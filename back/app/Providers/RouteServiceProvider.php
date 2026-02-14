@@ -20,14 +20,14 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
 
-            // API（Presenter配下）
+            // API
             Route::middleware('api')
                 ->prefix('api')
-                ->group(base_path('app/Presenter/Http/Routes/api.php'));
+                ->group(base_path('routes/api.php'));
 
             // Web（動作確認用）
             Route::middleware('web')
-                ->group(base_path('app/Presenter/Http/Routes/web.php'));
+                ->group(base_path('routes/web.php'));
         });
     }
 
