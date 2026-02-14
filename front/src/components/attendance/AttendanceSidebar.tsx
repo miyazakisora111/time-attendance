@@ -74,7 +74,7 @@ export function AttendanceSidebar() {
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <p className="text-sm truncate">田中 太郎</p>
+              <p className="text-sm truncate">煮干 太郎</p>
               <p className="text-xs text-blue-200 truncate">営業部</p>
             </div>
           )}
