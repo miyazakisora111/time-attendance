@@ -4,42 +4,25 @@ import { Button } from "../ui/button";
 
 export function MiniCalendar() {
   const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
-  
-  // Generate calendar days for December 2025
-  const calendarDays = [
-    { day: "", date: 0 },
-    { day: "1", date: 1, isWorkday: true },
-    { day: "2", date: 2, isWorkday: true },
-    { day: "3", date: 3, isWorkday: true },
-    { day: "4", date: 4, isWorkday: true },
-    { day: "5", date: 5, isWorkday: true },
-    { day: "6", date: 6, isHoliday: true },
-    { day: "7", date: 7, isHoliday: true },
-    { day: "8", date: 8, isWorkday: true },
-    { day: "9", date: 9, isWorkday: true },
-    { day: "10", date: 10, isWorkday: true },
-    { day: "11", date: 11, isWorkday: true },
-    { day: "12", date: 12, isWorkday: true },
-    { day: "13", date: 13, isHoliday: true },
-    { day: "14", date: 14, isHoliday: true },
-    { day: "15", date: 15, isWorkday: true },
-    { day: "16", date: 16, isToday: true, isWorkday: true },
-    { day: "17", date: 17 },
-    { day: "18", date: 18 },
-    { day: "19", date: 19 },
-    { day: "20", date: 20 },
-    { day: "21", date: 21 },
-    { day: "22", date: 22 },
-    { day: "23", date: 23 },
-    { day: "24", date: 24 },
-    { day: "25", date: 25 },
-    { day: "26", date: 26 },
-    { day: "27", date: 27 },
-    { day: "28", date: 28 },
-    { day: "29", date: 29 },
-    { day: "30", date: 30 },
-    { day: "31", date: 31 },
-  ];
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth(); // 0〜11
+  const lastDate = new Date(year, month + 1, 0).getDate(); // 今月の最終日
+  const calendarDays = [];
+  for (let d = 1; d <= lastDate; d++) {
+    const dateObj = new Date(year, month, d);
+    const dayOfWeek = dateObj.getDay(); // 0:日, 6:土
+    const dayItem = {
+      day: String(d),
+      date: d,
+      isWorkday: dayOfWeek >= 1 && dayOfWeek <= 5, // 月〜金は勤務日
+      isHoliday: dayOfWeek === 0 || dayOfWeek === 6, // 土日
+      isToday: d === today.getDate(),
+    };
+    calendarDays.push(dayItem);
+  }
+  calendarDays.unshift({ day: "", date: 0 });
 
   return (
     <Card className="shadow-lg">
@@ -66,35 +49,33 @@ export function MiniCalendar() {
           {daysOfWeek.map((day, index) => (
             <div
               key={day}
-              className={`text-center text-xs py-2 ${
-                index === 0 ? "text-red-600" : index === 6 ? "text-blue-600" : "text-gray-600"
-              }`}
+              className={`text-center text-xs py-2 ${index === 0 ? "text-red-600" : index === 6 ? "text-blue-600" : "text-gray-600"
+                }`}
             >
               {day}
             </div>
           ))}
-          
+
           {/* Calendar days */}
           {calendarDays.map((day, index) => (
             <div
               key={index}
-              className={`aspect-square flex items-center justify-center text-sm rounded-md ${
-                day.day === "" 
-                  ? "" 
+              className={`aspect-square flex items-center justify-center text-sm rounded-md ${day.day === ""
+                  ? ""
                   : day.isToday
-                  ? "bg-blue-600 text-white"
-                  : day.isWorkday
-                  ? "bg-green-50 text-green-700 hover:bg-green-100 cursor-pointer"
-                  : day.isHoliday
-                  ? "bg-red-50 text-red-600"
-                  : "hover:bg-gray-100 cursor-pointer"
-              }`}
+                    ? "bg-blue-600 text-white"
+                    : day.isWorkday
+                      ? "bg-green-50 text-green-700 hover:bg-green-100 cursor-pointer"
+                      : day.isHoliday
+                        ? "bg-red-50 text-red-600"
+                        : "hover:bg-gray-100 cursor-pointer"
+                }`}
             >
               {day.day}
             </div>
           ))}
         </div>
-        
+
         {/* Legend */}
         <div className="mt-4 pt-4 border-t flex gap-4 text-xs">
           <div className="flex items-center gap-1">
