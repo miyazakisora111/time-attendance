@@ -8,7 +8,7 @@ use Exception;
 use Throwable;
 
 /**
- * ビジネスロジック層の例外クラス
+ * ビジネスロジックの例外クラス
  */
 class BusinessException extends Exception
 {

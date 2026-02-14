@@ -20,11 +20,7 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array<class-string, array<int, class-string>>
      */
-    protected $listen = [
-        UserCreated::class => [
-            SendWelcomeMail::class,
-        ],
-    ];
+    protected $listen = [];
 
     /**
      * ブート

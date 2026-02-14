@@ -35,11 +35,9 @@ return [
     ],
 
     'providers' => ServiceProvider::defaultProviders()->merge([
-        App\Presenter\Providers\AppServiceProvider::class,
-        App\Presenter\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Presenter\Providers\EventServiceProvider::class,
-        App\Presenter\Providers\RouteServiceProvider::class,
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
     ])->toArray(),
 
     'aliases' => Facade::defaultAliases()->merge([
