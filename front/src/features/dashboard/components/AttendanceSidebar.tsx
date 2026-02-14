@@ -1,6 +1,6 @@
 import { Home, Clock, Calendar, FileText, Users, Settings, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../../../shared/components/ui/button";
 
 const menuItems = [
   { icon: Home, label: "ダッシュボード", href: "#dashboard" },

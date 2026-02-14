@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/ui/card";
 import { History, Clock } from "lucide-react";
 
 const recentRecords = [

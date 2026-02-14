@@ -1,6 +1,6 @@
 import { Home, Layers, BarChart, Users, Settings, HelpCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 
 const menuItems = [
   { icon: Home, label: "ホーム", href: "#home" },

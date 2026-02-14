@@ -1,9 +1,9 @@
-import { AttendanceSidebar } from "./components/attendance/AttendanceSidebar";
-import { ClockInOutCard } from "./components/attendance/ClockInOutCard";
-import { MonthlyStatsCard } from "./components/attendance/MonthlyStatsCard";
-import { RecentRecordsCard } from "./components/attendance/RecentRecordsCard";
-import { QuickActionsCard } from "./components/attendance/QuickActionsCard";
-import { MiniCalendar } from "./components/attendance/MiniCalendar";
+import { AttendanceSidebar } from "../features/dashboard/components/AttendanceSidebar";
+import { ClockInOutCard } from "../features/dashboard/components/ClockInOutCard";
+import { MonthlyStatsCard } from "../features/dashboard/components/MonthlyStatsCard";
+import { RecentRecordsCard } from "../features/dashboard/components/RecentRecordsCard";
+import { QuickActionsCard } from "../features/dashboard/components/QuickActionsCard";
+import { MiniCalendar } from "../features/dashboard/components/MiniCalendar";
 
 export default function App() {
   return (

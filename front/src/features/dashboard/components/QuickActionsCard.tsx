@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/ui/card";
+import { Button } from "../../../shared/components/ui/button";
 import { FileText, Plane, Stethoscope, FileEdit } from "lucide-react";
 
 const quickActions = [
