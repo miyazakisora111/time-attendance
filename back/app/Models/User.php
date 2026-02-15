@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * ユーザー情報を表すEloquentモデル。
  * PHP 8.2の属性とreadonly prototypeを活用。
  */
-#[ObservedBy([UserObserver::class])]
 class User extends Model
 {
     use HasUuid;

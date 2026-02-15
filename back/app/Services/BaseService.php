@@ -4,27 +4,36 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+
 /**
- * BaseService
- * 
- * すべてのサービスの基底クラス。
- * ビジネスロジックの再利用可能な部分を提供します。
+ * 基底のサービスクラス
  */
 abstract class BaseService
 {
     /**
-     * ログを記録
+     * 情報ログを記録する。
+     *
+     * @param string $message ログメッセージ
+     * @param array<string, mixed> $context 追加コンテキスト情報
+     *
+     * @return void
      */
     protected function log(string $message, array $context = []): void
     {
-        \Illuminate\Support\Facades\Log::info($message, $context);
+        Log::info($message, $context);
     }
 
     /**
-     * エラーログを記録
+     * エラーログを記録する。
+     *
+     * @param string $message ログメッセージ
+     * @param array<string, mixed> $context 追加コンテキスト情報
+     *
+     * @return void
      */
     protected function logError(string $message, array $context = []): void
     {
-        \Illuminate\Support\Facades\Log::error($message, $context);
+        Log::error($message, $context);
     }
 }
