@@ -11,7 +11,7 @@ const menuItems = [
   { icon: Settings, label: "設定", href: "#settings" },
 ];
 
-export function AttendanceSidebar() {
+export function AttendanceSidebar({ onLogout }: { onLogout?: () => void }) {
   const [collapsed, setCollapsed] = useState(false);
   const [activeItem, setActiveItem] = useState("ダッシュボード");
 
@@ -80,7 +80,12 @@ export function AttendanceSidebar() {
           )}
         </div>
         {!collapsed && (
-          <Button variant="outline" size="sm" className="w-full gap-2 border-blue-600 text-blue-100 hover:bg-blue-700 hover:text-white">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-2 border-blue-600 text-blue-100 hover:bg-blue-700 hover:text-white"
+            onClick={() => onLogout?.()}
+          >
             <LogOut size={16} />
             ログアウト
           </Button>

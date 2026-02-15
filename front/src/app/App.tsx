@@ -1,14 +1,30 @@
+import { useState } from "react";
 import { AttendanceSidebar } from "../features/dashboard/components/AttendanceSidebar";
 import { ClockInOutCard } from "../features/dashboard/components/ClockInOutCard";
 import { MonthlyStatsCard } from "../features/dashboard/components/MonthlyStatsCard";
 import { RecentRecordsCard } from "../features/dashboard/components/RecentRecordsCard";
 import { QuickActionsCard } from "../features/dashboard/components/QuickActionsCard";
 import { MiniCalendar } from "../features/dashboard/components/MiniCalendar";
+import { Login } from "../pages/login/Login";
 
 export default function App() {
+  const [showLogin, setShowLogin] = useState(false);
+
+  const handleLogout = () => {
+    setShowLogin(true);
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLogin(false);
+  };
+
+  if (showLogin) {
+    return <Login onLogin={handleLoginSuccess} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <AttendanceSidebar />
+      <AttendanceSidebar onLogout={handleLogout} />
       
       <div className="ml-64 transition-all duration-300 p-8">
         {/* Header */}
