@@ -8,36 +8,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
+            // UUID 主キー
             $table->uuid('id')->primary();
+
+            // 基本情報
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
             $table->string('phone')->nullable();
             $table->string('department')->nullable();
             $table->string('position')->nullable();
+
+            // 勤怠アプリ用ステータス
             $table->enum('status', ['active', 'inactive', 'suspended', 'deleted'])->default('active');
-            $table->json('metadata')->nullable();
+
+            // ログイン関連
             $table->timestamp('last_login_at')->nullable();
             $table->rememberToken();
+
+            // Laravel timestamps / soft deletes
             $table->softDeletes();
             $table->timestamps();
-            
+
+            // 検索用インデックス
             $table->index('email');
             $table->index('status');
             $table->index('department');
+            $table->index('position');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');
