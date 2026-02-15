@@ -34,8 +34,8 @@ class CalendarController extends BaseController
     {
         // 日付を取得する。
         $result = $this->service->getDates(
-            $request->year(),
-            $request->month(),
+            year: $request->year(),
+            month: $request->month(),
         );
 
         return ApiResponse::success($result);

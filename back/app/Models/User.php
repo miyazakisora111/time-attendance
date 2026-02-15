@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\Traits\HasUuid;
-use App\Models\Observers\UserObserver;
 use App\Enums\UserStatus;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * User Model
- * 
- * ユーザー情報を表すEloquentモデル。
- * PHP 8.2の属性とreadonly prototypeを活用。
+ * ユーザーのモデルクラス
  */
 class User extends Model
 {
