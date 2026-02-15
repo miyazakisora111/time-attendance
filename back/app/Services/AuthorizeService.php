@@ -7,15 +7,16 @@ namespace App\Services;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\ValueObjects\Email;
 
 /**
  * 認証のサービスクラス
  */
 class AuthorizeService
 {
-    public function login(string $email, string $password): array
+    public function login(Email $email, string $password): array
     {
-        $user = User::where('email', $email)->first();
+        $user = User::where('email', $email->value())->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
             throw new UnauthorizedHttpException('', 'Invalid credentials');

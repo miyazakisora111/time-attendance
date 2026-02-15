@@ -35,7 +35,7 @@ class AuthorizeController extends BaseController
         // ログイン処理を行う。
         $result = $this->service->login(
             email: $request->email(),
-            password: $request->password()
+            password: $request->password(),
         );
 
         return ApiResponse::success($result);

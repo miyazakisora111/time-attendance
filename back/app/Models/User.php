@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Traits\HasUuid;
 use App\Enums\UserStatus;
+use App\Model\Casts\EmailCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -36,6 +37,7 @@ class User extends Model
 
     protected $casts = [
         'id' => 'string',
+        'email' => EmailCast::class,
         'status' => UserStatus::class,
         'metadata' => 'json',
         'last_login_at' => 'datetime',

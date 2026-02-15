@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Authorize;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\ValueObjects\Email;
 
 /**
  * ログインのリクエストクラス
@@ -32,5 +33,10 @@ class LoginRequest extends FormRequest
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ];
+    }
+
+    public function email(): Email
+    {
+        return new Email($this->validated('email'));
     }
 }
