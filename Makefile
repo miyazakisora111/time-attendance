@@ -27,6 +27,9 @@ ps-back:
 ssh-back:
 	$(DC_CMD) exec $(BACK_CONTAINER) sh
 
+route-back:
+	$(DC_CMD) exec $(BACK_CONTAINER) php artisan route:list
+
 optimize-back:
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:clear
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan route:clear
