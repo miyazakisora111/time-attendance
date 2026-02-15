@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/atoms/CardComposite";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "../../../shared/components/ui/button";
+import { Button } from "../../../shared/components/atoms/Button";
 
 export function MiniCalendar() {
   const daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];

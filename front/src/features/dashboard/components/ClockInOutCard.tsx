@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/ui/card";
-import { Button } from "../../../shared/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/atoms/CardComposite";
+import { Button } from "../../../shared/components/atoms/Button";
 import { Clock, LogIn, LogOut, Coffee } from "lucide-react";
 import { useState } from "react";
 

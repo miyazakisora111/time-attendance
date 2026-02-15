@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/components/atoms/CardComposite";
 import { BarChart3, Clock, TrendingUp, Calendar } from "lucide-react";
 
 const stats = [
