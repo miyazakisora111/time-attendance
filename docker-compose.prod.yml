@@ -1,0 +1,12 @@
+services:
+  app:
+    ports:
+      - "80:8000"
+    command: php-fpm
+
+  postgres:
+    # 本番は内部ネットワークのみ、ポートは外部に公開しない
+    restart: always
+
+  redis:
+    restart: always
