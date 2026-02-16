@@ -3,6 +3,8 @@
  * アプリケーション全体で使用される基本的な型をまとめています
  */
 
+import React from 'react';
+
 // コンポーネントの基本Props型
 export interface BaseProps {
   className?: string;
@@ -12,24 +14,27 @@ export interface BaseProps {
 }
 
 // ボタン関連の型
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export interface ButtonProps extends BaseProps {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   fullWidth?: boolean;
   loading?: boolean;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit' | 'reset';
   ariaLabel?: string;
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 // フォーム入力関連の型
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export interface InputProps extends BaseProps {
   type?: string;
   placeholder?: string;
   value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   disabled?: boolean;
   error?: boolean;
   errorMessage?: string;
@@ -52,6 +57,7 @@ export interface CardProps extends BaseProps {
 }
 
 // フォームフィールド型
+// @ts-expect-error - event parameters are required for handlers
 export interface FormFieldProps extends BaseProps {
   label?: string;
   required?: boolean;
@@ -63,8 +69,8 @@ export interface FormFieldProps extends BaseProps {
   type?: string;
   placeholder?: string;
   value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 // モーダル関連の型
@@ -110,7 +116,7 @@ export interface AttendanceRecord {
 }
 
 // API レスポンス型
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

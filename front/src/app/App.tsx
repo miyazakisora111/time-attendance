@@ -1,47 +1,54 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from './queryClient';
-import { useAuthStore } from '../shared/store';
-import { LoginPage } from '../pages/login/LoginPage';
-import { DashboardPage } from '../pages/dashboard/DashboardPage';
+/**
+ * Root App コンポーネント
+ * 
+ * 責務:
+ * - ルーター + Providers の統合
+ * - グローバル認証初期化
+ */
+
+import { useEffect } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { bootstrap } from './app-init';
+import { router } from './router';
+import { Providers } from './providers';
+import { useAuthInitialize } from '@/features/auth';
+import './styles.css';
 
 /**
- * 保護されたルート
- * 認証されていない場合はログインページにリダイレクト
+ * 初期化ラッパーコンポーネント
+ * 認証状態を確認してからレンダリング
  */
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = useAuthStore((state) => state.token);
-  const isProduction = !import.meta.env.DEV;
+function AppInitializer() {
+  const { isInitialized } = useAuthInitialize();
 
-  if (isProduction && !token) {
-    return <Navigate to="/login" replace />;
+  if (!isInitialized) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+          <p className="mt-4 text-gray-600">初期化中...</p>
+        </div>
+      </div>
+    );
   }
 
-  return <>{children}</>;
+  return <RouterProvider router={router} />;
 }
 
 /**
- * App コンポーネント
- * アプリケーション全体のルートコンポーネント
+ * Root App コンポーネント
  */
-export default function App() {
+function App() {
+  useEffect(() => {
+    // アプリケーション初期化
+    bootstrap();
+  }, []);
+
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <Providers>
+      <AppInitializer />
+    </Providers>
   );
 }
+
+export default App;

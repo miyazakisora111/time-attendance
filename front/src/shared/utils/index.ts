@@ -58,7 +58,7 @@ export function getOrDefault<T>(value: T | null | undefined, defaultValue: T): T
 /**
  * テンプレート文字列を置換する
  */
-export function replaceTemplate(template: string, values: Record<string, any>): string {
+export function replaceTemplate(template: string, values: Record<string, unknown>): string {
   return template.replace(/{([^}]+)}/g, (match, key) => {
     return String(values[key] ?? match);
   });
@@ -119,7 +119,7 @@ export function parseQueryParams(queryString: string): Record<string, string> {
 /**
  * オブジェクトをURLパラメータに変換
  */
-export function objectToQueryString(obj: Record<string, any>): string {
+export function objectToQueryString(obj: Record<string, unknown>): string {
   const params = new URLSearchParams();
 
   Object.entries(obj).forEach(([key, value]) => {

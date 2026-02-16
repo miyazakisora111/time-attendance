@@ -2,6 +2,8 @@
  * アプリケーション定数
  */
 
+import { getEnv } from '@/lib';
+
 // ブレークポイント
 export const BREAKPOINTS = {
   xs: 0,
@@ -14,7 +16,7 @@ export const BREAKPOINTS = {
 
 // APIエンドポイント
 export const API_ENDPOINTS = {
-  baseUrl: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
+  baseUrl: getEnv('VITE_API_URL') || 'http://localhost:8000/api',
   auth: {
     login: '/auth/login',
     logout: '/auth/logout',

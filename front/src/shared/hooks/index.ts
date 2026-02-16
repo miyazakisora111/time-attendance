@@ -1,11 +1,6 @@
 /**
- * カスタムHooks集
+ * 古い実装は features/auth/ に統合されました
+ * カスタムHooks は各 feature 内で実装してください
  */
 
-export { useForm } from './useForm';
-export { useAsync } from './useAsync';
-export { useLocalStorage } from './useLocalStorage';
-export { useDebounce } from './useDebounce';
-
-// Query Hooks
-export * from './queries';
+// Placeholder: 将来の新しいシェアドHooksはここにexportします
