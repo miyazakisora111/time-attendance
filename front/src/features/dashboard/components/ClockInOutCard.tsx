@@ -56,7 +56,7 @@ export function ClockInOutCard() {
           {status === "out" && (
             <Button 
               onClick={handleClockIn} 
-              className="col-span-2 h-14 bg-green-600 hover:bg-green-700 gap-2"
+              className="col-span-2 h-14 bg-green-600 hover:bg-green-700 text-white not-odd:gap-2"
               size="lg"
             >
               <LogIn size={20} />
@@ -76,7 +76,7 @@ export function ClockInOutCard() {
               </Button>
               <Button 
                 onClick={handleClockOut} 
-                className="h-14 bg-red-600 hover:bg-red-700 gap-2"
+                className="h-14 bg-red-600 hover:bg-red-700 text-white gap-2"
               >
                 <LogOut size={20} />
                 退勤

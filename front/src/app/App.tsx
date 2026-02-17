@@ -29,7 +29,7 @@ export default function App() {
       <div className="ml-64 transition-all duration-300 p-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-gray-900 mb-2">ダッシュボード</h1>
+          <h1 className="text-2xl text-gray-900 mb-2 font-bold">ダッシュボード</h1>
           <p className="text-gray-600">本日も1日頑張りましょう！</p>
         </div>
 

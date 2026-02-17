@@ -70,7 +70,7 @@ export function AttendanceSidebar({ onLogout }: { onLogout?: () => void }) {
       <div className="p-4 border-t border-blue-700">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
-            <span>田</span>
+            <span>煮</span>
           </div>
           {!collapsed && (
             <div className="flex-1 min-w-0">
