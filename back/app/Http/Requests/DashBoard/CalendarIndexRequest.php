@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\DashBoard;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 
 /**
  * カレンダーのリクエストクラス
  */
-class CalendarIndexRequest extends FormRequest
+class CalendarIndexRequest extends BaseRequest
 {
     /**
-     * 認可判定
-     *
-     * @return bool
+     * {@inheritdoc}
      */
-    public function authorize(): bool
-    {
-        return true;
-    }
+    protected $filters = [
+        "number" => [
+            "year",
+            "month",
+        ],
+    ];
 
     /**
      * バリデーションルールを定義する。
@@ -32,15 +32,5 @@ class CalendarIndexRequest extends FormRequest
             'year'  => ['required', 'integer', 'min:2000', 'max:2100'],
             'month' => ['required', 'integer', 'min:1', 'max:12'],
         ];
-    }
-
-    public function year(): int
-    {
-        return (int) $this->validated('year');
-    }
-
-    public function month(): int
-    {
-        return (int) $this->validated('month');
     }
 }

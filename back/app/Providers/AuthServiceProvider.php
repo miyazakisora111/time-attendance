@@ -9,8 +9,6 @@ use App\Models\User;
 use App\Policies\UserPolicy;
 
 /**
- * AuthServiceProvider
- * 
  * 認可ポリシーを登録します。
  */
 class AuthServiceProvider extends ServiceProvider

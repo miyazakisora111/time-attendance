@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Presenter\Exceptions;
+namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -15,9 +14,7 @@ class Handler extends ExceptionHandler
      * @var array<int, string>
      */
     protected $dontFlash = [
-        'current_password',
         'password',
-        'password_confirmation',
     ];
 
     /**
@@ -25,8 +22,18 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        // ドメインの例外
+        $this->renderable(function (DomainException $e, $request) {
+
+            // JSONを返します。
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                ], $e->statusCode());
+            }
+
+            // 例外を起こします。
+            abort($e->statusCode(), $e->getMessage());
         });
     }
 }

@@ -7,54 +7,20 @@ namespace App\ValueObjects;
 use App\Exceptions\DomainException;
 
 /**
- * Email ValueObject
- * 
- * メールアドレスをValueObjectとして表現し、
- * ビジネスロジックと検証を一元化します。
+ * EmailのValueObjectクラス
  */
-final readonly class Email
+final readonly class Email extends BaseValueObject
 {
-    private string $value;
-
-    public function __construct(string $email)
+    /**
+     * メール形式を検証する。
+     *
+     * @param string $value 値 
+     * @throws DomainException
+     */
+    protected function assert(string $value): void
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new DomainException("Invalid email format: {$email}");
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            throw new DomainException("Invalid email format.");
         }
-
-        $this->value = strtolower(trim($email));
-    }
-
-    public function value(): string
-    {
-        return $this->value;
-    }
-
-    public function __toString(): string
-    {
-        return $this->value;
-    }
-
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
-    }
-
-    /**
-     * ドメイン部分を取得
-     */
-    public function domain(): string
-    {
-        $parts = explode('@', $this->value);
-        return $parts[1] ?? '';
-    }
-
-    /**
-     * ローカル部分を取得
-     */
-    public function localPart(): string
-    {
-        $parts = explode('@', $this->value);
-        return $parts[0] ?? '';
     }
 }

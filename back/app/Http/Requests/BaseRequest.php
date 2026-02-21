@@ -7,39 +7,80 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * BaseRequest
- * 
- * すべてのリクエストクラスの基底クラス。
- * 共通の機能と初期化を提供します。
+ * 既定のフォームリクエストクラス
  */
 abstract class BaseRequest extends FormRequest
 {
     /**
-     * リクエストが認可されているかを判断
+     * 正規化対象フィールド定義
+     *
+     * @var array{
+     *     number?: array<int, string>,
+     *     boolean?: array<int, string>
+     * }
      */
-    public function authorize(): bool
-    {
-        return true;
-    }
+    protected array $filters = [
+        'number'  => [],
+        'boolean' => [],
+    ];
 
     /**
-     * バリデーションルール
-     */
-    abstract public function rules(): array;
-
-    /**
-     * エラーメッセージ
-     */
-    public function messages(): array
-    {
-        return [];
-    }
-
-    /**
-     * 検証前の入力値を準備
+     * {@inheritdoc}
      */
     protected function prepareForValidation(): void
     {
-        // 子クラスでオーバーライド可能
+        $data = [];
+
+        foreach ($this->filters['number'] ?? [] as $column) {
+            $data[$column] = $this->filterNumber($this->input($column));
+        }
+
+        foreach ($this->filters['boolean'] ?? [] as $column) {
+            $data[$column] = $this->filterBoolean($this->input($column));
+        }
+
+        if (!empty($data)) {
+            $this->merge($data);
+        }
+    }
+
+    /**
+     * 数値入力を正規化する。
+     *
+     * @param mixed $value ユーザー入力値
+     * @return int|float|null 正規化された数値。変換不可の場合は null
+     */
+    protected function filterNumber(mixed $value): int|float|null
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $value = mb_convert_kana((string) $value, 'n');
+        $value = str_replace(',', '', $value);
+        $value = trim($value);
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        return str_contains($value, '.')
+            ? (float) $value
+            : (int) $value;
+    }
+
+    /**
+     * 真偽値入力を正規化する。
+     *
+     * @param mixed $value ユーザー入力値
+     * @return bool|null 正規化された真偽値。変換不可の場合は null
+     */
+    protected function filterBoolean(mixed $value): ?bool
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 }

@@ -4,29 +4,25 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Models\Traits\HasUuid;
 use App\Enums\UserStatus;
-use App\Model\Casts\EmailCast;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\HasUuid;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-/**
- * ユーザーのモデルクラス
- */
-class User extends Model
+class User extends Authenticatable
 {
     use HasUuid;
     use SoftDeletes;
 
     protected $fillable = [
+        'department_id',
         'name',
         'email',
         'password',
-        'phone',
-        'department',
-        'position',
         'status',
-        'metadata',
+        'email_verified_at',
         'last_login_at',
     ];
 
@@ -36,97 +32,50 @@ class User extends Model
     ];
 
     protected $casts = [
-        'id' => 'string',
-        'email' => EmailCast::class,
         'status' => UserStatus::class,
-        'metadata' => 'json',
-        'last_login_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
     ];
 
-    protected $keyType = 'string';
+    /*
+    |--------------------------------------------------------------------------
+    | Relations
+    |--------------------------------------------------------------------------
+    */
 
-    public $incrementing = false;
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
 
-    /**
-     * アクティブなユーザーのスコープ
-     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(LoginHistory::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes
+    |--------------------------------------------------------------------------
+    */
+
     public function scopeActive($query)
     {
-        return $query->where('status', UserStatus::ACTIVE->value);
+        return $query->where('status', UserStatus::ACTIVE);
     }
 
-    /**
-     * 非アクティブなユーザーのスコープ
-     */
     public function scopeInactive($query)
     {
-        return $query->where('status', UserStatus::INACTIVE->value);
+        return $query->where('status', UserStatus::INACTIVE);
     }
 
-    /**
-     * メールアドレスで検索
-     */
-    public function scopeByEmail($query, string $email)
+    public function scopeByDepartment($query, string $departmentId)
     {
-        return $query->where('email', strtolower($email));
-    }
-
-    /**
-     * 最後のログイン日時を更新
-     */
-    public function recordLogin(): void
-    {
-        $this->update(['last_login_at' => now()]);
-    }
-
-    /**
-     * ユーザーをアクティベート
-     */
-    public function activate(): void
-    {
-        if ($this->status->canActivate()) {
-            $this->update(['status' => UserStatus::ACTIVE]);
-        }
-    }
-
-    /**
-     * ユーザーを非アクティブ化
-     */
-    public function deactivate(): void
-    {
-        $this->update(['status' => UserStatus::INACTIVE]);
-    }
-
-    /**
-     * ユーザーを一時停止
-     */
-    public function suspend(): void
-    {
-        $this->update(['status' => UserStatus::SUSPENDED]);
-    }
-
-    /**
-     * メタデータを取得または設定
-     */
-    public function getMeta(string $key, mixed $default = null): mixed
-    {
-        return data_get($this->metadata ?? [], $key, $default);
-    }
-
-    public function setMeta(string $key, mixed $value): self
-    {
-        $metadata = $this->metadata ?? [];
-        data_set($metadata, $key, $value);
-        $this->metadata = $metadata;
-        return $this;
-    }
-
-    /**
-     * ユーザーが管理者かを判定
-     */
-    public function isAdmin(): bool
-    {
-        return $this->getMeta('is_admin', false) === true;
+        return $query->where('department_id', $departmentId);
     }
 }

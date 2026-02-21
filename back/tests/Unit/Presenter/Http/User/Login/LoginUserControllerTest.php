@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Unit\Presenter\Http\Payment;
+namespace Unit\Http\Payment;
 
 use App\Application\User\Login\LoginUserCommand;
 use App\Application\User\Login\LoginUserCommandHandler;
-use App\Presenter\Http\User\Login\LoginUserController;
-use App\Presenter\Http\User\Login\LoginUserRequest;
+use App\Http\User\Login\LoginUserController;
+use App\Http\User\Login\LoginUserRequest;
 use Illuminate\Validation\UnauthorizedException;
 use Laravel\Sanctum\NewAccessToken;
 use Mockery;

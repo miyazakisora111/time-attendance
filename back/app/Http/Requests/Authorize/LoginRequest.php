@@ -4,24 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Authorize;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseRequest;
 use App\ValueObjects\Email;
 
 /**
  * ログインのリクエストクラス
  */
-class LoginRequest extends FormRequest
+class LoginRequest extends BaseRequest
 {
-    /**
-     * 認可判定
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
-
     /**
      * バリデーションルールを定義する。
      *

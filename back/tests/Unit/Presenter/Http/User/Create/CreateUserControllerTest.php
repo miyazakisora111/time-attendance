@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Unit\Presenter\Http\Payment;
+namespace Unit\Http\Payment;
 
 use App\Application\User\Create\CreateUserCommand;
 use App\Application\User\Create\CreateUserCommandHandler;
-use App\Presenter\Http\User\Create\CreateUserController;
-use App\Presenter\Http\User\Create\CreateUserRequest;
+use App\Http\User\Create\CreateUserController;
+use App\Http\User\Create\CreateUserRequest;
 use Mockery;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\Response;

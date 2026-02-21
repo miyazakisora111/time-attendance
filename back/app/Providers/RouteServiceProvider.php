@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 
+/**
+ * ルート情報を定義します。
+ */
 class RouteServiceProvider extends ServiceProvider
 {
     public const HOME = '/';

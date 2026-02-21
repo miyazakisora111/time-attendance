@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Casts;
+namespace App\Models\Casts;
 
 use App\ValueObjects\Email;
 
@@ -17,3 +17,4 @@ class EmailCast extends ValueObjectCast
         return Email::class;
     }
 }
+
