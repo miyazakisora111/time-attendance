@@ -8,13 +8,13 @@ use RuntimeException;
 use Throwable;
 
 /**
- * ドメインの例外クラス
+ * 権限の例外クラス
  */
-class DomainException extends RuntimeException
+final class AuthorizationException extends RuntimeException
 {
     public function __construct(
-        string $message = 'Domain error.',
-        int $statusCode = 422,
+        string $message = '権限がありません',
+        int $statusCode = 403,
         ?Throwable $previous = null
     ) {
         parent::__construct($message, $statusCode, $previous);

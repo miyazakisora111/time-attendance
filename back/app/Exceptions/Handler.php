@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Throwable;
+use App\Http\Responses\ApiResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -22,18 +24,47 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        // ドメインの例外
+        // ドメイン
         $this->renderable(function (DomainException $e, $request) {
-
-            // JSONを返します。
             if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => $e->getMessage(),
-                ], $e->statusCode());
+                return ApiResponse::error(
+                    message: $e->getMessage(),
+                    status: $e->getCode()
+                );
             }
+            abort($e->getCode(), $e->getMessage());
+        });
 
-            // 例外を起こします。
-            abort($e->statusCode(), $e->getMessage());
+        // 未認証
+        $this->renderable(function (AuthenticationException $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    message: $e->getMessage(),
+                    status: $e->getCode(),
+                );
+            }
+            return redirect()->guest(route('login'));
+        });
+
+        // 権限なし
+        $this->renderable(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    message: $e->getMessage(),
+                    status: $e->getCode(),
+                );
+            }
+            abort($e->getCode(), $e->getMessage());
+        });
+
+        // その他
+        $this->renderable(function (Throwable $e, $request) {
+            if ($request->expectsJson()) {
+                return ApiResponse::error(
+                    message: $e->getMessage(),
+                    status: $e->getCode(),
+                );
+            }
         });
     }
 }

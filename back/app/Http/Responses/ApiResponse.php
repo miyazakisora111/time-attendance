@@ -30,8 +30,8 @@ final class ApiResponse
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data'    => $data,
-            'meta'    => $meta !== [] ? $meta : null,
+            'data' => $data,
+            'meta' => $meta !== [] ? $meta : null,
         ], $status);
     }
 

@@ -40,4 +40,16 @@ class AuthController extends BaseController
 
         return ApiResponse::success($result);
     }
+
+    /**
+     * ログインユーザーを取得する。
+     *
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function me(): JsonResponse
+    {
+        // ユーザーを取得する。
+        $result = $this->service->getUser();
+        return ApiResponse::success($result);
+    }
 }

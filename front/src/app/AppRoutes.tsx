@@ -9,12 +9,28 @@ export const AppRoutes = () => {
 
     return (
         <Routes>
+            {/* デフォルトルート */}
+            {/* <Route
+                path="/"
+                element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />}
+            /> */}
+
+            {/* 公開ページ */}
             <Route element={<PublicLayout />}>
                 <Route path="/login" element={<LoginPage />} />
             </Route>
 
-            <Route element={isAuthenticated ? <PrivateLayout /> : <Navigate to="/login" replace />}>
+            {/* 認証必須ページ */}
+            <Route
+                element={
+                    isAuthenticated ? <PrivateLayout /> : <Navigate to="/login" replace />
+                }
+            >
             </Route>
+
+
+            {/* ワイルドカード 404 */}
+            <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
         </Routes>
     );
 };
