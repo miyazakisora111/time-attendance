@@ -6,9 +6,7 @@ export { useAuth } from '@/features/auth/model/useAuth'
 export { useAuthStore } from '@/features/auth/model/useAuthStore'
 export {
   loginFormSchema,
-  registerFormSchema,
   type LoginFormData,
-  type RegisterFormData
 } from '@/features/auth/model/schema';
 export type {
   LoginRequest,
@@ -22,5 +20,5 @@ export {
   logoutApi,
   authMeApi,
   registerApi,
-  getCsrfTokenApi
+  getCsrfTokenApi,
 } from '@/features/auth/api/api';
