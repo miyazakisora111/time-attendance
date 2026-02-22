@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -14,12 +14,17 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+            'hash' => false,
+        ],
     ],
 
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Infrastructure\Database\Models\UserModel::class,
+            'model' => App\Models\User::class,
         ],
 
         // 'users' => [
@@ -38,5 +43,4 @@ return [
     ],
 
     'password_timeout' => 10800,
-
 ];

@@ -28,7 +28,7 @@ Route::prefix('auth')->group(function () {
 });
 
 // 認証必須ルート
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:api')->group(function () {
 
     /**
      * ログアウト

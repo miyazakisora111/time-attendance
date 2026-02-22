@@ -4,6 +4,7 @@ namespace App\Logging;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class AppLogger
 {
@@ -69,7 +70,7 @@ class AppLogger
     {
         return array_merge([
             'request_id' => request()->header('X-Request-ID') ?? Str::uuid(),
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
         ], $context);
     }
 

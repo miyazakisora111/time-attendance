@@ -30,7 +30,11 @@ ssh-back:
 optimize-back:
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:clear
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan route:clear
+	$(DC_CMD) exec $(BACK_CONTAINER) php artisan cache:clear
+	$(DC_CMD) exec $(BACK_CONTAINER) php artisan view:clear
+	$(DC_CMD) exec $(BACK_CONTAINER) composer dump-autoload
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:cache
+
 
 db-init:
 	@echo "==> DB作成チェック中..."

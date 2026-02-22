@@ -7,8 +7,11 @@ namespace App\Services;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use App\Exceptions\AuthenticationException;
 use App\Models\User;
 use App\ValueObjects\Email;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 /**
  * 認証のサービスクラス
@@ -27,17 +30,22 @@ class AuthService
      */
     public function login(Email $email, string $password): array
     {
-        // ユーザーを取得する。
-        $user = User::where('email', $email->value())->first();
-
-        // 認証を行う。
+        // パスワードを確認します。
+        $user = User::where('email', $email)->first();
         if (!$user || !Hash::check($password, $user->password)) {
-            throw new UnauthorizedHttpException('', 'Invalid credentials');
+            throw new \InvalidArgumentException('認証情報が正しくありません');
+        }
+
+        try {
+            $token = JWTAuth::fromUser($user);
+        } catch (JWTException $e) {
+            throw new \RuntimeException('トークン生成に失敗しました');
         }
 
         return [
+            'token' => JWTAuth::fromUser($user),
+            'ttl' => config('jwt.ttl'),
             'user' => $user,
-            'token' => $user->createToken('api-token')->plainTextToken,
         ];
     }
 
@@ -46,7 +54,7 @@ class AuthService
      *
      * @return array<string, mixed> 認証ユーザー情報
      *
-     * @throws \Illuminate\Auth\AuthenticationException
+     * @throws AuthenticationException
      */
     public function getUser(): array
     {
@@ -55,7 +63,7 @@ class AuthService
 
         // 認証の例外を投げる。
         if (!$user) {
-            throw new \Illuminate\Auth\AuthenticationException('未認証です');
+            throw new AuthenticationException();
         }
 
         return [

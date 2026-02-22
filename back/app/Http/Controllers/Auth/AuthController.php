@@ -42,6 +42,19 @@ final class AuthController extends BaseController
     }
 
     /**
+     * ログアウトする。
+     *
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function logout(): JsonResponse
+    {
+        // ログアウトする。
+        auth('api')->logout();
+
+        return ApiResponse::success();
+    }
+
+    /**
      * ログインユーザーを取得する。
      *
      * @return JsonResponse Jsonレスポンス
