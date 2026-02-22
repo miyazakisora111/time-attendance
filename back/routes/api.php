@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashBoard\CalendarController;
-use App\Http\Controllers\Authorize\AuthorizeController;
+use App\Http\Controllers\Auth\AuthController;
 
 // ヘルスチェック
 Route::get('/health', function () {
@@ -17,7 +17,7 @@ Route::prefix('auth')->group(function () {
      *
      * POST /api/auth/login
      */
-    Route::post('/login', [AuthorizeController::class, 'login'])
+    Route::post('/login', [AuthController::class, 'login'])
         ->middleware('throttle:5,1'); // 1分間に5回まで
 });
 
@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
      *
      * POST /api/auth/logout
      */
-    Route::post('/auth/logout', [AuthorizeController::class, 'logout']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     /**
      * カレンダー取得API

@@ -12,7 +12,7 @@ use App\ValueObjects\Email;
 /**
  * 認証のサービスクラス
  */
-class AuthorizeService
+class AuthService
 {
     /**
      * Eメールとパスワードでユーザーを認証する。

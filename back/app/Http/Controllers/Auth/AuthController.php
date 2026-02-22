@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Authorize;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\Authorize\LoginRequest;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\ApiResponse;
-use App\Services\AuthorizeService;
+use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 
 /**
  * 認証のコントローラー
  */
-class AuthorizeController extends BaseController
+class AuthController extends BaseController
 {
     /**
      * コンストラクタ
      * 
-     * @param AuthorizeService $service 認証のサービス
+     * @param AuthService $service 認証のサービス
      */
     public function __construct(
-        private readonly AuthorizeService $service,
+        private readonly AuthService $service,
     ) {}
 
     /**

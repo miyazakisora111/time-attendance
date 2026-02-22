@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Authorize;
+namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseRequest;
 use App\ValueObjects\Email;
