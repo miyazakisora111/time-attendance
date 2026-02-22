@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PublicLayout } from "./layouts/PublicLayout";
-import { PrivateLayout } from "./layouts/PrivateLayout";
+import { PublicLayout } from "@/layouts/PublicLayout";
+import { PrivateLayout } from "@/layouts/PrivateLayout";
 import LoginPage from "@/features/auth/ui/LoginPage";
 import { useAuth } from "@/features/auth/model/useAuth";
 

@@ -1,38 +1,36 @@
-/**
- * 統一エラークラス
- * API エラーとアプリケーションエラーを一元管理
- * 
- * note: code と statusCode は Error オブジェクトに保存され、
- *       デバッグやエラーハンドリングで使用されます
- */
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
 export class AppError extends Error {
+  public code: string;
+  public statusCode: number;
+
   constructor(
     message: string,
-    public code: string = 'APP_ERROR',
-    public statusCode: number = 500
-  ) {
+    code: string = 'APP_ERROR',
+    statusCode: number = 500) {
     super(message);
+    this.code = code;
+    this.statusCode = statusCode;
+
     this.name = 'AppError';
     Object.setPrototypeOf(this, AppError.prototype);
   }
 }
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export class ApiError extends AppError {
+  public validationErrors?: Record<string, string[]>;
+
   constructor(
     message: string,
     statusCode: number,
-    public validationErrors?: Record<string, string[]>
+    validationErrors?: Record<string, string[]>
   ) {
-    super(message, `API_ERROR_${statusCode}`, statusCode, { validationErrors });
+    super(message, `API_ERROR_${statusCode}`, statusCode);
+    this.validationErrors = validationErrors;
     this.name = 'ApiError';
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 
   isValidationError(): boolean {
-    return !!this.validationErrors;
+    return !!this.validationErrors && Object.keys(this.validationErrors).length > 0;
   }
 
   getFieldErrors(): Record<string, string[]> {
@@ -73,7 +71,7 @@ export class NetworkError extends AppError {
 }
 
 /**
- * エラーオブジェクトの判定
+ * エラーオブジェクトの型判定
  */
 export function isAppError(error: unknown): error is AppError {
   return error instanceof AppError;

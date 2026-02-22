@@ -1,7 +1,5 @@
-// src/features/auth/api/useAuth.ts
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { authMeApi, loginApi, logoutApi } from "../api/api";
-import { useAuthStore } from "../model/useAuthStore";
+import { authMeApi, loginApi, logoutApi, useAuthStore } from "@/features/auth";
 
 export const authQueryKey = {
     all: ["auth"] as const,

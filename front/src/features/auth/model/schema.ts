@@ -5,7 +5,7 @@ import { z } from 'zod';
  */
 const emailSchema = z
   .string()
-  .min(1, 'メールアドレスを入力してください')
+  .min(1, 'メールアドレスを入力してください!!')
   .email('有効なメールアドレスを入力してください');
 
 /**

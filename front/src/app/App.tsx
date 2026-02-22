@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
-import { AppProviders } from "./AppProviders";
-import { AppRoutes } from "./AppRoutes";
+import { AppProviders } from "@/app/AppProviders";
+import { AppRoutes } from "@/app/AppRoutes";
 
 export const App = () => (
   <BrowserRouter>
