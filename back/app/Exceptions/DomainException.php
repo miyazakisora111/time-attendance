@@ -13,7 +13,7 @@ use Throwable;
 class DomainException extends RuntimeException
 {
     public function __construct(
-        string $message = 'Domain error.',
+        string $message = 'ドメインの例外です',
         int $statusCode = 422,
         ?Throwable $previous = null
     ) {

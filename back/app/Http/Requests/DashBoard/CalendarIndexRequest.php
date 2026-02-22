@@ -14,7 +14,7 @@ class CalendarIndexRequest extends BaseRequest
     /**
      * {@inheritdoc}
      */
-    protected $filters = [
+    protected array $filters = [
         "number" => [
             "year",
             "month",

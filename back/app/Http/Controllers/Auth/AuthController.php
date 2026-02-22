@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 /**
  * 認証のコントローラー
  */
-class AuthController extends BaseController
+final class AuthController extends BaseController
 {
     /**
      * コンストラクタ

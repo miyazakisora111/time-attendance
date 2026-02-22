@@ -7,12 +7,11 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use App\Logging\ActivityLogger;
+use App\Logging\AppLogger;
+use Illuminate\Support\Facades\Auth;
 
 /**
- * LogApiRequest Middleware
- * 
- * API リクエストをログに記録するミドルウェア。
+ * APIリクエストをログに記録するミドルウェア
  */
 class LogApiRequest
 {
@@ -20,12 +19,11 @@ class LogApiRequest
     {
         $response = $next($request);
 
-        ActivityLogger::logApiCall(
+        AppLogger::logApiCall(
             method: $request->method(),
             endpoint: $request->path(),
             statusCode: $response->status(),
-            userId: auth()->id(),
-            details: [
+            context: [
                 'user_agent' => $request->userAgent(),
                 'ip' => $request->ip(),
             ],
