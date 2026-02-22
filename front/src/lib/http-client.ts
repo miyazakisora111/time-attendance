@@ -1,13 +1,14 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import { env } from '@/env';
 
 class HttpClient {
   private instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: import.meta.env.VITE_API_URL,
-      timeout: 10000,
-      withCredentials: true,
+      baseURL: env.API_URL,          // ここを env で置き換え
+      timeout: env.API_TIMEOUT,       // env から取得
+      withCredentials: true,          // Cookie を扱う場合は必須
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
@@ -26,8 +27,7 @@ class HttpClient {
         }
 
         if (error.response.status === 401) {
-          // ここでは何もしない
-          // UI層で処理させる
+          // UI 層で処理
         }
 
         return Promise.reject(error);
@@ -48,6 +48,14 @@ class HttpClient {
   async delete<T>(url: string): Promise<T> {
     const res = await this.instance.delete<T>(url);
     return res.data;
+  }
+
+  /**
+   * CSRFトークン取得 (Laravel Sanctum)
+   * /sanctum/csrf-cookie に GET して XSRF-TOKEN Cookie を取得
+   */
+  async getCsrfToken(): Promise<void> {
+    await this.instance.get('/sanctum/csrf-cookie');
   }
 }
 

@@ -1,5 +1,6 @@
 {
   "files": [],
+  "sourceMap": true,
   "references": [
     {
       "path": "./tsconfig.app.json"

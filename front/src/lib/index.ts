@@ -4,11 +4,13 @@
  */
 
 // 環境変数
-export { env, isProduction, isDevelopment, isTest } from './env';
+export { env, isProduction, isDevelopment, isTest } from '@/env';
 
 // Axios HTTP クライアント
-export { httpClient, setupAuthInterceptor } from './axios';
-export type { ApiResponse, ApiErrorResponse, PaginatedResponse } from './axios/types';
+export { httpClient } from '@/lib/http-client';
+
+// Query クライアント
+export { createQueryClient, invalidatePatterns } from '@/lib/query-client';
 
 // エラーハンドリング
 export {
@@ -23,6 +25,3 @@ export {
   isAuthError,
   isNetworkError,
 } from './errors';
-
-// TanStack Query
-export { createQueryClient, queryKeys, invalidatePatterns } from './query-client';

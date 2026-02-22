@@ -42,7 +42,7 @@ export const useAuth = () => {
     const logout = useMutation({
         mutationFn: logoutApi,
         onSuccess: async () => {
-            await queryClient.removeQueries({ queryKey: authQueryKey.me() });
+            queryClient.removeQueries({ queryKey: authQueryKey.me() });
             useAuthStore.getState().setUser(null);
             useAuthStore.getState().setIsAuthenticated(false);
         },

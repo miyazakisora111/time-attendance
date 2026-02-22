@@ -1,30 +1,19 @@
-/**
- * ログインフォームコンポーネント
- * React Hook Form + Zod 統合
- */
-
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLogin, loginFormSchema } from '@/features/auth';
-import { ApiError } from '@/lib';
+import { useAuth, loginFormSchema } from '@/features/auth';
+import { getCsrfTokenApi } from '@/features/auth/api/api';
 import type { LoginFormData } from '../model/schema';
 import type { Location } from 'react-router-dom';
 
 export function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
-  const loginMutation = useLogin();
+  const loginMutation = useAuth().login;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginFormSchema),
-  });
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setError } =
+    useForm<LoginFormData>({ resolver: zodResolver(loginFormSchema) });
 
   // ログイン後のリダイレクト
   useEffect(() => {
@@ -34,35 +23,16 @@ export function LoginForm() {
     }
   }, [loginMutation.isSuccess, navigate, location]);
 
-  // API エラーをフォームに統合
-  useEffect(() => {
-    if (loginMutation.isError) {
-      const error = loginMutation.error as ApiError;
-      // バリデーションエラーの場合
-      if (error.validationErrors) {
-        Object.entries(error.validationErrors).forEach(([field, messages]) => {
-          setError(field as keyof LoginFormData, {
-            type: 'server',
-            message: Array.isArray(messages) ? messages[0] : messages,
-          });
-        });
-      } else {
-        // 一般的なエラー
-        setError('email', {
-          type: 'server',
-          message: error.message || 'ログインに失敗しました',
-        });
-      }
-    }
-  }, [loginMutation.isError, loginMutation.error, setError]);
-
   const onSubmit = async (data: LoginFormData) => {
+    // CSRF トークン取得
+    await getCsrfTokenApi();
+
+    // ログイン
     await loginMutation.mutateAsync(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* メールアドレス */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           メールアドレス
@@ -74,12 +44,9 @@ export function LoginForm() {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           {...register('email')}
         />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
       </div>
 
-      {/* パスワード */}
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
           パスワード
@@ -91,12 +58,9 @@ export function LoginForm() {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           {...register('password')}
         />
-        {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
       </div>
 
-      {/* 送信ボタン */}
       <button
         type="submit"
         disabled={isSubmitting || loginMutation.isPending}
@@ -105,10 +69,9 @@ export function LoginForm() {
         {isSubmitting || loginMutation.isPending ? 'ログイン中...' : 'ログイン'}
       </button>
 
-      {/* 全般エラー */}
       {loginMutation.error && !Object.keys(errors).length && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
-          {(loginMutation.error as ApiError).message}
+          {loginMutation.error.message}
         </div>
       )}
     </form>
