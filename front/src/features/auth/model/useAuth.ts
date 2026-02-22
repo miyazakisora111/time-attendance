@@ -1,27 +1,50 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { authMeApi, loginApi, logoutApi } from '../api/api';
+// src/features/auth/api/useAuth.ts
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { authMeApi, loginApi, logoutApi } from "../api/api";
+import { useAuthStore } from "../model/useAuthStore";
+
+export const authQueryKey = {
+    all: ["auth"] as const,
+    me: () => [...authQueryKey.all, "me"] as const,
+};
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
 
+    // 認証ユーザー取得
     const authQuery = useQuery({
         queryKey: authQueryKey.me(),
         queryFn: authMeApi,
         retry: false,
         staleTime: 1000 * 60 * 5,
-    });
-
-    const login = useMutation({
-        mutationFn: loginApi,
-        onSuccess: (data) => {
-            queryClient.setQueryData(authQueryKey.me(), data.user);
+        refetchOnWindowFocus: false,
+        onSuccess: (user) => {
+            useAuthStore.getState().setUser(user);
+            useAuthStore.getState().setIsAuthenticated(!!user);
+            useAuthStore.getState().setIsInitializing(false);
+        },
+        onError: () => {
+            useAuthStore.getState().setUser(null);
+            useAuthStore.getState().setIsAuthenticated(false);
+            useAuthStore.getState().setIsInitializing(false);
         },
     });
 
+    // ログイン
+    const login = useMutation({
+        mutationFn: loginApi,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: authQueryKey.me() });
+        },
+    });
+
+    // ログアウト
     const logout = useMutation({
         mutationFn: logoutApi,
-        onSuccess: () => {
-            queryClient.setQueryData(authQueryKey.me(), null);
+        onSuccess: async () => {
+            await queryClient.removeQueries({ queryKey: authQueryKey.me() });
+            useAuthStore.getState().setUser(null);
+            useAuthStore.getState().setIsAuthenticated(false);
         },
     });
 
@@ -33,4 +56,3 @@ export const useAuth = () => {
         logout,
     };
 };
-

@@ -7,19 +7,11 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useLogin, loginFormSchema } from '../index';
+import { useLogin, loginFormSchema } from '@/features/auth';
 import { ApiError } from '@/lib';
 import type { LoginFormData } from '../model/schema';
 import type { Location } from 'react-router-dom';
 
-/**
- * ログインフォーム
- * 
- * 使用例:
- * ```tsx
- * <LoginForm />
- * ```
- */
 export function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();

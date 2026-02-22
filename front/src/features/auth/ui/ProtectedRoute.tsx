@@ -1,44 +1,24 @@
-/**
- * 保護されたルートコンポーネント
- * 認証していないユーザーをログインページにリダイレクト
- */
-
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '../store';
+// src/features/auth/ui/ProtectedRoute.tsx
+import React, { useEffect } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuthStore } from "../model/useAuthStore";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-/**
- * ProtectedRoute
- * 
- * 使用例:
- * ```tsx
- * <Route
- *   path="/dashboard"
- *   element={
- *     <ProtectedRoute>
- *       <DashboardPage />
- *     </ProtectedRoute>
- *   }
- * />
- * ```
- */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isInitializing } = useAuthStore();
+  const { isAuthenticated, isInitializing, setIsInitializing } = useAuthStore();
   const location = useLocation();
 
-  // 初期化中は何も表示しない (Suspense 使用推奨)
-  if (isInitializing) {
-    return null;
-  }
+  useEffect(() => {
+    if (isInitializing) {
+      setIsInitializing(false);
+    }
+  }, [isInitializing, setIsInitializing]);
 
-  // 未認証 → ログインページへリダイレクト
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" state={{ from: location }} replace />;
-//   }
+  if (isInitializing) return <div>Loading...</div>;
+  if (!isAuthenticated) return <Navigate to="/login" state={{ from: location }} replace />;
 
   return <>{children}</>;
 }

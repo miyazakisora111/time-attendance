@@ -1,20 +1,19 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LoginForm } from '@/features/auth/components';
-import { useAuthStore } from '@/features/auth'; // 認証状態管理（Zustandなど）
+import { LoginForm } from '@/features/auth/ui/LoginForm';
 
 export default function LoginPage() {
-  const navigate = useNavigate(); // ページ遷移関数
-  const { isAuthenticated } = useAuthStore(); // 認証状態を取得
+  // const navigate = useNavigate(); // ページ遷移関数
+  // const { isAuthenticated } = useAuthStore(); // 認証状態を取得
 
-  // ===============================
-  // 認証済みなら自動リダイレクト
-  // ===============================
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true }); // 履歴を置き換えて戻れないように
-    }
-  }, [isAuthenticated, navigate]);
+  // // ===============================
+  // // 認証済みなら自動リダイレクト
+  // // ===============================
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     navigate('/dashboard', { replace: true }); // 履歴を置き換えて戻れないように
+  //   }
+  // }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">

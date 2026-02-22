@@ -1,7 +1,7 @@
-import { httpClient } from '@/shared/lib/http/httpClient';
-import { toResult } from '@/shared/lib/result/toResult';
-import type { Result } from '@/shared/lib/result/result';
-import type { ApiResponse } from '@/shared/types/api';
+import { httpClient } from '@/lib/axios/client';
+import { toResult } from '@/shared/http/toResult';
+import type { Result } from '@/shared/http/types/result';
+import type { ApiResponse } from '@/shared/http/types/api';
 import type {
   LoginRequest,
   LoginResponse,
@@ -17,20 +17,18 @@ const AUTH_BASE_URL = '/auth';
  */
 export const loginApi = (
   credentials: LoginRequest
-): Promise<Result<LoginResponse>> =>
-  toResult(async () => {
-    const res = await httpClient.post<ApiResponse<LoginResponse>>(
+): Promise<Result<LoginResponse, Error>> =>
+  toResult(() =>
+    httpClient.post<LoginResponse>(
       `${AUTH_BASE_URL}/login`,
       credentials
-    );
-
-    return res.data.data;
-  });
+    )
+  );
 
 /**
  * ログアウト
  */
-export const logoutApi = (): Promise<Result<LogoutResponse>> =>
+export const logoutApi = (): Promise<Result<LogoutResponse, Error>> =>
   toResult(async () => {
     const res = await httpClient.post<ApiResponse<LogoutResponse>>(
       `${AUTH_BASE_URL}/logout`
@@ -42,7 +40,7 @@ export const logoutApi = (): Promise<Result<LogoutResponse>> =>
 /**
  * 現在ユーザー確認
  */
-export const authMeApi = (): Promise<Result<AuthMeResponse>> =>
+export const authMeApi = (): Promise<Result<AuthMeResponse, Error>> =>
   toResult(async () => {
     const res = await httpClient.get<ApiResponse<AuthMeResponse>>(
       `${AUTH_BASE_URL}/me`
@@ -56,7 +54,7 @@ export const authMeApi = (): Promise<Result<AuthMeResponse>> =>
  */
 export const registerApi = (
   payload: RegisterRequest
-): Promise<Result<LoginResponse>> =>
+): Promise<Result<LoginResponse, Error>> =>
   toResult(async () => {
     const res = await httpClient.post<ApiResponse<LoginResponse>>(
       `${AUTH_BASE_URL}/register`,
@@ -69,7 +67,7 @@ export const registerApi = (
 /**
  * CSRF取得
  */
-export const getCsrfTokenApi = (): Promise<Result<void>> =>
+export const getCsrfTokenApi = (): Promise<Result<void, Error>> =>
   toResult(async () => {
     await httpClient.getCsrfToken();
   });
