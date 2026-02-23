@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+/* デザインシステム */
+@theme {
+    --color-primary: 34 197 94;
+    --color-primary-foreground: 255 255 255;
+
+    --color-bg: 255 255 255;
+    --color-text: 17 24 39;
+
+    --radius-md: 0.5rem;
+}
+
+/* ダークテーマ */
+@media (prefers-color-scheme: dark) {
+    @theme {
+        --color-bg: 17 24 39;
+        --color-text: 243 244 246;
+    }
+}

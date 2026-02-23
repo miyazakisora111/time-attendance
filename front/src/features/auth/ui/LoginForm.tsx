@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate, useLocation, type Location } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, loginFormSchema } from '@/features/auth';
 import { getCsrfTokenApi } from '@/features/auth/api/api';
-import type { LoginFormData } from '../model/schema';
-import type { Location } from 'react-router-dom';
+import type { LoginFormData } from '@/features/auth';
+import { Button } from '@/shared/ui';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -33,47 +33,50 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {/* email */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700">
           メールアドレス
         </label>
         <input
-          id="email"
           type="email"
-          placeholder="your@example.com"
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          {...register('email')}
+          {...register("email")}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
-        {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="mt-1 text-sm text-red-600">
+            {errors.email.message}
+          </p>
+        )}
       </div>
 
+      {/* password */}
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700">
           パスワード
         </label>
         <input
-          id="password"
           type="password"
-          placeholder="••••••••"
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          {...register('password')}
+          {...register("password")}
+          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
         />
-        {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+        {errors.password && (
+          <p className="mt-1 text-sm text-red-600">
+            {errors.password.message}
+          </p>
+        )}
       </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting || loginMutation.isPending}
-        className="w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {isSubmitting || loginMutation.isPending ? 'ログイン中...' : 'ログイン'}
-      </button>
+      <Button>デフォルト（primary）</Button>
+      <Button variant="secondary">キャンセル</Button>
+      <Button variant="danger">削除</Button>
+      <Button variant="outline">下書き保存</Button>
+      <Button variant="ghost">閉じる</Button>
+      <Button variant="link">詳細を見る</Button>
 
-      {loginMutation.error && !Object.keys(errors).length && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
-          {loginMutation.error.message}
-        </div>
-      )}
+      <Button size="sm">小さい</Button>
+      <Button size="lg">大きい</Button>
     </form>
+
   );
 }
