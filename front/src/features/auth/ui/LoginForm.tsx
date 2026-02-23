@@ -5,7 +5,7 @@ import { FormProvider } from '@/shared/components/forms/FormProvider';
 import { useAuth, loginFormSchema } from '@/features/auth';
 import { getCsrfTokenApi } from '@/features/auth/api/api';
 import type { LoginFormData } from '@/features/auth';
-import { SubmitButton, Input, RadioGroup } from '@/shared/components';
+import { SubmitButton, Input, RadioGroup, Select, Switch } from '@/shared/components';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export function LoginForm() {
       <SubmitButton className="w-full">ログイン</SubmitButton>
       <RadioGroup
         name="test"
-        label="ラジオグループ"
+        label="RadioGroup"
         options={[
           { label: "選択1", value: "value1" },
           { label: "選択2", value: "value2" },
@@ -54,6 +54,14 @@ export function LoginForm() {
         className="flex-row"
       >
       </RadioGroup>
+      <Select label="Select" name="email" options={[
+        { label: "選択1", value: "value1" },
+        { label: "選択2", value: "value2" },
+        { label: "選択3", value: "value3" },
+      ]}>
+      </Select>
+      <Switch label="Select" name="email">
+      </Switch>
     </FormProvider>
   );
 }

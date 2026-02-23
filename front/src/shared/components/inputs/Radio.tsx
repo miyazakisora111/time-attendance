@@ -36,10 +36,6 @@ export const Radio = <T extends FieldValues>({
                 />
                 <span className="text-sm font-medium">{label}</span>
             </label>
-
-            {fieldError && (
-                <p className="text-red-500 text-xs mt-1 ml-6">{fieldError.message}</p>
-            )}
         </div>
     );
 };

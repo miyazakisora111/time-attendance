@@ -1,6 +1,6 @@
 import { useFormContext, type FieldValues } from "react-hook-form";
 import { cn } from "@/shared/utils/style";
-import { Radio } from "./Radio"; // Radio をインポート
+import { Radio } from "./Radio";
 
 type RadioOption = {
     label: string;
@@ -8,7 +8,7 @@ type RadioOption = {
 };
 
 type RadioGroupProps<T extends FieldValues> = {
-    name: keyof T & string; // Radio の name に渡す
+    name: keyof T & string;
     options: RadioOption[];
     className?: string;
     label?: string;
