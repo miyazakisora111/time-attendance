@@ -10,19 +10,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // ユーザー通知設定テーブルの作成
-        Schema::create('user_notification_settings', function (Blueprint $table) {
+        // ユーザー設定テーブルの作成
+        Schema::create('user_settings', function (Blueprint $table) {
 
             $table->uuid('id')->primary();
 
+            // ユーザーID(外部キー)
             $table->foreignUuid('user_id')
                 ->unique()
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->boolean('clock_in_reminder')->default(true); // 打刻忘れ通知
-            $table->boolean('approval_notification')->default(true); // 申請承認通知
-            $table->boolean('leave_reminder')->default(true); // 休暇リマインド
+            $table->string('theme', 10)->default('light'); // テーマ設定
+            $table->string('language', 10)->default('ja'); // 言語設定
 
             $table->timestampsTz();
         });
@@ -30,6 +30,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('user_notification_settings');
+        Schema::dropIfExists('user_settings');
     }
 };

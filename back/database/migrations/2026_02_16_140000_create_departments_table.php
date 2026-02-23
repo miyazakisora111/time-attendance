@@ -10,16 +10,17 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // 部署テーブルの作成
         Schema::create('departments', function (Blueprint $table) {
 
-            // カラム
             $table->uuid('id')->primary();
-            $table->string('name', 100);
-            $table->unsignedInteger('sort_order')->default(0);
+            
+            $table->string('name', 100); // 部署名
+            $table->unsignedInteger('sort_order')->default(0); // 並び順
+
             $table->timestamps();
             $table->softDeletes();
 
-            // インデックス
             $table->index('name');
         });
     }
