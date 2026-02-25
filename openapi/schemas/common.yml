@@ -1,0 +1,34 @@
+Unauthorized:
+  description: 認証エラー
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/ErrorResponse"
+
+Forbidden:
+  description: 権限エラー
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/ErrorResponse"
+
+ValidationError:
+  description: バリデーションエラー
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/ValidationErrorResponse"
+
+Conflict:
+  description: 業務競合エラー（重複打刻など）
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/ErrorResponse"
+
+ServerError:
+  description: サーバーエラー
+  content:
+    application/json:
+      schema:
+        $ref: "#/components/schemas/ErrorResponse"

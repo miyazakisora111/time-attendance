@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\DashBoard;
+namespace App\Http\Requests\Attendance;
 
 use App\Http\Requests\BaseRequest;
 

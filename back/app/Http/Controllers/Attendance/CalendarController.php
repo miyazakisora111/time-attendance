@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\DashBoard;
+namespace App\Http\Controllers\Attendance;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\DashBoard\CalendarIndexRequest;
+use App\Http\Requests\Attendance\CalendarIndexRequest;
 use App\Http\Responses\ApiResponse;
 use App\Services\CalendarService;
 use Illuminate\Http\JsonResponse;

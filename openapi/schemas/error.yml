@@ -1,0 +1,19 @@
+ErrorResponse:
+  type: object
+  properties:
+    message:
+      type: string
+      example: エラーが発生しました
+
+ValidationErrorResponse:
+  type: object
+  properties:
+    message:
+      type: string
+      example: バリデーションエラー
+    errors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
