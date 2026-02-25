@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use App\Exceptions\AuthenticationException;
 use App\Models\User;
 use App\ValueObjects\Email;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use App\DTO\UserProfile;
 
 /**
  * 認証のサービスクラス
@@ -30,49 +27,65 @@ class AuthService
      */
     public function login(Email $email, string $password): array
     {
-        // パスワードを確認します。
-        $user = User::where('email', $email)->first();
-        if (!$user || !Hash::check($password, $user->password)) {
-            throw new \InvalidArgumentException('認証情報が正しくありません');
+        if (!($token = auth()->attempt([
+            'email' => $email->value(),
+            'password' => $password
+        ]))) {
+            throw new AuthenticationException('認証に失敗しました');
         }
 
-        try {
-            $token = JWTAuth::fromUser($user);
-        } catch (JWTException $e) {
-            throw new \RuntimeException('トークン生成に失敗しました');
-        }
+        $user = auth()->user();
 
-        return [
-            'token' => JWTAuth::fromUser($user),
-            'ttl' => config('jwt.ttl'),
-            'user' => $user,
-        ];
+        $user->update([
+            'last_login_at' => now(),
+        ]);
+
+        return $this->respondWithToken($token);
     }
 
-    /**
-     * 現在の認証ユーザー情報を整形して返す。
-     *
-     * @return array<string, mixed> 認証ユーザー情報
-     *
-     * @throws AuthenticationException
-     */
-    public function getUser(): array
+    public function refresh(): array
     {
-        // ユーザーを取得する。
-        $user = Auth::user();
-
-        // 認証の例外を投げる。
-        if (!$user) {
-            throw new AuthenticationException();
+        try {
+            $token = auth()->refresh();
+        } catch (\Exception $e) {
+            throw new AuthenticationException('トークン更新に失敗しました');
         }
 
+        return $this->respondWithToken($token);
+    }
+
+    public function logout(): void
+    {
+        auth()->logout(); // blacklistへ
+    }
+
+    public function getUser(User $user): UserProfile
+    {
+        // N+1防止
+        $user->loadMissing([
+            'roles:id,name',
+            'settings',
+        ]);
+
+        if (!$user->exists) {
+            throw new AuthenticationException('ユーザーが存在しません');
+        }
+
+        return new UserProfile(
+            id: $user->id,
+            name: $user->name,
+            email: $user->email,
+            roles: $user->roles->pluck('name')->toArray(),
+            settings: $user->settings?->toArray(),
+        );
+    }
+
+    private function respondWithToken(string $token): array
+    {
         return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'roles' => $user->roles->pluck('name'),
-            'settings' => $user->settings ?? null,
-            'isAuthenticated' => true,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
         ];
     }
 }

@@ -1,44 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashBoard\CalendarController;
 use App\Http\Controllers\Auth\AuthController;
 
-// ヘルスチェック
 Route::get('/health', function () {
-    return ['status' => 'ok', 'api' => true];
+    return response()->json([
+        'status' => 'ok',
+        'api' => true,
+    ]);
 });
 
-// 認証不要ルート
 Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
 
-    /**
-     * ログインユーザー情報取得
-     * GET /api/auth/me
-     */
-    Route::get('/me', [AuthController::class, 'me'])
-        ->middleware('throttle:10,1'); // 1分間に10回まで
 
-    /**
-     * ログイン
-     * POST /api/auth/login
-     */
-    Route::post('/login', [AuthController::class, 'login'])
-        ->middleware('throttle:5,1'); // 1分間に5回まで
-});
 
-// 認証必須ルート
-Route::middleware('auth:api')->group(function () {
 
-    /**
-     * ログアウト
-     * POST /api/auth/logout
-     */
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
 
-    /**
-     * カレンダー取得
-     * GET /api/calendar?year=2026&month=2
-     */
-    Route::get('/calendar', [CalendarController::class, 'index']);
+
+
+    
+})->middleware('throttle:5,1');
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/calendar', [CalendarController::class, 'index']);
+    })->middleware('throttle:60,1');
 });

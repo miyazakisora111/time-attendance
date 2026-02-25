@@ -3,12 +3,10 @@
 declare(strict_types=1);
 
 return [
-
     'defaults' => [
-        'guard' => 'api',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
-
     'guards' => [
         'web' => [
             'driver' => 'session',
@@ -17,30 +15,21 @@ return [
         'api' => [
             'driver' => 'jwt',
             'provider' => 'users',
-            'hash' => false,
         ],
     ],
-
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
-
     'passwords' => [
         'users' => [
             'provider' => 'users',
             'table' => 'password_reset_tokens',
-            'expire' => 60,
-            'throttle' => 60,
+            'expire' => 60,      // 60分
+            'throttle' => 60,    // 再送信制限
         ],
     ],
-
-    'password_timeout' => 10800,
+    'password_timeout' => 10800, // 3時間
 ];

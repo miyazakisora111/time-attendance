@@ -49,9 +49,15 @@ final class AuthController extends BaseController
     public function logout(): JsonResponse
     {
         // ログアウトする。
-        auth('api')->logout();
+        $this->service->logout();
 
         return ApiResponse::success();
+    }
+
+    public function refresh()
+    {
+        $result = $this->service->refresh();
+        return ApiResponse::success($result);
     }
 
     /**
@@ -61,6 +67,8 @@ final class AuthController extends BaseController
      */
     public function me(): JsonResponse
     {
+        $user = auth()->user();
+        $result = $this->authService->getUser($user);
         // ユーザーを取得する。
         $result = $this->service->getUser();
         return ApiResponse::success($result);
