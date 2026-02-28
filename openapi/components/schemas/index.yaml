@@ -1,0 +1,14 @@
+Attendance:
+  $ref: './attendance.yaml#/Attendance'
+
+ErrorResponse:
+  $ref: './error.yaml#/ErrorResponse'
+
+ValidationErrorResponse:
+  $ref: './error.yaml#/ValidationErrorResponse'
+
+LoginRequest:
+  $ref: './auth.yaml#/LoginRequest'
+
+LoginResponse:
+  $ref: './auth.yaml#/LoginResponse'

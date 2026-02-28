@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Attendance API
+  version: 1.0.0
+  description: 勤怠管理API（JWT認証）
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost/api
+  - url: https://api.example.com/api
+security:
+  - BearerAuth: []
+tags:
+  - name: Attendance
+  - name: Auth
+paths:
+  /login:
+    post:
+      operationId: loginPost
+      tags:
+        - Auth
+      summary: ログイン
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: JWTトークン
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /attendances/today:
+    get:
+      tags:
+        - Attendance
+      summary: 今日の勤怠取得
+      responses:
+        '200':
+          description: 今日の勤怠情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /attendances/clock-in:
+    post:
+      tags:
+        - Attendance
+      summary: 出勤打刻
+      responses:
+        '200':
+          description: 出勤成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /attendances/clock-out:
+    post:
+      tags:
+        - Attendance
+      summary: 退勤打刻
+      responses:
+        '200':
+          description: 退勤成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attendance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/ServerError'
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: エラーが発生しました
+    ValidationErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: バリデーションエラー
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+    Attendance:
+      type: object
+      required:
+        - id
+        - user_id
+        - work_date
+        - start_time
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        work_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+  responses:
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    ServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: 業務競合エラー（重複打刻など）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

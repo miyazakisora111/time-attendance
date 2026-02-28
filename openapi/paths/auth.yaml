@@ -1,0 +1,25 @@
+login:
+  post:
+    operationId: loginPost
+    tags:
+      - Auth
+    summary: ログイン
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/index.yaml#/LoginRequest'
+    responses:
+      '200':
+        description: JWTトークン
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/index.yaml#/LoginResponse'
+      '401':
+        $ref: '../components/responses.yaml#/Unauthorized'
+      '422':
+        $ref: '../components/responses.yaml#/ValidationError'
+      '500':
+        $ref: '../components/responses.yaml#/ServerError'

@@ -1,4 +1,4 @@
-import { httpClient } from '@/lib/http-client';
+import { httpClient } from '@/api/client';
 import { toResult } from '@/shared/http/toResult';
 import type { Result } from '@/shared/http/types/result';
 import type {

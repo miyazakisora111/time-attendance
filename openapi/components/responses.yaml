@@ -1,34 +1,29 @@
+# Common reusable response objects referenced by paths
+
 Unauthorized:
   description: 認証エラー
   content:
     application/json:
       schema:
-        $ref: "#/components/schemas/ErrorResponse"
-
-Forbidden:
-  description: 権限エラー
-  content:
-    application/json:
-      schema:
-        $ref: "#/components/schemas/ErrorResponse"
+        $ref: './schemas/error.yaml#/ErrorResponse'
 
 ValidationError:
   description: バリデーションエラー
   content:
     application/json:
       schema:
-        $ref: "#/components/schemas/ValidationErrorResponse"
+        $ref: './schemas/error.yaml#/ValidationErrorResponse'
 
 Conflict:
   description: 業務競合エラー（重複打刻など）
   content:
     application/json:
       schema:
-        $ref: "#/components/schemas/ErrorResponse"
+        $ref: './schemas/error.yaml#/ErrorResponse'
 
 ServerError:
   description: サーバーエラー
   content:
     application/json:
       schema:
-        $ref: "#/components/schemas/ErrorResponse"
+        $ref: './schemas/error.yaml#/ErrorResponse'

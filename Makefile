@@ -71,8 +71,19 @@ test-front:
 lint-front:
 	npm run lint --prefix $(FRONT_DIR)
 
+openapi-lint:
+	npx --prefix $(FRONT_DIR) @redocly/cli lint openapi/openapi.yaml
+
+openapi-bundle:
+	npx --prefix $(FRONT_DIR) @redocly/cli bundle openapi/openapi.yaml -o openapi/build/bundle.yaml
+
+openapi-gen: openapi-bundle
+	npx --prefix $(FRONT_DIR) orval --config $(FRONT_DIR)/orval.config.ts
+
+openapi-build: openapi-lint openapi-gen
+
 # --------------------------------
 # 共通
 # --------------------------------
 .PHONY: up-back down-back ps-back ssh-back optimize-back refresh-back test-back phpcs-back phpcbf-back \
-        install-front up-front build-front test-front lint-front
+        install-front up-front build-front test-front lint-front openapi-lint openapi-bundle openapi-gen openapi-build

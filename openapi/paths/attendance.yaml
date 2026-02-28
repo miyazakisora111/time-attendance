@@ -1,0 +1,58 @@
+today:
+  get:
+    tags:
+      - Attendance
+    summary: 今日の勤怠取得
+    responses:
+      "200":
+        description: 今日の勤怠情報
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/index.yaml#/Attendance"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/ServerError"
+
+clockIn:
+  post:
+    tags:
+      - Attendance
+    summary: 出勤打刻
+    responses:
+      "200":
+        description: 出勤成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/index.yaml#/Attendance"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "409":
+        $ref: "../components/responses.yaml#/Conflict"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/ServerError"
+
+clockOut:
+  post:
+    tags:
+      - Attendance
+    summary: 退勤打刻
+    responses:
+      "200":
+        description: 退勤成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/index.yaml#/Attendance"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "409":
+        $ref: "../components/responses.yaml#/Conflict"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/ServerError"

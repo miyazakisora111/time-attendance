@@ -4,6 +4,9 @@ info:
   title: Attendance API
   version: 1.0.0
   description: 勤怠管理API（JWT認証）
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
 
 servers:
   - url: http://localhost/api
@@ -11,39 +14,25 @@ servers:
 
 tags:
   - name: Attendance
+  - name: Auth
 
 paths:
+  /login:
+    $ref: './paths/auth.yaml#/login'
   /attendances/today:
-    $ref: "./paths/attendances.yaml#/today"
+    $ref: './paths/attendance.yaml#/today'
   /attendances/clock-in:
-    $ref: "./paths/attendances.yaml#/clockIn"
+    $ref: './paths/attendance.yaml#/clockIn'
   /attendances/clock-out:
-    $ref: "./paths/attendances.yaml#/clockOut"
+    $ref: './paths/attendance.yaml#/clockOut'
 
 components:
   schemas:
-    Attendance:
-      $ref: "./components/schemas/attendance.yaml#/Attendance"
-    ErrorResponse:
-      $ref: "./components/schemas/error.yaml#/ErrorResponse"
-    ValidationErrorResponse:
-      $ref: "./components/schemas/error.yaml#/ValidationErrorResponse"
-
+    $ref: './components/schemas/index.yaml'
   responses:
-    Unauthorized:
-      $ref: "./components/responses/common.yaml#/Unauthorized"
-    Forbidden:
-      $ref: "./components/responses/common.yaml#/Forbidden"
-    ValidationError:
-      $ref: "./components/responses/common.yaml#/ValidationError"
-    Conflict:
-      $ref: "./components/responses/common.yaml#/Conflict"
-    ServerError:
-      $ref: "./components/responses/common.yaml#/ServerError"
-
+    $ref: './components/responses.yaml'
   securitySchemes:
-    BearerAuth:
-      $ref: "./components/security.yaml#/BearerAuth"
+    $ref: './components/securitySchemes.yaml'
 
 security:
   - BearerAuth: []
