@@ -6,8 +6,8 @@ info:
   description: 勤怠管理API（JWT認証）
 
 servers:
-  - url: http://localhost/api/v1
-  - url: https://api.example.com/api/v1
+  - url: http://localhost/api
+  - url: https://api.example.com/api
 
 tags:
   - name: Attendance
