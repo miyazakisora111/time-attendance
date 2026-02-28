@@ -5,30 +5,52 @@ declare(strict_types=1);
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('login_histories', function (Blueprint $table) {
 
-            $table->uuid('id')->primary();
+            $table->uuid('id')
+                  ->primary()
+                  ->default(DB::raw('gen_random_uuid()'))
+                  ->comment('ログイン履歴ID（UUID）');
 
-             // ユーザーID(外部キー)
+            // ユーザーID（外部キー）
             $table->foreignUuid('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete();
-                
-            $table->string('ip_address', 45)->nullable(); // IPアドレス（IPv6対応）
-            $table->text('user_agent')->nullable(); // ユーザーエージェント
-            $table->timestampTz('logged_in_at'); // ログイン日時
-            $table->timestampTz('logged_out_at')->nullable(); // ログアウト日時
-            $table->timestamps();
+                  ->constrained('users')
+                  ->cascadeOnDelete()
+                  ->comment('ユーザーID');
+
+            $table->ipAddress('ip_address')
+                  ->nullable()
+                  ->comment('IPアドレス');
+
+            $table->text('user_agent')
+                  ->nullable()
+                  ->comment('ユーザーエージェント');
+
+            $table->timestampTz('logged_in_at')
+                  ->comment('ログイン日時');
+
+            $table->timestampTz('logged_out_at')
+                  ->nullable()
+                  ->comment('ログアウト日時');
+
+            $table->timestampsTz();
 
             // インデックス
-            $table->index('user_id');
-            $table->index('logged_in_at');
+            $table->index('user_id', 'idx_login_histories_user_id');
+            $table->index('logged_in_at', 'idx_login_histories_logged_in_at');
         });
+
+        // テーブルコメント
+        DB::statement("COMMENT ON TABLE login_histories IS 'ログイン履歴'");
     }
 
     public function down(): void
