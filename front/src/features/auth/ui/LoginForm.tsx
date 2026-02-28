@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useNavigate, useLocation, type Location } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FormProvider } from '@/shared/components/forms/FormProvider';
-import { useAuth, loginFormSchema } from '@/features/auth';
-import { getCsrfTokenApi } from '@/features/auth/api/api';
+import { useAuth } from '@/features/auth';
+import { getCsrfToken } from '@/api/client';
 import type { LoginFormData } from '@/features/auth';
 import { SubmitButton, Input, RadioGroup, Select, Switch } from '@/shared/components';
 
@@ -22,7 +22,7 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     // CSRF トークン取得
-    await getCsrfTokenApi();
+    await getCsrfToken();
 
     // ログイン実行
     await loginMutation.mutateAsync(data);

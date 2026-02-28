@@ -1,4 +1,3 @@
-// src/features/auth/ui/ProtectedRoute.tsx
 import React, { useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../model/useAuthStore";
