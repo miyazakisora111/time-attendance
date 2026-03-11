@@ -27,7 +27,7 @@ export interface TypographyProps
     asChild?: boolean;
 }
 
-export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
+export const Typography = React.forwardRef<any, TypographyProps>(
     ({ className, variant, asChild = false, ...props }, ref) => {
         const Comp = asChild ? Slot : "p";
 

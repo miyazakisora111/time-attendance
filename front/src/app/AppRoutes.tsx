@@ -1,9 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { PublicLayout } from "@/layouts/PublicLayout";
 import { PrivateLayout } from "@/layouts/PrivateLayout";
 import { useAuth } from "@/features/auth";
 import LoginPage from "@/features/auth/ui/LoginPage";
-//import DashBoard from "@/features/auth/ui/DashBoard";
+import { DashBoardPage } from "@/features/dashboard";
 
 export const AppRoutes = () => {
     const { isAuthenticated } = useAuth();
@@ -11,10 +10,10 @@ export const AppRoutes = () => {
     return (
         <Routes>
             {/* デフォルトルート */}
-            {/* <Route
+            <Route
                 path="/"
                 element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />}
-            /> */}
+            />
 
             {/* 公開ページ */}
             <Route element={<PrivateLayout />}>
@@ -27,6 +26,7 @@ export const AppRoutes = () => {
                     isAuthenticated ? <PrivateLayout /> : <Navigate to="/login" replace />
                 }
             >
+                <Route path="/dashboard" element={<DashBoardPage />} />
             </Route>
 
 

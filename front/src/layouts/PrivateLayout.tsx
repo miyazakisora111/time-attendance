@@ -11,12 +11,12 @@ const user = {
 };
 
 const defaultMenuItems: SidebarMenuItem[] = [
-    { icon: Home, label: "ダッシュボード", href: "#dashboard" },
-    { icon: Clock, label: "打刻", href: "#clock" },
-    { icon: Calendar, label: "勤怠カレンダー", href: "#calendar" },
-    { icon: FileText, label: "申請・承認", href: "#requests" },
-    { icon: Users, label: "チーム管理", href: "#team" },
-    { icon: Settings, label: "設定", href: "#settings" },
+    { icon: Home, label: "ダッシュボード", href: "/dashboard" },
+    { icon: Clock, label: "打刻", href: "/clock" },
+    { icon: Calendar, label: "勤怠カレンダー", href: "/calendar" },
+    { icon: FileText, label: "申請・承認", href: "/requests" },
+    { icon: Users, label: "チーム管理", href: "/team" },
+    { icon: Settings, label: "設定", href: "/settings" },
 ];
 
 export const PrivateLayout = () => {
@@ -29,7 +29,7 @@ export const PrivateLayout = () => {
     };
 
     return (
-        <div className="flex min-h-screen">
+        <div className="min-h-screen">
             <Sidebar
                 user={user}
                 menuItems={defaultMenuItems}

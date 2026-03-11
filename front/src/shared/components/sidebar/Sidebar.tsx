@@ -44,12 +44,14 @@ function SidebarItem({
 }
 
 export default function Sidebar({
+    menuItems,
+    user,
     defaultCollapsed = false,
     onLogout,
     onProfileClick,
 }: SidebarProps) {
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
-    const [activeItem, setActiveItem] = useState(menuItems[0].label);
+    const [activeItem, setActiveItem] = useState(menuItems[0]?.label || "");
 
     return (
         <aside

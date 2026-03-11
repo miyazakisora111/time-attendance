@@ -19,7 +19,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.array(z.string())).optional(),
+    errors: z.record(z.string(), z.array(z.string())).optional(),
   });
   export const Attendance = z.object({
     id: z.string(),

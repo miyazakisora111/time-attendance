@@ -1,0 +1,37 @@
+# Node
+node_modules
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Laravel
+vendor
+storage
+bootstrap/cache
+
+# build
+dist
+build
+coverage
+
+# git
+.git
+.gitignore
+
+# logs
+*.log
+
+# env
+.env
+.env.*
+
+# docker
+docker-compose.override.yml
+
+# openapi build
+openapi/build
+openapi/dist
+
+# IDE
+.vscode
+.idea

@@ -35,30 +35,39 @@ export const urlSchema = z.string().url(validationMessages.url());
 export const dateSchema = z.string().refine(val => !isNaN(Date.parse(val)), { message: validationMessages.date() });
 
 // 数値バリデーション共通
-const baseNumberSchema = z.preprocess((val) => {
+const preprocessNumber = (schema: z.ZodTypeAny) => z.preprocess((val) => {
   if (val === '' || val === null || val === undefined) return undefined; // 空は undefined に
   const n = Number(val);
   return isNaN(n) ? val : n;
-}, z.number({ invalid_type_error: validationMessages.number() }));
+}, schema);
+
+const baseZodNumber = z.number({ message: validationMessages.number() });
 
 // 最小値のみ
 export const minNumberSchema = (min: number, isOptional = false) => {
-  let schema = baseNumberSchema.min(min, validationMessages.min(min));
+  let schema: any = preprocessNumber(baseZodNumber.min(min, validationMessages.min(min)));
   if (isOptional) schema = schema.optional();
   return schema;
 };
 
 // 最大値のみ
 export const maxNumberSchema = (max: number, isOptional = false) => {
-  let schema = baseNumberSchema.max(max, validationMessages.max(max));
+  let schema: any = preprocessNumber(baseZodNumber.max(max, validationMessages.max(max)));
   if (isOptional) schema = schema.optional();
   return schema;
 };
 
 // 範囲指定
 export const numberInRangeSchema = (min: number, max: number, isOptional = false) => {
-  let schema = baseNumberSchema.min(min, validationMessages.min(min)).max(max, validationMessages.max(max));
+  let schema: any = preprocessNumber(baseZodNumber.min(min, validationMessages.min(min)).max(max, validationMessages.max(max)));
   if (isOptional) schema = schema.optional();
+  return schema;
+};
+
+export const stringSchema = (min?: number, max?: number) => {
+  let schema = z.string();
+  if (min !== undefined) schema = schema.min(min, validationMessages.minLength(min));
+  if (max !== undefined) schema = schema.max(max, validationMessages.maxLength(max));
   return schema;
 };
 
