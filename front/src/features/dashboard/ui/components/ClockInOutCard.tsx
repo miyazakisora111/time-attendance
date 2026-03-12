@@ -39,11 +39,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
       </CardHeader>
       <CardContent className="space-y-6">
         <ClockDisplay />
-        <ClockActionButtons 
-          status={status} 
-          isPending={isPending} 
-          onAction={handleAction} 
-        />
+        <ClockActionButtons status={status} isPending={isPending} onAction={handleAction} />
         <ClockTodayRecord status={status} />
       </CardContent>
     </Card>

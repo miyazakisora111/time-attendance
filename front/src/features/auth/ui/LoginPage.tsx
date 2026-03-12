@@ -6,7 +6,7 @@ import { Card } from "@/shared/components/Card";
 import { Container } from "@/shared/components/Container";
 import { Typography } from "@/shared/components/Typography";
 
-// 既にログイン時にリダイレクトします。
+// 既にログイン時にリダイレクト
 const useRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
@@ -22,10 +22,10 @@ export default function LoginPage() {
   useRedirect();
 
   return (
-    <Container center className="bg-linear-to-br from-blue-600 to-blue-800 p-4">
-      <Card size="lg" className="w-full max-w-md">
-        <Typography asChild variant="h1" className="mb-4">
-          <h1>勤怠管理システム</h1>
+    <Container size="full" tone="blue">
+      <Card size="lg">
+        <Typography variant="h1" className="mb-4">
+          勤怠管理システム
         </Typography>
         <LoginForm />
       </Card>

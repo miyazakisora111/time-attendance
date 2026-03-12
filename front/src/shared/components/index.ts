@@ -1,4 +1,6 @@
-export { Button } from "@/shared/components/buttons/Button";
+export { PrivateLayout } from "@/shared/components/layouts/PrivateLayout";
+export { PublicLayout } from "@/shared/components/layouts/PublicLayout";
+export { Button, type ButtonProps } from "@/shared/components/buttons/Button";
 export { SubmitButton } from "@/shared/components/buttons/SubmitButton";
 export { Checkbox } from "@/shared/components/inputs/Checkbox";
 export { Input } from "@/shared/components/inputs/Input";
@@ -8,4 +10,5 @@ export { Select } from "@/shared/components/inputs/Select";
 export { Switch } from "@/shared/components/inputs/Switch";
 export { Textarea } from "@/shared/components/inputs/Textarea";
 export { Spinner } from "@/shared/components/Spinner";
+export { Form } from "@/shared/components/forms/Form";
 export { Error } from "@/shared/components/errors/Error";

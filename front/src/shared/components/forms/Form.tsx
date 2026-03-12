@@ -15,7 +15,7 @@ type Props<T extends FieldValues> = {
     className?: string;
 };
 
-export const FormProvider = <T extends FieldValues = FieldValues>({
+export const Form = <T extends FieldValues = FieldValues>({
     children,
     onSubmit,
     methods,

@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { loginApi } from "@/api/__generated__/auth/auth"; // Orval生成
-import { useAuthStore } from "@/features/auth"; // Zustand store
+import { loginApi } from "@/api/__generated__/auth/auth"; 
+import { useAuthStore } from "@/features/auth"; 
 import { z } from "zod";
 
+// TODO: APIクライアントの実装に合わせて修正
 // mock authMeApi
 const authMeApi = async () => ({ id: "1", name: "User", email: "user@example.com" });
 // mock logoutApi
@@ -46,7 +47,7 @@ export const useAuth = () => {
     }, [authQuery.isSuccess, authQuery.isError, authQuery.data]);
 
     // ログイン
-    const login = useMutation({
+    const loginMutation = useMutation({
         mutationFn: async (credentials: { email: string; password: string }) => {
             const data = await loginApi(credentials);
             return data;
@@ -59,7 +60,7 @@ export const useAuth = () => {
     });
 
     // ログアウト
-    const logout = useMutation({
+    const logoutMutation = useMutation({
         mutationFn: logoutApi,
         onSuccess: async () => {
             queryClient.removeQueries({ queryKey: authQueryKey.me() });
@@ -72,7 +73,7 @@ export const useAuth = () => {
         user: authQuery.data ?? null,
         isAuthenticated: !!authQuery.data,
         isLoading: authQuery.isLoading,
-        login,
-        logout,
+        loginMutation,
+        logoutMutation,
     };
 };

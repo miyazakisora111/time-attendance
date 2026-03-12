@@ -36,6 +36,6 @@ export const customInstance = <T>(
 };
 
 // Sanctum用
-export const getCsrfToken = async (): Promise<void> => {
+export const getCsrfTokenApi = async (): Promise<void> => {
   await axiosInstance.get('/sanctum/csrf-cookie');
 };

@@ -2,7 +2,6 @@ import React from "react";
 import { BarChart3, Clock, TrendingUp, Calendar } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/model/useDashboard";
 import { Spinner } from "@/shared/components/Spinner";
-import { DataErrorState } from "@/shared/components/errors/DataErrorState";
 import { StatItemCard } from "./stats/StatItemCard";
 
 export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
@@ -14,10 +13,6 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
         <Spinner size="lg" className="text-blue-600" />
       </div>
     );
-  }
-
-  if (isError || !stats) {
-    return <DataErrorState minHeight="min-h-[150px]" className="col-span-full" />;
   }
 
   const statsConfig = [
