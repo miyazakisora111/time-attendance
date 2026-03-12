@@ -1,3 +1,3 @@
-export * from './ui/SettingsPage';
-export { default } from './ui/SettingsPage';
-export * from './hooks/useSettings';
+export * from '@/features/settings/ui/SettingsPage';
+export { default } from '@/features/settings/ui/SettingsPage';
+export * from '@/features/settings/hooks/useSettings';

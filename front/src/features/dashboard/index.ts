@@ -1,1 +1,1 @@
-export { default as DashBoardPage } from './ui/DashBoardPage';
+export { default as DashBoardPage } from '@/features/dashboard/ui/DashBoardPage';

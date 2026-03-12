@@ -1,5 +1,5 @@
 import React from "react";
-import type { ClockStatus } from "./ClockActionButtons";
+import type { ClockStatus } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
 
 interface ClockTodayRecordProps {
   status: ClockStatus;

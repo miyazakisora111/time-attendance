@@ -17,8 +17,8 @@ import type {
   ServerErrorResponse,
   UnauthorizedResponse,
   ValidationErrorResponse,
-} from ".././model";
-import { customInstance } from "../../client";
+} from "@/api/__generated__/model";
+import { customInstance } from "@/api/client";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 

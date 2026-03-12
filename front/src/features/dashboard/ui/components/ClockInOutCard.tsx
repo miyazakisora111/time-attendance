@@ -3,10 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
 import { Clock } from "lucide-react";
 import { useClockInOut } from "@/features/dashboard/model/useDashboard";
 import { Badge } from "@/shared/components/data_display/Badge";
-import { ClockDisplay } from "./clock/ClockDisplay";
-import { ClockActionButtons } from "./clock/ClockActionButtons";
-import type { ClockStatus, ClockAction } from "./clock/ClockActionButtons";
-import { ClockTodayRecord } from "./clock/ClockTodayRecord";
+import { ClockDisplay } from "@/features/dashboard/ui/components/clock/ClockDisplay";
+import { ClockActionButtons } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
+import type { ClockStatus, ClockAction } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
+import { ClockTodayRecord } from "@/features/dashboard/ui/components/clock/ClockTodayRecord";
 
 const statusConfig: Record<ClockStatus, { text: string; variant: "muted" | "success" | "warning" }> = {
   out: { text: "退勤中", variant: "muted" },

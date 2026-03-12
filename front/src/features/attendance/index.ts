@@ -1,3 +1,3 @@
-export * from './ui/AttendancePage';
-export { default } from './ui/AttendancePage';
-export * from './hooks/useAttendance';
+export * from '@/features/attendance/ui/AttendancePage';
+export { default } from '@/features/attendance/ui/AttendancePage';
+export * from '@/features/attendance/hooks/useAttendance';

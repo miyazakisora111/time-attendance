@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { useSettings } from '../hooks/useSettings';
-import { SettingsPresenter } from './SettingsPresenter';
+import { useSettings } from '@/features/settings/hooks/useSettings';
+import { SettingsPresenter } from '@/features/settings/ui/SettingsPresenter';
 
 const SettingsPage: React.FC = () => {
   const { 

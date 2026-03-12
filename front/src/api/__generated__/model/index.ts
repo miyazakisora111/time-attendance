@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from "./attendance";
-export * from "./conflictResponse";
-export * from "./errorResponse";
-export * from "./loginRequest";
-export * from "./loginResponse";
-export * from "./serverErrorResponse";
-export * from "./unauthorizedResponse";
-export * from "./validationErrorResponse";
-export * from "./validationErrorResponseErrors";
+export * from "@/api/__generated__/model/attendance";
+export * from "@/api/__generated__/model/conflictResponse";
+export * from "@/api/__generated__/model/errorResponse";
+export * from "@/api/__generated__/model/loginRequest";
+export * from "@/api/__generated__/model/loginResponse";
+export * from "@/api/__generated__/model/serverErrorResponse";
+export * from "@/api/__generated__/model/unauthorizedResponse";
+export * from "@/api/__generated__/model/validationErrorResponse";
+export * from "@/api/__generated__/model/validationErrorResponseErrors";

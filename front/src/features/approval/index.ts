@@ -1,3 +1,3 @@
-export * from './ui/ApprovalPage';
-export { default } from './ui/ApprovalPage';
-export * from './hooks/useApproval';
+export * from '@/features/approval/ui/ApprovalPage';
+export { default } from '@/features/approval/ui/ApprovalPage';
+export * from '@/features/approval/hooks/useApproval';

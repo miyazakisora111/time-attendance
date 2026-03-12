@@ -1,12 +1,12 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { useApproval } from '../hooks/useApproval';
-import { ApprovalPresenter } from './ApprovalPresenter';
+import { useApproval } from '@/features/approval/hooks/useApproval';
+import { ApprovalPresenter } from '@/features/approval/ui/ApprovalPresenter';
 
 const ApprovalPage: React.FC = () => {
-  const { 
-    activeTab, setActiveTab, 
-    isModalOpen, setIsModalOpen, 
+  const {
+    activeTab, setActiveTab,
+    isModalOpen, setIsModalOpen,
     filteredRequests, handleApprove, handleReject,
     teamPendingCount, searchQuery, setSearchQuery
   } = useApproval();

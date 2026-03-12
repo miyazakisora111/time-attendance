@@ -1,3 +1,3 @@
-export * from './ui/SchedulePage';
-export { default } from './ui/SchedulePage';
-export * from './hooks/useSchedule';
+export * from '@/features/schedule/ui/SchedulePage';
+export { default } from '@/features/schedule/ui/SchedulePage';
+export * from '@/features/schedule/hooks/useSchedule';

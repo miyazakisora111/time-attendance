@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { useTeam } from '../hooks/useTeam';
-import { TeamPresenter } from './TeamPresenter';
+import { useTeam } from '@/features/team/hooks/useTeam';
+import { TeamPresenter } from '@/features/team/ui/TeamPresenter';
 
 const TeamPage: React.FC = () => {
   const { 

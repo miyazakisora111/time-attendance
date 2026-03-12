@@ -1,4 +1,4 @@
-import { React } from "react";
+
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/shared/utils/style";

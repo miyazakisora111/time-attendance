@@ -2,10 +2,10 @@ import React from "react";
 import { BarChart3, Clock, TrendingUp, Calendar } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/model/useDashboard";
 import { Spinner } from "@/shared/components/Spinner";
-import { StatItemCard } from "./stats/StatItemCard";
+import { StatItemCard } from "@/features/dashboard/ui/components/stats/StatItemCard";
 
 export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
-  const { data: stats, isLoading, isError } = useDashboardStats();
+  const { data: stats, isLoading } = useDashboardStats();
 
   if (isLoading) {
     return (
@@ -14,6 +14,8 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
       </div>
     );
   }
+
+  if (!stats) return null;
 
   const statsConfig = [
     {

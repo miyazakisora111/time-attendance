@@ -1,11 +1,11 @@
 
 import { Container } from '@/shared/components/Container';
 import { Typography } from '@/shared/components/Typography';
-import { MonthlyStatsCard } from './components/MonthlyStatsCard';
-import { ClockInOutCard } from './components/ClockInOutCard';
-import { MiniCalendar } from './components/MiniCalendar';
-import { QuickActionsCard } from './components/QuickActionsCard';
-import { RecentRecordsCard } from './components/RecentRecordsCard';
+import { MonthlyStatsCard } from '@/features/dashboard/ui/components/MonthlyStatsCard';
+import { ClockInOutCard } from '@/features/dashboard/ui/components/ClockInOutCard';
+import { MiniCalendar } from '@/features/dashboard/ui/components/MiniCalendar';
+import { QuickActionsCard } from '@/features/dashboard/ui/components/QuickActionsCard';
+import { RecentRecordsCard } from '@/features/dashboard/ui/components/RecentRecordsCard';
 
 export default function DashBoardPage() {
   return (

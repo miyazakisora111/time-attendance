@@ -5,7 +5,7 @@
  * 勤怠管理API（JWT認証）
  * OpenAPI spec version: 1.0.0
  */
-import type { ValidationErrorResponseErrors } from "./validationErrorResponseErrors";
+import type { ValidationErrorResponseErrors } from "@/api/__generated__/model/validationErrorResponseErrors";
 
 export interface ValidationErrorResponse {
   errors?: ValidationErrorResponseErrors;
