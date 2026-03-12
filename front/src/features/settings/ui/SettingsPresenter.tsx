@@ -4,7 +4,7 @@ import {
   User, Bell, Lock, Moon, Sun, Shield, Save, 
   ChevronRight, Monitor, SmartphoneNfc, Clock, AlertCircle, FileText, Calendar 
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Typography } from '@/shared/components';
+import { Card, CardContent, CardHeader, CardTitle, Button, Typography, Label } from '@/shared/components';
 import type { SettingsSection } from '@/domain/enums/settings';
 
 interface SettingsPresenterProps {
@@ -40,18 +40,18 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
         <aside className="w-full md:w-64 shrink-0">
           <div className="space-y-1">
             {SECTIONS.map((section) => (
-              <button
+              <Button
                 key={section.id}
+                variant={activeSection === section.id ? "solid" : "ghost"}
+                intent={activeSection === section.id ? "primary" : "secondary"}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all ${
-                  activeSection === section.id
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-100'
-                    : 'text-gray-500 hover:bg-white hover:text-gray-900'
-                }`}
+                className="w-full justify-start gap-3 px-4 py-3 rounded-2xl h-auto"
               >
                 <section.icon size={18} />
-                {section.label}
-              </button>
+                <Typography variant="label" className={activeSection === section.id ? "text-white" : "text-gray-500"}>
+                  {section.label}
+                </Typography>
+              </Button>
             ))}
           </div>
         </aside>
@@ -67,7 +67,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <Card className="border-none shadow-sm rounded-3xl overflow-hidden">
+                <Card variant="elevated" padding="none" className="overflow-hidden border-none shadow-md">
                   <CardHeader className="bg-gray-50/50 p-8 border-b border-gray-100">
                     <CardTitle className="text-xl font-bold flex items-center gap-2">
                        <User className="text-blue-600" size={20} />
@@ -80,24 +80,28 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                         <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl">
                           田
                         </div>
-                        <button className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-md text-gray-400 hover:text-blue-600 transition-colors border border-gray-100">
+                        <Button 
+                          variant="ghost"
+                          size="icon"
+                          className="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-md text-gray-400 hover:text-blue-600 transition-colors border border-gray-100 w-9 h-9"
+                        >
                           <SmartphoneNfc size={16} />
-                        </button>
+                        </Button>
                       </div>
                       <div className="space-y-1">
                         <Typography variant="h3" className="font-bold text-lg text-gray-900">田中 太郎</Typography>
-                        <p className="text-sm text-gray-500">営業部 / 正社員</p>
-                        <p className="text-xs text-gray-400">社員番号: EMP-2024001</p>
+                        <Typography variant="small" intent="muted">営業部 / 正社員</Typography>
+                        <Typography variant="small" intent="muted" className="text-xs">社員番号: EMP-2024001</Typography>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">姓名</label>
+                        <Label><Typography variant="label">姓名</Typography></Label>
                         <input type="text" defaultValue="田中 太郎" className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-bold text-gray-700">メールアドレス</label>
+                        <Label><Typography variant="label">メールアドレス</Typography></Label>
                         <input type="email" defaultValue="t.tanaka@example.com" className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500" />
                       </div>
                     </div>
@@ -133,8 +137,8 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                             <item.icon size={20} />
                           </div>
                           <div>
-                            <p className="font-bold text-gray-900">{item.title}</p>
-                            <p className="text-xs text-gray-500">{item.desc}</p>
+                            <Typography variant="label">{item.title}</Typography>
+                            <Typography variant="small" className="block text-gray-500">{item.desc}</Typography>
                           </div>
                         </div>
                         <div className="relative inline-flex items-center cursor-pointer">
@@ -162,29 +166,31 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                   </CardHeader>
                   <CardContent className="p-8 space-y-8">
                     <div className="space-y-4">
-                      <label className="text-sm font-bold text-gray-700">テーマ設定</label>
+                      <Label><Typography variant="label">テーマ設定</Typography></Label>
                       <div className="grid grid-cols-3 gap-4">
                         {[
                           { id: 'light', label: 'ライト', icon: Sun },
                           { id: 'dark', label: 'ダーク', icon: Moon },
                           { id: 'system', label: 'システム', icon: Monitor },
                         ].map((t) => (
-                          <button
+                          <Button
                             key={t.id}
+                            variant={theme === t.id ? "solid" : "ghost"}
+                            intent={theme === t.id ? "primary" : "secondary"}
                             onClick={() => setTheme(t.id as any)}
-                            className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${
-                              theme === t.id ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-50 text-gray-500 hover:border-gray-200'
-                            }`}
+                            className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all h-auto"
                           >
                             <t.icon size={24} />
-                            <span className="text-xs font-bold">{t.label}</span>
-                          </button>
+                            <Typography variant="label" className={theme === t.id ? "text-white" : "text-gray-500"}>
+                              {t.label}
+                            </Typography>
+                          </Button>
                         ))}
                       </div>
                     </div>
 
                     <div className="space-y-4">
-                      <label className="text-sm font-bold text-gray-700">使用言語</label>
+                      <Label><Typography variant="label">使用言語</Typography></Label>
                       <select 
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
@@ -222,8 +228,8 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                         <div className="flex items-center gap-3">
                           <AlertCircle className="text-red-500" size={20} />
                           <div>
-                            <p className="text-sm font-bold text-red-900">2要素認証が未設定です</p>
-                            <p className="text-xs text-red-700">アカウントの保護を強化するために設定を推奨します。</p>
+                            <Typography variant="label" className="text-red-900">2要素認証が未設定です</Typography>
+                            <Typography variant="small" className="text-red-700 block">アカウントの保護を強化するために設定を推奨します。</Typography>
                           </div>
                         </div>
                         <Button variant="outline" size="sm" className="bg-white border-red-200 text-red-600 hover:bg-red-50 rounded-xl">
@@ -232,12 +238,12 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                       </div>
 
                       <div className="space-y-4 pt-4">
-                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl border-gray-100 px-6 font-bold group">
-                          パスワードの変更
+                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl px-6 group">
+                          <Typography variant="label">パスワードの変更</Typography>
                           <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
                         </Button>
-                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl border-gray-100 px-6 font-bold group">
-                          ログイン履歴の確認
+                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl px-6 group">
+                          <Typography variant="label">ログイン履歴の確認</Typography>
                           <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
                         </Button>
                       </div>
@@ -250,15 +256,17 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
 
           {/* Bottom Actions */}
           <div className="flex items-center justify-end gap-3 pt-6">
-            <Button variant="ghost" className="rounded-xl text-gray-500 font-bold">
-              リセット
+            <Button variant="ghost" className="rounded-xl">
+              <Typography variant="label" className="text-gray-500">リセット</Typography>
             </Button>
             <Button 
               onClick={handleSave}
-              className="px-8 h-12 rounded-xl shadow-lg shadow-blue-100 gap-2 font-bold"
+              variant="solid"
+              intent="primary"
+              className="px-8 h-12 rounded-xl shadow-lg shadow-blue-100 gap-2"
             >
               <Save size={18} />
-              変更を保存
+              <Typography variant="label">変更を保存</Typography>
             </Button>
           </div>
         </div>

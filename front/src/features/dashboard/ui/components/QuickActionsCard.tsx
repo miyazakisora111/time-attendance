@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
+import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { Button } from "@/shared/components/buttons/Button";
 import { FileText, Plane, Stethoscope, FileEdit } from "lucide-react";
 
@@ -32,7 +32,7 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
                 <div className={`w-10 h-10 rounded-full ${action.bgColor} flex items-center justify-center transition-colors`}>
                   <Icon size={20} className={action.color} strokeWidth={2.5} />
                 </div>
-                <span className="text-sm font-medium text-gray-700">{action.label}</span>
+                <Typography variant="small" className="font-medium text-gray-700">{action.label}</Typography>
               </Button>
             );
           })}

@@ -26,11 +26,11 @@ export const useApproval = () => {
     request.applicant.includes(searchQuery)
   );
 
-  const handleApprove = (id: string) => {
+  const handleApprove = (_id: string) => {
     toast.success('申請を承認しました');
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = (_id: string) => {
     toast.error('申請を却下しました');
   };
 

@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   return (
     <Container size="full" tone="blue">
-      <Card size="lg">
+      <Card padding="lg">
         <Typography variant="h1" className="mb-4">
           勤怠管理システム
         </Typography>

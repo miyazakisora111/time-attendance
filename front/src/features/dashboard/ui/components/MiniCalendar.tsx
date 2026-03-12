@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
+import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/shared/components/buttons/Button";
 
@@ -54,7 +54,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
             <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900">
               <ChevronLeft size={16} />
             </Button>
-            <span className="text-sm font-medium text-gray-700">2025年12月</span>
+            <Typography variant="label" className="text-gray-700">2025年12月</Typography>
             <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-900">
               <ChevronRight size={16} />
             </Button>
@@ -95,18 +95,18 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
         </div>
 
         {/* Legend */}
-        <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4 text-xs font-medium">
+        <div className="mt-4 pt-4 border-t border-gray-100 flex gap-4">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-green-100 border border-green-200 rounded-sm"></div>
-            <span className="text-gray-600">出勤</span>
+            <Typography variant="small" className="text-gray-600">出勤</Typography>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-red-100 border border-red-200 rounded-sm"></div>
-            <span className="text-gray-600">休日</span>
+            <Typography variant="small" className="text-gray-600">休日</Typography>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 bg-blue-600 rounded-sm"></div>
-            <span className="text-gray-600">今日</span>
+            <Typography variant="small" className="text-gray-600">今日</Typography>
           </div>
         </div>
       </CardContent>

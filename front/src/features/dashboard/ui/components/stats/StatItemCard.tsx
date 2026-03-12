@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
+import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { IconWrapper } from "@/shared/components/icons/IconWrapper";
 import type { LucideIcon } from "lucide-react";
 
@@ -37,8 +37,8 @@ export const StatItemCard = React.memo(function StatItemCard({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-1">
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          <p className="text-xs text-gray-500 font-medium">{subtext}</p>
+          <Typography variant="h2" className="text-2xl font-bold text-gray-900">{value}</Typography>
+          <Typography variant="small" className="text-gray-500 font-medium">{subtext}</Typography>
         </div>
       </CardContent>
     </Card>

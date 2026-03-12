@@ -15,4 +15,5 @@ export { Error } from "@/shared/components/errors/Error";
 export { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/cards";
 export { Container } from "@/shared/components/Container";
 export { Typography } from "@/shared/components/Typography";
+export { Label } from "@/shared/components/Label";
 export { Badge } from "@/shared/components/data_display/Badge";

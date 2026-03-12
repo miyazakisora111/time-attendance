@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
 
@@ -6,30 +7,45 @@ const badgeVariants = cva(
   "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
-      variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
-        success: "border-transparent bg-green-100/80 text-green-700 hover:bg-green-100",
-        warning: "border-transparent bg-orange-100/80 text-orange-700 hover:bg-orange-100",
-        muted: "border-transparent bg-gray-100 text-gray-600 hover:bg-gray-200/80",
+      intent: {
+        default: "border-transparent bg-gray-100 text-gray-900 hover:bg-gray-100/80",
+        primary: "border-transparent bg-blue-600 text-white hover:bg-blue-600/80",
+        success: "border-transparent bg-green-600 text-white hover:bg-green-600/80",
+        warning: "border-transparent bg-amber-500 text-white hover:bg-amber-500/80",
+        danger: "border-transparent bg-red-600 text-white hover:bg-red-600/80",
+        outline: "text-gray-900 border border-gray-200 bg-transparent hover:bg-gray-50",
+      },
+      size: {
+        sm: "px-2 py-0.5 text-[10px]",
+        md: "px-2.5 py-0.5 text-xs",
       },
     },
     defaultVariants: {
-      variant: "default",
+      intent: "default",
+      size: "md",
     },
   }
 );
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
-
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
-  );
+    VariantProps<typeof badgeVariants> {
+  asChild?: boolean;
 }
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, intent, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "div";
+    return (
+      <Comp
+        ref={ref}
+        className={cn(badgeVariants({ intent, size }), className)}
+        {...props}
+      />
+    );
+  }
+);
+
+Badge.displayName = "Badge";
 
 export { Badge, badgeVariants };

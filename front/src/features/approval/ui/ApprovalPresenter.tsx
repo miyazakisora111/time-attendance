@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Plus, Search, Filter, Clock, CheckCircle2, XCircle, 
   AlertCircle, FileText, Calendar, MoreVertical, 
@@ -24,11 +24,11 @@ interface ApprovalPresenterProps {
 const getStatusInfo = (status: RequestStatus) => {
   switch (status) {
     case 'approved':
-      return { label: '承認済み', variant: 'success' as const, icon: CheckCircle2 };
+      return { label: '承認済み', intent: 'success' as const, icon: CheckCircle2 };
     case 'rejected':
-      return { label: '却下', variant: 'destructive' as const, icon: XCircle };
+      return { label: '却下', intent: 'danger' as const, icon: XCircle };
     default:
-      return { label: '承認待ち', variant: 'warning' as const, icon: Clock };
+      return { label: '承認待ち', intent: 'warning' as const, icon: Clock };
   }
 };
 
@@ -44,7 +44,7 @@ const getTypeIcon = (type: RequestType) => {
 export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
   activeTab,
   setActiveTab,
-  isModalOpen,
+  
   setIsModalOpen,
   searchQuery,
   setSearchQuery,
@@ -58,27 +58,29 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex bg-gray-100 p-1 rounded-xl w-fit">
-          <button
+          <Button
+            variant={activeTab === 'my' ? "solid" : "ghost"}
+            intent={activeTab === 'my' ? "primary" : "secondary"}
             onClick={() => setActiveTab('my')}
-            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-              activeTab === 'my' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className="px-6 rounded-lg h-auto"
           >
-            自分の申請
-          </button>
-          <button
+            <Typography variant="label" className={activeTab === 'my' ? 'text-white' : 'text-gray-500'}>自分の申請</Typography>
+          </Button>
+          <Button
+            variant={activeTab === 'team' ? "solid" : "ghost"}
+            intent={activeTab === 'team' ? "primary" : "secondary"}
             onClick={() => setActiveTab('team')}
-            className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
-              activeTab === 'team' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className="px-6 rounded-lg h-auto"
           >
-            承認待ち
+            <Typography variant="label" className={activeTab === 'team' ? 'text-white' : 'text-gray-500'}>
+              承認待ち
+            </Typography>
             {teamPendingCount > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 bg-red-500 text-white text-[10px] rounded-full">
+              <Badge intent="danger" className="ml-2 px-1 py-0 h-4 min-w-[1rem] flex items-center justify-center text-[10px]">
                 {teamPendingCount}
-              </span>
+              </Badge>
             )}
-          </button>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -92,16 +94,16 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
               className="pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full md:w-64"
             />
           </div>
-          <Button variant="outline" className="rounded-xl gap-2 border-gray-200">
+          <Button variant="outline" className="rounded-xl gap-2">
             <Filter size={16} />
-            フィルタ
+            <Typography variant="label">フィルタ</Typography>
           </Button>
           <Button 
             onClick={() => setIsModalOpen(true)}
             className="rounded-xl gap-2 shadow-lg shadow-blue-100"
           >
             <Plus size={16} />
-            新規申請
+            <Typography variant="label">新規申請</Typography>
           </Button>
         </div>
       </div>
@@ -129,15 +131,15 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
                       </div>
                       <div>
                         <Typography variant="h3" className="font-bold text-gray-900 mb-0.5">{request.title}</Typography>
-                        <div className="flex items-center gap-3 text-xs text-gray-400">
-                          <span className="flex items-center gap-1">
+                        <div className="flex items-center gap-3">
+                          <Typography variant="small" intent="muted" className="flex items-center gap-1">
                             <User size={12} />
                             {request.applicant}
-                          </span>
-                          <span className="flex items-center gap-1">
+                          </Typography>
+                          <Typography variant="small" intent="muted" className="flex items-center gap-1">
                             <Calendar size={12} />
                             {request.date}
-                          </span>
+                          </Typography>
                         </div>
                       </div>
                     </div>
@@ -145,14 +147,14 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
                     {/* Comment */}
                     <div className="hidden lg:flex items-start gap-2 max-w-xs flex-1">
                       <MessageSquare size={14} className="text-gray-300 mt-0.5" />
-                      <p className="text-xs text-gray-500 line-clamp-2 italic">
+                      <Typography variant="small" className="italic line-clamp-2">
                         {request.comment || 'コメントなし'}
-                      </p>
+                      </Typography>
                     </div>
 
                     {/* Status & Actions */}
                     <div className="flex items-center justify-between md:justify-end gap-6 pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
-                      <Badge variant={status.variant} className="flex items-center gap-1.5">
+                      <Badge intent={status.intent} className="flex items-center gap-1.5">
                         <StatusIcon size={14} />
                         {status.label}
                       </Badge>
@@ -161,20 +163,21 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
                         {activeTab === 'team' && request.status === 'pending' ? (
                           <>
                             <Button 
-                              size="sm" 
-                              onClick={() => handleApprove(request.id)}
-                              className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs"
-                            >
-                              承認
-                            </Button>
+                                size="sm" 
+                                variant="solid" intent="success"
+                                onClick={() => handleApprove(request.id)}
+                                className="h-9 px-4 rounded-lg"
+                              >
+                                <Typography variant="small">承認</Typography>
+                              </Button>
                             <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleReject(request.id)}
-                              className="h-9 px-4 border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-xs"
-                            >
-                              却下
-                            </Button>
+                                size="sm" 
+                                variant="solid" intent="danger"
+                                onClick={() => handleReject(request.id)}
+                                className="h-9 px-4 rounded-lg"
+                              >
+                                <Typography variant="small">却下</Typography>
+                              </Button>
                           </>
                         ) : (
                           <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600 rounded-lg">
@@ -195,16 +198,16 @@ export const ApprovalPresenter: React.FC<ApprovalPresenterProps> = ({
       {/* Stats Cards (Bottom) */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4">
         {[
-          { label: '今月の有給取得', value: '2.0', unit: '日', color: 'blue' },
-          { label: '有給残日数', value: '12.5', unit: '日', color: 'indigo' },
-          { label: '残業申請合計', value: '14', unit: '時間', color: 'orange' },
-          { label: '未承認の申請', value: '3', unit: '件', color: 'red' },
+          { label: '今月の有給取得', value: '2.0', unit: '日' },
+          { label: '有給残日数', value: '12.5', unit: '日' },
+          { label: '残業申請合計', value: '14', unit: '時間' },
+          { label: '未承認の申請', value: '3', unit: '件' },
         ].map((stat, i) => (
           <Card key={i} className="border-none shadow-sm p-5 bg-white">
-            <p className="text-xs text-gray-500 font-medium mb-1">{stat.label}</p>
+            <Typography variant="small" className="text-gray-500 font-medium mb-1">{stat.label}</Typography>
             <div className="flex items-baseline gap-1">
-              <span className={`text-2xl font-black text-blue-600`}>{stat.value}</span>
-              <span className="text-xs text-gray-400">{stat.unit}</span>
+              <Typography variant="h2" className="text-2xl font-black text-blue-600">{stat.value}</Typography>
+              <Typography variant="small" className="text-gray-400 font-medium">{stat.unit}</Typography>
             </div>
           </Card>
         ))}

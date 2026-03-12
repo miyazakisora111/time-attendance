@@ -8,10 +8,10 @@ import { ClockActionButtons } from "@/features/dashboard/ui/components/clock/Clo
 import type { ClockStatus, ClockAction } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
 import { ClockTodayRecord } from "@/features/dashboard/ui/components/clock/ClockTodayRecord";
 
-const statusConfig: Record<ClockStatus, { text: string; variant: "muted" | "success" | "warning" }> = {
-  out: { text: "退勤中", variant: "muted" },
-  in: { text: "勤務中", variant: "success" },
-  break: { text: "休憩中", variant: "warning" },
+const statusConfig: Record<ClockStatus, { text: string; intent: "default" | "success" | "warning" }> = {
+  out: { text: "退勤中", intent: "default" },
+  in: { text: "勤務中", intent: "success" },
+  break: { text: "休憩中", intent: "warning" },
 };
 
 export const ClockInOutCard = React.memo(function ClockInOutCard() {
@@ -32,7 +32,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
             <Clock className="text-blue-600" />
             打刻
           </CardTitle>
-          <Badge variant={statusConfig[status].variant}>
+          <Badge intent={statusConfig[status].intent}>
             {statusConfig[status].text}
           </Badge>
         </div>

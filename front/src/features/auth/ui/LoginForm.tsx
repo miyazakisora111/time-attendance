@@ -40,7 +40,7 @@ export function LoginForm() {
     >
       <Input label="メールアドレス" name="email" placeholder="test@test.com" />
       <Input label="パスワード" name="password" placeholder="Password@1" />
-      <SubmitButton className="w-full" variant="primary">ログイン</SubmitButton>
+      <SubmitButton className="w-full" variant="solid" intent="primary">ログイン</SubmitButton>
     </Form>
   );
 }

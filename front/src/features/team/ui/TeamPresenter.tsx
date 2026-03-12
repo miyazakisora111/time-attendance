@@ -26,13 +26,13 @@ interface TeamPresenterProps {
 const getStatusBadge = (status: MemberStatus) => {
   switch (status) {
     case 'working':
-      return { label: '勤務中', variant: 'success' as const, icon: CheckCircle2 };
+      return { label: '勤務中', intent: 'success' as const, icon: CheckCircle2 };
     case 'break':
-      return { label: '休憩中', variant: 'warning' as const, icon: Coffee };
+      return { label: '休憩中', intent: 'warning' as const, icon: Coffee };
     case 'leave':
-      return { label: '休暇', variant: 'secondary' as const, icon: Clock };
+      return { label: '休暇', intent: 'primary' as const, icon: Clock };
     default:
-      return { label: '未出勤', variant: 'muted' as const, icon: XCircle };
+      return { label: '未出勤', intent: 'default' as const, icon: XCircle };
   }
 };
 
@@ -55,18 +55,16 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
           { label: '休憩中', value: stats.break, icon: Coffee, color: 'text-amber-600', bgColor: 'bg-amber-50' },
           { label: '休暇・欠勤', value: stats.leave, icon: XCircle, color: 'text-gray-400', bgColor: 'bg-gray-50' },
         ].map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm overflow-hidden group">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 font-medium mb-1">{stat.label}</p>
-                  <Typography variant="h2" className="text-3xl font-black text-gray-900">{stat.value}</Typography>
-                </div>
-                <div className={`p-3 rounded-2xl ${stat.bgColor} ${stat.color} group-hover:scale-110 transition-transform`}>
-                  <stat.icon size={24} />
-                </div>
+          <Card key={i} variant="elevated" padding="lg" className="border-none group">
+            <div className="flex items-center justify-between">
+              <div>
+                <Typography variant="small" intent="muted" className="mb-1">{stat.label}</Typography>
+                <Typography variant="h2" className="text-3xl font-black text-gray-900">{stat.value}</Typography>
               </div>
-            </CardContent>
+              <div className={`p-3 rounded-2xl ${stat.bgColor} ${stat.color} group-hover:scale-110 transition-transform`}>
+                <stat.icon size={24} />
+              </div>
+            </div>
           </Card>
         ))}
       </div>
@@ -79,17 +77,18 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
               <Typography variant="h2" className="text-2xl font-bold text-gray-900">メンバーリスト</Typography>
               <div className="flex gap-1">
                 {departments.map((dept) => (
-                  <button
+                  <Button
                     key={dept}
+                    variant={filterDept === dept ? "solid" : "ghost"}
+                    intent={filterDept === dept ? "primary" : "secondary"}
+                    size="sm"
                     onClick={() => setFilterDept(dept)}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                      filterDept === dept 
-                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 
-                        : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-                    }`}
+                    className="px-4 py-1.5 rounded-full shadow-lg shadow-blue-100/20"
                   >
-                    {dept}
-                  </button>
+                    <Typography variant="label" className={filterDept === dept ? "text-white" : "text-gray-500"}>
+                      {dept}
+                    </Typography>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -105,9 +104,9 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                   className="pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500 w-full md:w-64"
                 />
               </div>
-              <Button className="rounded-xl gap-2 bg-gray-900 hover:bg-black text-white px-6">
+              <Button variant="solid" intent="primary" className="rounded-xl gap-2 px-6">
                 <UserPlus size={18} />
-                招待
+                <Typography variant="label">招待</Typography>
               </Button>
             </div>
           </div>
@@ -118,11 +117,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50">
-                  <th className="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">メンバー</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">部署 / 役職</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">ステータス</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">本日の出勤</th>
-                  <th className="px-8 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">アクション</th>
+                  <th className="px-8 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">メンバー</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">部署 / 役職</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">ステータス</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">本日の出勤</Typography></th>
+                  <th className="px-8 py-4 text-right"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">アクション</Typography></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -143,22 +142,22 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                             <span>{member.name.charAt(0)}</span>
                           </div>
                           <div>
-                            <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</p>
-                            <p className="text-xs text-gray-400">{member.email}</p>
+                            <Typography variant="label" className="text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</Typography>
+                            <Typography variant="small" intent="muted">{member.email}</Typography>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col">
-                          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                          <Typography variant="label" className="inline-flex items-center gap-1.5 text-gray-700">
                             <Building2 size={14} className="text-gray-300" />
                             {member.department}
-                          </span>
-                          <span className="text-xs text-gray-400 mt-0.5">{member.role}</span>
+                          </Typography>
+                          <Typography variant="small" className="text-gray-400 mt-0.5">{member.role}</Typography>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <Badge variant={status.variant} className="flex items-center gap-1.5">
+                        <Badge intent={status.intent} className="flex items-center gap-1.5">
                           <StatusIcon size={14} />
                           {status.label}
                         </Badge>
@@ -166,11 +165,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                       <td className="px-6 py-5">
                         {member.clockInTime ? (
                           <div className="flex flex-col">
-                            <span className="text-sm font-black text-gray-900 tracking-tight">{member.clockInTime}</span>
-                            <span className="text-[10px] text-green-500 font-bold uppercase tracking-widest">On Time</span>
+                            <Typography variant="label" className="text-sm text-gray-900 tracking-tight tabular-nums">{member.clockInTime}</Typography>
+                            <Typography variant="small" className="text-green-500 font-bold uppercase tracking-widest text-[10px]">On Time</Typography>
                           </div>
                         ) : (
-                          <span className="text-sm text-gray-300 italic">-</span>
+                          <Typography variant="small" className="text-gray-300 italic">-</Typography>
                         )}
                       </td>
                       <td className="px-8 py-5 text-right">
