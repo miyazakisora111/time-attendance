@@ -19,16 +19,30 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.string(), z.array(z.string())).optional(),
+    errors: z.record(z.array(z.string())).optional(),
   });
-  export const Attendance = z.object({
-    id: z.string(),
+  /** @description ユーザー情報 */
+  export const UserResponse = z.object({
+    user: z.object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string(),
+      roles: z.array(z.string()),
+      settings: z.record(z.unknown()).nullable().optional(),
+    }),
+  });
+  export const AttendanceResponse = z.object({
     user_id: z.string(),
     work_date: z.string(),
     start_time: z.string().nullable(),
     end_time: z.string().nullable().optional(),
-    created_at: z.string().optional(),
-    updated_at: z.string().optional(),
+  });
+  export const AttendanceClockInRequest = z.object({
+    work_date: z.string(),
+    start_time: z.string(),
+  });
+  export const AttendanceClockOutRequest = z.object({
+    end_time: z.string(),
   });
 }
 export namespace components.responses {
@@ -45,13 +59,25 @@ export namespace components.responses {
     },
   };
   /** @description サーバーエラー */
-  export const ServerError = {
+  export const InternalServerError = {
     content: {
       "application/json": components["schemas"]["ErrorResponse"],
     },
   };
-  /** @description 業務競合エラー（重複打刻など） */
+  /** @description 排他エラー */
   export const Conflict = {
+    content: {
+      "application/json": components["schemas"]["ErrorResponse"],
+    },
+  };
+  /** @description 認可エラー */
+  export const Forbidden = {
+    content: {
+      "application/json": components["schemas"]["ErrorResponse"],
+    },
+  };
+  /** @description リソース未存在エラー */
+  export const NotFound = {
     content: {
       "application/json": components["schemas"]["ErrorResponse"],
     },
@@ -68,7 +94,7 @@ export const operations = {
       },
     },
     responses: {
-      /** @description JWTトークン */
+      /** @description ログイン成功 */
       200: {
         content: {
           "application/json": components["schemas"]["LoginResponse"],
@@ -76,50 +102,88 @@ export const operations = {
       },
       401: components["responses"]["Unauthorized"],
       422: components["responses"]["ValidationError"],
-      500: components["responses"]["ServerError"],
+      500: components["responses"]["InternalServerError"],
     },
   },
-  todayApi: {
+  logoutApi: {
+    /** ログアウト */
+    responses: {
+      /** @description ログアウト成功 */
+      200: {
+        content: {
+          "application/json": z.object({
+            message: z.string().optional(),
+          }),
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  authMeApi: {
+    /** ログイン中ユーザー情報取得 */
+    responses: {
+      /** @description 認証済みユーザー情報 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  todayAttendanceApi: {
     /** 今日の勤怠取得 */
     responses: {
       /** @description 今日の勤怠情報 */
       200: {
         content: {
-          "application/json": components["schemas"]["Attendance"],
+          "application/json": components["schemas"]["AttendanceResponse"],
         },
       },
       401: components["responses"]["Unauthorized"],
-      500: components["responses"]["ServerError"],
+      500: components["responses"]["InternalServerError"],
     },
   },
   clockInApi: {
     /** 出勤打刻 */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttendanceClockInRequest"],
+      },
+    },
     responses: {
       /** @description 出勤成功 */
       200: {
         content: {
-          "application/json": components["schemas"]["Attendance"],
+          "application/json": components["schemas"]["AttendanceResponse"],
         },
       },
       401: components["responses"]["Unauthorized"],
       409: components["responses"]["Conflict"],
       422: components["responses"]["ValidationError"],
-      500: components["responses"]["ServerError"],
+      500: components["responses"]["InternalServerError"],
     },
   },
   clockOutApi: {
     /** 退勤打刻 */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttendanceClockOutRequest"],
+      },
+    },
     responses: {
       /** @description 退勤成功 */
       200: {
         content: {
-          "application/json": components["schemas"]["Attendance"],
+          "application/json": components["schemas"]["AttendanceResponse"],
         },
       },
       401: components["responses"]["Unauthorized"],
       409: components["responses"]["Conflict"],
       422: components["responses"]["ValidationError"],
-      500: components["responses"]["ServerError"],
+      500: components["responses"]["InternalServerError"],
     },
   },
 }
@@ -129,9 +193,17 @@ export const paths = {
     /** ログイン */
     post: operations["loginApi"],
   },
-  "/attendances/today": {
+  "/logout": {
+    /** ログアウト */
+    post: operations["logoutApi"],
+  },
+  "/authme": {
+    /** ログイン中ユーザー情報取得 */
+    get: operations["authMeApi"],
+  },
+  "/attendances/attendance": {
     /** 今日の勤怠取得 */
-    get: operations["todayApi"],
+    get: operations["todayAttendanceApi"],
   },
   "/attendances/clock-in": {
     /** 出勤打刻 */

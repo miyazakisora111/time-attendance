@@ -7,7 +7,7 @@ export default defineConfig({
             mode: 'tags-split', // タグごとにファイル分割
             target: './front/src/api/__generated__/index.ts', // 生成先
             schemas: './front/src/api/__generated__/model', // Zod 型出力先
-            client: 'react-query', // React Query クライアント生成
+            client: 'axios', // API 作成
             tsconfig: './front/tsconfig.json',
             override: {
                 mutator: {

@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Attendance API
+  title: TimeAttendance API
   version: 1.0.0
-  description: 勤怠管理API（JWT認証）
+  description: 勤怠管理API
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -24,9 +24,9 @@ security:
   - BearerAuth: []
 tags:
   - name: Attendance
-    description: 勤怠打刻・勤怠取得に関するAPI
+    description: 勤怠に関するAPI
   - name: Auth
-    description: 認証・JWTトークン管理API
+    description: 認証管理API
 paths:
   /login:
     post:
@@ -34,6 +34,7 @@ paths:
       tags:
         - Auth
       summary: ログイン
+      security: []
       requestBody:
         required: true
         content:
@@ -42,7 +43,7 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: JWTトークン
+          description: ログイン成功
           content:
             application/json:
               schema:
@@ -52,10 +53,48 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
         '500':
-          $ref: '#/components/responses/ServerError'
-  /attendances/today:
+          $ref: '#/components/responses/InternalServerError'
+  /logout:
+    post:
+      operationId: logoutApi
+      tags:
+        - Auth
+      summary: ログアウト
+      responses:
+        '200':
+          description: ログアウト成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /authme:
     get:
-      operationId: todayApi
+      operationId: authMeApi
+      tags:
+        - Auth
+      summary: ログイン中ユーザー情報取得
+      responses:
+        '200':
+          description: 認証済みユーザー情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/attendance:
+    get:
+      operationId: todayAttendanceApi
       tags:
         - Attendance
       summary: 今日の勤怠取得
@@ -65,24 +104,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Attendance'
+                $ref: '#/components/schemas/AttendanceResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/InternalServerError'
   /attendances/clock-in:
     post:
       operationId: clockInApi
       tags:
         - Attendance
       summary: 出勤打刻
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceClockInRequest'
       responses:
         '200':
           description: 出勤成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Attendance'
+                $ref: '#/components/schemas/AttendanceResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '409':
@@ -90,20 +135,26 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
         '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/InternalServerError'
   /attendances/clock-out:
     post:
       operationId: clockOutApi
       tags:
         - Attendance
       summary: 退勤打刻
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceClockOutRequest'
       responses:
         '200':
           description: 退勤成功
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Attendance'
+                $ref: '#/components/schemas/AttendanceResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '409':
@@ -111,8 +162,50 @@ paths:
         '422':
           $ref: '#/components/responses/ValidationError'
         '500':
-          $ref: '#/components/responses/ServerError'
+          $ref: '#/components/responses/InternalServerError'
 components:
+  responses:
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: 排他エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: 認可エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: リソース未存在エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     LoginRequest:
       type: object
@@ -150,17 +243,58 @@ components:
             type: array
             items:
               type: string
-    Attendance:
+    UserResponse:
+      type: object
+      description: ユーザー情報
+      required:
+        - user
+      properties:
+        user:
+          type: object
+          required:
+            - id
+            - name
+            - email
+            - roles
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ユーザーID
+              example: 9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f
+            name:
+              type: string
+              description: 表示名
+              example: 宮﨑 壮来
+            email:
+              type: string
+              format: email
+              description: メールアドレス
+              example: sora.miyazaki@example.com
+            roles:
+              type: array
+              description: 付与ロール名一覧
+              items:
+                type: string
+                example: manager
+              example:
+                - member
+                - manager
+            settings:
+              type: object
+              nullable: true
+              description: ユーザー設定（任意のキーを許容、存在しない場合は null）
+              additionalProperties: true
+              example:
+                theme: dark
+                language: ja
+    AttendanceResponse:
       type: object
       required:
-        - id
         - user_id
         - work_date
         - start_time
       properties:
-        id:
-          type: string
-          format: uuid
         user_id:
           type: string
           format: uuid
@@ -175,39 +309,23 @@ components:
           type: string
           format: date-time
           nullable: true
-        created_at:
+    AttendanceClockInRequest:
+      type: object
+      required:
+        - work_date
+        - start_time
+      properties:
+        work_date:
+          type: string
+          format: date
+        start_time:
           type: string
           format: date-time
-        updated_at:
+    AttendanceClockOutRequest:
+      type: object
+      required:
+        - end_time
+      properties:
+        end_time:
           type: string
           format: date-time
-  responses:
-    Unauthorized:
-      description: 認証エラー
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ValidationError:
-      description: バリデーションエラー
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ValidationErrorResponse'
-    ServerError:
-      description: サーバーエラー
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Conflict:
-      description: 業務競合エラー（重複打刻など）
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT

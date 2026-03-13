@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { loginApi } from "@/api/__generated__/auth/auth"; 
+import { getAuth } from "@/api/__generated__/auth/auth"; 
 import { useAuthStore } from "@/features/auth"; 
 import { z } from "zod";
 
@@ -49,7 +49,7 @@ export const useAuth = () => {
     // ログイン
     const loginMutation = useMutation({
         mutationFn: async (credentials: { email: string; password: string }) => {
-            const data = await loginApi(credentials);
+            const data = await getAuth().loginApi(credentials);
             return data;
         },
 

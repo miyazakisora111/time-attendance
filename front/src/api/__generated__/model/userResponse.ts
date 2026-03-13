@@ -5,9 +5,11 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from "./errorResponse";
+import type { UserResponseUser } from "./userResponseUser";
 
 /**
- * 排他エラー
+ * ユーザー情報
  */
-export type ConflictResponse = ErrorResponse;
+export interface UserResponse {
+  user: UserResponseUser;
+}
