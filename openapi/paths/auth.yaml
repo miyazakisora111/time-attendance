@@ -4,39 +4,33 @@ login:
     tags:
       - Auth
     summary: ログイン
+    security: []
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '../components/schemas/index.yaml#/LoginRequest'
+            $ref: '../components/schemas/auth/LoginRequest.yaml#/LoginRequest'
     responses:
       '200':
-        description: JWTトークン
+        description: ログイン成功
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/index.yaml#/LoginResponse'
+              $ref: '../components/schemas/auth/LoginResponse.yaml#/LoginResponse'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
       '422':
         $ref: '../components/responses.yaml#/ValidationError'
       '500':
-        $ref: '../components/responses.yaml#/ServerError'
-        
+        $ref: '../components/responses.yaml#/InternalServerError'
+
 logout:
   post:
     operationId: logoutApi
     tags:
       - Auth
     summary: ログアウト
-    requestBody:
-      required: false
-      content:
-        application/json:
-          schema:
-            type: object
-            description: ログアウトに必要なデータなし（JWTヘッダ必須）
     responses:
       '200':
         description: ログアウト成功
@@ -47,11 +41,11 @@ logout:
               properties:
                 message:
                   type: string
-                  example: "Logged out successfully"
+                  example: 'Logged out successfully'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
       '500':
-        $ref: '../components/responses.yaml#/ServerError'
+        $ref: '../components/responses.yaml#/InternalServerError'
 
 authMe:
   get:
@@ -65,8 +59,8 @@ authMe:
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/index.yaml#/UserResponse'
+              $ref: '../components/schemas/auth/UserResponse.yaml#/UserResponse'
       '401':
         $ref: '../components/responses.yaml#/Unauthorized'
       '500':
-        $ref: '../components/responses.yaml#/ServerError'
+        $ref: '../components/responses.yaml#/InternalServerError'

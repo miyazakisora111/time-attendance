@@ -6,7 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface LoginResponse {
-  /** JWT access token */
-  token?: string;
+export interface AttendanceClockOutRequest {
+  end_time: string;
 }

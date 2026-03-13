@@ -8,6 +8,6 @@
 import type { ErrorResponse } from "./errorResponse";
 
 /**
- * 排他エラー
+ * サーバーエラー
  */
-export type ConflictResponse = ErrorResponse;
+export type InternalServerErrorResponse = ErrorResponse;

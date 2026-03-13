@@ -1,0 +1,12 @@
+AttendanceClockInRequest:
+  type: object
+  required:
+    - work_date
+    - start_time
+  properties:
+    work_date:
+      type: string
+      format: date
+    start_time:
+      type: string
+      format: date-time

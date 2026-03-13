@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getAttendance } from "@/api/__generated__/attendance/attendance"; 
 import { fetchDashboardStats, fetchAttendanceRecords, clockInOut } from "@/features/dashboard/api/dashboardApi";
 
 export const dashboardQueryKeys = {

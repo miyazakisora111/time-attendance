@@ -10,10 +10,3 @@ LoginRequest:
     password:
       type: string
       format: password
-
-LoginResponse:
-  type: object
-  properties:
-    token:
-      type: string
-      description: JWT access token

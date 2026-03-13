@@ -1,6 +1,6 @@
-today:
+attendance:
   get:
-    operationId: todayApi
+    operationId: todayAttendanceApi
     tags:
       - Attendance
     summary: 今日の勤怠取得
@@ -10,11 +10,11 @@ today:
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/index.yaml#/Attendance"
+              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
       "500":
-        $ref: "../components/responses.yaml#/ServerError"
+        $ref: "../components/responses.yaml#/InternalServerError"
 
 clockIn:
   post:
@@ -22,13 +22,19 @@ clockIn:
     tags:
       - Attendance
     summary: 出勤打刻
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/attendance/AttendanceClockInRequest.yaml#/AttendanceClockInRequest"
     responses:
       "200":
         description: 出勤成功
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/index.yaml#/Attendance"
+              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
       "409":
@@ -36,7 +42,7 @@ clockIn:
       "422":
         $ref: "../components/responses.yaml#/ValidationError"
       "500":
-        $ref: "../components/responses.yaml#/ServerError"
+        $ref: "../components/responses.yaml#/InternalServerError"
 
 clockOut:
   post:
@@ -44,13 +50,19 @@ clockOut:
     tags:
       - Attendance
     summary: 退勤打刻
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
     responses:
       "200":
         description: 退勤成功
         content:
           application/json:
             schema:
-              $ref: "../components/schemas/index.yaml#/Attendance"
+              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
       "409":
@@ -58,4 +70,4 @@ clockOut:
       "422":
         $ref: "../components/responses.yaml#/ValidationError"
       "500":
-        $ref: "../components/responses.yaml#/ServerError"
+        $ref: "../components/responses.yaml#/InternalServerError"

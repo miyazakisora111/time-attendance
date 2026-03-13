@@ -5,8 +5,9 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
+import type { ErrorResponse } from "./errorResponse";
 
-export interface LoginResponse {
-  /** JWT access token */
-  token?: string;
-}
+/**
+ * 認可エラー
+ */
+export type ForbiddenResponse = ErrorResponse;

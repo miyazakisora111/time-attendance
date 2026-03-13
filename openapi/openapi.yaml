@@ -1,9 +1,9 @@
 openapi: 3.0.3
 
 info:
-  title: Attendance API
+  title: TimeAttendance API
   version: 1.0.0
-  description: 勤怠管理API（JWT認証）
+  description: 勤怠管理API
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -14,9 +14,7 @@ servers:
     variables:
       scheme:
         default: http
-        enum:
-          - http
-          - https
+        enum: [http, https]
       host:
         default: localhost:8000
         enum:
@@ -25,10 +23,9 @@ servers:
 
 tags:
   - name: Attendance
-    description: 勤怠打刻・勤怠取得に関するAPI
-
+    description: 勤怠に関するAPI
   - name: Auth
-    description: 認証・JWTトークン管理API
+    description: 認証管理API
 
 paths:
   /login:
@@ -37,16 +34,14 @@ paths:
     $ref: './paths/auth.yaml#/logout'
   /authme:
     $ref: './paths/auth.yaml#/authMe'
-  /attendances/today:
-    $ref: './paths/attendance.yaml#/today'
+  /attendances/attendance:
+    $ref: './paths/attendance.yaml#/attendance'
   /attendances/clock-in:
     $ref: './paths/attendance.yaml#/clockIn'
   /attendances/clock-out:
     $ref: './paths/attendance.yaml#/clockOut'
 
 components:
-  schemas:
-    $ref: './components/schemas/index.yaml'
   responses:
     $ref: './components/responses.yaml'
   securitySchemes:
