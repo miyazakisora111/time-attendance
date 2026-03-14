@@ -37,7 +37,6 @@ optimize-back:
 	$(DC_CMD) exec $(BACK_CONTAINER) composer dump-autoload
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:cache
 
-
 db-init:
 	@echo "==> DB作成チェック中..."
 	@$(DC_CMD) exec postgres bash -c 'psql -U $$POSTGRES_USER -lqt | cut -d \| -f 1 | grep -w $$DB_DATABASE || createdb -U $$POSTGRES_USER $$DB_DATABASE'
