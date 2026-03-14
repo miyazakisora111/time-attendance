@@ -262,9 +262,14 @@ components:
         email:
           type: string
           format: email
+          minLength: 1
+          maxLength: 255
         password:
           type: string
           format: password
+          minLength: 8
+          maxLength: 255
+          pattern: ^(?=.*[A-Za-z])(?=.*\d).+$
     LoginResponse:
       type: object
       properties:

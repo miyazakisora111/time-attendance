@@ -6,6 +6,7 @@ FRONT_DIR=front
 BACK_CONTAINER=app
 OPENAPI_DIR=openapi
 BUNDLE=$(OPENAPI_DIR)/build/bundle.yaml
+BUNDLE_JSON=$(OPENAPI_DIR)/build/bundle.json
 ENV ?= dev
 DOCKER_COMPOSE_BASE=docker-compose.base.yml
 DOCKER_COMPOSE_ENV=docker-compose.$(ENV).yml
@@ -68,6 +69,11 @@ openapi-bundle:
 	npx @redocly/cli bundle \
 	$(OPENAPI_DIR)/openapi.yaml \
 	-o $(BUNDLE)
+	npx @redocly/cli bundle \
+	$(OPENAPI_DIR)/openapi.yaml \
+	--dereferenced \
+	--ext json \
+	-o $(BUNDLE_JSON)
 
 openapi-client: openapi-bundle
 	npx --prefix $(FRONT_DIR) orval
@@ -77,7 +83,11 @@ openapi-zod: openapi-bundle
 	$(BUNDLE) \
 	-o $(FRONT_DIR)/src/api/__generated__/zod.ts
 
-openapi: openapi-client openapi-zod
+openapi-validators: openapi-bundle openapi-zod
+	node scripts/generate-openapi-validators.mjs
+	npx prettier --write ./front/src/api/__generated__/zod.validation.ts
+
+openapi: openapi-zod openapi-client openapi-validators
 
 # --------------------------------
 # DB

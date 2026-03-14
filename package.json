@@ -3,6 +3,13 @@
     "private": true,
     "version": "1.0.0",
     "type": "module",
+    "scripts": {
+        "openapi:bundle": "npx @redocly/cli bundle ./openapi/openapi.yaml -o ./openapi/build/bundle.yaml && npx @redocly/cli bundle ./openapi/openapi.yaml --dereferenced --ext json -o ./openapi/build/bundle.json",
+        "openapi:client": "npx --prefix ./front orval",
+        "openapi:zod": "npx --prefix ./front openapi-zod ./openapi/build/bundle.yaml -o ./front/src/api/__generated__/zod.ts",
+        "openapi:validators": "node ./scripts/generate-openapi-validators.mjs && npx prettier --write ./front/src/api/__generated__/zod.validation.ts",
+        "openapi:generate": "npm run openapi:bundle && npm run openapi:zod && npm run openapi:client && npm run openapi:validators"
+    },
     "devDependencies": {
         "@orval/core": "^8.5.1",
         "@redocly/cli": "^1.0.0",

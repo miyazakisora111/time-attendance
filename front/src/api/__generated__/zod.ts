@@ -19,7 +19,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.string(), z.array(z.string())).optional(),
+    errors: z.record(z.array(z.string())).optional(),
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
@@ -28,7 +28,7 @@ export namespace components.schemas {
       name: z.string(),
       email: z.string(),
       roles: z.array(z.string()),
-      settings: z.record(z.string(), z.unknown()).nullable().optional(),
+      settings: z.record(z.unknown()).nullable().optional(),
     }),
   });
   export const AttendanceResponse = z.object({
@@ -43,6 +43,44 @@ export namespace components.schemas {
   });
   export const AttendanceClockOutRequest = z.object({
     end_time: z.string(),
+  });
+  export const DashboardResponse = z.object({
+    user: z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+    clockStatus: z.enum(["out", "in", "break"]),
+    todayRecord: z.object({
+      clockInTime: z.string().nullable(),
+      totalWorkedHours: z.number().nullable(),
+    }),
+    stats: z.object({
+      totalHours: z.number(),
+      targetHours: z.number(),
+      workDays: z.number().int(),
+      remainingDays: z.number().int(),
+      avgHours: z.number(),
+      avgHoursDiff: z.number(),
+      overtimeHours: z.number(),
+      overtimeDiff: z.number(),
+    }),
+    recentRecords: z.array(z.object({
+        date: z.string(),
+        day: z.string(),
+        clockIn: z.string().nullable(),
+        clockOut: z.string().nullable(),
+        workHours: z.number().nullable(),
+        status: z.enum(["通常", "残業", "休日"]),
+      })),
+    pendingOvertimeRequests: z.number().int(),
+  });
+  export const DashboardClockRequest = z.object({
+    action: z.enum(["in", "out", "break_start", "break_end"]),
+  });
+  export const DashboardClockResponse = z.object({
+    action: z.enum(["in", "out", "break_start", "break_end"]),
+    timestamp: z.string(),
+    dashboard: components["schemas"]["DashboardResponse"],
   });
 }
 export namespace components.responses {
@@ -186,6 +224,39 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
+  getDashboardApi: {
+    /** ダッシュボード集計取得 */
+    responses: {
+      /** @description ダッシュボード情報 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DashboardResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  postDashboardClockApi: {
+    /** ダッシュボード打刻操作 */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DashboardClockRequest"],
+      },
+    },
+    responses: {
+      /** @description 打刻成功 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DashboardClockResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      409: components["responses"]["Conflict"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
 }
 
 export const paths = {
@@ -212,5 +283,13 @@ export const paths = {
   "/attendances/clock-out": {
     /** 退勤打刻 */
     post: operations["clockOutApi"],
+  },
+  "/dashboard": {
+    /** ダッシュボード集計取得 */
+    get: operations["getDashboardApi"],
+  },
+  "/dashboard/clock": {
+    /** ダッシュボード打刻操作 */
+    post: operations["postDashboardClockApi"],
   },
 }

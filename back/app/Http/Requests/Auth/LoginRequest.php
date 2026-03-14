@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseRequest;
+use App\Http\Requests\Generated\OpenApiGeneratedRules;
 use App\ValueObjects\Email;
 
 /**
@@ -19,10 +20,7 @@ class LoginRequest extends BaseRequest
      */
     public function rules(): array
     {
-        return [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ];
+        return OpenApiGeneratedRules::schema('LoginRequest');
     }
 
     public function email(): Email

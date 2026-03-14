@@ -17,7 +17,10 @@ export default defineConfig({
             },
         },
         hooks: {
-            afterAllFilesWrite: ['prettier --write'], // prettier 自動整形
+            afterAllFilesWrite: [
+                'npm run openapi:validators',
+                'prettier --write',
+            ], // prettier 自動整形 + 追加バリデーション生成
         }
     },
 })

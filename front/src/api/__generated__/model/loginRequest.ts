@@ -7,6 +7,15 @@
  */
 
 export interface LoginRequest {
+  /**
+   * @minLength 1
+   * @maxLength 255
+   */
   email: string;
+  /**
+   * @minLength 8
+   * @maxLength 255
+   * @pattern ^(?=.*[A-Za-z])(?=.*\d).+$
+   */
   password: string;
 }

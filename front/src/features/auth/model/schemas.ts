@@ -1,4 +1,4 @@
 
-import { components } from '@/api/__generated__/zod';
+import { validationSchemas } from '@/api/__generated__/zod.validation';
 
-export const loginSchema = components.schemas.LoginRequest;
+export const loginSchema = validationSchemas.LoginRequest;
