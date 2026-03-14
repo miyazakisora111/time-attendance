@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model
+class User extends Model implements JWTSubject
 {
     use SoftDeletes;
 
@@ -99,6 +100,16 @@ class User extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function userSetting()
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    public function userNotificationSetting()
+    {
+        return $this->hasOne(UserNotificationSetting::class);
+    }
+
     /**
      * 有効ユーザー
      */
@@ -121,5 +132,15 @@ class User extends Model
     public function scopeEmail(Builder $query, string $email): Builder
     {
         return $query->where('email', $email);
+    }
+
+    public function getJWTIdentifier(): string
+    {
+        return (string) $this->getKey();
+    }
+
+    public function getJWTCustomClaims(): array
+    {
+        return [];
     }
 }

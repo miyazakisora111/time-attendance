@@ -24,6 +24,11 @@ abstract class BaseRequest extends FormRequest
         'boolean' => [],
     ];
 
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     /**
      * {@inheritdoc}
      */

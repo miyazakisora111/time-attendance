@@ -29,4 +29,9 @@ class LoginRequest extends BaseRequest
     {
         return new Email($this->validated('email'));
     }
+
+    public function password(): string
+    {
+        return (string) $this->validated('password');
+    }
 }

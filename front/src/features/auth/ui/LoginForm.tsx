@@ -4,7 +4,6 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitButton, Input, Form } from '@/shared/components';
 import { useAuth, loginSchema as schema } from '@/features/auth';
-import { getCsrfTokenApi } from '@/api/client';
 import { toast } from "sonner"
 
 export function LoginForm() {
@@ -22,14 +21,12 @@ export function LoginForm() {
   }, [loginMutation.isSuccess, navigate, location]);
 
   const onSubmit = async (data: formData) => {
-
-    toast.error("API実装するまで待ってね。");
-
-    // CSRFトークン取得
-    await getCsrfTokenApi();
-
-    // ログイン実行
-    await loginMutation.mutateAsync(data);
+    try {
+      await loginMutation.mutateAsync(data);
+      toast.success("ログインしました。");
+    } catch {
+      toast.error("ログインに失敗しました。");
+    }
   };
 
   return (

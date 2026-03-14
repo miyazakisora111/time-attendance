@@ -2,6 +2,8 @@
 import axios, { type AxiosRequestConfig } from 'axios';
 import { env } from '@/env';
 
+const AUTH_TOKEN_KEY = 'time-attendance.auth-token';
+
 export const axiosInstance = axios.create({
   baseURL: env.API_URL,
   timeout: env.API_TIMEOUT,
@@ -10,6 +12,27 @@ export const axiosInstance = axios.create({
     'Content-Type': 'application/json',
     Accept: 'application/json',
   },
+});
+
+export const getAuthToken = (): string | null => localStorage.getItem(AUTH_TOKEN_KEY);
+
+export const setAuthToken = (token: string): void => {
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
+};
+
+export const clearAuthToken = (): void => {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
+};
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = getAuthToken();
+
+  if (token) {
+    config.headers = config.headers ?? {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });
 
 // レスポンス共通処理
@@ -21,7 +44,7 @@ axiosInstance.interceptors.response.use(
     }
 
     if (error.response.status === 401) {
-      // リフレッシュ処理 or logout
+      clearAuthToken();
     }
 
     return Promise.reject(error);
@@ -35,7 +58,7 @@ export const customInstance = <T>(
   return axiosInstance(config).then((res) => res.data);
 };
 
-// Sanctum用
+// 既存UI互換用
 export const getCsrfTokenApi = async (): Promise<void> => {
-  await axiosInstance.get('/sanctum/csrf-cookie');
+  return Promise.resolve();
 };

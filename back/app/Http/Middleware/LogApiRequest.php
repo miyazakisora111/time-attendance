@@ -8,7 +8,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Logging\AppLogger;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * APIリクエストをログに記録するミドルウェア

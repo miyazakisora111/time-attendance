@@ -15,10 +15,14 @@ Route::get('/health', function () {
     ]);
 });
 
-Route::prefix('auth')->group(function () {
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:api', 'throttle:60,1']);
+Route::get('/authme', [AuthController::class, 'me'])->middleware(['auth:api', 'throttle:60,1']);
+
+Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
-})->middleware('throttle:5,1');
+});
 
 Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
 Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
@@ -28,6 +32,7 @@ Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/calendar', [CalendarController::class, 'index']);
     })->middleware('throttle:60,1');
