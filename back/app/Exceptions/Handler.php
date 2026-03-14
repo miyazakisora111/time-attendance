@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use App\Http\Responses\ApiResponse;
-use App\Logging\AppLogger;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException as FrameworkAuthenticationException;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -30,13 +31,9 @@ class Handler extends ExceptionHandler
     {
         // ドメイン例外
         $this->renderable(function (\App\Exceptions\DomainException $e, $request) {
-            if (!$this->shouldReturnApiJson($request)) {
-                return null;
-            }
-
             $status = $this->normalizeStatusCode($e->getCode());
 
-            AppLogger::warning('Domain exception', $this->buildContext($request, $e, $status));
+            Log::channel('api')->warning('Domain exception', $this->buildContext($request, $e, $status));
 
             return ApiResponse::error(
                 message: $e->getMessage(),
@@ -45,11 +42,7 @@ class Handler extends ExceptionHandler
         });
 
         $this->renderable(function (AuthenticationException $e, $request) {
-            if (!$this->shouldReturnApiJson($request)) {
-                return null;
-            }
-
-            AppLogger::warning('Authentication exception', $this->buildContext($request, $e, 401));
+            Log::channel('api')->warning('Authentication exception', $this->buildContext($request, $e, 401));
 
             return ApiResponse::error(
                 message: $e->getMessage(),
@@ -57,13 +50,18 @@ class Handler extends ExceptionHandler
             );
         });
 
+        // 検証エラー
+        $this->renderable(function (ValidationException $e, $request) {
+            return ApiResponse::error(
+                message: 'Validation failed',
+                status: 422,
+                errors: $e->errors()
+            );
+        });
+
         // 未認証
         $this->renderable(function (FrameworkAuthenticationException $e, $request) {
-            if (!$this->shouldReturnApiJson($request)) {
-                return null;
-            }
-
-            AppLogger::warning('Framework authentication exception', $this->buildContext($request, $e, 401));
+            Log::channel('api')->warning('Framework authentication exception', $this->buildContext($request, $e, 401));
 
             return ApiResponse::error(
                 message: 'Unauthenticated',
@@ -73,11 +71,7 @@ class Handler extends ExceptionHandler
 
         // 権限なし
         $this->renderable(function (AuthorizationException $e, $request) {
-            if (!$this->shouldReturnApiJson($request)) {
-                return null;
-            }
-
-            AppLogger::warning('Authorization exception', $this->buildContext($request, $e, 403));
+            Log::channel('api')->warning('Authorization exception', $this->buildContext($request, $e, 403));
 
             return ApiResponse::error(
                 message: 'Forbidden',
@@ -87,24 +81,19 @@ class Handler extends ExceptionHandler
 
         // その他の例外
         $this->renderable(function (Throwable $e, $request) {
-            if (!$this->shouldReturnApiJson($request)) {
-                return null;
-            }
-
             $status = $this->resolveThrowableStatus($e);
 
-            AppLogger::error('Unhandled exception', $this->buildContext($request, $e, $status));
+            Log::channel('api')->log(
+                $status >= 500 ? 'error' : 'warning',
+                'Unhandled exception',
+                $this->buildContext($request, $e, $status)
+            );
 
             return ApiResponse::error(
                 message: $status >= 500 ? 'Internal Server Error' : $e->getMessage(),
                 status: $status
             );
         });
-    }
-
-    private function shouldReturnApiJson($request): bool
-    {
-        return $request->expectsJson() || $request->is('api/*');
     }
 
     /**
@@ -132,8 +121,6 @@ class Handler extends ExceptionHandler
             'status_code' => $status,
             'exception' => $e::class,
             'error_message' => $e->getMessage(),
-            'ip' => $request->ip(),
-            'user_agent' => $request->userAgent(),
             'trace' => $e->getTraceAsString(),
         ];
     }

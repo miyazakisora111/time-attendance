@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitButton, Input, Form } from '@/shared/components';
 import { useAuth, loginSchema as schema } from '@/features/auth';
-import { toast } from "sonner"
+import { toast as sonner } from 'sonner';
 
 export function LoginForm() {
   const navigate = useNavigate();
@@ -23,9 +23,9 @@ export function LoginForm() {
   const onSubmit = async (data: formData) => {
     try {
       await loginMutation.mutateAsync(data);
-      toast.success("ログインしました。");
+      sonner.success("ログインしました。");
     } catch {
-      toast.error("ログインに失敗しました。");
+      // 失敗時は Axios レスポンスインターセプターで共通処理
     }
   };
 

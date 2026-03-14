@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { toast as sonner } from 'sonner';
 import type { AttendanceRequest } from '@/domain/enums/approval';
 
 const MOCK_MY_REQUESTS: AttendanceRequest[] = [
@@ -27,11 +27,11 @@ export const useApproval = () => {
   );
 
   const handleApprove = (_id: string) => {
-    toast.success('申請を承認しました');
+    sonner.success('申請を承認しました');
   };
 
   const handleReject = (_id: string) => {
-    toast.error('申請を却下しました');
+    sonner.error('申請を却下しました');
   };
 
   return {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'sonner';
+import { toast as sonner } from 'sonner';
 import type { AttendanceStatus, LastAction } from '@/domain/enums/attendance';
 
 export const useAttendance = () => {
@@ -19,7 +19,7 @@ export const useAttendance = () => {
     });
     setStatus(type);
     setLastAction({ type: label, time: now });
-    toast.success(`${label}しました (${now})`, {
+    sonner.success(`${label}しました (${now})`, {
       description: '本日の勤務データに記録されました。',
     });
   };
