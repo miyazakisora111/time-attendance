@@ -16,7 +16,7 @@ export function LoginForm() {
   useEffect(() => {
     if (loginMutation.isSuccess) {
       const from = (location.state as { from: Location })?.from?.pathname;
-      navigate(from, { replace: true });
+      navigate(from ?? '/dashboard', { replace: true });
     }
   }, [loginMutation.isSuccess, navigate, location]);
 

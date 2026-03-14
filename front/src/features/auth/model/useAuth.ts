@@ -57,6 +57,7 @@ export const authQueryKey = {
 
 export const useAuth = () => {
     const queryClient = useQueryClient();
+    const isInitializing = useAuthStore((state) => state.isInitializing);
 
     // 認証ユーザー取得
     const authQuery = useQuery({
@@ -113,7 +114,7 @@ export const useAuth = () => {
     return {
         user: authQuery.data ?? null,
         isAuthenticated: !!authQuery.data,
-        isLoading: authQuery.isLoading || useAuthStore((state) => state.isInitializing),
+        isLoading: authQuery.isLoading || isInitializing,
         loginMutation,
         logoutMutation,
     };

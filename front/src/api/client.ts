@@ -74,6 +74,11 @@ const extractErrorMessages = (data: unknown): string[] => {
 const notifyByStatus = (status: number | undefined, data: unknown): void => {
   const messages = extractErrorMessages(data);
 
+  // 未ログイン状態の 401 は想定内のため、グローバル通知しない
+  if (status === 401) {
+    return;
+  }
+
   // 422 + 4xx ドメインエラーは中央モーダルへ
   if (status === 422 || (status !== undefined && status >= 400 && status < 500 && status !== 401)) {
     apiErrorHandler?.({
