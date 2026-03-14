@@ -1,7 +1,7 @@
 import React from "react";
+import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { IconWrapper } from "@/shared/components/icons/IconWrapper";
-import type { LucideIcon } from "lucide-react";
 
 interface StatItemCardProps {
   label: string;
@@ -21,25 +21,27 @@ export const StatItemCard = React.memo(function StatItemCard({
   iconBgColor,
 }: StatItemCardProps) {
   return (
-    <Card variant="elevated" className="hover:shadow-md transition-shadow">
-      <CardHeader className="pb-3 border-b-0 space-y-0">
+    <Card variant="elevated">
+      <CardHeader className="space-y-0 pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm font-medium text-gray-500">{label}</CardTitle>
           <IconWrapper
             icon={icon}
             iconColor={iconColor}
             bgColor={iconBgColor}
-            className="rounded-xl w-10 h-10"
+            className="h-10 w-10 rounded-xl"
             strokeWidth={2.5}
             size={20}
           />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-1">
-          <Typography variant="h2" className="text-2xl font-bold text-gray-900">{value}</Typography>
-          <Typography variant="small" className="text-gray-500 font-medium">{subtext}</Typography>
-        </div>
+        <Typography variant="h2" className="text-2xl tabular-nums">
+          {value}
+        </Typography>
+        <Typography variant="small" intent="muted" className="font-medium">
+          {subtext}
+        </Typography>
       </CardContent>
     </Card>
   );

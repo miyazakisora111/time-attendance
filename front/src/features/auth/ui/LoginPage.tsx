@@ -18,7 +18,7 @@ const useRedirect = () => {
   }, [isAuthenticated, navigate]);
 };
 
-export default function LoginPage() {
+export function LoginPage() {
   useRedirect();
 
   return (

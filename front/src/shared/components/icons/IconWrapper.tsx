@@ -27,5 +27,3 @@ export const IconWrapper = React.forwardRef<HTMLDivElement, IconWrapperProps>(
     );
   }
 );
-
-IconWrapper.displayName = "IconWrapper";

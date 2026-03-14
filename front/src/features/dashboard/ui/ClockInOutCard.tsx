@@ -1,12 +1,14 @@
-import React, { useState, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
+import React, { useCallback, useState } from "react";
 import { Clock } from "lucide-react";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
 import { useClockInOut } from "@/features/dashboard/model/useDashboard";
-import { Badge } from "@/shared/components/data_display/Badge";
-import { ClockDisplay } from "@/features/dashboard/ui/components/clock/ClockDisplay";
-import { ClockActionButtons } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
-import type { ClockStatus, ClockAction } from "@/features/dashboard/ui/components/clock/ClockActionButtons";
-import { ClockTodayRecord } from "@/features/dashboard/ui/components/clock/ClockTodayRecord";
+import { ClockActionButtons } from "@/features/dashboard/ui/clock/ClockActionButtons";
+import type {
+  ClockAction,
+  ClockStatus,
+} from "@/features/dashboard/ui/clock/ClockActionButtons";
+import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
+import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
 
 const statusConfig: Record<ClockStatus, { text: string; intent: "default" | "success" | "warning" }> = {
   out: { text: "退勤中", intent: "default" },
@@ -18,11 +20,14 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
   const [status, setStatus] = useState<ClockStatus>("out");
   const { mutate: clockInOut, isPending } = useClockInOut();
 
-  const handleAction = useCallback((action: ClockAction, nextStatus: ClockStatus) => {
-    clockInOut(action, {
-      onSuccess: () => setStatus(nextStatus),
-    });
-  }, [clockInOut]);
+  const handleAction = useCallback(
+    (action: ClockAction, nextStatus: ClockStatus) => {
+      clockInOut(action, {
+        onSuccess: () => setStatus(nextStatus),
+      });
+    },
+    [clockInOut]
+  );
 
   return (
     <Card variant="elevated">
@@ -32,9 +37,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
             <Clock className="text-blue-600" />
             打刻
           </CardTitle>
-          <Badge intent={statusConfig[status].intent}>
-            {statusConfig[status].text}
-          </Badge>
+          <Badge intent={statusConfig[status].intent}>{statusConfig[status].text}</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">

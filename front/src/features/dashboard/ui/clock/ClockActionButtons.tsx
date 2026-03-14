@@ -1,6 +1,6 @@
 import React from "react";
+import { Coffee, Clock, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/shared/components/buttons/Button";
-import { Clock, LogIn, LogOut, Coffee } from "lucide-react";
 
 export type ClockStatus = "out" | "in" | "break";
 export type ClockAction = "in" | "out" | "break_start" | "break_end";
@@ -14,7 +14,7 @@ interface ClockActionButtonsProps {
 export const ClockActionButtons = React.memo(function ClockActionButtons({
   status,
   isPending,
-  onAction
+  onAction,
 }: ClockActionButtonsProps) {
   return (
     <div className="grid grid-cols-2 gap-3">
@@ -22,8 +22,10 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
         <Button
           onClick={() => onAction("in", "in")}
           disabled={isPending}
-          className="col-span-2 h-14 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-bold transition-all shadow-sm hover:shadow"
+          intent="success"
           size="lg"
+          className="col-span-2"
+          fullWidth
         >
           <LogIn size={20} />
           出勤
@@ -36,7 +38,9 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
             onClick={() => onAction("break_start", "break")}
             disabled={isPending}
             variant="outline"
-            className="h-14 border-orange-600 text-orange-600 hover:bg-orange-50 font-bold transition-all shadow-sm hover:shadow"
+            intent="warning"
+            size="lg"
+            fullWidth
           >
             <Coffee size={20} />
             休憩開始
@@ -44,7 +48,9 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
           <Button
             onClick={() => onAction("out", "out")}
             disabled={isPending}
-            className="h-14 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold transition-all shadow-sm hover:shadow"
+            intent="danger"
+            size="lg"
+            fullWidth
           >
             <LogOut size={20} />
             退勤
@@ -56,8 +62,10 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
         <Button
           onClick={() => onAction("break_end", "in")}
           disabled={isPending}
-          className="col-span-2 h-14 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold transition-all shadow-sm hover:shadow"
+          intent="primary"
           size="lg"
+          className="col-span-2"
+          fullWidth
         >
           <Clock size={20} />
           休憩終了

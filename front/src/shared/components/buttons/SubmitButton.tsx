@@ -49,5 +49,3 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
         );
     }
 );
-
-SubmitButton.displayName = 'SubmitButton';
