@@ -18,7 +18,7 @@ class UserSettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => null,
             'theme' => fake()->randomElement(['light', 'dark']),
             'language' => fake()->randomElement(['ja', 'en']),
         ];

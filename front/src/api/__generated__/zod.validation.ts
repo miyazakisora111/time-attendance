@@ -1,23 +1,46 @@
 // This file is auto-generated. Do not edit manually.
-// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts
+// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts + field-labels.json
 
 import { z } from "zod";
 import { components as generatedComponents } from "./zod";
+import labelsJson from "./field-labels.json";
+
+const labels = labelsJson as Record<string, string>;
+const labelOf = (field: string): string => labels[field] ?? field;
 
 export const validationSchemas = {
   AttendanceClockInRequest:
     generatedComponents.schemas.AttendanceClockInRequest.extend({
-      work_date: z.string().trim().min(1, "work_dateは必須です。"),
-      start_time: z.string().trim().min(1, "start_timeは必須です。"),
+      work_date: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("work_date")}は必須です。`),
+      start_time: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("start_time")}は必須です。`),
     }),
   AttendanceClockOutRequest:
     generatedComponents.schemas.AttendanceClockOutRequest.extend({
-      end_time: z.string().trim().min(1, "end_timeは必須です。"),
+      end_time: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("end_time")}は必須です。`),
     }),
   AttendanceResponse: generatedComponents.schemas.AttendanceResponse.extend({
-    user_id: z.string().trim().min(1, "user_idは必須です。"),
-    work_date: z.string().trim().min(1, "work_dateは必須です。"),
-    start_time: z.string().trim().min(1, "start_timeは必須です。").nullable(),
+    user_id: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("user_id")}は必須です。`),
+    work_date: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("work_date")}は必須です。`),
+    start_time: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("start_time")}は必須です。`)
+      .nullable(),
     end_time: z.string().trim().nullable().optional(),
   }),
   DashboardClockRequest:
@@ -27,18 +50,27 @@ export const validationSchemas = {
   DashboardClockResponse:
     generatedComponents.schemas.DashboardClockResponse.extend({
       action: z.enum(["in", "out", "break_start", "break_end"]),
-      timestamp: z.string().trim().min(1, "timestampは必須です。"),
+      timestamp: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("timestamp")}は必須です。`),
       dashboard: z.object({
         user: z.object({
-          id: z.string().trim().min(1, "idは必須です。"),
-          name: z.string().trim().min(1, "nameは必須です。"),
+          id: z
+            .string()
+            .trim()
+            .min(1, `${labelOf("id")}は必須です。`),
+          name: z
+            .string()
+            .trim()
+            .min(1, `${labelOf("name")}は必須です。`),
         }),
         clockStatus: z.enum(["out", "in", "break"]),
         todayRecord: z.object({
           clockInTime: z
             .string()
             .trim()
-            .min(1, "clockInTimeは必須です。")
+            .min(1, `${labelOf("clockInTime")}は必須です。`)
             .nullable(),
           totalWorkedHours: z.number().nullable(),
         }),
@@ -54,13 +86,23 @@ export const validationSchemas = {
         }),
         recentRecords: z.array(
           z.object({
-            date: z.string().trim().min(1, "dateは必須です。"),
-            day: z.string().trim().min(1, "dayは必須です。"),
-            clockIn: z.string().trim().min(1, "clockInは必須です。").nullable(),
+            date: z
+              .string()
+              .trim()
+              .min(1, `${labelOf("date")}は必須です。`),
+            day: z
+              .string()
+              .trim()
+              .min(1, `${labelOf("day")}は必須です。`),
+            clockIn: z
+              .string()
+              .trim()
+              .min(1, `${labelOf("clockIn")}は必須です。`)
+              .nullable(),
             clockOut: z
               .string()
               .trim()
-              .min(1, "clockOutは必須です。")
+              .min(1, `${labelOf("clockOut")}は必須です。`)
               .nullable(),
             workHours: z.number().nullable(),
             status: z.enum(["通常", "残業", "休日"]),
@@ -71,15 +113,21 @@ export const validationSchemas = {
     }),
   DashboardResponse: generatedComponents.schemas.DashboardResponse.extend({
     user: z.object({
-      id: z.string().trim().min(1, "idは必須です。"),
-      name: z.string().trim().min(1, "nameは必須です。"),
+      id: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("id")}は必須です。`),
+      name: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("name")}は必須です。`),
     }),
     clockStatus: z.enum(["out", "in", "break"]),
     todayRecord: z.object({
       clockInTime: z
         .string()
         .trim()
-        .min(1, "clockInTimeは必須です。")
+        .min(1, `${labelOf("clockInTime")}は必須です。`)
         .nullable(),
       totalWorkedHours: z.number().nullable(),
     }),
@@ -95,10 +143,24 @@ export const validationSchemas = {
     }),
     recentRecords: z.array(
       z.object({
-        date: z.string().trim().min(1, "dateは必須です。"),
-        day: z.string().trim().min(1, "dayは必須です。"),
-        clockIn: z.string().trim().min(1, "clockInは必須です。").nullable(),
-        clockOut: z.string().trim().min(1, "clockOutは必須です。").nullable(),
+        date: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("date")}は必須です。`),
+        day: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("day")}は必須です。`),
+        clockIn: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("clockIn")}は必須です。`)
+          .nullable(),
+        clockOut: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("clockOut")}は必須です。`)
+          .nullable(),
         workHours: z.number().nullable(),
         status: z.enum(["通常", "残業", "休日"]),
       }),
@@ -112,20 +174,20 @@ export const validationSchemas = {
     email: z
       .string()
       .trim()
-      .min(1, "メールアドレスは必須です。")
-      .email("メールアドレスの形式が正しくありません。")
-      .max(255, "メールアドレスは255文字以内で入力してください。"),
+      .min(1, `${labelOf("email")}は必須です。`)
+      .email(`${labelOf("email")}の形式が正しくありません。`)
+      .max(255, `${labelOf("email")}は255文字以内で入力してください。`),
     password: z
       .string()
       .trim()
-      .min(1, "パスワードは必須です。")
-      .min(8, "パスワードは8文字以上で入力してください。")
+      .min(1, `${labelOf("password")}は必須です。`)
+      .min(8, `${labelOf("password")}は8文字以上で入力してください。`)
       .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
       .regex(/\d/, "パスワードに数字を1文字以上含めてください。")
-      .max(255, "パスワードは255文字以内で入力してください。")
+      .max(255, `${labelOf("password")}は255文字以内で入力してください。`)
       .regex(
         new RegExp("^(?=.*[A-Za-z])(?=.*\\d).+$"),
-        "パスワードの形式が正しくありません。",
+        `${labelOf("password")}の形式が正しくありません。`,
       ),
   }),
   LoginResponse: generatedComponents.schemas.LoginResponse.extend({
@@ -133,14 +195,25 @@ export const validationSchemas = {
   }),
   UserResponse: generatedComponents.schemas.UserResponse.extend({
     user: z.object({
-      id: z.string().trim().min(1, "idは必須です。"),
-      name: z.string().trim().min(1, "nameは必須です。"),
+      id: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("id")}は必須です。`),
+      name: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("name")}は必須です。`),
       email: z
         .string()
         .trim()
-        .min(1, "メールアドレスは必須です。")
-        .email("メールアドレスの形式が正しくありません。"),
-      roles: z.array(z.string().trim().min(1, "itemは必須です。")),
+        .min(1, `${labelOf("email")}は必須です。`)
+        .email(`${labelOf("email")}の形式が正しくありません。`),
+      roles: z.array(
+        z
+          .string()
+          .trim()
+          .min(1, `${labelOf("item")}は必須です。`),
+      ),
       settings: z.record(z.string(), z.unknown()).nullable().optional(),
     }),
   }),
@@ -150,7 +223,12 @@ export const validationSchemas = {
       errors: z
         .record(
           z.string(),
-          z.array(z.string().trim().min(1, "itemは必須です。")),
+          z.array(
+            z
+              .string()
+              .trim()
+              .min(1, `${labelOf("item")}は必須です。`),
+          ),
         )
         .optional(),
     }),

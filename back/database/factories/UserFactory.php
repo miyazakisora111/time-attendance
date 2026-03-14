@@ -18,12 +18,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'department_id' => fake()->optional(0.8)->passthrough(DepartmentFactory::new()),
-            'role_id' => fake()->optional(0.85)->passthrough(RoleFactory::new()->active()),
+            'department_id' => null,
+            'role_id' => null,
             'name' => fake()->name(),
             'sort_order' => fake()->numberBetween(1, 500),
             'email' => fake()->unique()->safeEmail(),
-            'password' => 'password',
+            'password' => 'Password@1',
             'status' => fake()->boolean() ? 1 : 0,
             'email_verified_at' => fake()->optional(0.9)->dateTimeBetween('-2 years', 'now'),
             'last_login_at' => fake()->optional(0.7)->dateTimeBetween('-1 year', 'now'),

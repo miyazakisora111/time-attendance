@@ -18,7 +18,7 @@ class PaidLeaveRequestFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => null,
             'leave_date' => fake()->dateTimeBetween('-1 month', '+2 months')->format('Y-m-d'),
             'days' => fake()->randomElement([0.5, 1.0]),
             'status' => fake()->randomElement([

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Department;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -30,8 +29,4 @@ class DepartmentFactory extends Factory
         ];
     }
 
-    public function withUsers(int $count = 5): static
-    {
-        return $this->has(UserFactory::new()->count($count), 'users');
-    }
 }

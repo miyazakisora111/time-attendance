@@ -11,6 +11,6 @@ class DepartmentSeeder extends Seeder
 {
     public function run(): void
     {
-        DepartmentFactory::new()->count(6)->withUsers(2)->create();
+        DepartmentFactory::new()->count(6)->create();
     }
 }

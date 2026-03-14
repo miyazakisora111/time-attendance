@@ -14,6 +14,7 @@ use Database\Factories\OvertimeRequestFactory;
 use Database\Factories\PaidLeaveGrantFactory;
 use Database\Factories\PaidLeaveRequestFactory;
 use Database\Factories\UserNotificationSettingFactory;
+use Database\Factories\UserFactory;
 use Database\Factories\UserSettingFactory;
 use Illuminate\Database\Seeder;
 
@@ -21,10 +22,11 @@ class SampleDataSeeder extends Seeder
 {
     public function run(): void
     {
-        DepartmentFactory::new()
-            ->count(3)
-            ->withUsers(8)
-            ->create();
+        $departments = DepartmentFactory::new()->count(3)->create();
+
+        foreach ($departments as $department) {
+            UserFactory::new()->count(8)->forDepartment($department)->active()->create();
+        }
 
         User::query()->each(function (User $user): void {
             UserSettingFactory::new()->forUser($user)->create();

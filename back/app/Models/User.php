@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model implements JWTSubject
+class User extends Authenticatable implements JWTSubject
 {
+    use HasFactory;
+    use Notifiable;
     use SoftDeletes;
 
     protected $table = 'users';
@@ -52,7 +56,7 @@ class User extends Model implements JWTSubject
      */
     protected $casts = [
         'sort_order' => 'integer',
-        'status' => 'boolean',
+        'status' => 'integer',
         'email_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
         'created_at' => 'datetime',

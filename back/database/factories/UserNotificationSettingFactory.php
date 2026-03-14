@@ -18,7 +18,7 @@ class UserNotificationSettingFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => null,
             'clock_in_reminder' => fake()->boolean(),
             'approval_notification' => fake()->boolean(),
             'leave_reminder' => fake()->boolean(),

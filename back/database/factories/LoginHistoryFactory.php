@@ -20,7 +20,7 @@ class LoginHistoryFactory extends Factory
         $loggedInAt = fake()->dateTimeBetween('-6 months', 'now');
 
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => null,
             'ip_address' => fake()->optional(0.95)->ipv4(),
             'user_agent' => fake()->optional(0.9)->userAgent(),
             'logged_in_at' => $loggedInAt,

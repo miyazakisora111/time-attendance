@@ -7,23 +7,26 @@ namespace Database\Factories;
 use App\Models\OvertimeRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Carbon\Carbon;
 
-/**
- * @extends Factory<OvertimeRequest>
- */
 class OvertimeRequestFactory extends Factory
 {
     protected $model = OvertimeRequest::class;
 
     public function definition(): array
     {
+        // ランダムに開始時間を生成
         $start = fake()->dateTimeBetween('-1 month', 'now');
+        $startCarbon = Carbon::instance($start);
+
+        // 開始時間から 1~5時間後を終了時間に設定
+        $endCarbon = (clone $startCarbon)->addHours(fake()->numberBetween(1, 5));
 
         return [
-            'user_id' => UserFactory::new(),
-            'work_date' => fake()->dateTimeBetween('-1 month', 'now')->format('Y-m-d'),
-            'start_time' => $start->format('H:i:s'),
-            'end_time' => fake()->dateTimeBetween($start, '+5 hours')->format('H:i:s'),
+            'user_id' => null,
+            'work_date' => $startCarbon->format('Y-m-d'),
+            'start_time' => $startCarbon->toDateTimeString(),
+            'end_time' => $endCarbon->toDateTimeString(),
             'status' => fake()->randomElement([
                 OvertimeRequest::STATUS_PENDING,
                 OvertimeRequest::STATUS_APPROVED,

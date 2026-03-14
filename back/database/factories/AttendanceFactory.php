@@ -20,7 +20,7 @@ class AttendanceFactory extends Factory
         $startDateTime = fake()->optional(0.95)->dateTimeBetween('-2 months', 'now');
 
         return [
-            'user_id' => UserFactory::new(),
+            'user_id' => null,
             'work_date' => fake()->dateTimeBetween('-2 months', 'now')->format('Y-m-d'),
             'start_time' => $startDateTime?->format('H:i:s'),
             'end_time' => $startDateTime === null

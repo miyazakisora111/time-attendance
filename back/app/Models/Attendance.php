@@ -7,9 +7,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Attendance extends Model
 {
+    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'attendances';
@@ -35,8 +37,8 @@ class Attendance extends Model
      */
     protected $casts = [
         'work_date' => 'date',
-        'start_time' => 'datetime:H:i:s',
-        'end_time' => 'datetime:H:i:s',
+        'start_time' => 'string',
+        'end_time' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',

@@ -19,6 +19,14 @@ final class OpenApiGeneratedRules
     }
 
     /**
+     * @return array<string, string>
+     */
+    public static function schemaAttributes(string $schema): array
+    {
+        return self::SCHEMA_ATTRIBUTES[$schema] ?? [];
+    }
+
+    /**
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
@@ -120,6 +128,111 @@ final class OpenApiGeneratedRules
             'errors' => ['sometimes', 'array'],
             'errors.*' => ['required', 'array'],
             'errors.*.*' => ['required', 'string'],
+        ],
+    ];
+
+    /**
+     * @var array<string, array<string, string>>
+     */
+    private const SCHEMA_ATTRIBUTES = [
+        'AttendanceClockInRequest' => [
+            'work_date' => 'work_date',
+            'start_time' => 'start_time',
+        ],
+        'AttendanceClockOutRequest' => [
+            'end_time' => 'end_time',
+        ],
+        'AttendanceResponse' => [
+            'user_id' => 'user_id',
+            'work_date' => 'work_date',
+            'start_time' => 'start_time',
+            'end_time' => 'end_time',
+        ],
+        'DashboardClockRequest' => [
+            'action' => 'action',
+        ],
+        'DashboardClockResponse' => [
+            'action' => 'action',
+            'timestamp' => 'timestamp',
+            'dashboard' => 'dashboard',
+            'dashboard.user' => 'user',
+            'dashboard.user.id' => 'id',
+            'dashboard.user.name' => 'name',
+            'dashboard.clockStatus' => 'clockStatus',
+            'dashboard.todayRecord' => 'todayRecord',
+            'dashboard.todayRecord.clockInTime' => 'clockInTime',
+            'dashboard.todayRecord.totalWorkedHours' => 'totalWorkedHours',
+            'dashboard.stats' => 'stats',
+            'dashboard.stats.totalHours' => 'totalHours',
+            'dashboard.stats.targetHours' => 'targetHours',
+            'dashboard.stats.workDays' => 'workDays',
+            'dashboard.stats.remainingDays' => 'remainingDays',
+            'dashboard.stats.avgHours' => 'avgHours',
+            'dashboard.stats.avgHoursDiff' => 'avgHoursDiff',
+            'dashboard.stats.overtimeHours' => 'overtimeHours',
+            'dashboard.stats.overtimeDiff' => 'overtimeDiff',
+            'dashboard.recentRecords' => 'recentRecords',
+            'dashboard.recentRecords.*' => 'recentRecords',
+            'dashboard.recentRecords.*.date' => 'date',
+            'dashboard.recentRecords.*.day' => 'day',
+            'dashboard.recentRecords.*.clockIn' => 'clockIn',
+            'dashboard.recentRecords.*.clockOut' => 'clockOut',
+            'dashboard.recentRecords.*.workHours' => 'workHours',
+            'dashboard.recentRecords.*.status' => 'status',
+            'dashboard.pendingOvertimeRequests' => 'pendingOvertimeRequests',
+        ],
+        'DashboardResponse' => [
+            'user' => 'user',
+            'user.id' => 'id',
+            'user.name' => 'name',
+            'clockStatus' => 'clockStatus',
+            'todayRecord' => 'todayRecord',
+            'todayRecord.clockInTime' => 'clockInTime',
+            'todayRecord.totalWorkedHours' => 'totalWorkedHours',
+            'stats' => 'stats',
+            'stats.totalHours' => 'totalHours',
+            'stats.targetHours' => 'targetHours',
+            'stats.workDays' => 'workDays',
+            'stats.remainingDays' => 'remainingDays',
+            'stats.avgHours' => 'avgHours',
+            'stats.avgHoursDiff' => 'avgHoursDiff',
+            'stats.overtimeHours' => 'overtimeHours',
+            'stats.overtimeDiff' => 'overtimeDiff',
+            'recentRecords' => 'recentRecords',
+            'recentRecords.*' => 'recentRecords',
+            'recentRecords.*.date' => 'date',
+            'recentRecords.*.day' => 'day',
+            'recentRecords.*.clockIn' => 'clockIn',
+            'recentRecords.*.clockOut' => 'clockOut',
+            'recentRecords.*.workHours' => 'workHours',
+            'recentRecords.*.status' => 'status',
+            'pendingOvertimeRequests' => 'pendingOvertimeRequests',
+        ],
+        'ErrorResponse' => [
+            'message' => 'message',
+        ],
+        'LoginRequest' => [
+            'email' => 'メールアドレス',
+            'password' => 'パスワード',
+        ],
+        'LoginResponse' => [
+            'token' => 'token',
+        ],
+        'UserResponse' => [
+            'user' => 'user',
+            'user.id' => 'id',
+            'user.name' => 'name',
+            'user.email' => 'メールアドレス',
+            'user.roles' => 'roles',
+            'user.roles.*' => 'roles',
+            'user.settings' => 'settings',
+            'user.settings.*' => 'settings',
+        ],
+        'ValidationErrorResponse' => [
+            'message' => 'message',
+            'errors' => 'errors',
+            'errors.*' => 'errors',
+            'errors.*.*' => 'errors',
         ],
     ];
 }

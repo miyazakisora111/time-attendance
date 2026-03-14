@@ -11,20 +11,16 @@ const rootDir = path.resolve(__dirname, '..');
 const bundleJsonPath = path.join(rootDir, 'openapi/build/bundle.json');
 const zodGeneratedPath = path.join(rootDir, 'front/src/api/__generated__/zod.ts');
 const frontOutputPath = path.join(rootDir, 'front/src/api/__generated__/zod.validation.ts');
+const labelOutputPath = path.join(rootDir, 'front/src/api/__generated__/field-labels.json');
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
 
-const LABEL_MAP = {
+const LABEL_OVERRIDES = {
   email: 'メールアドレス',
   password: 'パスワード',
 };
 
 const escapeSingleQuote = (value) => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 const escapeRegexForLaravel = (value) => value.replace(/\//g, '\\/');
-
-const fieldLabelFromPath = (pathParts) => {
-  const raw = pathParts[pathParts.length - 1] ?? '項目';
-  return LABEL_MAP[raw] ?? raw;
-};
 
 const readJson = async (filePath) => {
   const content = await fs.readFile(filePath, 'utf-8');
@@ -75,6 +71,52 @@ const createResolver = (schemas) => {
   return { resolveSchema };
 };
 
+const fieldKeyFromPath = (pathParts) => pathParts[pathParts.length - 1] ?? 'field';
+
+const buildLabelMap = (schemaNames, schemaMap, resolveSchema) => {
+  const labels = {};
+
+  const setLabel = (fieldKey, fieldSchema) => {
+    if (!fieldKey || labels[fieldKey]) {
+      return;
+    }
+
+    if (fieldSchema && typeof fieldSchema['x-label'] === 'string' && fieldSchema['x-label']) {
+      labels[fieldKey] = fieldSchema['x-label'];
+      return;
+    }
+
+    labels[fieldKey] = LABEL_OVERRIDES[fieldKey] ?? fieldKey;
+  };
+
+  const walk = (rawSchema, pathParts = []) => {
+    const schema = resolveSchema(rawSchema) ?? {};
+
+    if (schema && typeof schema === 'object' && schema.properties && typeof schema.properties === 'object') {
+      Object.entries(schema.properties).forEach(([propertyName, propertySchema]) => {
+        setLabel(propertyName, propertySchema);
+        walk(propertySchema, [...pathParts, propertyName]);
+      });
+      return;
+    }
+
+    if (schema && typeof schema === 'object' && schema.items) {
+      walk(schema.items, [...pathParts, 'item']);
+      return;
+    }
+
+    if (schema && typeof schema === 'object' && schema.additionalProperties && schema.additionalProperties !== true) {
+      walk(schema.additionalProperties, [...pathParts, 'value']);
+    }
+  };
+
+  schemaNames.forEach((schemaName) => {
+    walk(schemaMap[schemaName], [schemaName]);
+  });
+
+  return labels;
+};
+
 const createZodBuilder = (resolveSchema) => {
   const applyOptionalNullable = (expr, required, nullable) => {
     let next = expr;
@@ -91,7 +133,9 @@ const createZodBuilder = (resolveSchema) => {
   };
 
   const applyStringRules = (schema, required, pathParts) => {
-    const label = fieldLabelFromPath(pathParts);
+    const labelKey = fieldKeyFromPath(pathParts);
+    const labelRef = `labelOf(${JSON.stringify(labelKey)})`;
+    const labelTemplate = `\${${labelRef}}`;
     let expr = 'z.string().trim()';
 
     const minLength = typeof schema.minLength === 'number' ? schema.minLength : undefined;
@@ -101,32 +145,32 @@ const createZodBuilder = (resolveSchema) => {
 
     if (required) {
       if (format === 'password') {
-        expr += `.min(1, '${escapeSingleQuote(label)}は必須です。')`;
+        expr += `.min(1, \`${labelTemplate}は必須です。\`)`;
       } else {
         const min = Math.max(minLength ?? 0, 1);
-        expr += `.min(${min}, '${escapeSingleQuote(label)}は必須です。')`;
+        expr += `.min(${min}, \`${labelTemplate}は必須です。\`)`;
       }
     } else if (typeof minLength === 'number' && minLength > 0) {
-      expr += `.min(${minLength}, '${escapeSingleQuote(label)}は${minLength}文字以上で入力してください。')`;
+      expr += `.min(${minLength}, \`${labelTemplate}は${minLength}文字以上で入力してください。\`)`;
     }
 
     if (format === 'email') {
-      expr += `.email('${escapeSingleQuote(label)}の形式が正しくありません。')`;
+      expr += `.email(\`${labelTemplate}の形式が正しくありません。\`)`;
     }
 
     if (format === 'password') {
       const passwordMin = Math.max(minLength ?? 0, 8);
-      expr += `.min(${passwordMin}, '${escapeSingleQuote(label)}は${passwordMin}文字以上で入力してください。')`;
+      expr += `.min(${passwordMin}, \`${labelTemplate}は${passwordMin}文字以上で入力してください。\`)`;
       expr += ".regex(/[A-Za-z]/, 'パスワードに英字を1文字以上含めてください。')";
       expr += ".regex(/\\d/, 'パスワードに数字を1文字以上含めてください。')";
     }
 
     if (typeof maxLength === 'number') {
-      expr += `.max(${maxLength}, '${escapeSingleQuote(label)}は${maxLength}文字以内で入力してください。')`;
+      expr += `.max(${maxLength}, \`${labelTemplate}は${maxLength}文字以内で入力してください。\`)`;
     }
 
     if (pattern) {
-      expr += `.regex(new RegExp(${JSON.stringify(pattern)}), '${escapeSingleQuote(label)}の形式が正しくありません。')`;
+      expr += `.regex(new RegExp(${JSON.stringify(pattern)}), \`${labelTemplate}の形式が正しくありません。\`)`;
     }
 
     return expr;
@@ -363,10 +407,14 @@ const renderFrontFile = (schemaNames, schemas, toZodExpr) => {
   const lines = [];
 
   lines.push('// This file is auto-generated. Do not edit manually.');
-  lines.push('// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts');
+  lines.push('// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts + field-labels.json');
   lines.push('');
   lines.push("import { z } from 'zod';");
   lines.push("import { components as generatedComponents } from './zod';");
+  lines.push("import labelsJson from './field-labels.json';");
+  lines.push('');
+  lines.push('const labels = labelsJson as Record<string, string>;');
+  lines.push('const labelOf = (field: string): string => labels[field] ?? field;');
   lines.push('');
   lines.push('export const validationSchemas = {');
 
@@ -403,7 +451,13 @@ const renderFrontFile = (schemaNames, schemas, toZodExpr) => {
   return `${lines.join('\n')}`;
 };
 
-const renderBackFile = (schemaNames, schemaRuleMap) => {
+const fieldLabelFromRulePath = (pathKey, labels) => {
+  const segments = pathKey.split('.').filter((segment) => segment !== '*');
+  const field = segments[segments.length - 1] ?? pathKey;
+  return labels[field] ?? field;
+};
+
+const renderBackFile = (schemaNames, schemaRuleMap, labels) => {
   const lines = [];
 
   lines.push('<?php');
@@ -427,6 +481,14 @@ const renderBackFile = (schemaNames, schemaRuleMap) => {
   lines.push('    }');
   lines.push('');
   lines.push('    /**');
+  lines.push('     * @return array<string, string>');
+  lines.push('     */');
+  lines.push('    public static function schemaAttributes(string $schema): array');
+  lines.push('    {');
+  lines.push('        return self::SCHEMA_ATTRIBUTES[$schema] ?? [];');
+  lines.push('    }');
+  lines.push('');
+  lines.push('    /**');
   lines.push('     * @var array<string, array<string, array<int, string>>>');
   lines.push('     */');
   lines.push('    private const SCHEMA_RULES = [');
@@ -442,6 +504,23 @@ const renderBackFile = (schemaNames, schemaRuleMap) => {
   });
 
   lines.push('    ];');
+    lines.push('');
+    lines.push('    /**');
+    lines.push('     * @var array<string, array<string, string>>');
+    lines.push('     */');
+    lines.push('    private const SCHEMA_ATTRIBUTES = [');
+
+    schemaNames.forEach((schemaName) => {
+      lines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
+      const rules = schemaRuleMap[schemaName] ?? {};
+      Object.keys(rules).forEach((pathKey) => {
+        const label = fieldLabelFromRulePath(pathKey, labels);
+        lines.push(`            '${escapeSingleQuote(pathKey)}' => '${escapeSingleQuote(label)}',`);
+      });
+      lines.push('        ],');
+    });
+
+    lines.push('    ];');
   lines.push('}');
   lines.push('');
 
@@ -472,23 +551,28 @@ const main = async () => {
     .sort((a, b) => a.localeCompare(b));
 
   const schemaRuleMap = {};
+  const resolvedSchemas = Object.fromEntries(candidates.map((name) => [name, resolveSchema(schemas[name])]));
+  const labels = buildLabelMap(candidates, resolvedSchemas, resolveSchema);
 
   candidates.forEach((schemaName) => {
     const rules = {};
-    const schema = resolveSchema(schemas[schemaName]);
+    const schema = resolvedSchemas[schemaName];
     buildRules(schema, '', true, rules);
     schemaRuleMap[schemaName] = rules;
   });
 
-  const frontFile = renderFrontFile(candidates, Object.fromEntries(candidates.map((name) => [name, resolveSchema(schemas[name])])), toZodExpr);
-  const backFile = renderBackFile(candidates, schemaRuleMap);
+  const frontFile = renderFrontFile(candidates, resolvedSchemas, toZodExpr);
+  const backFile = renderBackFile(candidates, schemaRuleMap, labels);
 
   await ensureDir(frontOutputPath);
+  await ensureDir(labelOutputPath);
   await ensureDir(backOutputPath);
   await fs.writeFile(frontOutputPath, frontFile, 'utf-8');
+  await fs.writeFile(labelOutputPath, `${JSON.stringify(labels, null, 2)}\n`, 'utf-8');
   await fs.writeFile(backOutputPath, backFile, 'utf-8');
 
   console.log(`Generated: ${path.relative(rootDir, frontOutputPath)}`);
+  console.log(`Generated: ${path.relative(rootDir, labelOutputPath)}`);
   console.log(`Generated: ${path.relative(rootDir, backOutputPath)}`);
 };
 

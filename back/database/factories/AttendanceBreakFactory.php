@@ -20,7 +20,7 @@ class AttendanceBreakFactory extends Factory
         $breakStart = fake()->dateTimeBetween('-1 month', 'now');
 
         return [
-            'attendance_id' => AttendanceFactory::new(),
+            'attendance_id' => null,
             'break_start' => $breakStart->format('H:i:s'),
             'break_end' => fake()->optional(0.8)->dateTimeBetween($breakStart, '+90 minutes')?->format('H:i:s'),
         ];

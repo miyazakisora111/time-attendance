@@ -23,6 +23,16 @@ class LoginRequest extends BaseRequest
         return OpenApiGeneratedRules::schema('LoginRequest');
     }
 
+    /**
+     * バリデーション属性名を返す。
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return OpenApiGeneratedRules::schemaAttributes('LoginRequest');
+    }
+
     public function email(): Email
     {
         return new Email($this->validated('email'));
