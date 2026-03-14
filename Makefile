@@ -6,30 +6,27 @@ FRONT_DIR=front
 BACK_CONTAINER=app
 OPENAPI_DIR=openapi
 BUNDLE=$(OPENAPI_DIR)/build/bundle.yaml
-
-# Docker Compose 環境指定
 ENV ?= dev
 DOCKER_COMPOSE_BASE=docker-compose.base.yml
 DOCKER_COMPOSE_ENV=docker-compose.$(ENV).yml
-
 DC_CMD=docker-compose -f $(DOCKER_COMPOSE_BASE) -f $(DOCKER_COMPOSE_ENV)
 
 # --------------------------------
 # バックエンド
 # --------------------------------
-up-back:
+back-up:
 	$(DC_CMD) up -d
 
-down-back:
+back-down:
 	$(DC_CMD) down
 
-ps-back:
+back-ps:
 	$(DC_CMD) ps
 
-ssh-back:
+back-ssh:
 	$(DC_CMD) exec $(BACK_CONTAINER) sh
 
-optimize-back:
+back-optimize:
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:clear
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan route:clear
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan cache:clear
@@ -37,41 +34,36 @@ optimize-back:
 	$(DC_CMD) exec $(BACK_CONTAINER) composer dump-autoload
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:cache
 
-db-init:
-	@echo "==> DB作成チェック中..."
-	@$(DC_CMD) exec postgres bash -c 'psql -U $$POSTGRES_USER -lqt | cut -d \| -f 1 | grep -w $$DB_DATABASE || createdb -U $$POSTGRES_USER $$DB_DATABASE'
-	@echo "==> DB作成完了"
-
-refresh-back:
-	@$(DC_CMD) exec $(BACK_CONTAINER) php artisan migrate:fresh --seed
-
-test-back:
+back-test:
 	$(DC_CMD) exec $(BACK_CONTAINER) php artisan test --coverage --min=75.3
 
-phpcs-back:
+back-phpcs:
 	$(DC_CMD) exec $(BACK_CONTAINER) ./vendor/bin/phpcs --standard=phpcs.xml --colors -ps $(opt)
 
-phpcbf-back:
+back-phpcbf:
 	$(DC_CMD) exec $(BACK_CONTAINER) ./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php
 
 # --------------------------------
 # フロントエンド
 # --------------------------------
-install-front:
+front-install:
 	[ -d $(FRONT_DIR)/node_modules ] || npm install --prefix $(FRONT_DIR)
 
-up-front: install-front
+front-up: front-install
 	npm start --prefix $(FRONT_DIR)
 
-build-front:
+front-build:
 	npm run build --prefix $(FRONT_DIR)
 
-test-front:
+front-test:
 	npm test --prefix $(FRONT_DIR)
 
-lint-front:
+front-lint:
 	npm run lint --prefix $(FRONT_DIR)
 
+# --------------------------------
+# OpenAPI
+# --------------------------------
 openapi-bundle:
 	npx @redocly/cli bundle \
 	$(OPENAPI_DIR)/openapi.yaml \
@@ -86,6 +78,17 @@ openapi-zod: openapi-bundle
 	-o $(FRONT_DIR)/src/api/__generated__/zod.ts
 
 openapi: openapi-client openapi-zod
+
+# --------------------------------
+# DB
+# --------------------------------
+db-init:
+	@echo "==> DB作成チェック中..."
+	@$(DC_CMD) exec postgres bash -c 'psql -U $$POSTGRES_USER -lqt | cut -d \| -f 1 | grep -w $$DB_DATABASE || createdb -U $$POSTGRES_USER $$DB_DATABASE'
+	@echo "==> DB作成完了"
+
+db-refresh:
+	@$(DC_CMD) exec $(BACK_CONTAINER) php artisan migrate:fresh --seed
 
 # --------------------------------
 # 共通

@@ -35,7 +35,7 @@ return new class extends Migration
         });
 
         // テーブルコメント
-        DB::statement("ALTER TABLE roles COMMENT = '役職マスタ'");
+        DB::statement("COMMENT ON TABLE roles IS '役職マスタ'");
     }
 
     /**

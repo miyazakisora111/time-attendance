@@ -27,7 +27,7 @@ return new class extends Migration
                   ->cascadeOnDelete()
                   ->comment('ユーザーID');
 
-            $table->numeric('days', 4, 2)
+            $table->decimal('days', 4, 2)
                   ->comment('付与日数（例: 10.5日）');
 
             $table->date('granted_at')

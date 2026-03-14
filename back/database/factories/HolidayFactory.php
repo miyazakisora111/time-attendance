@@ -17,7 +17,7 @@ class HolidayFactory extends Factory
     public function definition(): array
     {
         return [
-            'holiday_date' => fake()->dateTimeBetween('now', '+1 year')->format('Y-m-d'),
+            'holiday_date' => fake()->dateTimeBetween('now', '+1 year')?->format('Y-m-d'),
             'name' => fake()->randomElement([
                 '元日',
                 '成人の日',

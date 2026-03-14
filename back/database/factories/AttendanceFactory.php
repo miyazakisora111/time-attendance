@@ -25,7 +25,7 @@ class AttendanceFactory extends Factory
             'start_time' => $startDateTime?->format('H:i:s'),
             'end_time' => $startDateTime === null
                 ? null
-                : fake()->optional(0.85)->dateTimeBetween($startDateTime, '+4 hours')->format('H:i:s'),
+                : fake()->optional(0.85)->dateTimeBetween($startDateTime, '+4 hours')?->format('H:i:s'),
         ];
     }
 
@@ -37,7 +37,7 @@ class AttendanceFactory extends Factory
     public function workingNow(): static
     {
         return $this->state(fn (): array => [
-            'start_time' => fake()->dateTimeBetween('-4 hours', '-30 minutes')->format('H:i:s'),
+            'start_time' => fake()->dateTimeBetween('-4 hours', '-30 minutes')?->format('H:i:s'),
             'end_time' => null,
         ]);
     }

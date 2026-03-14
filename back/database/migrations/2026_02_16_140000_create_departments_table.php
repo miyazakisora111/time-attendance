@@ -34,7 +34,7 @@ return new class extends Migration
         });
 
         // テーブルコメント
-        DB::statement("ALTER TABLE departments COMMENT = '部署マスタ'");
+        DB::statement("COMMENT ON TABLE departments IS '部署マスタ'");
     }
 
     /**

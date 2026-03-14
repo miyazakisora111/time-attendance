@@ -31,7 +31,7 @@ return new class extends Migration
                   ->comment('休暇日');
 
             // 半休・時間単位対応
-            $table->numeric('days', 4, 2)
+            $table->decimal('days', 4, 2)
                   ->default(1.00)
                   ->comment('取得日数（1, 0.5 など）');
 
