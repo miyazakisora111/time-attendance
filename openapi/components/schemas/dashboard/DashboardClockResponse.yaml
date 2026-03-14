@@ -1,0 +1,15 @@
+DashboardClockResponse:
+  type: object
+  required:
+    - action
+    - timestamp
+    - dashboard
+  properties:
+    action:
+      type: string
+      enum: [in, out, break_start, break_end]
+    timestamp:
+      type: string
+      format: date-time
+    dashboard:
+      $ref: "./DashboardResponse.yaml#/DashboardResponse"

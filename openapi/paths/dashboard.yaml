@@ -1,0 +1,45 @@
+dashboard:
+  get:
+    operationId: getDashboardApi
+    tags:
+      - Dashboard
+    summary: ダッシュボード集計取得
+    responses:
+      "200":
+        description: ダッシュボード情報
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/dashboard/DashboardResponse.yaml#/DashboardResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+dashboardClock:
+  post:
+    operationId: postDashboardClockApi
+    tags:
+      - Dashboard
+    summary: ダッシュボード打刻操作
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
+    responses:
+      "200":
+        description: 打刻成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/dashboard/DashboardClockResponse.yaml#/DashboardClockResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "409":
+        $ref: "../components/responses.yaml#/Conflict"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

@@ -27,6 +27,8 @@ tags:
     description: 勤怠に関するAPI
   - name: Auth
     description: 認証管理API
+  - name: Dashboard
+    description: ダッシュボードAPI
 paths:
   /login:
     post:
@@ -155,6 +157,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /dashboard:
+    get:
+      operationId: getDashboardApi
+      tags:
+        - Dashboard
+      summary: ダッシュボード集計取得
+      responses:
+        '200':
+          description: ダッシュボード情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /dashboard/clock:
+    post:
+      operationId: postDashboardClockApi
+      tags:
+        - Dashboard
+      summary: ダッシュボード打刻操作
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardClockRequest'
+      responses:
+        '200':
+          description: 打刻成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardClockResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '409':
@@ -329,3 +375,149 @@ components:
         end_time:
           type: string
           format: date-time
+    DashboardResponse:
+      type: object
+      required:
+        - user
+        - clockStatus
+        - todayRecord
+        - stats
+        - recentRecords
+        - pendingOvertimeRequests
+      properties:
+        user:
+          type: object
+          required:
+            - id
+            - name
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+        clockStatus:
+          type: string
+          enum:
+            - out
+            - in
+            - break
+        todayRecord:
+          type: object
+          required:
+            - clockInTime
+            - totalWorkedHours
+          properties:
+            clockInTime:
+              type: string
+              nullable: true
+              example: '09:00'
+            totalWorkedHours:
+              type: number
+              format: float
+              nullable: true
+              example: 5.5
+        stats:
+          type: object
+          required:
+            - totalHours
+            - targetHours
+            - workDays
+            - remainingDays
+            - avgHours
+            - avgHoursDiff
+            - overtimeHours
+            - overtimeDiff
+          properties:
+            totalHours:
+              type: number
+              format: float
+            targetHours:
+              type: number
+              format: float
+            workDays:
+              type: integer
+            remainingDays:
+              type: integer
+            avgHours:
+              type: number
+              format: float
+            avgHoursDiff:
+              type: number
+              format: float
+            overtimeHours:
+              type: number
+              format: float
+            overtimeDiff:
+              type: number
+              format: float
+        recentRecords:
+          type: array
+          items:
+            type: object
+            required:
+              - date
+              - day
+              - clockIn
+              - clockOut
+              - workHours
+              - status
+            properties:
+              date:
+                type: string
+                example: 2026/03/14
+              day:
+                type: string
+                example: 土
+              clockIn:
+                type: string
+                nullable: true
+                example: '09:00'
+              clockOut:
+                type: string
+                nullable: true
+                example: '18:00'
+              workHours:
+                type: number
+                format: float
+                nullable: true
+                example: 8
+              status:
+                type: string
+                enum:
+                  - 通常
+                  - 残業
+                  - 休日
+        pendingOvertimeRequests:
+          type: integer
+    DashboardClockRequest:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum:
+            - in
+            - out
+            - break_start
+            - break_end
+    DashboardClockResponse:
+      type: object
+      required:
+        - action
+        - timestamp
+        - dashboard
+      properties:
+        action:
+          type: string
+          enum:
+            - in
+            - out
+            - break_start
+            - break_end
+        timestamp:
+          type: string
+          format: date-time
+        dashboard:
+          $ref: '#/components/schemas/DashboardResponse'

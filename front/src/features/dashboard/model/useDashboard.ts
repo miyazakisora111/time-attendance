@@ -1,27 +1,40 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAttendance } from "@/api/__generated__/attendance/attendance"; 
-import { fetchDashboardStats, fetchAttendanceRecords, clockInOut } from "@/features/dashboard/api/dashboardApi";
+import {
+  fetchDashboard,
+  clockInOut,
+} from "@/features/dashboard/api/dashboardApi";
 
 export const dashboardQueryKeys = {
   all: ["dashboard"] as const,
+  data: () => [...dashboardQueryKeys.all, "data"] as const,
   stats: () => [...dashboardQueryKeys.all, "stats"] as const,
   recentRecords: () => [...dashboardQueryKeys.all, "recentRecords"] as const,
 };
 
-export function useDashboardStats() {
+export function useDashboardData() {
   return useQuery({
-    queryKey: dashboardQueryKeys.stats(),
-    queryFn: fetchDashboardStats,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    queryKey: dashboardQueryKeys.data(),
+    queryFn: fetchDashboard,
+    staleTime: 1000 * 60,
   });
 }
 
+export function useDashboardStats() {
+  const query = useDashboardData();
+
+  return {
+    ...query,
+    data: query.data?.stats,
+  };
+}
+
 export function useRecentRecords() {
-  return useQuery({
-    queryKey: dashboardQueryKeys.recentRecords(),
-    queryFn: fetchAttendanceRecords,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  const query = useDashboardData();
+
+  return {
+    ...query,
+    data: query.data?.recentRecords,
+  };
 }
 
 export function useClockInOut() {
@@ -29,9 +42,10 @@ export function useClockInOut() {
 
   return useMutation({
     mutationFn: clockInOut,
-    onSuccess: () => {
-      // Invalidate both stats and recent records to refresh the data
+    onSuccess: (result) => {
+      queryClient.setQueryData(dashboardQueryKeys.data(), result.dashboard);
       queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all });
     },
   });
 }
+

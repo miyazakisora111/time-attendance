@@ -26,6 +26,8 @@ tags:
     description: 勤怠に関するAPI
   - name: Auth
     description: 認証管理API
+  - name: Dashboard
+    description: ダッシュボードAPI
 
 paths:
   /login:
@@ -40,6 +42,10 @@ paths:
     $ref: './paths/attendance.yaml#/clockIn'
   /attendances/clock-out:
     $ref: './paths/attendance.yaml#/clockOut'
+  /dashboard:
+    $ref: './paths/dashboard.yaml#/dashboard'
+  /dashboard/clock:
+    $ref: './paths/dashboard.yaml#/dashboardClock'
 
 components:
   responses:

@@ -89,9 +89,3 @@ db-init:
 
 db-refresh:
 	@$(DC_CMD) exec $(BACK_CONTAINER) php artisan migrate:fresh --seed
-
-# --------------------------------
-# 共通
-# --------------------------------
-.PHONY: up-back down-back ps-back ssh-back optimize-back refresh-back test-back phpcs-back phpcbf-back \
-        install-front up-front build-front test-front lint-front openapi-lint openapi-bundle openapi-gen openapi-build

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Attendance\CalendarController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dashboard\DashboardController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -22,6 +23,8 @@ Route::prefix('auth')->group(function () {
 Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
 Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
 Route::get('/today', [AttendanceController::class, 'today']);
+Route::get('/dashboard', [DashboardController::class, 'show']);
+Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {

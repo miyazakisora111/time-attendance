@@ -6,15 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export * from "@/api/__generated__/model/attendance";
-export * from "@/api/__generated__/model/conflictResponse";
-export * from "@/api/__generated__/model/errorResponse";
-export * from "@/api/__generated__/model/loginRequest";
-export * from "@/api/__generated__/model/loginResponse";
-export * from "@/api/__generated__/model/serverErrorResponse";
-export * from "@/api/__generated__/model/unauthorizedResponse";
-export * from "@/api/__generated__/model/validationErrorResponse";
-export * from "@/api/__generated__/model/validationErrorResponseErrors";
 export * from "./attendanceClockInRequest";
 export * from "./attendanceClockOutRequest";
 export * from "./attendanceResponse";
@@ -32,3 +23,23 @@ export * from "./userResponseUser";
 export * from "./userResponseUserSettings";
 export * from "./validationErrorResponse";
 export * from "./validationErrorResponseErrors";
+export * from "@/api/__generated__/model/attendance";
+export * from "@/api/__generated__/model/conflictResponse";
+export * from "@/api/__generated__/model/errorResponse";
+export * from "@/api/__generated__/model/loginRequest";
+export * from "@/api/__generated__/model/loginResponse";
+export * from "@/api/__generated__/model/serverErrorResponse";
+export * from "@/api/__generated__/model/unauthorizedResponse";
+export * from "@/api/__generated__/model/validationErrorResponse";
+export * from "@/api/__generated__/model/validationErrorResponseErrors";
+export * from "./dashboardClockRequest";
+export * from "./dashboardClockRequestAction";
+export * from "./dashboardClockResponse";
+export * from "./dashboardClockResponseAction";
+export * from "./dashboardResponse";
+export * from "./dashboardResponseClockStatus";
+export * from "./dashboardResponseRecentRecordsItem";
+export * from "./dashboardResponseRecentRecordsItemStatus";
+export * from "./dashboardResponseStats";
+export * from "./dashboardResponseTodayRecord";
+export * from "./dashboardResponseUser";
