@@ -1,0 +1,17 @@
+teamMembers:
+  get:
+    operationId: getTeamMembersApi
+    tags:
+      - Team
+    summary: チームメンバー一覧取得
+    responses:
+      '200':
+        description: チームメンバー一覧
+        content:
+          application/json:
+            schema:
+              $ref: '../components/schemas/team/TeamMembersResponse.yaml#/TeamMembersResponse'
+      '401':
+        $ref: '../components/responses.yaml#/Unauthorized'
+      '500':
+        $ref: '../components/responses.yaml#/InternalServerError'

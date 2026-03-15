@@ -1,30 +1,45 @@
 import { QueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
+import { HttpStatusCode, QUERY_CONFIG } from '@/config/api';
 
+/**
+ * AxiosError 判定の型ガード。
+ */
 function isAxiosError(error: unknown): error is AxiosError {
   return (error as AxiosError)?.isAxiosError === true;
 }
 
+/**
+ * アプリ共通 QueryClient を生成する。
+ */
 export function createQueryClient(): QueryClient {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60 * 5, // 5分
+        staleTime: QUERY_CONFIG.defaultStaleTimeMs,
         retry: (failureCount: number, error: unknown) => {
 
           // Axios でないエラーはリトライ
-          if (!isAxiosError(error)) return failureCount < 3;
+          if (!isAxiosError(error)) return failureCount < QUERY_CONFIG.maxNetworkRetryCount;
 
           // ネットワークエラー
-          if (!error.response) return failureCount < 3;
+          if (!error.response) return failureCount < QUERY_CONFIG.maxNetworkRetryCount;
 
           // 4xx はリトライなし
-          if (error.response.status >= 400 && error.response.status < 500) return false;
+          if (
+            error.response.status >= HttpStatusCode.ClientErrorMin &&
+            error.response.status <= HttpStatusCode.ClientErrorMax
+          ) {
+            return false;
+          }
 
           // 5xx は最大3回
-          return failureCount < 3;
+          return failureCount < QUERY_CONFIG.maxServerRetryCount;
         },
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+        retryDelay: (attemptIndex) => Math.min(
+          QUERY_CONFIG.retryDelayBaseMs * 2 ** attemptIndex,
+          QUERY_CONFIG.retryDelayMaxMs,
+        ),
         refetchOnWindowFocus: false,
         refetchOnReconnect: true,
         refetchOnMount: false,

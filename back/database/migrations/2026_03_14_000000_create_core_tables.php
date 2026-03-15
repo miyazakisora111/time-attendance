@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('roles', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('役職ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('役職ID');
             $table->string('name', 50)->comment('役職名');
             $table->unsignedInteger('sort_order')->default(0)->comment('表示順');
             $table->string('status', 20)->default('active')->comment('状態（active / inactive）');
@@ -23,7 +23,7 @@ return new class extends Migration
         });
 
         Schema::create('departments', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('部署ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('部署ID');
             $table->string('name', 100)->comment('部署名');
             $table->unsignedInteger('sort_order')->default(0)->comment('表示順');
             $table->timestampsTz();
@@ -33,7 +33,7 @@ return new class extends Migration
         });
 
         Schema::create('users', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザーID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザーID');
             $table->foreignUuid('department_id')->nullable()->constrained('departments')->nullOnDelete()->comment('部署ID');
             $table->foreignUuid('role_id')->nullable()->constrained('roles')->nullOnDelete()->comment('役職ID');
             $table->string('name', 100)->comment('氏名');
@@ -52,7 +52,7 @@ return new class extends Migration
         });
 
         Schema::create('login_histories', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ログイン履歴ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ログイン履歴ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->ipAddress('ip_address')->nullable()->comment('IPアドレス');
             $table->text('user_agent')->nullable()->comment('ユーザーエージェント');
@@ -64,7 +64,7 @@ return new class extends Migration
         });
 
         Schema::create('user_notification_settings', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザー通知設定ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザー通知設定ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->boolean('clock_in_reminder')->default(true)->comment('打刻忘れ通知');
             $table->boolean('approval_notification')->default(true)->comment('承認通知');
@@ -74,7 +74,7 @@ return new class extends Migration
         });
 
         Schema::create('user_settings', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザー設定ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザー設定ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->string('theme', 20)->default('light')->comment('テーマ設定');
             $table->string('language', 10)->default('ja')->comment('言語設定');
@@ -83,7 +83,7 @@ return new class extends Migration
         });
 
         Schema::create('attendances', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('勤怠ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('勤怠ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->date('work_date')->comment('勤務日');
             $table->time('start_time')->nullable()->comment('出勤時刻');
@@ -95,7 +95,7 @@ return new class extends Migration
         });
 
         Schema::create('attendance_breaks', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('休憩ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('休憩ID');
             $table->foreignUuid('attendance_id')->constrained('attendances')->cascadeOnDelete()->comment('勤怠ID');
             $table->time('break_start')->comment('休憩開始時刻');
             $table->time('break_end')->nullable()->comment('休憩終了時刻');
@@ -105,7 +105,7 @@ return new class extends Migration
         });
 
         Schema::create('paid_leave_grants', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('有給付与ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('有給付与ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->decimal('days', 4, 2)->comment('付与日数');
             $table->date('granted_at')->comment('付与日');
@@ -116,7 +116,7 @@ return new class extends Migration
         });
 
         Schema::create('paid_leave_requests', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('有給申請ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('有給申請ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->date('leave_date')->comment('休暇日');
             $table->decimal('days', 4, 2)->default(1.00)->comment('取得日数');
@@ -129,7 +129,7 @@ return new class extends Migration
         });
 
         Schema::create('overtime_requests', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('残業申請ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('残業申請ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->date('work_date')->comment('対象勤務日');
             $table->timestampTz('start_time')->comment('残業開始日時');
@@ -142,7 +142,7 @@ return new class extends Migration
         });
 
         Schema::create('holidays', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('祝日ID（UUID）');
+            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('祝日ID');
             $table->date('holiday_date')->comment('祝日の日付');
             $table->string('name', 50)->comment('祝日名');
             $table->timestampsTz();

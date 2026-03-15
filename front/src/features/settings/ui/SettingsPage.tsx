@@ -1,10 +1,13 @@
 import React from 'react';
 import { Container } from '@/shared/components';
+import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { SettingsPresenter } from '@/features/settings/ui/SettingsPresenter';
 
 const SettingsPage: React.FC = () => {
-  const { 
+  const {
+    isLoading,
+    isSaving,
     activeSection, setActiveSection, 
     theme, setTheme, 
     language, setLanguage, 
@@ -13,15 +16,17 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container size="full">
-      <SettingsPresenter
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-        theme={theme}
-        setTheme={setTheme}
-        language={language}
-        setLanguage={setLanguage}
-        handleSave={handleSave}
-      />
+      <DataStateWrapper isLoading={isLoading}>
+        <SettingsPresenter
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+          theme={theme}
+          setTheme={setTheme}
+          language={language}
+          setLanguage={setLanguage}
+          handleSave={isSaving ? () => undefined : handleSave}
+        />
+      </DataStateWrapper>
     </Container>
   );
 };

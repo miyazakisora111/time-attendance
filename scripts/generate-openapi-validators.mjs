@@ -3,6 +3,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import YAML from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +14,8 @@ const zodGeneratedPath = path.join(rootDir, 'front/src/api/__generated__/zod.ts'
 const frontOutputPath = path.join(rootDir, 'front/src/api/__generated__/zod.validation.ts');
 const labelOutputPath = path.join(rootDir, 'front/src/api/__generated__/field-labels.json');
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
+const fieldsPath = path.join(rootDir, 'schema/fields.yaml');
+const mismatchOutputPath = path.join(rootDir, 'schema/field-mismatches.json');
 
 const LABEL_OVERRIDES = {
   email: 'メールアドレス',
@@ -25,6 +28,63 @@ const escapeRegexForLaravel = (value) => value.replace(/\//g, '\\/');
 const readJson = async (filePath) => {
   const content = await fs.readFile(filePath, 'utf-8');
   return JSON.parse(content);
+};
+
+const readYaml = async (filePath) => {
+  const content = await fs.readFile(filePath, 'utf-8');
+  return YAML.parse(content) ?? {};
+};
+
+const normalizeFieldType = (type) => {
+  switch (type) {
+    case 'uuid':
+    case 'email':
+    case 'password':
+    case 'time':
+    case 'date':
+    case 'datetime':
+    case 'timezone':
+    case 'text':
+    case 'enum':
+      return 'string';
+    case 'integer':
+      return 'integer';
+    case 'number':
+      return 'number';
+    case 'boolean':
+      return 'boolean';
+    case 'array':
+      return 'array';
+    case 'object':
+      return 'object';
+    default:
+      return 'string';
+  }
+};
+
+const buildFieldSpecMap = (fieldsDoc) => {
+  const byKey = {};
+
+  Object.values(fieldsDoc ?? {}).forEach((group) => {
+    if (!group || typeof group !== 'object') {
+      return;
+    }
+
+    Object.entries(group).forEach(([fieldKey, spec]) => {
+      if (!spec || typeof spec !== 'object') {
+        return;
+      }
+
+      byKey[fieldKey] = {
+        type: typeof spec.type === 'string' ? spec.type : undefined,
+        label: typeof spec.label === 'string' ? spec.label : undefined,
+        required: typeof spec.required === 'boolean' ? spec.required : undefined,
+        description: typeof spec.description === 'string' ? spec.description : undefined,
+      };
+    });
+  });
+
+  return byKey;
 };
 
 const getRefName = (ref) => ref.split('/').at(-1) ?? '';
@@ -73,11 +133,16 @@ const createResolver = (schemas) => {
 
 const fieldKeyFromPath = (pathParts) => pathParts[pathParts.length - 1] ?? 'field';
 
-const buildLabelMap = (schemaNames, schemaMap, resolveSchema) => {
+const buildLabelMap = (schemaNames, schemaMap, resolveSchema, fieldSpecsByKey) => {
   const labels = {};
 
   const setLabel = (fieldKey, fieldSchema) => {
     if (!fieldKey || labels[fieldKey]) {
+      return;
+    }
+
+    if (fieldSpecsByKey[fieldKey]?.label) {
+      labels[fieldKey] = fieldSpecsByKey[fieldKey].label;
       return;
     }
 
@@ -266,7 +331,7 @@ const createZodBuilder = (resolveSchema) => {
   return { toZodExpr };
 };
 
-const createLaravelBuilder = (resolveSchema) => {
+const createLaravelBuilder = (resolveSchema, fieldSpecsByKey) => {
   const uniquePush = (list, value) => {
     if (!list.includes(value)) {
       list.push(value);
@@ -315,11 +380,22 @@ const createLaravelBuilder = (resolveSchema) => {
     }
   };
 
+  const fieldSpecForPath = (pathKey) => {
+    const segments = pathKey.split('.').filter((segment) => segment !== '*');
+    const key = segments[segments.length - 1] ?? '';
+    return fieldSpecsByKey[key] ?? null;
+  };
+
   const buildRules = (rawSchema, pathKey, required, rules) => {
     const schema = resolveSchema(rawSchema) ?? {};
+    const fieldSpec = pathKey ? fieldSpecForPath(pathKey) : null;
+    const effectiveRequired = typeof fieldSpec?.required === 'boolean' ? fieldSpec.required : required;
+    const effectiveType = typeof schema.type === 'string'
+      ? schema.type
+      : (fieldSpec?.type ? normalizeFieldType(fieldSpec.type) : undefined);
 
     if (pathKey) {
-      addPresenceRules(rules, pathKey, required, Boolean(schema.nullable));
+      addPresenceRules(rules, pathKey, effectiveRequired, Boolean(schema.nullable));
     }
 
     if (Array.isArray(schema.enum) && schema.enum.length > 0) {
@@ -330,7 +406,7 @@ const createLaravelBuilder = (resolveSchema) => {
       return;
     }
 
-    const type = schema.type;
+    const type = effectiveType;
 
     if (type === 'object' || schema.properties || schema.additionalProperties) {
       if (pathKey) {
@@ -378,6 +454,23 @@ const createLaravelBuilder = (resolveSchema) => {
 
     if (type === 'string' && pathKey) {
       addStringRule(rules, pathKey, schema);
+
+      if (fieldSpec?.type === 'date') {
+        addRule(rules, pathKey, 'date_format:Y-m-d');
+      }
+
+      if (fieldSpec?.type === 'time') {
+        addRule(rules, pathKey, 'date_format:H:i');
+      }
+
+      if (fieldSpec?.type === 'datetime') {
+        addRule(rules, pathKey, 'date');
+      }
+
+      if (fieldSpec?.type === 'timezone') {
+        addRule(rules, pathKey, 'timezone:all');
+      }
+
       return;
     }
 
@@ -531,16 +624,68 @@ const ensureDir = async (targetPath) => {
   await fs.mkdir(path.dirname(targetPath), { recursive: true });
 };
 
+const buildMismatchReport = (schemaNames, schemas, fieldSpecsByKey) => {
+  const mismatches = [];
+
+  schemaNames.forEach((schemaName) => {
+    const schema = schemas[schemaName];
+    if (!schema || typeof schema !== 'object' || !schema.properties || typeof schema.properties !== 'object') {
+      return;
+    }
+
+    const requiredSet = new Set(Array.isArray(schema.required) ? schema.required : []);
+
+    Object.entries(schema.properties).forEach(([fieldName, fieldSchema]) => {
+      const spec = fieldSpecsByKey[fieldName];
+      if (!spec) {
+        mismatches.push({
+          schema: schemaName,
+          field: fieldName,
+          issue: 'missing_in_fields_yaml',
+        });
+        return;
+      }
+
+      const openapiType = typeof fieldSchema?.type === 'string' ? fieldSchema.type : 'object';
+      const fieldsType = spec.type ? normalizeFieldType(spec.type) : 'string';
+
+      if (openapiType !== fieldsType && !(fieldsType === 'string' && Array.isArray(fieldSchema?.enum))) {
+        mismatches.push({
+          schema: schemaName,
+          field: fieldName,
+          issue: 'type_mismatch',
+          openapiType,
+          fieldsType,
+        });
+      }
+
+      if (typeof spec.required === 'boolean' && requiredSet.has(fieldName) !== spec.required) {
+        mismatches.push({
+          schema: schemaName,
+          field: fieldName,
+          issue: 'required_mismatch',
+          openapiRequired: requiredSet.has(fieldName),
+          fieldsRequired: spec.required,
+        });
+      }
+    });
+  });
+
+  return mismatches;
+};
+
 const main = async () => {
   const bundle = await readJson(bundleJsonPath);
+  const fieldsDoc = await readYaml(fieldsPath);
   const schemas = bundle?.components?.schemas ?? {};
+  const fieldSpecsByKey = buildFieldSpecMap(fieldsDoc);
 
   const zodFile = await fs.readFile(zodGeneratedPath, 'utf-8');
   const exportedZodSchemaNames = Array.from(zodFile.matchAll(/export const (\w+)\s*=/g)).map((match) => match[1]);
 
   const { resolveSchema } = createResolver(schemas);
   const { toZodExpr } = createZodBuilder(resolveSchema);
-  const { buildRules } = createLaravelBuilder(resolveSchema);
+  const { buildRules } = createLaravelBuilder(resolveSchema, fieldSpecsByKey);
 
   const candidates = Object.keys(schemas)
     .filter((name) => exportedZodSchemaNames.includes(name))
@@ -552,7 +697,7 @@ const main = async () => {
 
   const schemaRuleMap = {};
   const resolvedSchemas = Object.fromEntries(candidates.map((name) => [name, resolveSchema(schemas[name])]));
-  const labels = buildLabelMap(candidates, resolvedSchemas, resolveSchema);
+  const labels = buildLabelMap(candidates, resolvedSchemas, resolveSchema, fieldSpecsByKey);
 
   candidates.forEach((schemaName) => {
     const rules = {};
@@ -563,17 +708,21 @@ const main = async () => {
 
   const frontFile = renderFrontFile(candidates, resolvedSchemas, toZodExpr);
   const backFile = renderBackFile(candidates, schemaRuleMap, labels);
+  const mismatches = buildMismatchReport(candidates, resolvedSchemas, fieldSpecsByKey);
 
   await ensureDir(frontOutputPath);
   await ensureDir(labelOutputPath);
   await ensureDir(backOutputPath);
+  await ensureDir(mismatchOutputPath);
   await fs.writeFile(frontOutputPath, frontFile, 'utf-8');
   await fs.writeFile(labelOutputPath, `${JSON.stringify(labels, null, 2)}\n`, 'utf-8');
   await fs.writeFile(backOutputPath, backFile, 'utf-8');
+  await fs.writeFile(mismatchOutputPath, `${JSON.stringify(mismatches, null, 2)}\n`, 'utf-8');
 
   console.log(`Generated: ${path.relative(rootDir, frontOutputPath)}`);
   console.log(`Generated: ${path.relative(rootDir, labelOutputPath)}`);
   console.log(`Generated: ${path.relative(rootDir, backOutputPath)}`);
+  console.log(`Generated: ${path.relative(rootDir, mismatchOutputPath)}`);
 };
 
 main().catch((error) => {

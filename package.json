@@ -4,9 +4,10 @@
     "version": "1.0.0",
     "type": "module",
     "scripts": {
+        "generate:api": "npm run openapi:generate",
         "openapi:bundle": "npx @redocly/cli bundle ./openapi/openapi.yaml -o ./openapi/build/bundle.yaml && npx @redocly/cli bundle ./openapi/openapi.yaml --dereferenced --ext json -o ./openapi/build/bundle.json",
         "openapi:client": "npx --prefix ./front orval",
-        "openapi:zod": "npx --prefix ./front openapi-zod ./openapi/build/bundle.yaml -o ./front/src/api/__generated__/zod.ts",
+        "openapi:zod": "npx --prefix ./front openapi-zod ./openapi/build/bundle.yaml -o ./front/src/api/__generated__/zod.ts && node ./scripts/fix-openapi-zod.mjs",
         "openapi:validators": "node ./scripts/generate-openapi-validators.mjs && npx prettier --write ./front/src/api/__generated__/zod.validation.ts",
         "openapi:generate": "npm run openapi:bundle && npm run openapi:zod && npm run openapi:client && npm run openapi:validators"
     },

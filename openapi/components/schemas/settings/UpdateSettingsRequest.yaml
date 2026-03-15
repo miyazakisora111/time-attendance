@@ -1,0 +1,13 @@
+UpdateSettingsRequest:
+  type: object
+  required:
+    - theme
+    - language
+  properties:
+    theme:
+      type: string
+      enum: [light, dark, system]
+    language:
+      type: string
+      minLength: 1
+      maxLength: 32

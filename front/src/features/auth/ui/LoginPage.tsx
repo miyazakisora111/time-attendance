@@ -7,7 +7,9 @@ import { Card } from "@/shared/components";
 import { Container } from "@/shared/components/Container";
 import { Typography } from "@/shared/components/Typography";
 
-// 既にログイン時にリダイレクト
+/**
+ * ログイン済みユーザーをダッシュボードへリダイレクトする。
+ */
 const useRedirect = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
@@ -19,6 +21,9 @@ const useRedirect = () => {
   }, [isAuthenticated, navigate]);
 };
 
+/**
+ * ログイン画面。
+ */
 export function LoginPage() {
   useRedirect();
 

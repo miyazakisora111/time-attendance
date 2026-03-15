@@ -1,0 +1,314 @@
+attendance:
+  id:
+    type: uuid
+    label: 勤怠ID
+    required: true
+    description: 勤怠レコード識別子
+  user_id:
+    type: uuid
+    label: ユーザーID
+    required: true
+    description: 勤怠対象ユーザー
+  work_date:
+    type: date
+    label: 勤務日
+    required: true
+    description: 勤務対象日
+  start_time:
+    type: time
+    label: 出勤時刻
+    required: false
+    description: 旧互換の出勤時刻
+  end_time:
+    type: time
+    label: 退勤時刻
+    required: false
+    description: 旧互換の退勤時刻
+  clock_in_at:
+    type: datetime
+    label: 出勤日時
+    required: false
+    description: タイムゾーン付きの出勤日時
+  clock_out_at:
+    type: datetime
+    label: 退勤日時
+    required: false
+    description: タイムゾーン付きの退勤日時
+  clock_in_local_time:
+    type: time
+    label: 出勤時間
+    required: false
+    description: ローカル時刻表示の出勤時間
+  clock_out_local_time:
+    type: time
+    label: 退勤時間
+    required: false
+    description: ローカル時刻表示の退勤時間
+  clock_out_next_day:
+    type: boolean
+    label: 翌日退勤フラグ
+    required: false
+    description: 退勤が翌日に跨るかどうか
+  work_timezone:
+    type: timezone
+    label: 勤務タイムゾーン
+    required: true
+    description: IANA タイムゾーン
+  break_minutes:
+    type: integer
+    label: 休憩分数
+    required: false
+    description: 勤務中の休憩分数
+  worked_minutes:
+    type: integer
+    label: 実働分数
+    required: false
+    description: 計算済み実働分
+  note:
+    type: text
+    label: 備考
+    required: false
+    description: 管理用メモ
+
+attendance_break:
+  id:
+    type: uuid
+    label: 休憩ID
+    required: true
+    description: 休憩レコード識別子
+  attendance_id:
+    type: uuid
+    label: 勤怠ID
+    required: true
+    description: 紐付く勤怠レコード
+  break_start:
+    type: time
+    label: 休憩開始時刻
+    required: true
+    description: 休憩開始時刻
+  break_end:
+    type: time
+    label: 休憩終了時刻
+    required: false
+    description: 休憩終了時刻
+
+user:
+  id:
+    type: uuid
+    label: ユーザーID
+    required: true
+    description: ユーザー識別子
+  department_id:
+    type: uuid
+    label: 部署ID
+    required: false
+    description: 所属部署
+  role_id:
+    type: uuid
+    label: 役職ID
+    required: false
+    description: 権限ロール
+  name:
+    type: string
+    label: 氏名
+    required: true
+    description: ユーザー表示名
+  sort_order:
+    type: integer
+    label: 表示順
+    required: false
+    description: 一覧表示順
+  email:
+    type: email
+    label: メールアドレス
+    required: true
+    description: ログインメール
+  password:
+    type: password
+    label: パスワード
+    required: true
+    description: ログインパスワード
+  status:
+    type: integer
+    label: 状態
+    required: true
+    description: 有効/無効ステータス
+  roles:
+    type: array
+    label: ロール一覧
+    required: true
+    description: ユーザーの権限ロール
+  settings:
+    type: object
+    label: ユーザー設定
+    required: false
+    description: ユーザー個別設定
+
+user_settings:
+  theme:
+    type: enum
+    label: テーマ設定
+    required: true
+    description: light/dark/system
+  language:
+    type: string
+    label: 言語設定
+    required: true
+    description: 表示言語
+
+user_notification_settings:
+  clock_in_reminder:
+    type: boolean
+    label: 打刻忘れ通知
+    required: true
+    description: 打刻忘れ通知の有効フラグ
+  approval_notification:
+    type: boolean
+    label: 承認通知
+    required: true
+    description: 承認通知の有効フラグ
+  leave_reminder:
+    type: boolean
+    label: 休暇リマインド通知
+    required: true
+    description: 休暇通知の有効フラグ
+
+auth:
+  token:
+    type: string
+    label: 認証トークン
+    required: false
+    description: JWT トークン
+  token_type:
+    type: string
+    label: トークン種別
+    required: false
+    description: Bearer など
+  expires_in:
+    type: integer
+    label: 有効期限秒数
+    required: false
+    description: JWT 期限
+
+dashboard:
+  clockStatus:
+    type: enum
+    label: 打刻状態
+    required: true
+    description: out/in/break
+  totalHours:
+    type: number
+    label: 総勤務時間
+    required: true
+    description: 当月勤務時間
+  targetHours:
+    type: number
+    label: 目標勤務時間
+    required: true
+    description: 目標値
+  workDays:
+    type: integer
+    label: 勤務日数
+    required: true
+    description: 出勤日数
+  remainingDays:
+    type: integer
+    label: 残り日数
+    required: true
+    description: 予定勤務残日数
+  avgHours:
+    type: number
+    label: 平均勤務時間
+    required: true
+    description: 平均値
+  avgHoursDiff:
+    type: number
+    label: 平均差分
+    required: true
+    description: 目標との差分
+  overtimeHours:
+    type: number
+    label: 残業時間
+    required: true
+    description: 当月残業
+  overtimeDiff:
+    type: number
+    label: 残業差分
+    required: true
+    description: 想定との差分
+  recentRecords:
+    type: array
+    label: 直近勤怠
+    required: true
+    description: 直近の勤怠一覧
+  pendingOvertimeRequests:
+    type: integer
+    label: 未処理残業申請数
+    required: true
+    description: 承認待ち件数
+  action:
+    type: enum
+    label: 打刻アクション
+    required: true
+    description: in/out/break_start/break_end
+
+team:
+  members:
+    type: array
+    label: メンバー一覧
+    required: true
+    description: チームメンバー配列
+  role:
+    type: string
+    label: 役職
+    required: true
+    description: ユーザー役職
+  department:
+    type: string
+    label: 部署
+    required: true
+    description: 所属部署
+  clockInTime:
+    type: time
+    label: 出勤時刻
+    required: false
+    description: 当日の出勤時刻
+
+schedule:
+  year:
+    type: integer
+    label: 年
+    required: true
+    description: カレンダー対象年
+  month:
+    type: integer
+    label: 月
+    required: true
+    description: カレンダー対象月
+  date:
+    type: date
+    label: 日付
+    required: true
+    description: カレンダー日付
+
+common:
+  success:
+    type: boolean
+    label: 成功フラグ
+    required: true
+    description: API 成否
+  message:
+    type: string
+    label: メッセージ
+    required: false
+    description: 応答メッセージ
+  data:
+    type: object
+    label: データ
+    required: false
+    description: 応答データ
+  errors:
+    type: object
+    label: エラー詳細
+    required: false
+    description: バリデーションエラー情報

@@ -1,37 +1,82 @@
-import { useState } from 'react';
-import type { TeamMember } from '@/domain/enums/team';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getTeam } from '@/api/__generated__/team/team';
+import type { TeamMember as ApiTeamMember } from '@/api/__generated__/model';
+import { MEMBER_STATUS, type MemberStatus, type TeamMember } from '@/domain/enums/team';
+import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
 
-const MOCK_TEAM: TeamMember[] = [
-  { id: '1', name: '佐藤 花子', role: 'マネージャー', department: '営業部', status: 'working', clockInTime: '08:52', email: 'h.sato@example.com' },
-  { id: '2', name: '鈴木 一郎', role: 'リーダー', department: '営業部', status: 'working', clockInTime: '09:05', email: 'i.suzuki@example.com' },
-  { id: '3', name: '伊藤 結衣', role: '正社員', department: '開発部', status: 'break', clockInTime: '09:30', email: 'y.ito@example.com' },
-  { id: '4', name: '高橋 健太', role: '正社員', department: '開発部', status: 'working', clockInTime: '08:45', email: 'k.takahashi@example.com' },
-  { id: '5', name: '渡辺 亮', role: '契約社員', department: '営業部', status: 'off', email: 'r.watanabe@example.com' },
-  { id: '6', name: '小林 美咲', role: '正社員', department: '人事部', status: 'leave', email: 'm.kobayashi@example.com' },
-  { id: '7', name: '中村 翼', role: '正社員', department: '開発部', status: 'working', clockInTime: '10:15', email: 't.nakamura@example.com' },
-  { id: '8', name: '加藤 純一', role: 'インターン', department: '開発部', status: 'working', clockInTime: '09:00', email: 'j.kato@example.com' },
-];
+/** 部署フィルタの全件選択値。 */
+const ALL_DEPARTMENTS = 'すべて';
 
+/** Team API の Query Key。 */
+const TEAM_QUERY_KEY = ['team', 'members'] as const;
+
+/**
+ * APIメンバー型をフロント表示型へ正規化する。
+ */
+const toTeamMember = (member: ApiTeamMember): TeamMember => ({
+  id: member.id,
+  name: member.name,
+  role: member.role,
+  department: member.department,
+  status: member.status as MemberStatus,
+  clockInTime: member.clockInTime ?? undefined,
+  email: member.email,
+});
+
+/**
+ * Team API からメンバー一覧を取得する。
+ */
+const fetchTeamMembers = async (): Promise<TeamMember[]> => {
+  const response = await getTeam().getTeamMembersApi();
+  const data = unwrapApiEnvelope<{ members: ApiTeamMember[] }>(response);
+
+  return data.members.map(toTeamMember);
+};
+
+/**
+ * チーム画面の検索・絞り込み状態を管理する。
+ */
 export const useTeam = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterDept, setFilterDept] = useState('すべて');
+  const [filterDept, setFilterDept] = useState(ALL_DEPARTMENTS);
 
-  const filteredMembers = MOCK_TEAM.filter(member => {
-    const matchesSearch = member.name.includes(searchQuery) || member.department.includes(searchQuery);
-    const matchesDept = filterDept === 'すべて' || member.department === filterDept;
-    return matchesSearch && matchesDept;
+  const teamQuery = useQuery({
+    queryKey: TEAM_QUERY_KEY,
+    queryFn: fetchTeamMembers,
   });
 
-  const stats = {
-    total: MOCK_TEAM.length,
-    working: MOCK_TEAM.filter(m => m.status === 'working').length,
-    break: MOCK_TEAM.filter(m => m.status === 'break').length,
-    leave: MOCK_TEAM.filter(m => m.status === 'leave').length,
-  };
+  const members = useMemo(() => teamQuery.data ?? [], [teamQuery.data]);
 
-  const departments = ['すべて', ...Array.from(new Set(MOCK_TEAM.map(m => m.department)))];
+  const filteredMembers = useMemo(
+    () => members.filter((member) => {
+      // 名前と部署の部分一致で検索し、部署フィルタを同時に適用する。
+      const matchesSearch = member.name.includes(searchQuery) || member.department.includes(searchQuery);
+      const matchesDept = filterDept === ALL_DEPARTMENTS || member.department === filterDept;
+      return matchesSearch && matchesDept;
+    }),
+    [members, searchQuery, filterDept],
+  );
+
+  // 勤務状態ごとの件数を集計する。
+  const stats = useMemo(
+    () => ({
+      total: members.length,
+      working: members.filter((member) => member.status === MEMBER_STATUS.Working).length,
+      break: members.filter((member) => member.status === MEMBER_STATUS.Break).length,
+      leave: members.filter((member) => member.status === MEMBER_STATUS.Leave).length,
+    }),
+    [members],
+  );
+
+  const departments = useMemo(
+    () => [ALL_DEPARTMENTS, ...Array.from(new Set(members.map((member) => member.department)))],
+    [members],
+  );
 
   return {
+    isLoading: teamQuery.isLoading,
+    isError: teamQuery.isError,
     searchQuery,
     setSearchQuery,
     filterDept,

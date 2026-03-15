@@ -1,0 +1,39 @@
+TeamMembersResponse:
+  type: object
+  required:
+    - members
+  properties:
+    members:
+      type: array
+      items:
+        $ref: '#/TeamMember'
+
+TeamMember:
+  type: object
+  required:
+    - id
+    - name
+    - role
+    - department
+    - status
+    - email
+  properties:
+    id:
+      type: string
+      format: uuid
+    name:
+      type: string
+    role:
+      type: string
+    department:
+      type: string
+    status:
+      type: string
+      enum: [working, break, off, leave]
+    clockInTime:
+      type: string
+      nullable: true
+      example: '09:00'
+    email:
+      type: string
+      format: email

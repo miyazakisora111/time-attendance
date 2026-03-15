@@ -193,6 +193,76 @@ export const validationSchemas = {
   LoginResponse: generatedComponents.schemas.LoginResponse.extend({
     token: z.string().trim().optional(),
   }),
+  SettingsResponse: generatedComponents.schemas.SettingsResponse.extend({
+    theme: z.enum(["light", "dark", "system"]),
+    language: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("language")}は必須です。`),
+  }),
+  TeamMember: generatedComponents.schemas.TeamMember.extend({
+    id: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("id")}は必須です。`),
+    name: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("name")}は必須です。`),
+    role: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("role")}は必須です。`),
+    department: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("department")}は必須です。`),
+    status: z.enum(["working", "break", "off", "leave"]),
+    clockInTime: z.string().trim().nullable().optional(),
+    email: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("email")}は必須です。`)
+      .email(`${labelOf("email")}の形式が正しくありません。`),
+  }),
+  TeamMembersResponse: generatedComponents.schemas.TeamMembersResponse.extend({
+    members: z.array(
+      z.object({
+        id: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("id")}は必須です。`),
+        name: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("name")}は必須です。`),
+        role: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("role")}は必須です。`),
+        department: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("department")}は必須です。`),
+        status: z.enum(["working", "break", "off", "leave"]),
+        clockInTime: z.string().trim().nullable().optional(),
+        email: z
+          .string()
+          .trim()
+          .min(1, `${labelOf("email")}は必須です。`)
+          .email(`${labelOf("email")}の形式が正しくありません。`),
+      }),
+    ),
+  }),
+  UpdateSettingsRequest:
+    generatedComponents.schemas.UpdateSettingsRequest.extend({
+      theme: z.enum(["light", "dark", "system"]),
+      language: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("language")}は必須です。`)
+        .max(32, `${labelOf("language")}は32文字以内で入力してください。`),
+    }),
   UserResponse: generatedComponents.schemas.UserResponse.extend({
     user: z.object({
       id: z

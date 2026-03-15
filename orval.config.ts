@@ -14,6 +14,10 @@ export default defineConfig({
                     path: './front/src/api/client.ts', // Axios instance などを定義したファイル
                     name: 'customInstance', // mutator で使う関数名
                 },
+                query: {
+                    useQuery: true,
+                    useMutation: true,
+                },
             },
         },
         hooks: {

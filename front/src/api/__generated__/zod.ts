@@ -82,6 +82,27 @@ export namespace components.schemas {
     timestamp: z.string(),
     dashboard: components["schemas"]["DashboardResponse"],
   });
+  export const CalendarResponse = z.array(z.string());
+  export const TeamMember = z.object({
+    id: z.string(),
+    name: z.string(),
+    role: z.string(),
+    department: z.string(),
+    status: z.enum(["working", "break", "off", "leave"]),
+    clockInTime: z.string().nullable().optional(),
+    email: z.string(),
+  });
+  export const TeamMembersResponse = z.object({
+    members: z.array(components["schemas"]["TeamMember"]),
+  });
+  export const SettingsResponse = z.object({
+    theme: z.enum(["light", "dark", "system"]),
+    language: z.string(),
+  });
+  export const UpdateSettingsRequest = z.object({
+    theme: z.enum(["light", "dark", "system"]),
+    language: z.string(),
+  });
 }
 export namespace components.responses {
   /** @description 認証エラー */
@@ -257,6 +278,71 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
+  getCalendarApi: {
+    /** 月次カレンダー取得 */
+    parameters: {
+      query: z.object({
+        year: z.number().int(),
+        month: z.number().int(),
+      }),
+    },
+    responses: {
+      /** @description 対象月の日付一覧 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["CalendarResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  getTeamMembersApi: {
+    /** チームメンバー一覧取得 */
+    responses: {
+      /** @description チームメンバー一覧 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamMembersResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  getSettingsApi: {
+    /** ユーザー設定取得 */
+    responses: {
+      /** @description ユーザー設定 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SettingsResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  updateSettingsApi: {
+    /** ユーザー設定更新 */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UpdateSettingsRequest"],
+      },
+    },
+    responses: {
+      /** @description 更新後ユーザー設定 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SettingsResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
 }
 
 export const paths = {
@@ -291,5 +377,19 @@ export const paths = {
   "/dashboard/clock": {
     /** ダッシュボード打刻操作 */
     post: operations["postDashboardClockApi"],
+  },
+  "/auth/calendar": {
+    /** 月次カレンダー取得 */
+    get: operations["getCalendarApi"],
+  },
+  "/team/members": {
+    /** チームメンバー一覧取得 */
+    get: operations["getTeamMembersApi"],
+  },
+  "/settings": {
+    /** ユーザー設定取得 */
+    get: operations["getSettingsApi"],
+    /** ユーザー設定更新 */
+    put: operations["updateSettingsApi"],
   },
 }

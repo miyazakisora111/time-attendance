@@ -7,6 +7,8 @@ use App\Http\Controllers\Attendance\CalendarController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Settings\SettingsController;
+use App\Http\Controllers\Team\TeamController;
 
 Route::get('/health', function () {
     return response()->json([
@@ -47,5 +49,14 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/', [AttendanceController::class, 'index']);
         Route::post('/', [AttendanceController::class, 'store']);
         Route::patch('/{attendance}', [AttendanceController::class, 'update']);
+    });
+
+    Route::prefix('team')->middleware('throttle:60,1')->group(function () {
+        Route::get('/members', [TeamController::class, 'index']);
+    });
+
+    Route::prefix('settings')->middleware('throttle:60,1')->group(function () {
+        Route::get('/', [SettingsController::class, 'show']);
+        Route::put('/', [SettingsController::class, 'update']);
     });
 });

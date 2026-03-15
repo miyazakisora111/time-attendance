@@ -1,0 +1,12 @@
+SettingsResponse:
+  type: object
+  required:
+    - theme
+    - language
+  properties:
+    theme:
+      type: string
+      enum: [light, dark, system]
+    language:
+      type: string
+      example: 日本語

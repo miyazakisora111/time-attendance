@@ -3,8 +3,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAuth } from "@/api/__generated__/auth/auth";
 import { useAuthStore } from "@/features/auth"; 
 import { clearAuthToken, getAuthToken, setAuthToken } from "@/api/client";
+import { QUERY_CONFIG } from "@/config/api";
 import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 
+/** 認証済みユーザー情報。 */
 type AuthUser = {
     id: string;
     name: string;
@@ -14,12 +16,16 @@ type AuthUser = {
     isAuthenticated?: boolean;
 };
 
+/** ログインAPIレスポンス。 */
 type LoginResult = {
     token?: string;
     token_type?: string;
     expires_in?: number;
 };
 
+/**
+ * 認証済みユーザー情報を取得する。
+ */
 const fetchAuthMe = async (): Promise<AuthUser> => {
     const response = await getAuth().authMeApi();
     const data = unwrapApiEnvelope<{ user: AuthUser }>(response);
@@ -27,6 +33,9 @@ const fetchAuthMe = async (): Promise<AuthUser> => {
     return data.user;
 };
 
+/**
+ * ログアウトAPIを実行する。
+ */
 const logoutRequest = async (): Promise<void> => {
     await getAuth().logoutApi();
 };
@@ -37,6 +46,9 @@ export const authQueryKey = {
     me: () => [...authQueryKey.all, "me"] as const,
 };
 
+/**
+ * 認証状態の取得とログイン/ログアウト処理を提供する hook。
+ */
 export const useAuth = () => {
     const queryClient = useQueryClient();
     const isInitializing = useAuthStore((state) => state.isInitializing);
@@ -47,7 +59,7 @@ export const useAuth = () => {
         queryFn: fetchAuthMe,
         enabled: !!getAuthToken(),
         retry: false,
-        staleTime: 1000 * 60 * 5,
+        staleTime: QUERY_CONFIG.defaultStaleTimeMs,
         refetchOnWindowFocus: false,
     });
 

@@ -7,6 +7,12 @@ import { useAuth, loginSchema as schema } from '@/features/auth';
 import { AppRoutePath } from '@/config/routes';
 import { toast as sonner } from 'sonner';
 
+/** ログイン後リダイレクト元の location state。 */
+type RedirectState = { from: Location };
+
+/**
+ * ログインフォーム。
+ */
 export function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,11 +22,14 @@ export function LoginForm() {
   // ログイン後のリダイレクト
   useEffect(() => {
     if (loginMutation.isSuccess) {
-      const from = (location.state as { from: Location })?.from?.pathname;
+      const from = (location.state as RedirectState | null)?.from?.pathname;
       navigate(from ?? AppRoutePath.Dashboard, { replace: true });
     }
   }, [loginMutation.isSuccess, navigate, location]);
 
+  /**
+   * 認証APIへログイン情報を送信する。
+   */
   const onSubmit = async (data: FormData) => {
     try {
       await loginMutation.mutateAsync(data);

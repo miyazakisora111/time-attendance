@@ -1,0 +1,6 @@
+CalendarResponse:
+  type: array
+  items:
+    type: string
+    format: date
+    example: '2026-03-15'
