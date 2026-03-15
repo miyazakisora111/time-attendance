@@ -1,3 +1,8 @@
+import {
+  calculateWorkedMinutesUtil,
+  formatMinutesUtil,
+} from '@/shared/utils/attendanceTimeUtil';
+
 export type AttendanceRow = {
   id: string;
   workDate: string;
@@ -21,6 +26,9 @@ const toDate = (iso: string | null): Date | null => {
   return date;
 };
 
+/**
+ * ISO日時を指定タイムゾーンの表示文字列へ変換する。
+ */
 export const formatLocalDateTime = (iso: string | null, timezone: string): string => {
   const date = toDate(iso);
   if (!date) {
@@ -42,27 +50,28 @@ export const computeWorkedMinutes = (row: AttendanceRow): number | null => {
     return Math.max(0, row.workedMinutes);
   }
 
-  const clockIn = toDate(row.clockInAt);
-  const clockOut = toDate(row.clockOutAt);
-  if (!clockIn || !clockOut || clockOut <= clockIn) {
-    return null;
-  }
+  const formatToClock = (iso: string | null): string | null => {
+    const date = toDate(iso);
+    if (!date) {
+      return null;
+    }
 
-  const gross = Math.floor((clockOut.getTime() - clockIn.getTime()) / 60000);
-  return Math.max(0, gross - row.breakMinutes);
+    return date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  return calculateWorkedMinutesUtil(
+    formatToClock(row.clockInAt),
+    formatToClock(row.clockOutAt),
+    row.breakMinutes,
+  );
 };
 
 export const formatMinutes = (minutes: number | null): string => {
-  if (minutes === null) {
-    return '--:--';
-  }
-
-  const h = Math.floor(minutes / 60)
-    .toString()
-    .padStart(2, '0');
-  const m = (minutes % 60).toString().padStart(2, '0');
-
-  return `${h}:${m}`;
+  return formatMinutesUtil(minutes);
 };
 
 export const isCrossDayShift = (row: AttendanceRow): boolean => {

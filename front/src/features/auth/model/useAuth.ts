@@ -1,14 +1,9 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAuth } from "@/api/__generated__/auth/auth"; 
+import { getAuth } from "@/api/__generated__/auth/auth";
 import { useAuthStore } from "@/features/auth"; 
 import { clearAuthToken, getAuthToken, setAuthToken } from "@/api/client";
-
-type ApiEnvelope<T> = {
-    success: boolean;
-    message: string;
-    data: T;
-};
+import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 
 type AuthUser = {
     id: string;
@@ -25,22 +20,9 @@ type LoginResult = {
     expires_in?: number;
 };
 
-const unwrapResponse = <T>(payload: T | ApiEnvelope<T>): T => {
-    if (
-        payload &&
-        typeof payload === "object" &&
-        "data" in payload &&
-        "success" in payload
-    ) {
-        return (payload as ApiEnvelope<T>).data;
-    }
-
-    return payload as T;
-};
-
 const fetchAuthMe = async (): Promise<AuthUser> => {
     const response = await getAuth().authMeApi();
-    const data = unwrapResponse<{ user: AuthUser }>(response);
+    const data = unwrapApiEnvelope<{ user: AuthUser }>(response);
 
     return data.user;
 };
@@ -88,7 +70,7 @@ export const useAuth = () => {
     const loginMutation = useMutation({
         mutationFn: async (credentials: { email: string; password: string }) => {
             const response = await getAuth().loginApi(credentials);
-            return unwrapResponse<LoginResult>(response);
+            return unwrapApiEnvelope<LoginResult>(response);
         },
 
         onSuccess: async (result) => {

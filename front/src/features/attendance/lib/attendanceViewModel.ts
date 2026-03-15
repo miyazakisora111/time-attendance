@@ -1,5 +1,9 @@
 import type { AttendanceStatus, LastAction } from '@/domain/enums/attendance';
 import type { ClockAction, ClockStatus } from '@/features/dashboard/ui/clock/ClockActionButtons';
+import {
+  formatWorkedHoursUtil,
+  isCrossDayShiftByClockUtil,
+} from '@/shared/utils/attendanceTimeUtil';
 
 export const mapClockStatusToAttendanceStatus = (status: ClockStatus): AttendanceStatus => {
   switch (status) {
@@ -7,17 +11,6 @@ export const mapClockStatusToAttendanceStatus = (status: ClockStatus): Attendanc
       return 'working';
     case 'break':
       return 'break';
-    default:
-      return 'out';
-  }
-};
-
-export const mapAttendanceStatusToClockAction = (status: AttendanceStatus): ClockAction => {
-  switch (status) {
-    case 'working':
-      return 'in';
-    case 'break':
-      return 'break_start';
     default:
       return 'out';
   }
@@ -39,23 +32,9 @@ export const isCrossDayByClockText = (
   clockIn?: string | null,
   clockOut?: string | null,
 ): boolean => {
-  if (!clockIn || !clockOut) {
-    return false;
-  }
-
-  return clockOut < clockIn;
+  return isCrossDayShiftByClockUtil(clockIn, clockOut);
 };
 
 export const toDisplayWorkedHours = (value: number | null | undefined): string => {
-  if (value === null || value === undefined) {
-    return '--:--';
-  }
-
-  const totalMinutes = Math.max(0, Math.round(value * 60));
-  const hours = Math.floor(totalMinutes / 60)
-    .toString()
-    .padStart(2, '0');
-  const minutes = (totalMinutes % 60).toString().padStart(2, '0');
-
-  return `${hours}:${minutes}`;
+  return formatWorkedHoursUtil(value);
 };

@@ -4,6 +4,9 @@ import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } 
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
 import { isCrossDayByClockText } from "@/features/attendance/lib/attendanceViewModel";
 
+/**
+ * 最近の勤怠記録を一覧表示するコンポーネント。
+ */
 export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
   const { data: records, isLoading, isError } = useRecentRecords();
 

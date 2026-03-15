@@ -45,6 +45,11 @@ const getStatusDisplay = (status: AttendanceStatus) => {
   }
 };
 
+/**
+ * 勤怠画面プレゼンテーションコンポーネント。
+ *
+ * 渡された状態を描画し、打刻イベントを親へ通知する。
+ */
 export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
   status,
   currentTime,

@@ -11,6 +11,9 @@ export type DashboardStats = DashboardResponse["stats"];
 export type AttendanceRecord = DashboardResponse["recentRecords"][number];
 export type ClockAction = DashboardClockRequestAction;
 
+/**
+ * ダッシュボード表示用データを取得する。
+ */
 export async function fetchDashboard(): Promise<DashboardData> {
   const response = await getDashboard().getDashboardApi();
 
@@ -29,6 +32,9 @@ export async function fetchAttendanceRecords(): Promise<AttendanceRecord[]> {
   return data.recentRecords;
 }
 
+/**
+ * 打刻アクションを実行し、更新後のダッシュボード情報を返す。
+ */
 export async function clockInOut(action: ClockAction): Promise<DashboardClockResponse> {
   const response = await getDashboard().postDashboardClockApi({ action });
 

@@ -10,6 +10,11 @@ import {
 import type { ClockAction, ClockStatus } from '@/features/dashboard/ui/clock/ClockActionButtons';
 import { useMemo, useState } from 'react';
 
+/**
+ * 勤怠画面の表示状態を管理する hook。
+ *
+ * 打刻状態の取得・打刻実行・表示用データ変換を担当する。
+ */
 export const useAttendance = () => {
   const currentTime = useCurrentTime();
   const { data, isLoading, isError } = useAttendanceDashboardData();
@@ -29,6 +34,12 @@ export const useAttendance = () => {
     return '--:--';
   }, []);
 
+  /**
+   * 画面の打刻操作を API アクションへ変換して実行する。
+   *
+   * @param type 次状態
+   * @param label 画面表示ラベル
+   */
   const handleAction = (type: AttendanceStatus, label: string) => {
     const actionMap: Record<AttendanceStatus, ClockAction> = {
       out: 'out',

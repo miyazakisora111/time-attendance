@@ -11,12 +11,18 @@ export const dashboardQueryKeys = {
   recentRecords: () => [...dashboardQueryKeys.all, "recentRecords"] as const,
 };
 
-export function useDashboardData() {
+/**
+ * ダッシュボードデータを取得する。
+ */
+export function useGetDashboardData() {
   return useAttendanceDashboardData();
 }
 
-export function useDashboardStats() {
-  const query = useDashboardData();
+/**
+ * ダッシュボード統計情報を取得する。
+ */
+export function useGetDashboardStats() {
+  const query = useGetDashboardData();
 
   return {
     ...query,
@@ -24,8 +30,11 @@ export function useDashboardStats() {
   };
 }
 
-export function useRecentRecords() {
-  const query = useDashboardData();
+/**
+ * 最近の勤怠記録を取得する。
+ */
+export function useGetRecentRecords() {
+  const query = useGetDashboardData();
 
   return {
     ...query,
@@ -33,7 +42,16 @@ export function useRecentRecords() {
   };
 }
 
-export function useClockInOut() {
+/**
+ * 打刻アクションを作成する。
+ */
+export function useCreateClockInOut() {
   return useAttendanceClockAction();
 }
+
+// 互換エクスポート
+export const useDashboardData = useGetDashboardData;
+export const useDashboardStats = useGetDashboardStats;
+export const useRecentRecords = useGetRecentRecords;
+export const useClockInOut = useCreateClockInOut;
 

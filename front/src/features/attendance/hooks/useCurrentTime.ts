@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * 現在時刻を 1 秒ごとに更新する hook。
+ */
 export const useCurrentTime = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
