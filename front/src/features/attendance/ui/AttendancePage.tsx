@@ -4,7 +4,17 @@ import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import { AttendancePresenter } from '@/features/attendance/ui/AttendancePresenter';
 
 const AttendancePage: React.FC = () => {
-  const { status, currentTime, lastAction, handleAction } = useAttendance();
+  const {
+    status,
+    currentTime,
+    lastAction,
+    isLoading,
+    isError,
+    isPending,
+    todayWorkedTime,
+    breakTime,
+    handleAction,
+  } = useAttendance();
 
   return (
     <Container size="full">
@@ -12,6 +22,11 @@ const AttendancePage: React.FC = () => {
         status={status}
         currentTime={currentTime}
         lastAction={lastAction}
+        isLoading={isLoading}
+        isError={isError}
+        isPending={isPending}
+        todayWorkedTime={todayWorkedTime}
+        breakTime={breakTime}
         onAction={handleAction}
       />
     </Container>

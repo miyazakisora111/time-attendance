@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Typography } from "@/shared/components";
+import { useCurrentTime } from "@/features/attendance/hooks/useCurrentTime";
 
 export const ClockDisplay = React.memo(function ClockDisplay() {
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const currentTime = useCurrentTime();
 
   return (
     <div className="rounded-lg from-blue-50 to-indigo-50 py-6 text-center">

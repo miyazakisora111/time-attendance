@@ -8,6 +8,11 @@ interface AttendancePresenterProps {
   status: AttendanceStatus;
   currentTime: Date;
   lastAction: LastAction | null;
+  isLoading?: boolean;
+  isError?: boolean;
+  isPending?: boolean;
+  todayWorkedTime?: string;
+  breakTime?: string;
   onAction: (type: AttendanceStatus, label: string) => void;
 }
 
@@ -44,6 +49,11 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
   status,
   currentTime,
   lastAction,
+  isLoading = false,
+  isError = false,
+  isPending = false,
+  todayWorkedTime = '--:--',
+  breakTime = '--:--',
   onAction,
 }) => {
   const currentStatus = getStatusDisplay(status);
@@ -104,7 +114,7 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Button
-          disabled={status !== 'out'}
+          disabled={isLoading || isPending || status !== 'out'}
           onClick={() => onAction('working', '出勤')}
           size="lg"
           variant={status === 'out' ? 'solid' : 'outline'}
@@ -116,7 +126,7 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
         </Button>
 
         <Button
-          disabled={status !== 'working'}
+          disabled={isLoading || isPending || status !== 'working'}
           onClick={() => onAction('break', '休憩開始')}
           size="lg"
           variant={status === 'working' ? 'solid' : 'outline'}
@@ -128,7 +138,7 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
         </Button>
 
         <Button
-          disabled={status !== 'break'}
+          disabled={isLoading || isPending || status !== 'break'}
           onClick={() => onAction('working', '休憩終了')}
           size="lg"
           variant={status === 'break' ? 'solid' : 'outline'}
@@ -140,7 +150,7 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
         </Button>
 
         <Button
-          disabled={status === 'out'}
+          disabled={isLoading || isPending || status === 'out'}
           onClick={() => onAction('out', '退勤')}
           size="lg"
           variant={status !== 'out' ? 'solid' : 'outline'}
@@ -183,7 +193,9 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
                   </motion.div>
                 ) : (
                   <div className="text-center py-4">
-                    <Typography variant="small" intent="muted">本日の打刻履歴はありません</Typography>
+                      <Typography variant="small" intent="muted">
+                        {isError ? '打刻状態の取得に失敗しました' : '本日の打刻履歴はありません'}
+                      </Typography>
                   </div>
                 )}
               </AnimatePresence>
@@ -196,14 +208,14 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
             <div>
               <Typography variant="small" intent="white" className="opacity-80 mb-1 font-medium">現在の勤務時間</Typography>
               <Typography variant="h3" intent="white" className="text-4xl mb-6 font-black tracking-tight">
-                {status === 'working' ? '05:24' : status === 'break' ? '05:00' : '00:00'}
+                {todayWorkedTime}
               </Typography>
             </div>
             
             <div className="space-y-4 pt-6 border-t border-blue-500/50">
               <div className="flex items-center justify-between">
                 <Typography variant="small" className="text-blue-100">休憩合計</Typography>
-                <Typography variant="label" intent="white">00:45</Typography>
+                <Typography variant="label" intent="white">{breakTime}</Typography>
               </div>
               <div className="flex items-center justify-between">
                 <Typography variant="small" className="text-blue-100">残業予定</Typography>

@@ -1,22 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  fetchDashboard,
-  clockInOut,
-} from "@/features/dashboard/api/dashboardApi";
+  attendanceQueryKeys,
+  useAttendanceClockAction,
+  useAttendanceDashboardData,
+} from "@/features/attendance/hooks/useAttendanceData";
 
 export const dashboardQueryKeys = {
-  all: ["dashboard"] as const,
-  data: () => [...dashboardQueryKeys.all, "data"] as const,
+  all: attendanceQueryKeys.all,
+  data: attendanceQueryKeys.dashboard,
   stats: () => [...dashboardQueryKeys.all, "stats"] as const,
   recentRecords: () => [...dashboardQueryKeys.all, "recentRecords"] as const,
 };
 
 export function useDashboardData() {
-  return useQuery({
-    queryKey: dashboardQueryKeys.data(),
-    queryFn: fetchDashboard,
-    staleTime: 1000 * 60,
-  });
+  return useAttendanceDashboardData();
 }
 
 export function useDashboardStats() {
@@ -38,14 +34,6 @@ export function useRecentRecords() {
 }
 
 export function useClockInOut() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: clockInOut,
-    onSuccess: (result) => {
-      queryClient.setQueryData(dashboardQueryKeys.data(), result.dashboard);
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all });
-    },
-  });
+  return useAttendanceClockAction();
 }
 

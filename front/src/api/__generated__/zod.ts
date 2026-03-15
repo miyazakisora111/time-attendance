@@ -19,7 +19,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.array(z.string())).optional(),
+    errors: z.record(z.string(), z.array(z.string())).optional(),
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
@@ -28,7 +28,7 @@ export namespace components.schemas {
       name: z.string(),
       email: z.string(),
       roles: z.array(z.string()),
-      settings: z.record(z.unknown()).nullable().optional(),
+      settings: z.record(z.string(), z.unknown()).nullable().optional(),
     }),
   });
   export const AttendanceResponse = z.object({

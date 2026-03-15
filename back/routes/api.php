@@ -30,10 +30,22 @@ Route::get('/today', [AttendanceController::class, 'today']);
 Route::get('/dashboard', [DashboardController::class, 'show']);
 Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
+Route::prefix('attendances')->group(function () {
+    Route::get('/attendance', [AttendanceController::class, 'today']);
+    Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
+    Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
+});
+
 Route::middleware(['auth:api'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/calendar', [CalendarController::class, 'index']);
     })->middleware('throttle:60,1');
+
+    Route::prefix('attendances')->middleware('throttle:60,1')->group(function () {
+        Route::get('/', [AttendanceController::class, 'index']);
+        Route::post('/', [AttendanceController::class, 'store']);
+        Route::patch('/{attendance}', [AttendanceController::class, 'update']);
+    });
 });

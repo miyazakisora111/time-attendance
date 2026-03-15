@@ -49,23 +49,30 @@ class DashboardService extends BaseService
                 );
 
             if ($action === 'in') {
-                if ($attendance->start_time !== null) {
+                if ($attendance->clock_in_at !== null || $attendance->start_time !== null) {
                     throw new DomainException('既に出勤済みです', 409);
                 }
 
                 $attendance->update([
+                    'clock_in_at' => now(),
                     'start_time' => now()->format('H:i:s'),
                 ]);
             } elseif ($action === 'out') {
-                if ($attendance->start_time === null) {
+                if ($attendance->clock_in_at === null && $attendance->start_time === null) {
                     throw new DomainException('出勤していません', 409);
                 }
 
-                if ($attendance->end_time !== null) {
+                if ($attendance->clock_out_at !== null || $attendance->end_time !== null) {
                     throw new DomainException('既に退勤済みです', 409);
                 }
 
+                $workedMinutes = $attendance->clock_in_at !== null
+                    ? $attendance->clock_in_at->diffInMinutes(now())
+                    : null;
+
                 $attendance->update([
+                    'clock_out_at' => now(),
+                    'worked_minutes' => $workedMinutes,
                     'end_time' => now()->format('H:i:s'),
                 ]);
             } elseif ($action === 'break_start') {
@@ -129,7 +136,9 @@ class DashboardService extends BaseService
             ->get();
 
         $totalHours = $this->sumWorkHours($currentAttendances);
-        $workDays = $currentAttendances->whereNotNull('start_time')->count();
+        $workDays = $currentAttendances
+            ->filter(fn (Attendance $attendance): bool => $attendance->clock_in_at !== null || $attendance->start_time !== null)
+            ->count();
         $targetHours = $workDays * 8;
         $avgHours = $workDays > 0 ? round($totalHours / $workDays, 1) : 0.0;
 
@@ -161,8 +170,9 @@ class DashboardService extends BaseService
             ->get()
             ->map(function (Attendance $attendance): array {
                 $workHours = $this->calculateWorkHours(
-                    startTime: $attendance->start_time,
-                    endTime: $attendance->end_time,
+                    startAt: $attendance->clock_in_at,
+                    endAt: $attendance->clock_out_at,
+                    workedMinutes: $attendance->worked_minutes,
                 );
 
                 $date = Carbon::parse($attendance->work_date);
@@ -170,8 +180,10 @@ class DashboardService extends BaseService
                 return [
                     'date' => $date->format('Y/m/d'),
                     'day' => $this->weekdayJa($date),
-                    'clockIn' => $attendance->start_time?->format('H:i'),
-                    'clockOut' => $attendance->end_time?->format('H:i'),
+                    'clockIn' => $attendance->clock_in_at?->setTimezone($attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo'))->format('H:i')
+                        ?? (is_string($attendance->start_time) ? substr($attendance->start_time, 0, 5) : null),
+                    'clockOut' => $attendance->clock_out_at?->setTimezone($attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo'))->format('H:i')
+                        ?? (is_string($attendance->end_time) ? substr($attendance->end_time, 0, 5) : null),
                     'workHours' => $workHours,
                     'status' => $workHours === null
                         ? '休日'
@@ -184,11 +196,11 @@ class DashboardService extends BaseService
 
     private function resolveClockStatus(?Attendance $attendance): string
     {
-        if ($attendance === null || $attendance->start_time === null) {
+        if ($attendance === null || ($attendance->clock_in_at === null && $attendance->start_time === null)) {
             return 'out';
         }
 
-        if ($attendance->end_time !== null) {
+        if ($attendance->clock_out_at !== null || $attendance->end_time !== null) {
             return 'out';
         }
 
@@ -206,7 +218,7 @@ class DashboardService extends BaseService
 
     private function buildTodayRecord(?Attendance $attendance): array
     {
-        if ($attendance === null || $attendance->start_time === null) {
+        if ($attendance === null || ($attendance->clock_in_at === null && $attendance->start_time === null)) {
             return [
                 'clockInTime' => null,
                 'totalWorkedHours' => null,
@@ -214,13 +226,17 @@ class DashboardService extends BaseService
         }
 
         $hours = $this->calculateWorkHours(
-            startTime: $attendance->start_time,
-            endTime: $attendance->end_time,
+            startAt: $attendance->clock_in_at,
+            endAt: $attendance->clock_out_at,
+            workedMinutes: $attendance->worked_minutes,
             fallbackEndTime: now(),
         );
 
+        $timezone = $attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo');
+
         return [
-            'clockInTime' => $attendance->start_time?->format('H:i'),
+            'clockInTime' => $attendance->clock_in_at?->setTimezone($timezone)->format('H:i')
+                ?? (is_string($attendance->start_time) ? substr($attendance->start_time, 0, 5) : null),
             'totalWorkedHours' => $hours,
         ];
     }
@@ -229,7 +245,7 @@ class DashboardService extends BaseService
     {
         return round((float) $attendances
             ->map(fn (Attendance $attendance): float =>
-                $this->calculateWorkHours($attendance->start_time, $attendance->end_time) ?? 0.0
+                $this->calculateWorkHours($attendance->clock_in_at, $attendance->clock_out_at, $attendance->worked_minutes) ?? 0.0
             )
             ->sum(), 1);
     }
@@ -247,17 +263,22 @@ class DashboardService extends BaseService
     }
 
     private function calculateWorkHours(
-        mixed $startTime,
-        mixed $endTime,
+        mixed $startAt,
+        mixed $endAt,
+        ?int $workedMinutes = null,
         ?Carbon $fallbackEndTime = null,
     ): ?float {
-        if ($startTime === null) {
+        if ($workedMinutes !== null) {
+            return round($workedMinutes / 60, 1);
+        }
+
+        if ($startAt === null) {
             return null;
         }
 
-        $start = Carbon::parse((string) $startTime);
-        $end = $endTime !== null
-            ? Carbon::parse((string) $endTime)
+        $start = Carbon::parse((string) $startAt);
+        $end = $endAt !== null
+            ? Carbon::parse((string) $endAt)
             : $fallbackEndTime;
 
         if ($end === null || $end->lt($start)) {

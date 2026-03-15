@@ -2,6 +2,7 @@ import React from "react";
 import { AlertCircle, Clock, History } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
+import { isCrossDayByClockText } from "@/features/attendance/lib/attendanceViewModel";
 
 export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
   const { data: records, isLoading, isError } = useRecentRecords();
@@ -76,7 +77,14 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                       </div>
                     </td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{record.clockIn || "-"}</td>
-                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{record.clockOut || "-"}</td>
+                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
+                      {record.clockOut || "-"}
+                      {isCrossDayByClockText(record.clockIn, record.clockOut) ? (
+                        <Typography variant="small" intent="muted" className="ml-1 inline-block">
+                          (翌日)
+                        </Typography>
+                      ) : null}
+                    </td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
                       {record.workHours !== null ? `${record.workHours}h` : "-"}
                     </td>

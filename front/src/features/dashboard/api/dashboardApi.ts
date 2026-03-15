@@ -4,26 +4,7 @@ import type {
   DashboardClockResponse,
   DashboardResponse,
 } from "@/api/__generated__/model";
-
-type ApiEnvelope<T> = {
-  success: boolean;
-  message: string;
-  data: T;
-  meta?: unknown;
-};
-
-const unwrapResponse = <T>(payload: T | ApiEnvelope<T>): T => {
-  if (
-    payload &&
-    typeof payload === "object" &&
-    "data" in payload &&
-    "success" in payload
-  ) {
-    return (payload as ApiEnvelope<T>).data;
-  }
-
-  return payload as T;
-};
+import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 
 export type DashboardData = DashboardResponse;
 export type DashboardStats = DashboardResponse["stats"];
@@ -33,7 +14,7 @@ export type ClockAction = DashboardClockRequestAction;
 export async function fetchDashboard(): Promise<DashboardData> {
   const response = await getDashboard().getDashboardApi();
 
-  return unwrapResponse<DashboardData>(response);
+  return unwrapApiEnvelope<DashboardData>(response);
 }
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
@@ -51,6 +32,6 @@ export async function fetchAttendanceRecords(): Promise<AttendanceRecord[]> {
 export async function clockInOut(action: ClockAction): Promise<DashboardClockResponse> {
   const response = await getDashboard().postDashboardClockApi({ action });
 
-  return unwrapResponse<DashboardClockResponse>(response);
+  return unwrapApiEnvelope<DashboardClockResponse>(response);
 }
 
