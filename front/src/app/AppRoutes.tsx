@@ -4,11 +4,14 @@ import { useAuth } from "@/features/auth";
 import { LoginPage } from "@/features/auth/ui/LoginPage";
 import { DashBoardPage } from "@/features/dashboard";
 import AttendancePage from "@/features/attendance";
-//import {ApprovalPage} from "@/features/approval";
 import TeamPage from "@/features/team";
 import SettingsPage from "@/features/settings";
 import SchedulePage from "@/features/schedule";
+import { AppRoutePath } from "@/config/routes";
 
+/**
+ * 認証状態に応じたルーティングを構成する。
+ */
 export const AppRoutes = () => {
     const { isAuthenticated } = useAuth();
 
@@ -16,27 +19,26 @@ export const AppRoutes = () => {
         <Routes>
             {/* デフォルトルート */}
             <Route
-                path="/"
-                element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />}
+                path={AppRoutePath.Root}
+                element={<Navigate to={isAuthenticated ? AppRoutePath.Dashboard : AppRoutePath.Login} replace />}
             />
 
             {/* 公開ページ */}
             <Route element={<PublicLayout />}>
-                <Route path="/login" element={<LoginPage />} />
+                <Route path={AppRoutePath.Login} element={<LoginPage />} />
             </Route>
 
             {/* 認証必須ページ */}
-            <Route element={isAuthenticated ? <PrivateLayout /> : <Navigate to="/login" replace />}>
-                <Route path="/dashboard" element={<DashBoardPage />} />
-                <Route path="/attendance" element={<AttendancePage />} />
-                {/* <Route path="/approval" element={<ApprovalPage />} /> */}
-                <Route path="/team" element={<TeamPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/schedule" element={<SchedulePage />} />
+            <Route element={isAuthenticated ? <PrivateLayout /> : <Navigate to={AppRoutePath.Login} replace />}>
+                <Route path={AppRoutePath.Dashboard} element={<DashBoardPage />} />
+                <Route path={AppRoutePath.Attendance} element={<AttendancePage />} />
+                <Route path={AppRoutePath.Team} element={<TeamPage />} />
+                <Route path={AppRoutePath.Settings} element={<SettingsPage />} />
+                <Route path={AppRoutePath.Schedule} element={<SchedulePage />} />
             </Route>
 
             {/* ワイルドカード 404 */}
-            <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+            <Route path={AppRoutePath.Wildcard} element={<Navigate to={isAuthenticated ? AppRoutePath.Dashboard : AppRoutePath.Login} replace />} />
         </Routes>
     );
 };

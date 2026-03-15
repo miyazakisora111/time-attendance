@@ -4,23 +4,24 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitButton, Input, Form } from '@/shared/components';
 import { useAuth, loginSchema as schema } from '@/features/auth';
+import { AppRoutePath } from '@/config/routes';
 import { toast as sonner } from 'sonner';
 
 export function LoginForm() {
   const navigate = useNavigate();
   const location = useLocation();
   const { loginMutation } = useAuth();
-  type formData = z.infer<typeof schema>;
+  type FormData = z.infer<typeof schema>;
 
   // ログイン後のリダイレクト
   useEffect(() => {
     if (loginMutation.isSuccess) {
       const from = (location.state as { from: Location })?.from?.pathname;
-      navigate(from ?? '/dashboard', { replace: true });
+      navigate(from ?? AppRoutePath.Dashboard, { replace: true });
     }
   }, [loginMutation.isSuccess, navigate, location]);
 
-  const onSubmit = async (data: formData) => {
+  const onSubmit = async (data: FormData) => {
     try {
       await loginMutation.mutateAsync(data);
       sonner.success("ログインしました。");
@@ -30,7 +31,7 @@ export function LoginForm() {
   };
 
   return (
-    <Form<formData>
+    <Form<FormData>
       formOptions={{ resolver: zodResolver(schema) }}
       onSubmit={onSubmit}
       className="space-y-4 max-w-md mx-4"

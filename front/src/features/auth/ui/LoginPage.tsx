@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LoginForm } from '@/features/auth/ui/LoginForm';
 import { useAuthStore } from '@/features/auth';
+import { AppRoutePath } from '@/config/routes';
 import { Card } from "@/shared/components";
 import { Container } from "@/shared/components/Container";
 import { Typography } from "@/shared/components/Typography";
@@ -13,7 +14,7 @@ const useRedirect = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate(AppRoutePath.Dashboard, { replace: true });
     }
   }, [isAuthenticated, navigate]);
 };

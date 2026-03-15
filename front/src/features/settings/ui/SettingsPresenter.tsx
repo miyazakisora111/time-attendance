@@ -4,6 +4,7 @@ import {
   User, Bell, Lock, Moon, Sun, Shield, Save, 
   ChevronRight, Monitor, SmartphoneNfc, Clock, AlertCircle, FileText, Calendar 
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Typography, Label } from '@/shared/components';
 import type { SettingsSection } from '@/domain/enums/settings';
 
@@ -17,7 +18,9 @@ interface SettingsPresenterProps {
   handleSave: () => void;
 }
 
-const SECTIONS: { id: SettingsSection; label: string; icon: any }[] = [
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const SECTIONS: { id: SettingsSection; label: string; icon: LucideIcon }[] = [
   { id: 'profile', label: 'プロフィール', icon: User },
   { id: 'notifications', label: '通知設定', icon: Bell },
   { id: 'security', label: 'セキュリティ', icon: Lock },
@@ -177,7 +180,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                             key={t.id}
                             variant={theme === t.id ? "solid" : "ghost"}
                             intent={theme === t.id ? "primary" : "secondary"}
-                            onClick={() => setTheme(t.id as any)}
+                            onClick={() => setTheme(t.id as ThemeMode)}
                             className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all h-auto"
                           >
                             <t.icon size={24} />

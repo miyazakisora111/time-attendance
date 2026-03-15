@@ -1,13 +1,15 @@
-// front/src/api/client.ts
 import axios, { type AxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
-import { env } from '@/env';
+import { apiConfig, HttpStatusCode } from '@/config/api';
+import { StorageKey } from '@/config/auth';
+import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
 
-const AUTH_TOKEN_KEY = 'time-attendance.auth-token';
-
+/**
+ * Axios共通インスタンス。
+ */
 export const axiosInstance = axios.create({
-  baseURL: env.API_URL,
-  timeout: env.API_TIMEOUT,
+  baseURL: apiConfig.baseUrl,
+  timeout: apiConfig.timeoutMs,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -15,34 +17,70 @@ export const axiosInstance = axios.create({
   },
 });
 
-export const getAuthToken = (): string | null => localStorage.getItem(AUTH_TOKEN_KEY);
+/**
+ * localStorage から認証トークンを取得する。
+ */
+export const getAuthToken = (): string | null => localStorage.getItem(StorageKey.AuthToken);
 
+/**
+ * 認証トークンを localStorage へ保存する。
+ *
+ * @param token JWTトークン
+ */
 export const setAuthToken = (token: string): void => {
-  localStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(StorageKey.AuthToken, token);
 };
 
+/**
+ * localStorage から認証トークンを削除する。
+ */
 export const clearAuthToken = (): void => {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(StorageKey.AuthToken);
 };
 
+/**
+ * グローバルAPIエラーペイロード。
+ */
 type GlobalApiErrorPayload = {
+  /** HTTPステータス */
   status?: number;
+  /** エラータイトル */
   title: string;
+  /** 表示メッセージ */
   messages: string[];
 };
 
+/**
+ * グローバルAPIエラーハンドラー。
+ */
 type ApiErrorHandler = (payload: GlobalApiErrorPayload) => void;
 
+/**
+ * 現在登録されているエラーハンドラー。
+ */
 let apiErrorHandler: ApiErrorHandler | null = null;
 
+/**
+ * グローバルAPIエラーハンドラーを登録する。
+ *
+ * @param handler ハンドラー関数
+ */
 export const setApiErrorHandler = (handler: ApiErrorHandler | null): void => {
   apiErrorHandler = handler;
 };
 
+/**
+ * オブジェクト判定を行う型ガード。
+ */
 const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null;
 };
 
+/**
+ * APIエラーオブジェクトからメッセージ配列を抽出する。
+ *
+ * @param data エラーレスポンス
+ */
 const extractErrorMessages = (data: unknown): string[] => {
   if (!isRecord(data)) {
     return [];
@@ -71,36 +109,54 @@ const extractErrorMessages = (data: unknown): string[] => {
   return Array.from(new Set(messages));
 };
 
+/**
+ * ステータスコードに応じてエラー通知を振り分ける。
+ *
+ * @param status HTTPステータス
+ * @param data エラーレスポンス
+ */
 const notifyByStatus = (status: number | undefined, data: unknown): void => {
   const messages = extractErrorMessages(data);
 
-  // 未ログイン状態の 401 は想定内のため、グローバル通知しない
-  if (status === 401) {
+  // 未ログイン状態の 401 は想定内のため、グローバル通知しない。
+  if (status === HttpStatusCode.Unauthorized) {
     return;
   }
 
-  // 422 + 4xx ドメインエラーは中央モーダルへ
-  if (status === 422 || (status !== undefined && status >= 400 && status < 500 && status !== 401)) {
+  // 422 と 4xx ドメインエラーは中央モーダルへ通知する。
+  if (
+    status === HttpStatusCode.UnprocessableEntity ||
+    (
+      status !== undefined &&
+      status >= HttpStatusCode.ClientErrorMin &&
+      status <= HttpStatusCode.ClientErrorMax &&
+      status !== HttpStatusCode.Unauthorized
+    )
+  ) {
     apiErrorHandler?.({
       status,
-      title: '入力内容を確認してください',
-      messages: messages.length > 0 ? messages : ['リクエストが処理できませんでした。'],
+      title: ApiErrorTitle.Validation,
+      messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
     });
     return;
   }
 
-  // 5xx, 401, その他は Sonner トーストへ
+  // 5xx とその他はトースト表示へフォールバックする。
   const fallbackMessage =
-    status !== undefined && status >= 500
-      ? 'サーバーエラーが発生しました。時間をおいて再度お試しください。'
-      : 'エラーが発生しました。';
+    status !== undefined && status >= HttpStatusCode.ServerErrorMin
+      ? ApiErrorMessage.ServerError
+      : ApiErrorMessage.GenericError;
 
   toast.error(messages[0] ?? fallbackMessage);
 };
 
+/**
+ * APIリクエスト送信前に認証ヘッダーを付与する。
+ */
 axiosInstance.interceptors.request.use((config) => {
   const token = getAuthToken();
 
+  // トークンがある場合のみ Authorization ヘッダーを付与する。
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -114,11 +170,12 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (!error.response) {
-      toast.error('ネットワークエラーが発生しました。接続を確認してください。');
+      toast.error(ApiErrorMessage.NetworkError);
       return Promise.reject(error);
     }
 
-    if (error.response.status === 401) {
+    // 認証エラー時はクライアント側トークンを削除する。
+    if (error.response.status === HttpStatusCode.Unauthorized) {
       clearAuthToken();
     }
 
@@ -128,14 +185,20 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// Orval用mutator
+/**
+ * Orval 用 Axios mutator。
+ *
+ * @param config Axios設定
+ */
 export const customInstance = <T>(
   config: AxiosRequestConfig
 ): Promise<T> => {
   return axiosInstance(config).then((res) => res.data);
 };
 
-// 既存UI互換用
+/**
+ * 既存UI互換のCSRF APIダミー。
+ */
 export const getCsrfTokenApi = async (): Promise<void> => {
   return Promise.resolve();
 };

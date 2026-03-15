@@ -1,10 +1,24 @@
 import { create } from "zustand";
 
+/**
+ * 認証ストアで保持するユーザー情報。
+ */
+interface AuthUserState {
+    id: string;
+    name: string;
+    email: string;
+    roles: string[];
+    settings?: Record<string, unknown> | null;
+}
+
+/**
+ * 認証状態のグローバルストア。
+ */
 interface AuthStore {
-    user: any | null;
+    user: AuthUserState | null;
     isAuthenticated: boolean;
     isInitializing: boolean;
-    setUser: (user: any | null) => void;
+    setUser: (user: AuthUserState | null) => void;
     setIsAuthenticated: (auth: boolean) => void;
     setIsInitializing: (init: boolean) => void;
 }

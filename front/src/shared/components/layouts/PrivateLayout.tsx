@@ -4,6 +4,7 @@ import Sidebar from "@/shared/components/sidebar/Sidebar";
 import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { Home, Clock, Calendar, FileText, Users, Settings } from "lucide-react";
 import { cn } from "@/shared/utils/style";
+import { AppRoutePath } from "@/config/routes";
 
 // 仮のログイン情報
 const user = {
@@ -13,21 +14,30 @@ const user = {
 };
 
 const defaultMenuItems: SidebarMenuItem[] = [
-    { icon: Home, label: "ダッシュボード", href: "/dashboard" },
-    { icon: Clock, label: "打刻", href: "/attendance" },
-    { icon: Calendar, label: "スケジュール", href: "/schedule" },
-    { icon: FileText, label: "申請・承認", href: "/approval" },
-    { icon: Users, label: "チーム管理", href: "/team" },
-    { icon: Settings, label: "設定", href: "/settings" },
+    { icon: Home, label: "ダッシュボード", href: AppRoutePath.Dashboard },
+    { icon: Clock, label: "打刻", href: AppRoutePath.Attendance },
+    { icon: Calendar, label: "スケジュール", href: AppRoutePath.Schedule },
+    { icon: FileText, label: "申請・承認", href: AppRoutePath.Approval },
+    { icon: Users, label: "チーム管理", href: AppRoutePath.Team },
+    { icon: Settings, label: "設定", href: AppRoutePath.Settings },
 ];
 
+/**
+ * 認証後画面の共通レイアウト。
+ */
 export const PrivateLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
+    /**
+     * ログアウトイベントを受け取る。
+     */
     const handleLogout = () => {
         console.log("ログアウト処理");
     };
 
+    /**
+     * プロフィール編集イベントを受け取る。
+     */
     const handleProfileClick = () => {
         console.log("プロフィール編集");
     };

@@ -10,6 +10,11 @@ import type {
 import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
 import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
 
+/**
+ * ダッシュボードの打刻カード。
+ *
+ * 現在の打刻状態を表示し、打刻アクションを実行する。
+ */
 const statusConfig: Record<ClockStatus, { text: string; intent: "default" | "success" | "warning" }> = {
   out: { text: "退勤中", intent: "default" },
   in: { text: "勤務中", intent: "success" },
@@ -23,7 +28,9 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
   const todayRecord = data?.todayRecord;
 
   const handleAction = useCallback(
-    (action: ClockAction, _nextStatus: ClockStatus) => {
+    (action: ClockAction, nextStatus: ClockStatus) => {
+      // ボタン側の契約を維持するため nextStatus を受け取るが、状態遷移は API レスポンスを正とする。
+      void nextStatus;
       clockInOut(action);
     },
     [clockInOut]

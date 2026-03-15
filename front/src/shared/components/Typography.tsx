@@ -49,7 +49,7 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
 
         return (
             <Comp
-                ref={ref as any}
+                ref={ref as unknown as React.Ref<HTMLParagraphElement>}
                 className={cn(typographyVariants({ variant, intent, align }), className)}
                 {...props}
             />
