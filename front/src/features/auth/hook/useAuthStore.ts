@@ -1,26 +1,16 @@
-import { create } from "zustand";
+// src/features/auth/store.ts
+import { create } from 'zustand';
+import type { AuthUser } from '@/domain/auth/types';
 
-/**
- * 認証ストアで保持するユーザー情報。
- */
-interface AuthUserState {
-    id: string;
-    name: string;
-    email: string;
-    roles: string[];
-    settings?: Record<string, unknown> | null;
-}
-
-/**
- * 認証状態のグローバルストア。
- */
 interface AuthStore {
-    user: AuthUserState | null;
+    user: AuthUser | null;
     isAuthenticated: boolean;
     isInitializing: boolean;
-    setUser: (user: AuthUserState | null) => void;
+
+    setUser: (user: AuthUser | null) => void;
     setIsAuthenticated: (auth: boolean) => void;
     setIsInitializing: (init: boolean) => void;
+    reset: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -31,4 +21,5 @@ export const useAuthStore = create<AuthStore>((set) => ({
     setUser: (user) => set({ user }),
     setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
     setIsInitializing: (init) => set({ isInitializing: init }),
+    reset: () => set({ user: null, isAuthenticated: false, isInitializing: true }),
 }));

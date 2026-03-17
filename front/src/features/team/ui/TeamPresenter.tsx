@@ -6,7 +6,7 @@ import {
   ChevronRight 
 } from 'lucide-react';
 import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
-import type { TeamMember } from '@/domain/enums/team';
+import type { TeamMember } from '@/domain/entities/team';
 import { getTeamMemberStatusView } from '@/shared/presentation/team';
 
 interface TeamPresenterProps {

@@ -3,8 +3,8 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
 import { getSettings } from '@/__generated__/settings/settings';
 import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsRequest } from '@/__generated__/model';
-import type { SettingsSection } from '@/domain/enums/settings';
-import { SETTINGS_SECTION } from '@/domain/enums/settings';
+import type { SettingsSection } from '@/domain/entities/settings';
+import { SETTINGS_SECTION } from '@/domain/entities/settings';
 import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 

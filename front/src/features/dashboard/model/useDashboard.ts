@@ -1,7 +1,7 @@
 import {
   attendanceQueryKeys,
   useAttendanceClockAction,
-  useAttendanceDashboardData,
+  useAttendanceDashboard,
 } from "@/features/attendance/hooks/useAttendanceData";
 
 export const dashboardQueryKeys = {
@@ -15,7 +15,7 @@ export const dashboardQueryKeys = {
  * ダッシュボードデータを取得する。
  */
 export function useGetDashboardData() {
-  return useAttendanceDashboardData();
+  return useAttendanceDashboard();
 }
 
 /**

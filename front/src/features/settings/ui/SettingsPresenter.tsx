@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Typography, Label } from '@/shared/components';
-import type { SettingsSection } from '@/domain/enums/settings';
+import type { SettingsSection } from '@/domain/entities/settings';
 import {
   settingsLanguageOptions,
   settingsNotificationItems,

@@ -15,7 +15,6 @@ const frontOutputPath = path.join(rootDir, 'front/src/__generated__/zod.validati
 const labelOutputPath = path.join(rootDir, 'front/src/__generated__/field-labels.json');
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
 const fieldsPath = path.join(rootDir, 'schema/fields.yaml');
-const mismatchOutputPath = path.join(rootDir, 'schema/field-mismatches.json');
 
 const LABEL_OVERRIDES = {
   email: 'メールアドレス',
@@ -713,16 +712,9 @@ const main = async () => {
   await ensureDir(frontOutputPath);
   await ensureDir(labelOutputPath);
   await ensureDir(backOutputPath);
-  await ensureDir(mismatchOutputPath);
   await fs.writeFile(frontOutputPath, frontFile, 'utf-8');
   await fs.writeFile(labelOutputPath, `${JSON.stringify(labels, null, 2)}\n`, 'utf-8');
   await fs.writeFile(backOutputPath, backFile, 'utf-8');
-  await fs.writeFile(mismatchOutputPath, `${JSON.stringify(mismatches, null, 2)}\n`, 'utf-8');
-
-  console.log(`Generated: ${path.relative(rootDir, frontOutputPath)}`);
-  console.log(`Generated: ${path.relative(rootDir, labelOutputPath)}`);
-  console.log(`Generated: ${path.relative(rootDir, backOutputPath)}`);
-  console.log(`Generated: ${path.relative(rootDir, mismatchOutputPath)}`);
 };
 
 main().catch((error) => {

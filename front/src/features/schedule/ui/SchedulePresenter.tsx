@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
 import { cn } from '@/shared/utils/style';
-import type { DaySchedule } from '@/domain/enums/schedule';
+import type { DaySchedule } from '@/domain/entities/schedule';
 import { formatJapaneseYearMonth } from '@/shared/presentation/format';
 import {
   getScheduleShiftLabel,

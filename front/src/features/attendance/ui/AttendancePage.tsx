@@ -4,9 +4,7 @@ import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import { AttendancePresenter } from '@/features/attendance/ui/AttendancePresenter';
 
 /**
- * 勤怠画面コンテナ。
- *
- * 勤怠画面に必要な状態を取得し、表示コンポーネントへ渡す。
+ * 勤怠画面
  */
 const AttendancePage: React.FC = () => {
   const {
@@ -16,8 +14,6 @@ const AttendancePage: React.FC = () => {
     isLoading,
     isError,
     isPending,
-    todayWorkedTime,
-    breakTime,
     handleAction,
   } = useAttendance();
 
@@ -30,8 +26,6 @@ const AttendancePage: React.FC = () => {
         isLoading={isLoading}
         isError={isError}
         isPending={isPending}
-        todayWorkedTime={todayWorkedTime}
-        breakTime={breakTime}
         onAction={handleAction}
       />
     </Container>

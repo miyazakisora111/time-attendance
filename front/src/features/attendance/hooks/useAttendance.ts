@@ -3,9 +3,8 @@ import { useMemo, useState } from 'react';
 import type { AttendanceStatus, ClockStatus, LastAction } from '@/domain/time-attendance/attendance';
 import type { ClockAction } from '@/domain/time-attendance/clock-action';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
-import { useAttendanceClockAction, useAttendanceDashboardData } from '@/features/attendance/hooks/useAttendanceData';
+import { useAttendanceClockAction, useAttendanceDashboard } from '@/features/attendance/hooks/useAttendanceData';
 import {
-  EMPTY_TIME_TEXT,
   formatJapaneseHourMinute,
   formatWorkedHours,
 } from '@/shared/presentation/format';
@@ -16,34 +15,33 @@ import {
 } from '@/shared/presentation/time-attendance';
 
 /**
- * 勤怠画面の表示状態を管理する hook。
- *
- * 打刻状態の取得・打刻実行・表示用データ変換を担当する。
+ * 勤怠画面の表示状態を管理するカスタムフック。
  */
 export const useAttendance = () => {
   const currentTime = useCurrentTime();
-  const { data, isLoading, isError } = useAttendanceDashboardData();
+  const { data, isLoading, isError } = useAttendanceDashboard();
   const { mutate: clockAction, isPending } = useAttendanceClockAction();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
 
+  // 勤怠ステータスを算出
   const status = useMemo<AttendanceStatus>(() => {
     const rawStatus = (data?.clockStatus ?? 'out') as ClockStatus;
     return mapClockStatusToAttendanceStatus(rawStatus);
   }, [data?.clockStatus]);
 
+  // 本日の実働時間を整形
   const todayWorkedTime = useMemo(() => {
     return formatWorkedHours(data?.todayRecord?.totalWorkedHours);
   }, [data?.todayRecord?.totalWorkedHours]);
 
-  const breakTime = EMPTY_TIME_TEXT;
-
+  // 直近アクションの表示用オブジェクトに変換
   const lastActionView = useMemo(() => {
     if (!lastAction) return null;
     return toLastActionView(lastAction);
   }, [lastAction]);
 
   /**
-   * 画面の打刻操作を API アクションへ変換して実行する。
+   * 画面上の打刻操作を実行するハンドラー。
    *
    * @param action 実行する打刻アクション
    */
@@ -51,12 +49,11 @@ export const useAttendance = () => {
     const nowText = formatJapaneseHourMinute(new Date());
     const label = getActionLabel(action);
 
+    // API実行
     clockAction(action, {
       onSuccess: () => {
         setLastAction({ action, time: nowText });
-        sonner.success(`${label}しました (${nowText})`, {
-          description: '本日の勤務データに記録されました。',
-        });
+        sonner.success(`${label}しました (${nowText})`);
       },
     });
   };
@@ -69,7 +66,6 @@ export const useAttendance = () => {
     isError,
     isPending,
     todayWorkedTime,
-    breakTime,
     handleAction,
   };
 };

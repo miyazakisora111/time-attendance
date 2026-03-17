@@ -1,8 +1,7 @@
 import {
   DAY_SCHEDULE_STATUS,
-  type DaySchedule,
   type DayScheduleStatus,
-} from '@/domain/enums/schedule';
+} from '@/domain/entities/schedule';
 import { EMPTY_TIME_RANGE_TEXT } from '@/shared/presentation/format';
 
 type ScheduleBadgeIntent = 'default' | 'danger' | 'outline' | 'warning';
@@ -53,6 +52,22 @@ const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
     shiftFallback: '休み',
   },
 };
+
+/**
+ * 日次スケジュール。
+ */
+export interface DaySchedule {
+  /** 日付表示 */
+  date: string;
+  /** 勤務ステータス */
+  status: DayScheduleStatus;
+  /** シフト名称 */
+  shift?: string;
+  /** 勤務時間帯 */
+  timeRange?: string;
+  /** 今日フラグ */
+  isToday?: boolean;
+}
 
 export const toScheduleRows = (dates: string[], today = new Date()): DaySchedule[] => {
   const todayText = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(

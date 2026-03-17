@@ -4,7 +4,7 @@ import { clockInOut, fetchDashboard } from '@/features/dashboard/api/dashboardAp
 import { API_CONFIG } from '@/config/api';
 
 /**
- * 勤怠/ダッシュボードの共通 React Query キー。
+ * React Query キー。
  */
 export const attendanceQueryKeys = {
   all: ['attendance-dashboard'] as const,
@@ -12,9 +12,9 @@ export const attendanceQueryKeys = {
 };
 
 /**
- * 勤怠/ダッシュボード共通の勤怠サマリーを取得する。
+ * 勤怠サマリーを取得する。
  */
-export const useGetAttendanceDashboard = () => {
+export const useAttendanceDashboard = () => {
   return useQuery({
     queryKey: attendanceQueryKeys.dashboard(),
     queryFn: fetchDashboard,
@@ -38,5 +38,4 @@ export const useCreateAttendanceClockAction = () => {
 };
 
 // 互換エクスポート
-export const useAttendanceDashboardData = useGetAttendanceDashboard;
 export const useAttendanceClockAction = useCreateAttendanceClockAction;

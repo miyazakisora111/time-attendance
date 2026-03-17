@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getTeam } from '@/__generated__/team/team';
 import type { TeamMember as ApiTeamMember } from '@/__generated__/model';
-import { MEMBER_STATUS, type MemberStatus, type TeamMember } from '@/domain/enums/team';
+import { MEMBER_STATUS, type MemberStatus, type TeamMember } from '@/domain/entities/team';
 import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
 
 /** 部署フィルタの全件選択値。 */
