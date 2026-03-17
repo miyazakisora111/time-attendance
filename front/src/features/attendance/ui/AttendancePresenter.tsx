@@ -2,47 +2,35 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, LogIn, LogOut, Coffee, MapPin, Shield, CheckCircle2, History, AlertCircle } from 'lucide-react';
 import { Button, Card, CardContent, Typography } from '@/shared/components';
-import type { AttendanceStatus, LastAction } from '@/domain/enums/attendance';
+import type { AttendanceStatus } from '@/domain/time-attendance/attendance';
+import type { ClockAction } from '@/domain/time-attendance/clock-action';
+import {
+  EMPTY_TIME_TEXT,
+  formatJapaneseLongDate,
+  formatJapaneseTime,
+} from '@/shared/presentation/format';
+import {
+  attendanceActionButtonLabelMap,
+  getAttendanceStatusView,
+  type LastActionView,
+} from '@/shared/presentation/time-attendance';
 
 interface AttendancePresenterProps {
   status: AttendanceStatus;
   currentTime: Date;
-  lastAction: LastAction | null;
+  lastAction: LastActionView | null;
   isLoading?: boolean;
   isError?: boolean;
   isPending?: boolean;
   todayWorkedTime?: string;
   breakTime?: string;
-  onAction: (type: AttendanceStatus, label: string) => void;
+  onAction: (action: ClockAction) => void;
 }
 
-const getStatusDisplay = (status: AttendanceStatus) => {
-  switch (status) {
-    case 'working':
-      return {
-        text: <Typography variant="h3" intent="primary" className="mb-2">勤務中</Typography>,
-        iconColor: 'text-blue-600',
-        intent: 'primary' as const,
-        description: <Typography variant="small" intent="primary" align="center" className="block">今日も順調に業務が進んでいます。適度に休憩を取りましょう。</Typography>,
-        icon: <CheckCircle2 size={32} />,
-      };
-    case 'break':
-      return {
-        text: <Typography variant="h3" intent="warning" className="mb-2">休憩中</Typography>,
-        iconColor: 'text-amber-600',
-        intent: 'warning' as const,
-        description: <Typography variant="small" intent="warning" align="center" className="block">リフレッシュして、次の業務に備えましょう。</Typography>,
-        icon: <Coffee size={32} />,
-      };
-    default:
-      return {
-        text: <Typography variant="h3" intent="muted" className="mb-2">未出勤</Typography>,
-        iconColor: 'text-gray-500',
-        intent: 'muted' as const,
-        description: <Typography variant="small" intent="muted" align="center" className="block">業務を開始する準備はできましたか？</Typography>,
-        icon: <AlertCircle size={32} />,
-      };
-  }
+const statusIconMap: Record<AttendanceStatus, { iconColor: string; icon: React.ReactNode }> = {
+  working: { iconColor: 'text-blue-600', icon: <CheckCircle2 size={32} /> },
+  break: { iconColor: 'text-amber-600', icon: <Coffee size={32} /> },
+  out: { iconColor: 'text-gray-500', icon: <AlertCircle size={32} /> },
 };
 
 /**
@@ -57,11 +45,12 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
   isLoading = false,
   isError = false,
   isPending = false,
-  todayWorkedTime = '--:--',
-  breakTime = '--:--',
+  todayWorkedTime = EMPTY_TIME_TEXT,
+  breakTime = EMPTY_TIME_TEXT,
   onAction,
 }) => {
-  const currentStatus = getStatusDisplay(status);
+  const currentStatus = getAttendanceStatusView(status);
+  const currentStatusIcon = statusIconMap[status];
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -78,11 +67,11 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-50 text-gray-500 text-sm font-medium mb-6"
             >
               <Clock size={16} className="text-blue-500" />
-              {currentTime.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
+              {formatJapaneseLongDate(currentTime)}
             </motion.div>
             
             <Typography variant="h1" className="text-5xl md:text-6xl tabular-nums font-black mb-4">
-              {currentTime.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              {formatJapaneseTime(currentTime)}
             </Typography>
             
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
@@ -103,14 +92,14 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
             <Card variant="flat" intent={currentStatus.intent} padding="md" className="transition-colors duration-500">
               <div className="flex flex-col items-center text-center">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white shadow-sm mb-4">
-                  <div className={currentStatus.iconColor}>
-                    {currentStatus.icon}
+                  <div className={currentStatusIcon.iconColor}>
+                    {currentStatusIcon.icon}
                   </div>
                 </div>
-                {currentStatus.text}
-                <div className="leading-relaxed block">
+                <Typography variant="h3" intent={currentStatus.intent} className="mb-2">{currentStatus.title}</Typography>
+                <Typography variant="small" intent={currentStatus.intent} align="center" className="block leading-relaxed">
                   {currentStatus.description}
-                </div>
+                </Typography>
               </div>
             </Card>
           </div>
@@ -120,50 +109,50 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Button
           disabled={isLoading || isPending || status !== 'out'}
-          onClick={() => onAction('working', '出勤')}
+          onClick={() => onAction('in')}
           size="lg"
           variant={status === 'out' ? 'solid' : 'outline'}
           intent="primary"
           className="h-24"
         >
           <LogIn size={24} />
-          <Typography variant="label">出勤</Typography>
+          <Typography variant="label">{attendanceActionButtonLabelMap.in}</Typography>
         </Button>
 
         <Button
           disabled={isLoading || isPending || status !== 'working'}
-          onClick={() => onAction('break', '休憩開始')}
+          onClick={() => onAction('break_start')}
           size="lg"
           variant={status === 'working' ? 'solid' : 'outline'}
           intent={status === 'working' ? 'warning' : 'primary'}
           className="h-24"
         >
           <Coffee size={24} />
-          <Typography variant="label">休憩</Typography>
+          <Typography variant="label">{attendanceActionButtonLabelMap.break_start}</Typography>
         </Button>
 
         <Button
           disabled={isLoading || isPending || status !== 'break'}
-          onClick={() => onAction('working', '休憩終了')}
+          onClick={() => onAction('break_end')}
           size="lg"
           variant={status === 'break' ? 'solid' : 'outline'}
           intent="primary"
           className="h-24"
         >
           <CheckCircle2 size={24} />
-          <Typography variant="label">戻り</Typography>
+          <Typography variant="label">{attendanceActionButtonLabelMap.break_end}</Typography>
         </Button>
 
         <Button
           disabled={isLoading || isPending || status === 'out'}
-          onClick={() => onAction('out', '退勤')}
+          onClick={() => onAction('out')}
           size="lg"
           variant={status !== 'out' ? 'solid' : 'outline'}
           intent="primary"
           className="h-24 bg-gray-900"
         >
           <LogOut size={24} />
-          <Typography variant="label">退勤</Typography>
+          <Typography variant="label">{attendanceActionButtonLabelMap.out}</Typography>
         </Button>
       </div>
 

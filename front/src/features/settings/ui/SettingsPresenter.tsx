@@ -7,25 +7,44 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Button, Typography, Label } from '@/shared/components';
 import type { SettingsSection } from '@/domain/enums/settings';
+import {
+  settingsLanguageOptions,
+  settingsNotificationItems,
+  settingsSections,
+  settingsSecurityActionLabels,
+  settingsThemeOptions,
+  type SettingsNotificationKey,
+  type SettingsThemeMode,
+} from '@/shared/presentation/settings';
 
 interface SettingsPresenterProps {
   activeSection: SettingsSection;
   setActiveSection: (section: SettingsSection) => void;
-  theme: 'light' | 'dark' | 'system';
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  theme: SettingsThemeMode;
+  setTheme: (theme: SettingsThemeMode) => void;
   language: string;
   setLanguage: (lang: string) => void;
   handleSave: () => void;
 }
 
-type ThemeMode = 'light' | 'dark' | 'system';
+const settingsSectionIconMap: Record<SettingsSection, LucideIcon> = {
+  profile: User,
+  notifications: Bell,
+  security: Lock,
+  display: Monitor,
+};
 
-const SECTIONS: { id: SettingsSection; label: string; icon: LucideIcon }[] = [
-  { id: 'profile', label: 'プロフィール', icon: User },
-  { id: 'notifications', label: '通知設定', icon: Bell },
-  { id: 'security', label: 'セキュリティ', icon: Lock },
-  { id: 'display', label: '表示設定', icon: Monitor },
-];
+const settingsThemeIconMap: Record<SettingsThemeMode, LucideIcon> = {
+  light: Sun,
+  dark: Moon,
+  system: Monitor,
+};
+
+const settingsNotificationIconMap: Record<SettingsNotificationKey, LucideIcon> = {
+  clock_missing: Clock,
+  approval: FileText,
+  leave_reminder: Calendar,
+};
 
 export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
   activeSection,
@@ -42,20 +61,24 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
         {/* Sidebar Nav */}
         <aside className="w-full md:w-64 shrink-0">
           <div className="space-y-1">
-            {SECTIONS.map((section) => (
-              <Button
-                key={section.id}
-                variant={activeSection === section.id ? "solid" : "ghost"}
-                intent={activeSection === section.id ? "primary" : "secondary"}
-                onClick={() => setActiveSection(section.id)}
-                className="w-full justify-start gap-3 px-4 py-3 rounded-2xl h-auto"
-              >
-                <section.icon size={18} />
-                <Typography variant="label" className={activeSection === section.id ? "text-white" : "text-gray-500"}>
-                  {section.label}
-                </Typography>
-              </Button>
-            ))}
+            {settingsSections.map((section) => {
+              const SectionIcon = settingsSectionIconMap[section.id];
+
+              return (
+                <Button
+                  key={section.id}
+                  variant={activeSection === section.id ? "solid" : "ghost"}
+                  intent={activeSection === section.id ? "primary" : "secondary"}
+                  onClick={() => setActiveSection(section.id)}
+                  className="w-full justify-start gap-3 px-4 py-3 rounded-2xl h-auto"
+                >
+                  <SectionIcon size={18} />
+                  <Typography variant="label" className={activeSection === section.id ? "text-white" : "text-gray-500"}>
+                    {section.label}
+                  </Typography>
+                </Button>
+              );
+            })}
           </div>
         </aside>
 
@@ -129,19 +152,18 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-8 space-y-6">
-                    {[
-                      { title: '打刻忘れ通知', desc: '定時を過ぎても打刻がない場合に通知します', icon: Clock },
-                      { title: '申請承認通知', desc: '申請が承認または却下された場合に通知します', icon: FileText },
-                      { title: '休暇リマインド', desc: '取得予定の休暇の1日前に通知します', icon: Calendar },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center justify-between py-4 border-b border-gray-50 last:border-none">
+                    {settingsNotificationItems.map((item) => {
+                      const ItemIcon = settingsNotificationIconMap[item.id];
+
+                      return (
+                        <div key={item.id} className="flex items-center justify-between py-4 border-b border-gray-50 last:border-none">
                         <div className="flex items-center gap-4">
                           <div className="p-3 bg-gray-50 rounded-2xl text-gray-400">
-                            <item.icon size={20} />
+                            <ItemIcon size={20} />
                           </div>
                           <div>
                             <Typography variant="label">{item.title}</Typography>
-                            <Typography variant="small" className="block text-gray-500">{item.desc}</Typography>
+                            <Typography variant="small" className="block text-gray-500">{item.description}</Typography>
                           </div>
                         </div>
                         <div className="relative inline-flex items-center cursor-pointer">
@@ -149,7 +171,8 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                           <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -171,24 +194,24 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                     <div className="space-y-4">
                       <Label><Typography variant="label">テーマ設定</Typography></Label>
                       <div className="grid grid-cols-3 gap-4">
-                        {[
-                          { id: 'light', label: 'ライト', icon: Sun },
-                          { id: 'dark', label: 'ダーク', icon: Moon },
-                          { id: 'system', label: 'システム', icon: Monitor },
-                        ].map((t) => (
-                          <Button
-                            key={t.id}
-                            variant={theme === t.id ? "solid" : "ghost"}
-                            intent={theme === t.id ? "primary" : "secondary"}
-                            onClick={() => setTheme(t.id as ThemeMode)}
-                            className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all h-auto"
-                          >
-                            <t.icon size={24} />
-                            <Typography variant="label" className={theme === t.id ? "text-white" : "text-gray-500"}>
-                              {t.label}
-                            </Typography>
-                          </Button>
-                        ))}
+                        {settingsThemeOptions.map((option) => {
+                          const ThemeIcon = settingsThemeIconMap[option.id];
+
+                          return (
+                            <Button
+                              key={option.id}
+                              variant={theme === option.id ? "solid" : "ghost"}
+                              intent={theme === option.id ? "primary" : "secondary"}
+                              onClick={() => setTheme(option.id)}
+                              className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all h-auto"
+                            >
+                              <ThemeIcon size={24} />
+                              <Typography variant="label" className={theme === option.id ? "text-white" : "text-gray-500"}>
+                                {option.label}
+                              </Typography>
+                            </Button>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -199,10 +222,9 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                         onChange={(e) => setLanguage(e.target.value)}
                         className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500"
                       >
-                        <option>日本語</option>
-                        <option>English</option>
-                        <option>简体中文</option>
-                        <option>繁體中文</option>
+                        {settingsLanguageOptions.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
                       </select>
                     </div>
                   </CardContent>
@@ -241,14 +263,12 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                       </div>
 
                       <div className="space-y-4 pt-4">
-                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl px-6 group">
-                          <Typography variant="label">パスワードの変更</Typography>
-                          <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
-                        </Button>
-                        <Button variant="outline" className="w-full justify-between h-14 rounded-2xl px-6 group">
-                          <Typography variant="label">ログイン履歴の確認</Typography>
-                          <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
-                        </Button>
+                        {settingsSecurityActionLabels.map((label) => (
+                          <Button key={label} variant="outline" className="w-full justify-between h-14 rounded-2xl px-6 group">
+                            <Typography variant="label">{label}</Typography>
+                            <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
+                          </Button>
+                        ))}
                       </div>
                     </div>
                   </CardContent>

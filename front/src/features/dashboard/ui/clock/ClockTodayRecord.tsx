@@ -1,6 +1,7 @@
 import React from "react";
+import type { ClockStatus } from "@/domain/time-attendance/attendance";
 import { Typography } from "@/shared/components";
-import type { ClockStatus } from "@/features/dashboard/ui/clock/ClockActionButtons";
+import { EMPTY_DURATION_TEXT, EMPTY_TIME_TEXT } from "@/shared/presentation/format";
 
 interface ClockTodayRecordProps {
   status: ClockStatus;
@@ -25,13 +26,13 @@ export const ClockTodayRecord = React.memo(function ClockTodayRecord({
           <Typography variant="small" intent="muted" className="mb-1 block">
             出勤時刻
           </Typography>
-          <Typography variant="h3">{isWorking ? clockInTime : "--:--"}</Typography>
+          <Typography variant="h3">{isWorking ? clockInTime : EMPTY_TIME_TEXT}</Typography>
         </div>
         <div>
           <Typography variant="small" intent="muted" className="mb-1 block">
             勤務時間
           </Typography>
-          <Typography variant="h3">{isWorking ? totalWorkedHours : "--h --m"}</Typography>
+          <Typography variant="h3">{isWorking ? totalWorkedHours : EMPTY_DURATION_TEXT}</Typography>
         </div>
       </div>
     </section>

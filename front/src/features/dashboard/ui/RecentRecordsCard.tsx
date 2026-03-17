@@ -1,8 +1,10 @@
 import React from "react";
 import { AlertCircle, Clock, History } from "lucide-react";
+import { isCrossDayShiftByClock } from "@/domain/time-attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
-import { isCrossDayShiftByClock } from "@/features/attendance/lib/attendanceViewModel";
+import { formatClockText, formatHoursText } from "@/shared/presentation/format";
+import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/time-attendance";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。
@@ -79,9 +81,9 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                         </Typography>
                       </div>
                     </td>
-                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{record.clockIn || "-"}</td>
+                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{formatClockText(record.clockIn)}</td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
-                      {record.clockOut || "-"}
+                      {formatClockText(record.clockOut)}
                       {isCrossDayShiftByClock(record.clockIn, record.clockOut) ? (
                         <Typography variant="small" intent="muted" className="ml-1 inline-block">
                           (翌日)
@@ -89,10 +91,10 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                       ) : null}
                     </td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
-                      {record.workHours !== null ? `${record.workHours}h` : "-"}
+                      {formatHoursText(record.workHours)}
                     </td>
                     <td className="px-3 py-4">
-                      <Badge intent={record.status === "通常" ? "success" : record.status === "残業" ? "warning" : "default"}>
+                      <Badge intent={getAttendanceRecordStatusBadgeIntent(record.status)}>
                         {record.status}
                       </Badge>
                     </td>

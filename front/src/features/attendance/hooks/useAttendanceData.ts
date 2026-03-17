@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ClockAction } from '@/domain/time-attendance/clock-action';
 import { clockInOut, fetchDashboard } from '@/features/dashboard/api/dashboardApi';
-import type { ClockAction } from '@/features/dashboard/api/dashboardApi';
 import { API_CONFIG } from '@/config/api';
 
 /**

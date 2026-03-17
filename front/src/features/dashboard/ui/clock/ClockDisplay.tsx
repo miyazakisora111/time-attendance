@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography } from "@/shared/components";
 import { useCurrentTime } from "@/features/attendance/hooks/useCurrentTime";
+import { formatJapaneseLongDate, formatJapaneseTime } from "@/shared/presentation/format";
 
 export const ClockDisplay = React.memo(function ClockDisplay() {
   const currentTime = useCurrentTime();
@@ -11,19 +12,10 @@ export const ClockDisplay = React.memo(function ClockDisplay() {
         現在時刻
       </Typography>
       <Typography variant="h1" className="mb-1 text-4xl tabular-nums tracking-tight">
-        {currentTime.toLocaleTimeString("ja-JP", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })}
+        {formatJapaneseTime(currentTime)}
       </Typography>
       <Typography variant="caption" intent="muted">
-        {currentTime.toLocaleDateString("ja-JP", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          weekday: "long",
-        })}
+        {formatJapaneseLongDate(currentTime)}
       </Typography>
     </div>
   );

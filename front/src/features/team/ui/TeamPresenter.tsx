@@ -6,7 +6,8 @@ import {
   ChevronRight 
 } from 'lucide-react';
 import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
-import type { TeamMember, MemberStatus } from '@/domain/enums/team';
+import type { TeamMember } from '@/domain/enums/team';
+import { getTeamMemberStatusView } from '@/shared/presentation/team';
 
 interface TeamPresenterProps {
   searchQuery: string;
@@ -23,18 +24,12 @@ interface TeamPresenterProps {
   departments: string[];
 }
 
-const getStatusBadge = (status: MemberStatus) => {
-  switch (status) {
-    case 'working':
-      return { label: '勤務中', intent: 'success' as const, icon: CheckCircle2 };
-    case 'break':
-      return { label: '休憩中', intent: 'warning' as const, icon: Coffee };
-    case 'leave':
-      return { label: '休暇', intent: 'primary' as const, icon: Clock };
-    default:
-      return { label: '未出勤', intent: 'default' as const, icon: XCircle };
-  }
-};
+const teamMemberStatusIconMap = {
+  working: CheckCircle2,
+  break: Coffee,
+  leave: Clock,
+  off: XCircle,
+} as const;
 
 export const TeamPresenter: React.FC<TeamPresenterProps> = ({
   searchQuery,
@@ -126,8 +121,8 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filteredMembers.map((member, index) => {
-                  const status = getStatusBadge(member.status);
-                  const StatusIcon = status.icon;
+                  const status = getTeamMemberStatusView(member.status);
+                  const StatusIcon = teamMemberStatusIconMap[member.status];
                   return (
                     <motion.tr 
                       initial={{ opacity: 0, y: 10 }}

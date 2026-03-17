@@ -1,36 +1,28 @@
 import React, { useCallback } from "react";
 import { Clock } from "lucide-react";
+import type { ClockStatus } from "@/domain/time-attendance/attendance";
+import type { ClockAction } from "@/domain/time-attendance/clock-action";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
 import { useClockInOut, useDashboardData } from "@/features/dashboard/model/useDashboard";
 import { ClockActionButtons } from "@/features/dashboard/ui/clock/ClockActionButtons";
-import type {
-  ClockAction,
-  ClockStatus,
-} from "@/features/dashboard/ui/clock/ClockActionButtons";
 import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
 import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
+import { getClockStatusBadgeView } from "@/shared/presentation/time-attendance";
 
 /**
  * ダッシュボードの打刻カード。
  *
  * 現在の打刻状態を表示し、打刻アクションを実行する。
  */
-const statusConfig: Record<ClockStatus, { text: string; intent: "default" | "success" | "warning" }> = {
-  out: { text: "退勤中", intent: "default" },
-  in: { text: "勤務中", intent: "success" },
-  break: { text: "休憩中", intent: "warning" },
-};
-
 export const ClockInOutCard = React.memo(function ClockInOutCard() {
   const { data } = useDashboardData();
   const { mutate: clockInOut, isPending } = useClockInOut();
   const status = (data?.clockStatus ?? "out") as ClockStatus;
   const todayRecord = data?.todayRecord;
+  const statusView = getClockStatusBadgeView(status);
 
   const handleAction = useCallback(
-    (action: ClockAction, nextStatus: ClockStatus) => {
-      // ボタン側の契約を維持するため nextStatus を受け取るが、状態遷移は API レスポンスを正とする。
-      void nextStatus;
+    (action: ClockAction) => {
       clockInOut(action);
     },
     [clockInOut]
@@ -44,7 +36,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
             <Clock className="text-blue-600" />
             打刻
           </CardTitle>
-          <Badge intent={statusConfig[status].intent}>{statusConfig[status].text}</Badge>
+          <Badge intent={statusView.intent}>{statusView.text}</Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">

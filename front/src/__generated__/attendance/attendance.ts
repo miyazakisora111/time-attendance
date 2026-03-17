@@ -10,7 +10,7 @@ import type {
   AttendanceClockOutRequest,
   AttendanceResponse,
 } from ".././model";
-import { customInstance } from "../../../shared/http/client";
+import { customInstance } from "../../shared/http/client";
 
 export const getAttendance = () => {
   /**

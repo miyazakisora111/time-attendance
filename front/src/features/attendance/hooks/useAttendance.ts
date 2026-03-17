@@ -1,14 +1,19 @@
 import { toast as sonner } from 'sonner';
-import type { AttendanceStatus, LastAction } from '@/domain/enums/attendance';
+import { useMemo, useState } from 'react';
+import type { AttendanceStatus, ClockStatus, LastAction } from '@/domain/time-attendance/attendance';
+import type { ClockAction } from '@/domain/time-attendance/clock-action';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import { useAttendanceClockAction, useAttendanceDashboardData } from '@/features/attendance/hooks/useAttendanceData';
 import {
-  mapClockStatusToAttendanceStatus,
+  EMPTY_TIME_TEXT,
+  formatJapaneseHourMinute,
   formatWorkedHours,
-  toLastAction,
-} from '@/features/attendance/lib/attendanceViewModel';
-import type { ClockAction, ClockStatus } from '@/features/dashboard/ui/clock/ClockActionButtons';
-import { useMemo, useState } from 'react';
+} from '@/shared/presentation/format';
+import { getActionLabel } from '@/shared/presentation/action-label';
+import {
+  mapClockStatusToAttendanceStatus,
+  toLastActionView,
+} from '@/shared/presentation/time-attendance';
 
 /**
  * 勤怠画面の表示状態を管理する hook。
@@ -30,32 +35,25 @@ export const useAttendance = () => {
     return formatWorkedHours(data?.todayRecord?.totalWorkedHours);
   }, [data?.todayRecord?.totalWorkedHours]);
 
-  const breakTime = useMemo(() => {
-    return '--:--';
-  }, []);
+  const breakTime = EMPTY_TIME_TEXT;
+
+  const lastActionView = useMemo(() => {
+    if (!lastAction) return null;
+    return toLastActionView(lastAction);
+  }, [lastAction]);
 
   /**
    * 画面の打刻操作を API アクションへ変換して実行する。
    *
-   * @param type 次状態
-   * @param label 画面表示ラベル
+   * @param action 実行する打刻アクション
    */
-  const handleAction = (type: AttendanceStatus, label: string) => {
-    const actionMap: Record<AttendanceStatus, ClockAction> = {
-      out: 'out',
-      working: label === '休憩終了' ? 'break_end' : 'in',
-      break: 'break_start',
-    };
-    const action = actionMap[type];
-
-    const nowText = new Date().toLocaleTimeString('ja-JP', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const handleAction = (action: ClockAction) => {
+    const nowText = formatJapaneseHourMinute(new Date());
+    const label = getActionLabel(action);
 
     clockAction(action, {
       onSuccess: () => {
-        setLastAction(toLastAction(action, nowText));
+        setLastAction({ action, time: nowText });
         sonner.success(`${label}しました (${nowText})`, {
           description: '本日の勤務データに記録されました。',
         });
@@ -66,7 +64,7 @@ export const useAttendance = () => {
   return {
     status,
     currentTime,
-    lastAction,
+    lastAction: lastActionView,
     isLoading,
     isError,
     isPending,

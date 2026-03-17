@@ -8,6 +8,12 @@ import {
 import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
 import { cn } from '@/shared/utils/style';
 import type { DaySchedule } from '@/domain/enums/schedule';
+import { formatJapaneseYearMonth } from '@/shared/presentation/format';
+import {
+  getScheduleShiftLabel,
+  getScheduleStatusView,
+  getScheduleTimeRangeText,
+} from '@/shared/presentation/schedule';
 
 interface SchedulePresenterProps {
   currentMonth: Date;
@@ -16,26 +22,13 @@ interface SchedulePresenterProps {
   prevMonth: () => void;
 }
 
-const getStatusStyles = (status: DaySchedule['status']) => {
-  switch (status) {
-    case 'working':
-      return { border: 'border-l-4 border-blue-500', bg: 'bg-white', text: 'text-gray-900', intent: 'default' as const };
-    case 'holiday':
-      return { border: 'border-l-4 border-red-500', bg: 'bg-red-50/30', text: 'text-red-700', intent: 'danger' as const };
-    case 'off':
-      return { border: 'border-l-4 border-gray-300', bg: 'bg-gray-50/50', text: 'text-gray-400', intent: 'outline' as const };
-    default:
-      return { border: 'border-l-4 border-amber-500', bg: 'bg-amber-50/30', text: 'text-amber-700', intent: 'warning' as const };
-  }
-};
-
 export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
   currentMonth,
   schedule,
   nextMonth,
   prevMonth,
 }) => {
-  const monthName = currentMonth.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
+  const monthName = formatJapaneseYearMonth(currentMonth);
 
   return (
     <div className="space-y-8">
@@ -107,7 +100,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
       {/* Schedule Grid/List */}
       <div className="space-y-3">
         {schedule.map((day, index) => {
-          const styles = getStatusStyles(day.status);
+          const styles = getScheduleStatusView(day.status);
           return (
             <motion.div
               initial={{ opacity: 0, x: -10 }}
@@ -127,11 +120,11 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
                     {/* Shift Info */}
                     <div className="flex-1 flex flex-col md:flex-row md:items-center gap-6">
                       <div>
-                        <Typography variant="label" className={cn("block text-sm", styles.text)}>{day.shift || (day.status === 'off' ? '公休日' : '休み')}</Typography>
+                        <Typography variant="label" className={cn("block text-sm", styles.text)}>{getScheduleShiftLabel(day)}</Typography>
                         <div className="flex items-center gap-3 mt-1">
                           <Typography variant="small" intent="muted" className="flex items-center gap-1 font-medium">
                             <Clock size={12} />
-                            {day.timeRange || '--:-- - --:--'}
+                            {getScheduleTimeRangeText(day.timeRange)}
                           </Typography>
                           <Typography variant="small" intent="muted" className="flex items-center gap-1 font-medium">
                             <MapPin size={12} />
@@ -149,9 +142,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
 
                     {/* Status & Action */}
                     <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-none border-gray-100 pt-4 md:pt-0">
-                      <Badge intent={styles.intent}>
-                        {day.status === 'working' ? '出社' : day.status === 'off' ? '公休' : '休暇'}
-                      </Badge>
+                      <Badge intent={styles.intent}>{styles.badgeLabel}</Badge>
                       <Button variant="ghost" size="sm" className="rounded-lg">
                         <Typography variant="small" intent="primary" className="font-bold">詳細</Typography>
                       </Button>

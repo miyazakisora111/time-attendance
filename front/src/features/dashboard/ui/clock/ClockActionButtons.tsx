@@ -1,14 +1,14 @@
 import React from "react";
 import { Coffee, Clock, LogIn, LogOut } from "lucide-react";
+import type { ClockStatus } from "@/domain/time-attendance/attendance";
+import type { ClockAction } from "@/domain/time-attendance/clock-action";
 import { Button } from "@/shared/components/buttons/Button";
-
-export type ClockStatus = "out" | "in" | "break";
-export type ClockAction = "in" | "out" | "break_start" | "break_end";
+import { getActionLabel } from "@/shared/presentation/action-label";
 
 interface ClockActionButtonsProps {
   status: ClockStatus;
   isPending: boolean;
-  onAction: (action: ClockAction, nextStatus: ClockStatus) => void;
+  onAction: (action: ClockAction) => void;
 }
 
 export const ClockActionButtons = React.memo(function ClockActionButtons({
@@ -20,7 +20,7 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
     <div className="grid grid-cols-2 gap-3">
       {status === "out" && (
         <Button
-          onClick={() => onAction("in", "in")}
+          onClick={() => onAction("in")}
           disabled={isPending}
           intent="success"
           size="lg"
@@ -28,14 +28,14 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
           fullWidth
         >
           <LogIn size={20} />
-          出勤
+          {getActionLabel("in")}
         </Button>
       )}
 
       {status === "in" && (
         <>
           <Button
-            onClick={() => onAction("break_start", "break")}
+            onClick={() => onAction("break_start")}
             disabled={isPending}
             variant="outline"
             intent="warning"
@@ -43,24 +43,24 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
             fullWidth
           >
             <Coffee size={20} />
-            休憩開始
+            {getActionLabel("break_start")}
           </Button>
           <Button
-            onClick={() => onAction("out", "out")}
+            onClick={() => onAction("out")}
             disabled={isPending}
             intent="danger"
             size="lg"
             fullWidth
           >
             <LogOut size={20} />
-            退勤
+            {getActionLabel("out")}
           </Button>
         </>
       )}
 
       {status === "break" && (
         <Button
-          onClick={() => onAction("break_end", "in")}
+          onClick={() => onAction("break_end")}
           disabled={isPending}
           intent="primary"
           size="lg"
@@ -68,7 +68,7 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
           fullWidth
         >
           <Clock size={20} />
-          休憩終了
+          {getActionLabel("break_end")}
         </Button>
       )}
     </div>

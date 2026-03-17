@@ -2,7 +2,7 @@ import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isDevelopment } from '@/env';
-import { parseClockToMinutes } from '@/shared/query-client';
+import { createQueryClient } from '@/shared/query-client';
 import { Toaster } from 'sonner';
 import { ErrorProvider } from '@/shared/contexts/ErrorContext';
 import { ErrorModal } from '@/shared/components/errors/ErrorModal';
@@ -16,7 +16,7 @@ interface Props {
  */
 export function AppProviders({ children }: Props) {
     // NOTE:再レンダーでも同一インスタンスを保持する。
-    const [queryClient] = React.useState(() => parseClockToMinutes());
+    const [queryClient] = React.useState(() => createQueryClient());
 
     return (
         <QueryClientProvider client={queryClient}>

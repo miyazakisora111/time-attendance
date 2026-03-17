@@ -6,6 +6,7 @@ import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsR
 import type { SettingsSection } from '@/domain/enums/settings';
 import { SETTINGS_SECTION } from '@/domain/enums/settings';
 import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
+import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /** 設定 Query Key。 */
 const SETTINGS_QUERY_KEY = ['settings'] as const;
@@ -50,7 +51,7 @@ export const useSettings = () => {
   );
 
   const language = useMemo(
-    () => draftSettings?.language ?? settingsQuery.data?.language ?? '日本語',
+    () => draftSettings?.language ?? settingsQuery.data?.language ?? DEFAULT_SETTINGS_LANGUAGE,
     [draftSettings?.language, settingsQuery.data?.language],
   );
 
@@ -58,7 +59,7 @@ export const useSettings = () => {
   const setTheme = (nextTheme: 'light' | 'dark' | 'system') => {
     setDraftSettings((prev) => ({
       theme: UpdateSettingsRequestTheme[nextTheme],
-      language: prev?.language ?? settingsQuery.data?.language ?? '日本語',
+      language: prev?.language ?? settingsQuery.data?.language ?? DEFAULT_SETTINGS_LANGUAGE,
     }));
   };
 

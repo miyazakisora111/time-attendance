@@ -9,6 +9,7 @@ import {
   RecentRecordsCard,
 } from "@/features/dashboard/ui";
 import { useDashboardData } from "@/features/dashboard/model/useDashboard";
+import { DASHBOARD_TITLE, formatDashboardGreeting } from "@/shared/presentation/dashboard";
 
 export default function DashBoardPage() {
   const { data } = useDashboardData();
@@ -18,10 +19,10 @@ export default function DashBoardPage() {
       <Container size="lg" className="grid gap-8 py-8">
         <header>
           <Typography asChild variant="h1">
-            <h1>ダッシュボード</h1>
+            <h1>{DASHBOARD_TITLE}</h1>
           </Typography>
           <Typography variant="body" intent="muted">
-            {data?.user?.name ? `${data.user.name}さん、本日も1日頑張りましょう！` : "本日も1日頑張りましょう！"}
+            {formatDashboardGreeting(data?.user?.name)}
           </Typography>
         </header>
         <DashboardLayoutGrid

@@ -1,15 +1,14 @@
 import { getDashboard } from "@/__generated__/dashboard/dashboard";
 import type {
-  DashboardClockRequestAction,
   DashboardClockResponse,
   DashboardResponse,
 } from "@/__generated__/model";
+import type { ClockAction } from "@/domain/time-attendance/clock-action";
 import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 
 export type DashboardData = DashboardResponse;
 export type DashboardStats = DashboardResponse["stats"];
 export type AttendanceRecord = DashboardResponse["recentRecords"][number];
-export type ClockAction = DashboardClockRequestAction;
 
 /**
  * ダッシュボード表示用データを取得する。
