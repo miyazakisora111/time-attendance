@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getSchedule } from '@/api/__generated__/schedule/schedule';
+import { getSchedule } from '@/__generated__/schedule/schedule';
 import { DAY_SCHEDULE_STATUS, type DaySchedule } from '@/domain/enums/schedule';
 import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
 

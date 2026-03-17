@@ -5,7 +5,7 @@
  * 勤怠管理API（JWT認証）
  * OpenAPI spec version: 1.0.0
  */
-import type { ErrorResponse } from "@/api/__generated__/model/errorResponse";
+import type { ErrorResponse } from "@/__generated__/model/errorResponse";
 
 /**
  * サーバーエラー

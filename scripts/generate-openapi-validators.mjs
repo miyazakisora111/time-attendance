@@ -10,9 +10,9 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 const bundleJsonPath = path.join(rootDir, 'openapi/build/bundle.json');
-const zodGeneratedPath = path.join(rootDir, 'front/src/api/__generated__/zod.ts');
-const frontOutputPath = path.join(rootDir, 'front/src/api/__generated__/zod.validation.ts');
-const labelOutputPath = path.join(rootDir, 'front/src/api/__generated__/field-labels.json');
+const zodGeneratedPath = path.join(rootDir, 'front/src/__generated__/zod.ts');
+const frontOutputPath = path.join(rootDir, 'front/src/__generated__/zod.validation.ts');
+const labelOutputPath = path.join(rootDir, 'front/src/__generated__/field-labels.json');
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
 const fieldsPath = path.join(rootDir, 'schema/fields.yaml');
 const mismatchOutputPath = path.join(rootDir, 'schema/field-mismatches.json');
@@ -500,7 +500,7 @@ const renderFrontFile = (schemaNames, schemas, toZodExpr) => {
   const lines = [];
 
   lines.push('// This file is auto-generated. Do not edit manually.');
-  lines.push('// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts + field-labels.json');
+  lines.push('// Source: openapi/build/bundle.json + front/src/__generated__/zod.ts + field-labels.json');
   lines.push('');
   lines.push("import { z } from 'zod';");
   lines.push("import { components as generatedComponents } from './zod';");

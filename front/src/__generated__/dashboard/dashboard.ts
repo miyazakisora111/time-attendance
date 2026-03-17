@@ -10,7 +10,7 @@ import type {
   DashboardClockResponse,
   DashboardResponse,
 } from ".././model";
-import { customInstance } from "../../client";
+import { customInstance } from "../../../shared/http/client";
 
 export const getDashboard = () => {
   /**

@@ -4,7 +4,7 @@ import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import { useAttendanceClockAction, useAttendanceDashboardData } from '@/features/attendance/hooks/useAttendanceData';
 import {
   mapClockStatusToAttendanceStatus,
-  toDisplayWorkedHours,
+  formatWorkedHours,
   toLastAction,
 } from '@/features/attendance/lib/attendanceViewModel';
 import type { ClockAction, ClockStatus } from '@/features/dashboard/ui/clock/ClockActionButtons';
@@ -27,7 +27,7 @@ export const useAttendance = () => {
   }, [data?.clockStatus]);
 
   const todayWorkedTime = useMemo(() => {
-    return toDisplayWorkedHours(data?.todayRecord?.totalWorkedHours);
+    return formatWorkedHours(data?.todayRecord?.totalWorkedHours);
   }, [data?.todayRecord?.totalWorkedHours]);
 
   const breakTime = useMemo(() => {

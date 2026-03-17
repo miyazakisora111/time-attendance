@@ -1,0 +1,1 @@
+export type ClockAction = "in" | "out" | "break_start" | "break_end";

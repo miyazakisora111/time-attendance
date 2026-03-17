@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
-const zodFilePath = path.join(rootDir, 'front/src/api/__generated__/zod.ts');
+const zodFilePath = path.join(rootDir, 'front/src/__generated__/zod.ts');
 
 const patchContent = (source) => {
   return source

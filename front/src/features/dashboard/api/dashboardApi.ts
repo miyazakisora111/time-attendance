@@ -1,9 +1,9 @@
-import { getDashboard } from "@/api/__generated__/dashboard/dashboard";
+import { getDashboard } from "@/__generated__/dashboard/dashboard";
 import type {
   DashboardClockRequestAction,
   DashboardClockResponse,
   DashboardResponse,
-} from "@/api/__generated__/model";
+} from "@/__generated__/model";
 import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 
 export type DashboardData = DashboardResponse;

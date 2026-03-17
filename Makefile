@@ -81,11 +81,11 @@ openapi-client: openapi-bundle
 openapi-zod: openapi-bundle
 	npx --prefix $(FRONT_DIR) openapi-zod \
 	$(BUNDLE) \
-	-o $(FRONT_DIR)/src/api/__generated__/zod.ts
+	-o $(FRONT_DIR)/src/__generated__/zod.ts
 
 openapi-validators: openapi-bundle openapi-zod
 	node scripts/generate-openapi-validators.mjs
-	npx prettier --write ./front/src/api/__generated__/zod.validation.ts
+	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi: openapi-zod openapi-client openapi-validators
 

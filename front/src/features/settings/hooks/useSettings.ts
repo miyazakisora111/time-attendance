@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
-import { getSettings } from '@/api/__generated__/settings/settings';
-import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsRequest } from '@/api/__generated__/model';
+import { getSettings } from '@/__generated__/settings/settings';
+import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsRequest } from '@/__generated__/model';
 import type { SettingsSection } from '@/domain/enums/settings';
 import { SETTINGS_SECTION } from '@/domain/enums/settings';
 import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';

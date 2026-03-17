@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { clockInOut, fetchDashboard } from '@/features/dashboard/api/dashboardApi';
 import type { ClockAction } from '@/features/dashboard/api/dashboardApi';
-import { apiConfig } from '@/config/api';
+import { API_CONFIG } from '@/config/api';
 
 /**
  * 勤怠/ダッシュボードの共通 React Query キー。
@@ -18,7 +18,7 @@ export const useGetAttendanceDashboard = () => {
   return useQuery({
     queryKey: attendanceQueryKeys.dashboard(),
     queryFn: fetchDashboard,
-    staleTime: apiConfig.cacheStaleTimeMs,
+    staleTime: API_CONFIG.cacheStaleTimeMs,
   });
 };
 

@@ -1,8 +1,5 @@
 import { env } from '@/env';
 
-/** React Query キャッシュ既定時間(ms)。 */
-const CACHE_STALE_TIME_MS = 60_000;
-
 /**
  * API関連の設定値。
  */
@@ -12,13 +9,8 @@ export const API_CONFIG = {
   /** APIタイムアウト(ms) */
   timeoutMs: env.API_TIMEOUT,
   /** React Query キャッシュ時間(ms) */
-  cacheStaleTimeMs: CACHE_STALE_TIME_MS,
+  cacheStaleTimeMs: 60_000,
 } as const;
-
-/**
- * 既存参照互換のエイリアス。
- */
-export const apiConfig = API_CONFIG;
 
 /**
  * React Query の既定動作設定。

@@ -10,7 +10,7 @@ import SchedulePage from "@/features/schedule";
 import { AppRoutePath } from "@/config/routes";
 
 /**
- * 認証状態に応じたルーティングを構成する。
+ * ルーティングコンポーネント。
  */
 export const AppRoutes = () => {
     const { isAuthenticated } = useAuth();

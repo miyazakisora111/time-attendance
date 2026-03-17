@@ -1,9 +1,5 @@
 import type { AttendanceStatus, LastAction } from '@/domain/enums/attendance';
 import type { ClockAction, ClockStatus } from '@/features/dashboard/ui/clock/ClockActionButtons';
-import {
-  formatWorkedHoursUtil,
-  isCrossDayShiftByClockUtil,
-} from '@/shared/utils/attendanceTimeUtil';
 
 export const mapClockStatusToAttendanceStatus = (status: ClockStatus): AttendanceStatus => {
   switch (status) {
@@ -27,14 +23,3 @@ export const toLastAction = (action: ClockAction, timeText: string): LastAction 
   type: actionLabelMap[action],
   time: timeText,
 });
-
-export const isCrossDayByClockText = (
-  clockIn?: string | null,
-  clockOut?: string | null,
-): boolean => {
-  return isCrossDayShiftByClockUtil(clockIn, clockOut);
-};
-
-export const toDisplayWorkedHours = (value: number | null | undefined): string => {
-  return formatWorkedHoursUtil(value);
-};

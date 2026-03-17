@@ -1,6 +1,6 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import { toast } from 'sonner';
-import { apiConfig, HttpStatusCode } from '@/config/api';
+import { toast as sonner } from 'sonner';
+import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
 
@@ -8,8 +8,8 @@ import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
  * Axios共通インスタンス。
  */
 export const axiosInstance = axios.create({
-  baseURL: apiConfig.baseUrl,
-  timeout: apiConfig.timeoutMs,
+  baseURL: API_CONFIG.baseUrl,
+  timeout: API_CONFIG.timeoutMs,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -118,7 +118,7 @@ const extractErrorMessages = (data: unknown): string[] => {
 const notifyByStatus = (status: number | undefined, data: unknown): void => {
   const messages = extractErrorMessages(data);
 
-  // 未ログイン状態の 401 は想定内のため、グローバル通知しない。
+  // 未ログイン状態の 401 はグローバル通知しない。
   if (status === HttpStatusCode.Unauthorized) {
     return;
   }
@@ -147,7 +147,7 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
       ? ApiErrorMessage.ServerError
       : ApiErrorMessage.GenericError;
 
-  toast.error(messages[0] ?? fallbackMessage);
+  sonner.error(messages[0] ?? fallbackMessage);
 };
 
 /**
@@ -169,8 +169,9 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // ネットワークエラーなどでレスポンスがない場合はトースト表示する。
     if (!error.response) {
-      toast.error(ApiErrorMessage.NetworkError);
+      sonner.error(ApiErrorMessage.NetworkError);
       return Promise.reject(error);
     }
 
@@ -179,6 +180,7 @@ axiosInstance.interceptors.response.use(
       clearAuthToken();
     }
 
+    // ステータスコードに応じてエラー通知を振り分ける。
     notifyByStatus(error.response.status, error.response.data);
 
     return Promise.reject(error);

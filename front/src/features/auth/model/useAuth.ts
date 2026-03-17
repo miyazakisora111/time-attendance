@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAuth } from "@/api/__generated__/auth/auth";
+import { getAuth } from "@/__generated__/auth/auth";
 import { useAuthStore } from "@/features/auth"; 
-import { clearAuthToken, getAuthToken, setAuthToken } from "@/api/client";
+import { clearAuthToken, getAuthToken, setAuthToken } from "@/shared/http/client";
 import { QUERY_CONFIG } from "@/config/api";
 import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
 

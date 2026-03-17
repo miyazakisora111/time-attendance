@@ -5,8 +5,8 @@ export default defineConfig({
         input: './openapi/build/bundle.yaml',
         output: {
             mode: 'tags-split', // タグごとにファイル分割
-            target: './front/src/api/__generated__/index.ts', // 生成先
-            schemas: './front/src/api/__generated__/model', // Zod 型出力先
+            target: './front/src/__generated__/index.ts', // 生成先
+            schemas: './front/src/__generated__/model', // Zod 型出力先
             client: 'axios', // API 作成
             tsconfig: './front/tsconfig.json',
             override: {

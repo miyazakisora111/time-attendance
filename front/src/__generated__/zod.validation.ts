@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Source: openapi/build/bundle.json + front/src/api/__generated__/zod.ts + field-labels.json
+// Source: openapi/build/bundle.json + front/src/__generated__/zod.ts + field-labels.json
 
 import { z } from "zod";
 import { components as generatedComponents } from "./zod";

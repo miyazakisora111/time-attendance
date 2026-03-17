@@ -8,7 +8,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 export default defineConfig([
   globalIgnores([
     'dist',
-    'src/api/__generated__'
+    'src/__generated__'
   ]),
 
   {
@@ -27,7 +27,7 @@ export default defineConfig([
 
   // generated code 用
   {
-    files: ['src/api/__generated__/**/*.{ts,tsx}'],
+    files: ['src/__generated__/**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-namespace': 'off',
     },
