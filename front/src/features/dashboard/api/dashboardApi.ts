@@ -3,7 +3,7 @@ import type {
   DashboardClockResponse,
   DashboardResponse,
 } from "@/__generated__/model";
-import type { ClockAction } from "@/domain/time-attendance/clock-action";
+import type { ClockAction } from "@/domain/attendance/attendance";
 import { unwrapApiEnvelope } from "@/shared/http/result/envelope";
 
 export type DashboardData = DashboardResponse;

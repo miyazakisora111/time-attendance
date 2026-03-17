@@ -54,7 +54,7 @@ useEffect(() => {
 /**
  * ログイン画面。
  */
-export function LoginPage() {
+  export function LoginPage() {
   useRedirect();
 
   return (

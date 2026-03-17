@@ -1,4 +1,3 @@
-// src/features/auth/store.ts
 import { create } from 'zustand';
 import type { AuthUser } from '@/domain/auth/types';
 

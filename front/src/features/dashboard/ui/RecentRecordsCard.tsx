@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertCircle, Clock, History } from "lucide-react";
-import { isCrossDayShiftByClock } from "@/domain/time-attendance/time";
+import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";

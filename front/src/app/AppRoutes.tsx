@@ -3,7 +3,7 @@ import { PrivateLayout, PublicLayout } from "@/shared/components";
 import { useAuth } from "@/features/auth";
 import { LoginPage } from "@/features/auth/ui/LoginPage";
 import { DashBoardPage } from "@/features/dashboard";
-import AttendancePage from "@/features/attendance";
+import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
 import TeamPage from "@/features/team";
 import SettingsPage from "@/features/settings";
 import SchedulePage from "@/features/schedule";

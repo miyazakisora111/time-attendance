@@ -1,7 +1,7 @@
 import type { AttendanceResponse } from '@/__generated__/model';
-import type { DashboardView } from './types';
+import type { AttendanceView } from '@/features/attendance/ui/types';
 
-export const toDashboardView = (src: AttendanceResponse): DashboardView => {
+export const toAttendanceView = (src: AttendanceResponse): AttendanceView => {
     const start = src.start_time ?? null;
     const end = src.end_time ?? null;
 

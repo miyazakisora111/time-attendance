@@ -1,5 +1,5 @@
 import React from "react";
-import type { ClockStatus } from "@/domain/time-attendance/attendance";
+import type { ClockStatus } from "@/domain/attendance/attendance";
 import { Typography } from "@/shared/components";
 import { EMPTY_DURATION_TEXT, EMPTY_TIME_TEXT } from "@/shared/presentation/format";
 

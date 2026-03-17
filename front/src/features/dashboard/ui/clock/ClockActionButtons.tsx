@@ -1,7 +1,7 @@
 import React from "react";
 import { Coffee, Clock, LogIn, LogOut } from "lucide-react";
-import type { ClockStatus } from "@/domain/time-attendance/attendance";
-import type { ClockAction } from "@/domain/time-attendance/clock-action";
+import type { ClockStatus } from "@/domain/attendance/attendance";
+import type { ClockAction } from "@/domain/attendance/attendance";
 import { Button } from "@/shared/components/buttons/Button";
 import { getActionLabel } from "@/shared/presentation/action-label";
 

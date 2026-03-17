@@ -1,7 +1,6 @@
 import { toast as sonner } from 'sonner';
 import { useMemo, useState } from 'react';
-import type { AttendanceStatus, ClockStatus, LastAction } from '@/domain/time-attendance/attendance';
-import type { ClockAction } from '@/domain/time-attendance/clock-action';
+import { type AttendanceStatus, actionLabelMap } from '@/domain/attendance/attendance';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import {
   useAttendanceDashboard,
@@ -9,7 +8,6 @@ import {
   useClockOut,
 } from '@/features/attendance/hooks/useAttendanceData';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
-import { getActionLabel } from '@/shared/presentation/action-label';
 
 /**
  * 勤怠画面の表示状態を管理するカスタムフック。
@@ -20,17 +18,12 @@ export const useAttendance = () => {
   const { mutate: clockInMutate, isPending: isClockingIn } = useClockIn();
   const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOut();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
+
   const isPending = isClockingIn || isClockingOut;
 
   // ステータス
   const status = useMemo<AttendanceStatus>(() => {
-    const raw = (data?.clockStatus ?? 'out') as ClockStatus;
-    const map: Record<ClockStatus, AttendanceStatus> = {
-      in: 'working',
-      out: 'out',
-      break: 'break',
-    };
-    return map[raw];
+    return (data?.clockStatus ?? 'out') as AttendanceStatus;
   }, [data?.clockStatus]);
 
   // 実働時間
@@ -40,7 +33,7 @@ export const useAttendance = () => {
 
   // 最後の打刻アクション
   const lastActionView = useMemo(
-    () => (lastAction ? { type: getActionLabel(lastAction.action), time: lastAction.time } : null),
+    () => (lastAction ? { type: actionLabelMap[lastAction.action], time: lastAction.time } : null),
     [lastAction]
   );
 
@@ -50,14 +43,14 @@ export const useAttendance = () => {
   const handleAction = (action: ClockAction) => {
     const now = new Date();
     const nowText = formatJapaneseHourMinute(now);
-    const label = getActionLabel(action);
+    const label = actionLabelMap[action];
 
     const onSuccess = () => {
       setLastAction({ action, time: nowText });
       sonner.success(`${label}しました (${nowText})`);
     };
 
-    const onError = (err: unknown) => {
+    const onError = (_err: unknown) => {
       sonner.error(`${label}に失敗しました`);
     };
 
@@ -80,6 +73,11 @@ export const useAttendance = () => {
           },
           { onSuccess, onError }
         );
+        break;
+      }
+      case 'break_start':
+      case 'break_end': {
+        sonner.info('この操作はまだ実装されていません');
         break;
       }
       default:

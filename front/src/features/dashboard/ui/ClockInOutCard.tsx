@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Clock } from "lucide-react";
-import type { ClockStatus } from "@/domain/time-attendance/attendance";
-import type { ClockAction } from "@/domain/time-attendance/clock-action";
+import type { ClockStatus } from "@/domain/attendance/attendance";
+import type { ClockAction } from "@/domain/attendance/attendance";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
 import { useClockInOut, useDashboardData } from "@/features/dashboard/model/useDashboard";
 import { ClockActionButtons } from "@/features/dashboard/ui/clock/ClockActionButtons";

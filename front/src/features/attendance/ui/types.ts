@@ -1,43 +1,39 @@
-// src/features/attendance/ui/types.ts
-import type { AttendanceStatus } from '@/domain/time-attendance/attendance';
+import type { ClockStatus } from '@/domain/attendance/attendance';
 
-/** カードの見た目意図（色/トーン） */
-export type AttendanceCardIntent = 'primary' | 'warning' | 'muted';
+/** 勤怠 */
+export type AttendanceView = {
+    clockStatus: ClockStatus;
+    totalWorkedMs: number | null;
+    startTime: string | null;
+    endTime: string | null;
+    workDate: string;
+};
 
-/** ステータスバッジの見た目意図 */
-export type ClockStatusBadgeIntent = 'default' | 'success' | 'warning';
-
-/** 勤怠レコードのバッジ意図 */
-export type AttendanceRecordBadgeIntent = 'default' | 'success' | 'warning';
-
-/** 勤怠ステータスの UI 表現 */
+/** 勤怠ステータス */
 export interface AttendanceStatusView {
     title: string;
     description: string;
-    intent: AttendanceCardIntent;
+    intent: 'primary' | 'warning' | 'muted';
 }
 
-/** 打刻ステータスのバッジ表現 */
+/** 打刻ステータスのバッジ */
 export interface ClockStatusBadgeView {
     text: string;
-    intent: ClockStatusBadgeIntent;
+    intent: 'default' | 'success' | 'warning';
 }
 
-/** 直近打刻の UI 表現 */
+/** 直近打刻 */
 export interface LastActionView {
-    type: string; // ラベル（例：出勤/退勤/休憩/戻り）
-    time: string; // 表示時刻（例：09:30）
+    type: string;
+    time: string;
 }
 
-/** Presenter の props（必要ならこちらで型も管理） */
-export interface AttendancePresenterProps {
-    status: AttendanceStatus;
-    currentTime: Date;
-    lastAction: LastActionView | null;
-    isLoading?: boolean;
-    isError?: boolean;
-    isPending?: boolean;
-    todayWorkedTime?: string;
-    breakTime?: string;
-    onAction: (action: 'in' | 'out' | 'break_start' | 'break_end') => void;
+/**
+ * 直近打刻情報。
+ */
+export interface LastAction {
+  /** 打刻種別 */
+  ttendanceStatus: AttendanceStatus;
+  /** 打刻時刻 */
+  time: string;
 }
