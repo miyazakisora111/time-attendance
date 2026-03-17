@@ -5,7 +5,7 @@ import { getSettings } from '@/__generated__/settings/settings';
 import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsRequest } from '@/__generated__/model';
 import type { SettingsSection } from '@/domain/entities/settings';
 import { SETTINGS_SECTION } from '@/domain/entities/settings';
-import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
+import { unwrapApiEnvelope } from '@/shared/http/result/envelope';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /** 設定 Query Key。 */

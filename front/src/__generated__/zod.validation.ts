@@ -22,6 +22,10 @@ export const validationSchemas = {
     }),
   AttendanceClockOutRequest:
     generatedComponents.schemas.AttendanceClockOutRequest.extend({
+      work_date: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("work_date")}は必須です。`),
       end_time: z
         .string()
         .trim()

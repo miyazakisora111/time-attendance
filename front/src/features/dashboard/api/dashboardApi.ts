@@ -4,7 +4,7 @@ import type {
   DashboardResponse,
 } from "@/__generated__/model";
 import type { ClockAction } from "@/domain/time-attendance/clock-action";
-import { unwrapApiEnvelope } from "@/shared/http/unwrapApiEnvelope";
+import { unwrapApiEnvelope } from "@/shared/http/result/envelope";
 
 export type DashboardData = DashboardResponse;
 export type DashboardStats = DashboardResponse["stats"];

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { authApi, authQueryKeys } from '@/features/auth/api/api';
+import { authApi, authQueryKeys } from '@/features/auth/api/authApi';
 import { useAuthStore } from '@/features/auth/hook/useAuthStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/shared/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';

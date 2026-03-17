@@ -3,30 +3,39 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, LogIn, LogOut, Coffee, MapPin, Shield, CheckCircle2, History, AlertCircle } from 'lucide-react';
 import { Button, Card, CardContent, Typography } from '@/shared/components';
 import type { AttendanceStatus } from '@/domain/time-attendance/attendance';
-import type { ClockAction } from '@/domain/time-attendance/clock-action';
 import {
   EMPTY_TIME_TEXT,
   formatJapaneseLongDate,
   formatJapaneseTime,
 } from '@/shared/presentation/format';
-import {
-  attendanceActionButtonLabelMap,
-  getAttendanceStatusView,
-  type LastActionView,
-} from '@/shared/presentation/time-attendance';
+import type {
+  AttendancePresenterProps,
+  AttendanceStatusView,
+} from '@/features/attendance/ui/types';
 
-interface AttendancePresenterProps {
-  status: AttendanceStatus;
-  currentTime: Date;
-  lastAction: LastActionView | null;
-  isLoading?: boolean;
-  isError?: boolean;
-  isPending?: boolean;
-  todayWorkedTime?: string;
-  breakTime?: string;
-  onAction: (action: ClockAction) => void;
-}
+// UI 表示用：ステータスのビューを取得
+const getAttendanceStatusView = (status: AttendanceStatus): AttendanceStatusView => {
+  const attendanceStatusViewMap: Record<AttendanceStatus, AttendanceStatusView> = {
+    working: {
+      title: '勤務中',
+      description: '今日も順調に業務が進んでいます。適度に休憩を取りましょう。',
+      intent: 'primary',
+    },
+    break: {
+      title: '休憩中',
+      description: 'リフレッシュして、次の業務に備えましょう。',
+      intent: 'warning',
+    },
+    out: {
+      title: '未出勤',
+      description: '業務を開始する準備はできましたか？',
+      intent: 'muted',
+    },
+  };
+  return attendanceStatusViewMap[status];
+};
 
+// ステータスアイコン（UI 表示のみのため、このファイルに内包）
 const statusIconMap: Record<AttendanceStatus, { iconColor: string; icon: React.ReactNode }> = {
   working: { iconColor: 'text-blue-600', icon: <CheckCircle2 size={32} /> },
   break: { iconColor: 'text-amber-600', icon: <Coffee size={32} /> },
@@ -52,12 +61,9 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      {/* Main Clock Section */}
       <Card variant="elevated" padding="lg" className="relative overflow-hidden border-gray-100">
         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
-        
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-          {/* Time Display */}
           <div className="flex-1 text-center md:text-left">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -67,11 +73,9 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
               <Clock size={16} className="text-blue-500" />
               {formatJapaneseLongDate(currentTime)}
             </motion.div>
-            
             <Typography variant="h1" className="text-5xl md:text-6xl tabular-nums font-black mb-4">
               {formatJapaneseTime(currentTime)}
             </Typography>
-            
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
               <span className="flex items-center gap-1.5">
                 <MapPin size={14} className="text-gray-300" />
@@ -84,8 +88,6 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
               </span>
             </div>
           </div>
-
-          {/* Status Indicator */}
           <div className="w-full md:w-72">
             <Card variant="flat" intent={currentStatus.intent} padding="md" className="transition-colors duration-500">
               <div className="flex flex-col items-center text-center">
@@ -94,7 +96,9 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
                     {currentStatusIcon.icon}
                   </div>
                 </div>
-                <Typography variant="h3" intent={currentStatus.intent} className="mb-2">{currentStatus.title}</Typography>
+                <Typography variant="h3" intent={currentStatus.intent} className="mb-2">
+                  {currentStatus.title}
+                </Typography>
                 <Typography variant="small" intent={currentStatus.intent} align="center" className="block leading-relaxed">
                   {currentStatus.description}
                 </Typography>
@@ -103,7 +107,6 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
           </div>
         </div>
       </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Button
           disabled={isLoading || isPending || status !== 'out'}
@@ -114,9 +117,8 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
           className="h-24"
         >
           <LogIn size={24} />
-          <Typography variant="label">{attendanceActionButtonLabelMap.in}</Typography>
+          <Typography variant="label">出勤</Typography>
         </Button>
-
         <Button
           disabled={isLoading || isPending || status !== 'working'}
           onClick={() => onAction('break_start')}
@@ -126,9 +128,8 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
           className="h-24"
         >
           <Coffee size={24} />
-          <Typography variant="label">{attendanceActionButtonLabelMap.break_start}</Typography>
+          <Typography variant="label">休憩</Typography>
         </Button>
-
         <Button
           disabled={isLoading || isPending || status !== 'break'}
           onClick={() => onAction('break_end')}
@@ -138,9 +139,8 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
           className="h-24"
         >
           <CheckCircle2 size={24} />
-          <Typography variant="label">{attendanceActionButtonLabelMap.break_end}</Typography>
+          <Typography variant="label">戻り</Typography>
         </Button>
-
         <Button
           disabled={isLoading || isPending || status === 'out'}
           onClick={() => onAction('out')}
@@ -150,13 +150,10 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
           className="h-24 bg-gray-900"
         >
           <LogOut size={24} />
-          <Typography variant="label">{attendanceActionButtonLabelMap.out}</Typography>
+          <Typography variant="label">退勤</Typography>
         </Button>
       </div>
-
-      {/* Info Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Today's History */}
         <Card variant="elevated" padding="none" className="col-span-1 md:col-span-2 overflow-hidden">
           <div className="p-6 flex items-center justify-between border-b border-gray-50">
             <Typography variant="h3" className="flex items-center gap-2 font-bold">
@@ -185,16 +182,15 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
                   </motion.div>
                 ) : (
                   <div className="text-center py-4">
-                      <Typography variant="small" intent="muted">
-                        {isError ? '打刻状態の取得に失敗しました' : '本日の打刻履歴はありません'}
-                      </Typography>
+                    <Typography variant="small" intent="muted">
+                      {isError ? '打刻状態の取得に失敗しました' : '本日の打刻履歴はありません'}
+                    </Typography>
                   </div>
                 )}
               </AnimatePresence>
             </div>
           </CardContent>
         </Card>
-
         <Card padding="lg" intent="primary" className="border-none shadow-sm rounded-3xl text-white">
           <div className="h-full flex flex-col justify-between">
             <div>
@@ -203,7 +199,6 @@ export const AttendancePresenter: React.FC<AttendancePresenterProps> = ({
                 {todayWorkedTime}
               </Typography>
             </div>
-            
             <div className="space-y-4 pt-6 border-t border-blue-500/50">
               <div className="flex items-center justify-between">
                 <Typography variant="small" className="text-blue-100">休憩合計</Typography>

@@ -35,6 +35,7 @@ final class OpenApiGeneratedRules
             'start_time' => ['sometimes', 'string', 'date_format:H:i'],
         ],
         'AttendanceClockOutRequest' => [
+            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
             'end_time' => ['sometimes', 'string', 'date_format:H:i'],
         ],
         'AttendanceResponse' => [
@@ -168,6 +169,7 @@ final class OpenApiGeneratedRules
             'start_time' => '出勤時刻',
         ],
         'AttendanceClockOutRequest' => [
+            'work_date' => '勤務日',
             'end_time' => '退勤時刻',
         ],
         'AttendanceResponse' => [

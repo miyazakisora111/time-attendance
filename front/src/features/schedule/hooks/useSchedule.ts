@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSchedule } from '@/__generated__/schedule/schedule';
-import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
+import { unwrapApiEnvelope } from '@/shared/http/result/envelope';
 import { toScheduleRows } from '@/shared/presentation/schedule';
 
 /** Schedule API Query Key。 */

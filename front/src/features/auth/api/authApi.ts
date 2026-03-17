@@ -1,5 +1,5 @@
 import { getAuth } from '@/__generated__/auth/auth';
-import { unwrapApiEnvelope } from '@/shared/http/unwrapApiEnvelope';
+import { unwrapApiEnvelope } from '@/shared/http/result/envelope';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 
 export const authQueryKeys = {

@@ -3,16 +3,13 @@ import { useMemo, useState } from 'react';
 import type { AttendanceStatus, ClockStatus, LastAction } from '@/domain/time-attendance/attendance';
 import type { ClockAction } from '@/domain/time-attendance/clock-action';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
-import { useAttendanceClockAction, useAttendanceDashboard } from '@/features/attendance/hooks/useAttendanceData';
 import {
-  formatJapaneseHourMinute,
-  formatWorkedHours,
-} from '@/shared/presentation/format';
+  useAttendanceDashboard,
+  useClockIn,
+  useClockOut,
+} from '@/features/attendance/hooks/useAttendanceData';
+import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
 import { getActionLabel } from '@/shared/presentation/action-label';
-import {
-  mapClockStatusToAttendanceStatus,
-  toLastActionView,
-} from '@/shared/presentation/time-attendance';
 
 /**
  * 勤怠画面の表示状態を管理するカスタムフック。
@@ -20,42 +17,74 @@ import {
 export const useAttendance = () => {
   const currentTime = useCurrentTime();
   const { data, isLoading, isError } = useAttendanceDashboard();
-  const { mutate: clockAction, isPending } = useAttendanceClockAction();
+  const { mutate: clockInMutate, isPending: isClockingIn } = useClockIn();
+  const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOut();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
+  const isPending = isClockingIn || isClockingOut;
 
-  // 勤怠ステータスを算出
+  // ステータス
   const status = useMemo<AttendanceStatus>(() => {
-    const rawStatus = (data?.clockStatus ?? 'out') as ClockStatus;
-    return mapClockStatusToAttendanceStatus(rawStatus);
+    const raw = (data?.clockStatus ?? 'out') as ClockStatus;
+    const map: Record<ClockStatus, AttendanceStatus> = {
+      in: 'working',
+      out: 'out',
+      break: 'break',
+    };
+    return map[raw];
   }, [data?.clockStatus]);
 
-  // 本日の実働時間を整形
+  // 実働時間
   const todayWorkedTime = useMemo(() => {
-    return formatWorkedHours(data?.todayRecord?.totalWorkedHours);
-  }, [data?.todayRecord?.totalWorkedHours]);
+    return formatWorkedHours(data?.totalWorkedMs ?? null);
+  }, [data?.totalWorkedMs]);
 
-  // 直近アクションの表示用オブジェクトに変換
-  const lastActionView = useMemo(() => {
-    if (!lastAction) return null;
-    return toLastActionView(lastAction);
-  }, [lastAction]);
+  // 最後の打刻アクション
+  const lastActionView = useMemo(
+    () => (lastAction ? { type: getActionLabel(lastAction.action), time: lastAction.time } : null),
+    [lastAction]
+  );
 
   /**
-   * 画面上の打刻操作を実行するハンドラー。
-   *
-   * @param action 実行する打刻アクション
+   * 打刻操作ハンドラー
    */
   const handleAction = (action: ClockAction) => {
-    const nowText = formatJapaneseHourMinute(new Date());
+    const now = new Date();
+    const nowText = formatJapaneseHourMinute(now);
     const label = getActionLabel(action);
 
-    // API実行
-    clockAction(action, {
-      onSuccess: () => {
-        setLastAction({ action, time: nowText });
-        sonner.success(`${label}しました (${nowText})`);
-      },
-    });
+    const onSuccess = () => {
+      setLastAction({ action, time: nowText });
+      sonner.success(`${label}しました (${nowText})`);
+    };
+
+    const onError = (err: unknown) => {
+      sonner.error(`${label}に失敗しました`);
+    };
+
+    switch (action) {
+      case 'in': {
+        clockInMutate(
+          {
+            start_time: now.toISOString(),
+            work_date: data?.workDate ?? now.toISOString().slice(0, 10),
+          },
+          { onSuccess, onError }
+        );
+        break;
+      }
+      case 'out': {
+        clockOutMutate(
+          {
+            end_time: now.toISOString(),
+            work_date: data?.workDate ?? now.toISOString().slice(0, 10),
+          },
+          { onSuccess, onError }
+        );
+        break;
+      }
+      default:
+        sonner.error('未対応の打刻アクションです');
+    }
   };
 
   return {
