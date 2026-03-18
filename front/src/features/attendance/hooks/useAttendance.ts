@@ -1,6 +1,6 @@
 import { toast as sonner } from 'sonner';
 import { useMemo, useState } from 'react';
-import { type AttendanceStatus, clockActionLabelMap } from '@/domain/attendance/attendance';
+import { type AttendanceStatus } from '@/domain/attendance/attendance';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import {
   useAttendanceDashboard,
@@ -8,6 +8,7 @@ import {
   useClockOut,
 } from '@/features/attendance/hooks/useAttendanceData';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
+import { clockActionLabelMap } from '@/shared/presentation/attendance';
 import { type LastAction } from '@/features/attendance/ui/types';
 import type { ClockAction } from '@/domain/attendance/attendance';
 

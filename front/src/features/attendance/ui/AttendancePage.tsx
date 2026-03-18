@@ -17,7 +17,7 @@ import {
   formatJapaneseLongDate,
   formatJapaneseTime,
 } from '@/shared/presentation/format';
-import { STATUS_ICON_MAP } from '@/shared/presentation/attendance/attendanceStatus';
+import { STATUS_ICON_MAP } from '@/shared/presentation/attendance';
 import type { AttendanceStatus } from '@/domain/attendance/attendance';
 import type { AttendanceStatusView } from '@/features/attendance/ui/types';
 

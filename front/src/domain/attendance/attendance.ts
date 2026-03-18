@@ -24,13 +24,3 @@ export const clockActionMap: Record<ClockAction, AttendanceStatus> = {
     break_start: 'break',
     break_end: 'working',
 };
-
-/**
- * 打刻アクションの表示用ラベル。
- */
-export const clockActionLabelMap: Record<ClockAction, string> = {
-    in: '出勤',
-    out: '退勤',
-    break_start: '休憩開始',
-    break_end: '休憩終了',
-};

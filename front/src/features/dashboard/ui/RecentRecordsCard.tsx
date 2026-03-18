@@ -4,7 +4,7 @@ import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";
-//import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/time-attendance";
+import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/time-attendance";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。
@@ -94,9 +94,9 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                       {formatHoursText(record.workHours)}
                     </td>
                     <td className="px-3 py-4">
-                      {/* <Badge intent={getAttendanceRecordStatusBadgeIntent(record.status)}>
+                      <Badge intent={getAttendanceRecordStatusBadgeIntent(record.status)}>
                         {record.status}
-                      </Badge> */}
+                      </Badge>
                     </td>
                   </tr>
                 ))}
