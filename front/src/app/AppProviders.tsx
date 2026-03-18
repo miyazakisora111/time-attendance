@@ -2,7 +2,7 @@ import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isDevelopment } from '@/env';
-import { createQueryClient } from '@/shared/query-client';
+import { createQueryClient } from '@/shared/react-query/query-client';
 import { Toaster } from 'sonner';
 import { ErrorProvider } from '@/shared/contexts/ErrorContext';
 import { ErrorModal } from '@/shared/components/errors/ErrorModal';

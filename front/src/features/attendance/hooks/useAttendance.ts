@@ -1,6 +1,6 @@
 import { toast as sonner } from 'sonner';
 import { useMemo, useState } from 'react';
-import { type AttendanceStatus, actionLabelMap } from '@/domain/attendance/attendance';
+import { type AttendanceStatus, clockActionLabelMap } from '@/domain/attendance/attendance';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import {
   useAttendanceDashboard,
@@ -9,6 +9,7 @@ import {
 } from '@/features/attendance/hooks/useAttendanceData';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
 import { type LastAction } from '@/features/attendance/ui/types';
+import type { ClockAction } from '@/domain/attendance/attendance';
 
 /**
  * 勤怠画面の表示状態を管理するカスタムフック。
@@ -24,8 +25,8 @@ export const useAttendance = () => {
 
   // ステータス
   const status = useMemo<AttendanceStatus>(() => {
-    return (data?.clockStatus ?? 'out') as AttendanceStatus;
-  }, [data?.clockStatus]);
+    return (data?.clockAction ?? 'out') as AttendanceStatus;
+  }, [data?.clockAction]);
 
   // 実働時間
   const todayWorkedTime = useMemo(() => {
@@ -34,20 +35,20 @@ export const useAttendance = () => {
 
   // 最後の打刻アクション
   const lastActionView = useMemo(
-    () => (lastAction ? { type: actionLabelMap[lastAction.action], time: lastAction.time } : null),
+    () => (lastAction ? { type: clockActionLabelMap[lastAction.clockAction], time: lastAction.time } : null),
     [lastAction]
   );
 
   /**
    * 打刻操作ハンドラー
    */
-  const handleAction = (action: ClockAction) => {
+  const handleAction = (clockAction: ClockAction) => {
     const now = new Date();
     const nowText = formatJapaneseHourMinute(now);
-    const label = actionLabelMap[action];
+    const label = clockActionLabelMap[clockAction];
 
     const onSuccess = () => {
-      setLastAction({ action, time: nowText });
+      setLastAction({ clockAction, time: nowText });
       sonner.success(`${label}しました (${nowText})`);
     };
 
@@ -55,7 +56,7 @@ export const useAttendance = () => {
       sonner.error(`${label}に失敗しました`);
     };
 
-    switch (action) {
+    switch (clockAction) {
       case 'in': {
         clockInMutate(
           {

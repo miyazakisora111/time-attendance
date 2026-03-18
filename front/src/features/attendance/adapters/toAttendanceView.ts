@@ -6,7 +6,7 @@ export const toAttendanceView = (src: AttendanceResponse): AttendanceView => {
     const end = src.end_time ?? null;
 
     return {
-        clockStatus: start && !end ? 'in' : 'out',
+        clockAction: start && !end ? 'in' : 'out',
         totalWorkedMs: start && end ? new Date(end).getTime() - new Date(start).getTime() : null,
         startTime: start,
         endTime: end,

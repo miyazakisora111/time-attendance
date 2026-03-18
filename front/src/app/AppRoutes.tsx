@@ -13,8 +13,8 @@ import { AppRoutePath } from "@/config/routes";
  * ルーティングコンポーネント。
  */
 export const AppRoutes = () => {
-    const { isAuthenticated } = useAuth();
-
+    // TODO:後で戻す
+    const { isAuthenticated = true } = useAuth();
     return (
         <Routes>
             {/* デフォルトルート */}

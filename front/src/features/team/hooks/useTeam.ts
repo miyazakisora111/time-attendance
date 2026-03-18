@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getTeam } from '@/__generated__/team/team';
 import type { TeamMember as ApiTeamMember } from '@/__generated__/model';
 import { MEMBER_STATUS, type MemberStatus, type TeamMember } from '@/domain/entities/team';
-import { unwrapApiEnvelope } from '@/shared/http/result/envelope';
+import { unwrapApiEnvelope } from '@/shared/http/result';
 
 /** 部署フィルタの全件選択値。 */
 const ALL_DEPARTMENTS = 'すべて';
