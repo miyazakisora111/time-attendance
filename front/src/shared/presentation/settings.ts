@@ -1,4 +1,4 @@
-import type { SettingsSection } from '@/domain/entities/settings';
+import type { SettingsSection } from '@/domain/settings/types';
 
 export type SettingsThemeMode = 'light' | 'dark' | 'system';
 export type SettingsNotificationKey = 'clock_missing' | 'approval' | 'leave_reminder';

@@ -1,4 +1,4 @@
-import type { MemberStatus } from '@/domain/entities/team';
+import type { MemberStatus } from '@/domain/team/types';
 
 type TeamMemberBadgeIntent = 'default' | 'primary' | 'success' | 'warning';
 

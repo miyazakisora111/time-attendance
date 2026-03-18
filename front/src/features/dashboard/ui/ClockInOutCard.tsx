@@ -7,7 +7,7 @@ import { useClockInOut, useDashboardData } from "@/features/dashboard/model/useD
 import { ClockActionButtons } from "@/features/dashboard/ui/clock/ClockActionButtons";
 import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
 import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
-import { getClockStatusBadgeView } from "@/shared/presentation/time-attendance";
+import { getClockStatusBadgeView } from "@/shared/presentation/attendance";
 
 /**
  * ダッシュボードの打刻カード。

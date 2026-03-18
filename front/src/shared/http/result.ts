@@ -28,20 +28,42 @@ export type ApiEnvelope<T> = {
     meta?: unknown;
 };
 
-const isAxiosResponse = (v: unknown): v is AxiosResponse =>
-    !!v && typeof v === 'object' && 'status' in (v as any) && 'headers' in (v as any);
+type ApiPayload<T> = T | ApiEnvelope<T> | AxiosResponse<unknown>;
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+    return typeof value === 'object' && value !== null;
+};
+
+const hasOwnKey = <TKey extends string>(
+    value: Record<string, unknown>,
+    key: TKey,
+): value is Record<TKey, unknown> & Record<string, unknown> => {
+    return Object.prototype.hasOwnProperty.call(value, key);
+};
+
+const isAxiosResponse = (value: unknown): value is AxiosResponse<unknown> => {
+    if (!isRecord(value)) return false;
+
+    return (
+        hasOwnKey(value, 'status') &&
+        hasOwnKey(value, 'headers') &&
+        hasOwnKey(value, 'data')
+    );
+};
 
 export const isApiEnvelope = <T = unknown>(payload: unknown): payload is ApiEnvelope<T> => {
-    if (!payload || typeof payload !== 'object') return false;
+    if (!isRecord(payload)) return false;
     if (isAxiosResponse(payload)) return false; // AxiosResponse は除外
-    const o = payload as Partial<ApiEnvelope<unknown>>;
+
     const hasKeys =
-        'data' in (o as any) &&
-        'success' in (o as any) &&
-        'message' in (o as any);
+        hasOwnKey(payload, 'data') &&
+        hasOwnKey(payload, 'success') &&
+        hasOwnKey(payload, 'message');
+
     const typeSafe =
-        typeof (o as any).success === 'boolean' &&
-        typeof (o as any).message === 'string';
+        typeof payload.success === 'boolean' &&
+        typeof payload.message === 'string';
+
     return !!hasKeys && !!typeSafe;
 };
 
@@ -50,9 +72,9 @@ export const isApiEnvelope = <T = unknown>(payload: unknown): payload is ApiEnve
  * - AxiosResponse の場合は res.data を対象にする
  * - Envelope でなければそのまま T として返す（寛容）
  */
-export const unwrapApiEnvelope = <T>(payload: T | AxiosResponse | ApiEnvelope<T>): T => {
-    const base = isAxiosResponse(payload) ? (payload as AxiosResponse).data : payload;
-    return isApiEnvelope<T>(base) ? (base as ApiEnvelope<T>).data : (base as T);
+export const unwrapApiEnvelope = <T>(payload: ApiPayload<T>): T => {
+    const base: unknown = isAxiosResponse(payload) ? payload.data : payload;
+    return isApiEnvelope<T>(base) ? base.data : (base as T);
 };
 
 /* ============================
@@ -68,7 +90,7 @@ type AsyncFn<T> = () => Promise<T>;
  */
 export const call = async <T>(fn: AsyncFn<T>): Promise<T> => {
     const res = await fn();
-    return unwrapApiEnvelope<T>(res as any);
+    return unwrapApiEnvelope<T>(res as ApiPayload<T>);
 };
 
 /**
@@ -80,7 +102,7 @@ export const call = async <T>(fn: AsyncFn<T>): Promise<T> => {
 export const callResult = async <T>(fn: AsyncFn<T>): Promise<Result<T, unknown>> => {
     try {
         const res = await fn();
-        return ok(unwrapApiEnvelope<T>(res as any));
+        return ok(unwrapApiEnvelope<T>(res as ApiPayload<T>));
     } catch (e) {
         return err(e);
     }

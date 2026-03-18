@@ -1,8 +1,6 @@
 interface EnvConfig {
-  /** API URL（互換キー） */
+  /** API URL */
   API_URL: string;
-  /** API ベース URL */
-  API_BASE_URL: string;
   /** API タイムアウト(ms) */
   API_TIMEOUT: number;
   /** 実行環境 */
@@ -18,8 +16,7 @@ const DEFAULT_API_TIMEOUT_MS = 30_000;
  * 環境変数を読み込み、型安全な設定値へ変換する。
  */
 function getEnvConfig(): EnvConfig {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-  const apiUrl = apiBaseUrl || import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL;
   const apiTimeout = import.meta.env.VITE_API_TIMEOUT;
   const nodeEnv = import.meta.env.VITE_NODE_ENV as EnvConfig['NODE_ENV'] | undefined;
   const debugFlag = import.meta.env.VITE_DEBUG;
@@ -30,7 +27,6 @@ function getEnvConfig(): EnvConfig {
 
   return {
     API_URL: apiUrl,
-    API_BASE_URL: apiUrl,
     API_TIMEOUT: timeout,
     NODE_ENV: nodeEnv ?? 'development',
     DEBUG: debugFlag === 'true',

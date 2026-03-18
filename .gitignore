@@ -11,7 +11,6 @@ cat << 'EOF' > .gitignore
 /front/node_modules
 /front/dist
 /front/.env
-/front/.env.*
 
 # Common
 .DS_Store

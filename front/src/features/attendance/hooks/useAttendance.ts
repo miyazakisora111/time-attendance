@@ -53,7 +53,7 @@ export const useAttendance = () => {
       sonner.success(`${label}しました (${nowText})`);
     };
 
-    const onError = (_err: unknown) => {
+    const onError = () => {
       sonner.error(`${label}に失敗しました`);
     };
 

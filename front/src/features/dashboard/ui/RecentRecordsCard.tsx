@@ -4,7 +4,7 @@ import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";
-import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/time-attendance";
+import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/attendance";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。

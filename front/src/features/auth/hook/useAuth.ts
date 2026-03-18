@@ -22,6 +22,7 @@ export const authQueryKeys = {
 export const useAuth = () => {
     const queryClient = useQueryClient();
     const { setUser, setIsAuthenticated, setIsInitializing } = useAuthStore.getState();
+    const isInitializing = useAuthStore((state) => state.isInitializing);
     const hasToken = !!getAuthToken();
 
     // /me クエリ：トークンがあるときだけ問い合わせ
@@ -105,7 +106,7 @@ export const useAuth = () => {
     return {
         user: authQuery.data ?? null,
         isAuthenticated: !!authQuery.data,
-        isLoading: authQuery.isLoading || useAuthStore((s) => s.isInitializing),
+        isLoading: authQuery.isLoading || isInitializing,
         loginMutation,
         logoutMutation,
     };

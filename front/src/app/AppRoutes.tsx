@@ -14,7 +14,9 @@ import { AppRoutePath } from "@/config/routes";
  */
 export const AppRoutes = () => {
     // TODO:後で戻す
-    const { isAuthenticated = true } = useAuth();
+    // const { isAuthenticated } = useAuth();
+    const isAuthenticated = true;
+    
     return (
         <Routes>
             {/* デフォルトルート */}

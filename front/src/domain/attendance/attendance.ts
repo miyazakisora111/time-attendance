@@ -16,6 +16,14 @@ export type AttendanceStatus =
     | 'break';
 
 /**
+ * ダッシュボード表示用の打刻状態。
+ */
+export type ClockStatus =
+    | 'in'
+    | 'out'
+    | 'break';
+
+/**
  * 打刻アクション → 勤怠状態の変換マップ。
  */
 export const clockActionMap: Record<ClockAction, AttendanceStatus> = {
