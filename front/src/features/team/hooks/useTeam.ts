@@ -1,37 +1,33 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getTeam } from '@/__generated__/team/team';
-import type { TeamMember as ApiTeamMember } from '@/__generated__/model';
-import { MEMBER_STATUS, type MemberStatus, type TeamMember } from '@/domain/entities/team';
-import { unwrapApiEnvelope } from '@/shared/http/result';
+import { makeScopedKeys } from '@/shared/react-query/keys';
+import { fetchTeamMembers } from '@/features/team/api/teamApi';
+import type { TeamMember } from '@/domain/team/types';
+import { QUERY_CONFIG } from '@/config/api';
 
 /** 部署フィルタの全件選択値。 */
 const ALL_DEPARTMENTS = 'すべて';
 
-/** Team API の Query Key。 */
-const TEAM_QUERY_KEY = ['team', 'members'] as const;
+/**
+ * React Query キー。
+ */
+const SCOPE = 'team' as const;
+const scoped = makeScopedKeys(SCOPE);
+export const teamQueryKeys = {
+  all: () => scoped.all(),
+  members: () => scoped.nest('members'),
+} as const;
 
 /**
- * APIメンバー型をフロント表示型へ正規化する。
+ * チームメンバー一覧を取得 する。
  */
-const toTeamMember = (member: ApiTeamMember): TeamMember => ({
-  id: member.id,
-  name: member.name,
-  role: member.role,
-  department: member.department,
-  status: member.status as MemberStatus,
-  clockInTime: member.clockInTime ?? undefined,
-  email: member.email,
-});
-
-/**
- * Team API からメンバー一覧を取得する。
- */
-const fetchTeamMembers = async (): Promise<TeamMember[]> => {
-  const response = await getTeam().getTeamMembersApi();
-  const data = unwrapApiEnvelope<{ members: ApiTeamMember[] }>(response);
-
-  return data.members.map(toTeamMember);
+export const useGetTeamMembers = () => {
+  return useQuery<TeamMember[]>({
+    queryKey: teamQueryKeys.members(),
+    queryFn: fetchTeamMembers,
+    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
+    refetchOnWindowFocus: false,
+  });
 };
 
 /**
@@ -42,8 +38,10 @@ export const useTeam = () => {
   const [filterDept, setFilterDept] = useState(ALL_DEPARTMENTS);
 
   const teamQuery = useQuery({
-    queryKey: TEAM_QUERY_KEY,
+    queryKey: teamQueryKeys.members(),
     queryFn: fetchTeamMembers,
+    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
+    refetchOnWindowFocus: false,
   });
 
   const members = useMemo(() => teamQuery.data ?? [], [teamQuery.data]);
@@ -62,9 +60,9 @@ export const useTeam = () => {
   const stats = useMemo(
     () => ({
       total: members.length,
-      working: members.filter((member) => member.status === MEMBER_STATUS.Working).length,
-      break: members.filter((member) => member.status === MEMBER_STATUS.Break).length,
-      leave: members.filter((member) => member.status === MEMBER_STATUS.Leave).length,
+      working: members.filter((member) => member.status === 'working').length,
+      break: members.filter((member) => member.status === 'break').length,
+      leave: members.filter((member) => member.status === 'leave').length,
     }),
     [members],
   );

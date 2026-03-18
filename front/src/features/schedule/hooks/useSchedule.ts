@@ -1,20 +1,19 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getSchedule } from '@/__generated__/schedule/schedule';
-import { unwrapApiEnvelope } from '@/shared/http/result';
+import { makeScopedKeys } from '@/shared/react-query/keys';
+import { fetchCalendar } from '@/features/schedule/api/scheduleApi';
 import { toScheduleRows } from '@/shared/presentation/schedule';
-
-/** Schedule API Query Key。 */
-const scheduleQueryKey = (year: number, month: number) => ['schedule', year, month] as const;
+import { QUERY_CONFIG } from '@/config/api';
 
 /**
- * カレンダー API を実行する。
+ * React Query キー。
  */
-const fetchCalendar = async (year: number, month: number): Promise<string[]> => {
-  const response = await getSchedule().getCalendarApi({ year, month });
-
-  return unwrapApiEnvelope<string[]>(response);
-};
+const SCOPE = 'schedule' as const;
+const scoped = makeScopedKeys(SCOPE);
+export const scheduleQueryKeys = {
+  all: () => scoped.all(),
+  calendar: (year: number, month: number) => scoped.nest(`calendar-${year}-${month}`),
+} as const;
 
 /**
  * スケジュール画面の月移動状態を管理する。
@@ -23,8 +22,10 @@ export const useSchedule = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
 
   const calendarQuery = useQuery({
-    queryKey: scheduleQueryKey(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
+    queryKey: scheduleQueryKeys.calendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
     queryFn: () => fetchCalendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
+    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
+    refetchOnWindowFocus: false,
   });
 
   const schedule = useMemo(

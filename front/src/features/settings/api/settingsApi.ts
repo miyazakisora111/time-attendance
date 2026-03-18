@@ -1,0 +1,14 @@
+import { getSettings } from '@/__generated__/settings/settings';
+import type { SettingsResponse, UpdateSettingsRequest } from '@/__generated__/model';
+import { call } from '@/shared/http/result';
+import { toAppSettings } from '@/features/settings/adapters/toAppSettings';
+
+const client = getSettings();
+
+/** ユーザー設定を取得 */
+export const fetchSettings = () =>
+  call<SettingsResponse>(() => client.getSettingsApi()).then(toAppSettings);
+
+/** ユーザー設定を更新 */
+export const updateSettings = (payload: UpdateSettingsRequest) =>
+  call<SettingsResponse>(() => client.updateSettingsApi(payload)).then(toAppSettings);

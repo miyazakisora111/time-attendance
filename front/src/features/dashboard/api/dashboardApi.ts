@@ -1,42 +1,18 @@
-import { getDashboard } from "@/__generated__/dashboard/dashboard";
-import type {
-  DashboardClockResponse,
-  DashboardResponse,
-} from "@/__generated__/model";
-import type { ClockAction } from "@/domain/attendance/attendance";
-import { unwrapApiEnvelope } from "@/shared/http/result/envelope";
+import { getDashboard } from '@/__generated__/dashboard/dashboard';
+import type { DashboardResponse, DashboardClockResponse } from '@/__generated__/model';
+import type { ClockAction } from '@/domain/attendance/attendance';
+import { call } from '@/shared/http/result';
 
-export type DashboardData = DashboardResponse;
-export type DashboardStats = DashboardResponse["stats"];
-export type AttendanceRecord = DashboardResponse["recentRecords"][number];
+const client = getDashboard();
 
 /**
- * ダッシュボード表示用データを取得する。
+ * ダッシュボード情報を取得
  */
-export async function fetchDashboard(): Promise<DashboardData> {
-  const response = await getDashboard().getDashboardApi();
-
-  return unwrapApiEnvelope<DashboardData>(response);
-}
-
-export async function fetchDashboardStats(): Promise<DashboardStats> {
-  const data = await fetchDashboard();
-
-  return data.stats;
-}
-
-export async function fetchAttendanceRecords(): Promise<AttendanceRecord[]> {
-  const data = await fetchDashboard();
-
-  return data.recentRecords;
-}
+export const fetchDashboard = () => call<DashboardResponse>(() => client.getDashboardApi());
 
 /**
- * 打刻アクションを実行し、更新後のダッシュボード情報を返す。
+ * 打刻アクションを実行
  */
-export async function clockInOut(action: ClockAction): Promise<DashboardClockResponse> {
-  const response = await getDashboard().postDashboardClockApi({ action });
-
-  return unwrapApiEnvelope<DashboardClockResponse>(response);
-}
+export const clockInOut = (action: ClockAction) =>
+  call<DashboardClockResponse>(() => client.postDashboardClockApi({ action }));
 

@@ -1,52 +1,64 @@
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
-import { getSettings } from '@/__generated__/settings/settings';
-import { UpdateSettingsRequestTheme, type SettingsResponse, type UpdateSettingsRequest } from '@/__generated__/model';
-import type { SettingsSection } from '@/domain/entities/settings';
-import { SETTINGS_SECTION } from '@/domain/entities/settings';
-import { unwrapApiEnvelope } from '@/shared/http/result';
+import { makeScopedKeys } from '@/shared/react-query/keys';
+import { fetchSettings, updateSettings } from '@/features/settings/api/settingsApi';
+import { UpdateSettingsRequestTheme, type UpdateSettingsRequest } from '@/__generated__/model';
+import type { AppSettings, SettingsSection } from '@/domain/settings/types';
+import { SETTINGS_SECTION, THEME } from '@/domain/settings/types';
+import { QUERY_CONFIG } from '@/config/api';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
-/** 設定 Query Key。 */
-const SETTINGS_QUERY_KEY = ['settings'] as const;
+/**
+ * React Query キー。
+ */
+const SCOPE = 'settings' as const;
+const scoped = makeScopedKeys(SCOPE);
+export const settingsQueryKeys = {
+  all: () => scoped.all(),
+  current: () => scoped.nest('current'),
+  update: () => scoped.nest('update'),
+} as const;
 
 /**
- * 設定取得 API。
+ * ユーザー設定を取得する hook。
  */
-const fetchSettings = async (): Promise<SettingsResponse> => {
-  const response = await getSettings().getSettingsApi();
-
-  return unwrapApiEnvelope<SettingsResponse>(response);
+const useGetSettings = () => {
+  return useQuery<AppSettings>({
+    queryKey: settingsQueryKeys.current(),
+    queryFn: fetchSettings,
+    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
+    refetchOnWindowFocus: false,
+  });
 };
 
 /**
- * 設定更新 API。
+ * ユーザー設定を更新する hook。
  */
-const saveSettings = async (payload: UpdateSettingsRequest): Promise<SettingsResponse> => {
-  const response = await getSettings().updateSettingsApi(payload);
+const useUpdateSettings = () => {
+  const queryClient = useQueryClient();
 
-  return unwrapApiEnvelope<SettingsResponse>(response);
+  return useMutation({
+    mutationKey: settingsQueryKeys.update(),
+    mutationFn: updateSettings,
+    onSuccess: (data) => {
+      queryClient.setQueryData(settingsQueryKeys.current(), data);
+    },
+  });
 };
 
 /**
- * 設定画面の状態を管理する hook。
+ * 設定画面の状態を管理する composite hook。
  */
 export const useSettings = () => {
   const [activeSection, setActiveSection] = useState<SettingsSection>(SETTINGS_SECTION.Profile);
   const [draftSettings, setDraftSettings] = useState<UpdateSettingsRequest | null>(null);
 
-  const settingsQuery = useQuery({
-    queryKey: SETTINGS_QUERY_KEY,
-    queryFn: fetchSettings,
-  });
+  const settingsQuery = useGetSettings();
+  const updateMutation = useUpdateSettings();
 
-  const updateMutation = useMutation({
-    mutationFn: saveSettings,
-  });
-
-  const theme = useMemo<'light' | 'dark' | 'system'>(
-    () => draftSettings?.theme ?? settingsQuery.data?.theme ?? 'light',
+  const theme = useMemo<typeof THEME[keyof typeof THEME]>(
+    () => (draftSettings?.theme as typeof THEME[keyof typeof THEME]) ?? settingsQuery.data?.theme ?? THEME.System,
     [draftSettings?.theme, settingsQuery.data?.theme],
   );
 
@@ -55,18 +67,22 @@ export const useSettings = () => {
     [draftSettings?.language, settingsQuery.data?.language],
   );
 
-  /** テーマ更新ハンドラー。 */
-  const setTheme = (nextTheme: 'light' | 'dark' | 'system') => {
+  /**
+   * テーマ更新ハンドラー。
+   */
+  const setTheme = (nextTheme: typeof THEME[keyof typeof THEME]) => {
     setDraftSettings((prev) => ({
-      theme: UpdateSettingsRequestTheme[nextTheme],
+      theme: UpdateSettingsRequestTheme[nextTheme as keyof typeof UpdateSettingsRequestTheme],
       language: prev?.language ?? settingsQuery.data?.language ?? DEFAULT_SETTINGS_LANGUAGE,
     }));
   };
 
-  /** 言語更新ハンドラー。 */
+  /**
+   * 言語更新ハンドラー。
+   */
   const setLanguage = (nextLanguage: string) => {
     setDraftSettings((prev) => ({
-      theme: prev?.theme ?? UpdateSettingsRequestTheme[settingsQuery.data?.theme ?? 'light'],
+      theme: prev?.theme ?? UpdateSettingsRequestTheme[settingsQuery.data?.theme ?? THEME.Light],
       language: nextLanguage,
     }));
   };
@@ -77,7 +93,7 @@ export const useSettings = () => {
   const handleSave = async () => {
     try {
       await updateMutation.mutateAsync({
-        theme: UpdateSettingsRequestTheme[theme],
+        theme: UpdateSettingsRequestTheme[theme as keyof typeof UpdateSettingsRequestTheme],
         language,
       });
 
