@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.6.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host --port 5173 --strictPort",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --host --port 4173"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

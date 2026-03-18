@@ -1,101 +1,110 @@
-# --------------------------------
-# パス設定
-# --------------------------------
-BACK_DIR=back
-FRONT_DIR=front
-BACK_CONTAINER=app
-OPENAPI_DIR=openapi
-BUNDLE=$(OPENAPI_DIR)/build/bundle.yaml
-BUNDLE_JSON=$(OPENAPI_DIR)/build/bundle.json
+BACK_DIR := back
+FRONT_DIR := front
+INFRA_DIR := infra
+OPENAPI_DIR := openapi
+
 ENV ?= dev
-DOCKER_COMPOSE_BASE=docker-compose.base.yml
-DOCKER_COMPOSE_ENV=docker-compose.$(ENV).yml
-DC_CMD=docker-compose -f $(DOCKER_COMPOSE_BASE) -f $(DOCKER_COMPOSE_ENV)
+DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.$(ENV).yml
 
-# --------------------------------
-# バックエンド
-# --------------------------------
-back-up:
-	$(DC_CMD) up -d
+BUNDLE := $(OPENAPI_DIR)/build/bundle.yaml
+BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 
-back-down:
-	$(DC_CMD) down
+.PHONY: setup setup-local up build down restart logs ps sh init migrate seed fresh test optimize \
+	front-install front-dev front-build front-typecheck front-lint local-back health \
+	openapi-bundle openapi-client openapi-zod openapi-validators openapi
 
-back-ps:
-	$(DC_CMD) ps
+setup:
+	@[ -f .env ] || cp .env.example .env
+	@[ -f $(BACK_DIR)/.env ] || cp $(BACK_DIR)/.env.example $(BACK_DIR)/.env
+	@[ -f $(FRONT_DIR)/.env ] || cp $(FRONT_DIR)/.env.example $(FRONT_DIR)/.env
+	$(MAKE) build
+	$(MAKE) init
 
-back-ssh:
-	$(DC_CMD) exec $(BACK_CONTAINER) sh
+setup-local:
+	@[ -f $(BACK_DIR)/.env ] || cp $(BACK_DIR)/.env.example $(BACK_DIR)/.env
+	@[ -f $(FRONT_DIR)/.env ] || cp $(FRONT_DIR)/.env.example $(FRONT_DIR)/.env
+	@echo "Edit back/.env for host mode: DB_HOST=localhost and REDIS_HOST=localhost"
+	cd $(BACK_DIR) && composer install
+	cd $(FRONT_DIR) && pnpm install
+	cd $(BACK_DIR) && php artisan key:generate --ansi
+	cd $(BACK_DIR) && php artisan jwt:secret --ansi
+	cd $(BACK_DIR) && php artisan migrate --seed
 
-back-optimize:
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:clear
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan route:clear
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan cache:clear
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan view:clear
-	$(DC_CMD) exec $(BACK_CONTAINER) composer dump-autoload
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan config:cache
+up:
+	$(DC) up -d
 
-back-test:
-	$(DC_CMD) exec $(BACK_CONTAINER) php artisan test --coverage --min=75.3
+build:
+	$(DC) up -d --build
 
-back-phpcs:
-	$(DC_CMD) exec $(BACK_CONTAINER) ./vendor/bin/phpcs --standard=phpcs.xml --colors -ps $(opt)
+down:
+	$(DC) down
 
-back-phpcbf:
-	$(DC_CMD) exec $(BACK_CONTAINER) ./vendor/bin/phpcbf --standard=phpcs.xml --extensions=php
+restart:
+	$(MAKE) down
+	$(MAKE) up
 
-# --------------------------------
-# フロントエンド
-# --------------------------------
+logs:
+	$(DC) logs -f --tail=200
+
+ps:
+	$(DC) ps
+
+sh:
+	$(DC) exec app sh
+
+init:
+	$(DC) exec app php artisan key:generate --ansi
+	$(DC) exec app php artisan jwt:secret --ansi
+	$(DC) exec app php artisan migrate --seed --force
+
+migrate:
+	$(DC) exec app php artisan migrate --force
+
+seed:
+	$(DC) exec app php artisan db:seed --force
+
+fresh:
+	$(DC) exec app php artisan migrate:fresh --seed --force
+
+test:
+	$(DC) exec app php artisan test
+
+optimize:
+	$(DC) exec app composer optimize-prod
+
 front-install:
-	[ -d $(FRONT_DIR)/node_modules ] || npm install --prefix $(FRONT_DIR)
+	cd $(FRONT_DIR) && pnpm install
 
-front-up: front-install
-	npm start --prefix $(FRONT_DIR)
+front-dev:
+	cd $(FRONT_DIR) && pnpm dev --host --port 5173 --strictPort
 
 front-build:
-	npm run build --prefix $(FRONT_DIR)
+	cd $(FRONT_DIR) && pnpm build
 
-front-test:
-	npm test --prefix $(FRONT_DIR)
+front-typecheck:
+	cd $(FRONT_DIR) && pnpm typecheck
 
 front-lint:
-	npm run lint --prefix $(FRONT_DIR)
+	cd $(FRONT_DIR) && pnpm lint
 
-# --------------------------------
-# OpenAPI
-# --------------------------------
+local-back:
+	cd $(BACK_DIR) && php artisan serve --host=0.0.0.0 --port=8000
+
+health:
+	@curl -fsS http://localhost:$${APP_PORT:-8000}/api/health && echo
+
 openapi-bundle:
-	npx @redocly/cli bundle \
-	$(OPENAPI_DIR)/openapi.yaml \
-	-o $(BUNDLE)
-	npx @redocly/cli bundle \
-	$(OPENAPI_DIR)/openapi.yaml \
-	--dereferenced \
-	--ext json \
-	-o $(BUNDLE_JSON)
+	npx @redocly/cli bundle $(OPENAPI_DIR)/openapi.yaml -o $(BUNDLE)
+	npx @redocly/cli bundle $(OPENAPI_DIR)/openapi.yaml --dereferenced --ext json -o $(BUNDLE_JSON)
 
 openapi-client: openapi-bundle
 	npx --prefix $(FRONT_DIR) orval
 
 openapi-zod: openapi-bundle
-	npx --prefix $(FRONT_DIR) openapi-zod \
-	$(BUNDLE) \
-	-o $(FRONT_DIR)/src/__generated__/zod.ts
+	npx --prefix $(FRONT_DIR) openapi-zod $(BUNDLE) -o $(FRONT_DIR)/src/__generated__/zod.ts
 
 openapi-validators: openapi-bundle openapi-zod
 	node scripts/generate-openapi-validators.mjs
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi: openapi-zod openapi-client openapi-validators
-
-# --------------------------------
-# DB
-# --------------------------------
-db-init:
-	@echo "==> DB作成チェック中..."
-	@$(DC_CMD) exec postgres bash -c 'psql -U $$POSTGRES_USER -lqt | cut -d \| -f 1 | grep -w $$DB_DATABASE || createdb -U $$POSTGRES_USER $$DB_DATABASE'
-	@echo "==> DB作成完了"
-
-db-refresh:
-	@$(DC_CMD) exec $(BACK_CONTAINER) php artisan migrate:fresh --seed

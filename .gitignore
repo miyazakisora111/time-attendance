@@ -1,20 +1,33 @@
-cat << 'EOF' > .gitignore
-# Laravel
-/back/vendor
-/back/.env
-/back/storage/*.key
-/back/storage/logs
-/back/storage/framework
-/back/public/build
-
-# React
-/front/node_modules
-/front/dist
-/front/.env
-
-# Common
+# Root
+.env
+.env.*
+!.env.example
 .DS_Store
 .idea
 .vscode
+
+# Backend
+/back/.env
+/back/.env.*
+!/back/.env.example
+/back/vendor
+/back/storage/*.key
+/back/storage/logs
+/back/storage/framework/cache
+/back/storage/framework/sessions
+/back/storage/framework/views
+/back/public/build
+
+# Frontend
+/front/.env
+/front/.env.*
+!/front/.env.example
+/front/node_modules
+/front/dist
+
+# Node
 node_modules
-EOF
+
+# Secrets
+*.pem
+*.key
