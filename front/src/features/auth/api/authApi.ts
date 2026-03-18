@@ -1,25 +1,18 @@
 import { getAuth } from '@/__generated__/auth/auth';
-import { unwrapApiEnvelope } from '@/shared/http/result/envelope';
-import type { AuthUser, LoginResult } from '@/domain/auth/types';
+import type { LoginResponse } from '@/__generated__/model/loginResponse';
+import type { UserResponse } from '@/__generated__/model/userResponse';
+import type { LogoutApi200 } from '@/__generated__/model/logoutApi200';
+import type { LoginRequest } from '@/__generated__/model';
+import { call } from '@/shared/http/result';
+import { toAuthUser } from '@/features/auth/adapters/toAuthUser';
 
-export const authQueryKeys = {
-  all: ['auth'] as const,
-  me: () => [...authQueryKeys.all, 'me'] as const,
-};
+const client = getAuth();
 
-export const authApi = {
-    async me(): Promise<AuthUser> {
-        const resp = await getAuth().authMeApi();
-        const data = unwrapApiEnvelope<{ user: AuthUser }>(resp);
-        return data.user;
-    },
+/** ユーザー情報を取得 */
+export const me = () => call<UserResponse>(() => client.authMeApi()).then(toAuthUser);
 
-    async login(credentials: { email: string; password: string }): Promise<LoginResult> {
-        const resp = await getAuth().loginApi(credentials);
-        return unwrapApiEnvelope<LoginResult>(resp);
-    },
+/** ログイン */
+export const login = (payload: LoginRequest) => call<LoginResponse>(() => client.loginApi(payload));
 
-    async logout(): Promise<void> {
-        await getAuth().logoutApi();
-    },
-};
+/** ログアウト */
+export const logout = () => call<LogoutApi200>(() => client.logoutApi());

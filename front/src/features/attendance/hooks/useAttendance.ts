@@ -8,6 +8,7 @@ import {
   useClockOut,
 } from '@/features/attendance/hooks/useAttendanceData';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
+import { type LastAction } from '@/features/attendance/ui/types';
 
 /**
  * 勤怠画面の表示状態を管理するカスタムフック。

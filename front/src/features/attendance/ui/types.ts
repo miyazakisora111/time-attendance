@@ -1,8 +1,8 @@
-import type { ClockStatus } from '@/domain/attendance/attendance';
+import type { ClockAction } from '@/domain/attendance/attendance';
 
 /** 勤怠 */
 export type AttendanceView = {
-    clockStatus: ClockStatus;
+    clockAction: ClockAction;
     totalWorkedMs: number | null;
     startTime: string | null;
     endTime: string | null;
@@ -32,8 +32,8 @@ export interface LastActionView {
  * 直近打刻情報。
  */
 export interface LastAction {
-  /** 打刻種別 */
-  ttendanceStatus: AttendanceStatus;
-  /** 打刻時刻 */
-  time: string;
+    /** 打刻種別 */
+    clockAction: ClockAction;
+    /** 打刻時刻 */
+    time: string;
 }

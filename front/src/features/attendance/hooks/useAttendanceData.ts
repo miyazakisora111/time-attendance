@@ -1,32 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchDashboard, clockIn, clockOut } from '@/features/attendance/api/attendanceApi';
-import type {
-  AttendanceResponse,
-  AttendanceClockInRequest,
-  AttendanceClockOutRequest,
-} from '@/__generated__/model';
+import { makeScopedKeys } from '@/shared/react-query/keys';
+import { fetchAttendance, clockIn, clockOut } from '@/features/attendance/api/attendanceApi';
 import { API_CONFIG } from '@/config/api';
-import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceView';
 import { type AttendanceView } from '@/features/attendance/ui/types';
 
 /**
  * React Query キー。
  */
+const SCOPE = 'attendance' as const;
+const scoped = makeScopedKeys(SCOPE);
 export const attendanceQueryKeys = {
-  all: ['attendance'] as const,
-  attendance: () => [...attendanceQueryKeys.all, 'attendance'] as const,
-};
+  all: () => scoped.all(),
+  attendance: () => scoped.nest('attendance'),
+  clockIn: () => scoped.nest('clockIn'),
+  clockOut: () => scoped.nest('clockOut'),
+} as const;
 
 /** 
- * 勤怠サマリー取得 
+ * 勤怠取得 
  */
 export const useAttendanceDashboard = () => {
   return useQuery({
     queryKey: attendanceQueryKeys.attendance(),
-    queryFn: async (): Promise<AttendanceView> => {
-      const res = await fetchDashboard();
-      return toAttendanceView(res);
-    },
+    queryFn: async (): Promise<AttendanceView> => await fetchAttendance(),
     staleTime: API_CONFIG.cacheStaleTimeMs,
   });
 };
@@ -35,14 +31,12 @@ export const useAttendanceDashboard = () => {
  * 出勤打刻 
  */
 export const useClockIn = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ['attendance', 'clockIn'],
-    mutationFn: (payload: AttendanceClockInRequest) => clockIn(payload),
-    onSuccess: (res: AttendanceResponse) => {
-      const view = toAttendanceView(res);
-      qc.setQueryData(attendanceQueryKeys.attendance(), view);
-      qc.invalidateQueries({ queryKey: attendanceQueryKeys.attendance() });
+    mutationKey: attendanceQueryKeys.clockIn(),
+    mutationFn: (payload: { start_time: string, work_date: string }) => clockIn(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
     },
   });
 };
@@ -51,14 +45,12 @@ export const useClockIn = () => {
  * 退勤打刻 
  */
 export const useClockOut = () => {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationKey: ['attendance', 'clockOut'],
-    mutationFn: (payload: AttendanceClockOutRequest) => clockOut(payload),
-    onSuccess: (res: AttendanceResponse) => {
-      const view = toAttendanceView(res);
-      qc.setQueryData(attendanceQueryKeys.attendance(), view);
-      qc.invalidateQueries({ queryKey: attendanceQueryKeys.attendance() });
+    mutationKey: attendanceQueryKeys.clockOut(),
+    mutationFn: (payload: { end_time: string, work_date: string }) => clockOut(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
     },
   });
 };

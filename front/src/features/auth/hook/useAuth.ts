@@ -1,21 +1,33 @@
 import { useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { authApi, authQueryKeys } from '@/features/auth/api/authApi';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { makeScopedKeys } from '@/shared/react-query/keys';
+import { me, login, logout } from '@/features/auth/api/authApi';
 import { useAuthStore } from '@/features/auth/hook/useAuthStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/shared/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 import { QUERY_CONFIG } from '@/config/api';
 
+/**
+ * React Query キー。
+ */
+const SCOPE = 'auth' as const;
+const scoped = makeScopedKeys(SCOPE);
+export const authQueryKeys = {
+  all: () => scoped.all(),
+  me: () => scoped.nest('me'),
+  login: () => scoped.nest('login'),
+  logout: () => scoped.nest('logout'),
+} as const;
+
 export const useAuth = () => {
     const queryClient = useQueryClient();
     const { setUser, setIsAuthenticated, setIsInitializing } = useAuthStore.getState();
-
     const hasToken = !!getAuthToken();
 
     // /me クエリ：トークンがあるときだけ問い合わせ
     const authQuery = useQuery<AuthUser>({
         queryKey: authQueryKeys.me(),
-        queryFn: authApi.me,
+        queryFn: me,
         enabled: hasToken,
         retry: false,
         staleTime: QUERY_CONFIG.defaultStaleTimeMs,
@@ -59,8 +71,8 @@ export const useAuth = () => {
 
     // ログイン：トークン保存 → /me 取得 → Store 同期
     const loginMutation = useMutation({
-        mutationKey: ['auth', 'login'],
-        mutationFn: (credentials: { email: string; password: string }) => authApi.login(credentials),
+        mutationKey: authQueryKeys.login(),
+        mutationFn: (credentials: { email: string; password: string }) => login(credentials),
         onSuccess: async (result: LoginResult) => {
             if (result.token) {
                 setAuthToken(result.token);
@@ -75,8 +87,8 @@ export const useAuth = () => {
 
     // ログアウト：サーバー通知 → トークン削除 → Query 破棄 → Store クリア
     const logoutMutation = useMutation({
-        mutationKey: ['auth', 'logout'],
-        mutationFn: authApi.logout,
+        mutationKey: authQueryKeys.logout(),
+        mutationFn: logout,
         onSuccess: () => {
             clearAuthToken();
             queryClient.removeQueries({ queryKey: authQueryKeys.me() });
