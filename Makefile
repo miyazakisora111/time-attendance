@@ -9,9 +9,10 @@ DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-c
 BUNDLE := $(OPENAPI_DIR)/build/bundle.yaml
 BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 
-.PHONY: setup setup-local up build down restart logs ps sh init migrate seed fresh test optimize \
+.PHONY: setup up build down restart logs ps sh init migrate seed fresh test optimize \
 	front-install front-dev front-build front-typecheck front-lint local-back health \
-	openapi-bundle openapi-client openapi-zod openapi-validators openapi
+	openapi-bundle openapi-client openapi-zod openapi-validators openapi \
+	db-init
 
 setup:
 	@[ -f .env ] || cp .env.example .env
@@ -19,16 +20,6 @@ setup:
 	@[ -f $(FRONT_DIR)/.env ] || cp $(FRONT_DIR)/.env.example $(FRONT_DIR)/.env
 	$(MAKE) build
 	$(MAKE) init
-
-setup-local:
-	@[ -f $(BACK_DIR)/.env ] || cp $(BACK_DIR)/.env.example $(BACK_DIR)/.env
-	@[ -f $(FRONT_DIR)/.env ] || cp $(FRONT_DIR)/.env.example $(FRONT_DIR)/.env
-	@echo "Edit back/.env for host mode: DB_HOST=localhost and REDIS_HOST=localhost"
-	cd $(BACK_DIR) && composer install
-	cd $(FRONT_DIR) && pnpm install
-	cd $(BACK_DIR) && php artisan key:generate --ansi
-	cd $(BACK_DIR) && php artisan jwt:secret --ansi
-	cd $(BACK_DIR) && php artisan migrate --seed
 
 up:
 	$(DC) up -d
@@ -108,3 +99,16 @@ openapi-validators: openapi-bundle openapi-zod
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi: openapi-zod openapi-client openapi-validators
+
+db-init:
+    @echo "=== PostgreSQL 初期化 ==="
+    @read -p "DB 名 (default: time_attendance): " DB_NAME; \
+    : $$ { DB_NAME:=$${DB_NAME:-time_attendance}; }; \
+    read -p "ユーザー名 (default: app_user): " DB_USER; \
+    : $$ { DB_USER:=$${DB_USER:-app_user}; }; \
+    read -s -p "パスワード（入力は表示されません）: " DB_PASS; echo; \
+    sudo -u postgres psql \
+      -v dbname="$$DB_NAME" \
+      -v dbuser="$$DB_USER" \
+      -v dbpass="$$DB_PASS" \
+      -f database/init.sql
