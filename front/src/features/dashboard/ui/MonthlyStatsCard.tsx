@@ -1,7 +1,7 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
-import { useDashboardStats } from "@/features/dashboard/model/useDashboard";
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboard";
 import { DataStateWrapper } from "@/shared/components/DataStateWrapper";
 import { StatItemCard } from "@/features/dashboard/ui/stats/StatItemCard";
 import {
@@ -20,14 +20,23 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
   const { data: stats, isLoading } = useDashboardStats();
 
   const statsConfig = stats
-    ? buildDashboardMonthlyStatsView(stats).map((item) => ({
-      icon: dashboardMonthlyStatIconMap[item.key],
-      label: item.label,
-      value: item.value,
-      subtext: item.subtext,
-      iconColor: item.iconColorClassName,
-      iconBgColor: item.iconBgColorClassName,
-    }))
+    ? buildDashboardMonthlyStatsView({
+        totalHours: stats.totalHours,
+        targetHours: 160, // 仮値（将来 API から返すか config から取得）
+        workDays: stats.workDays,
+        remainingDays: 10, // 仮値
+        avgHours: stats.avgHours,
+        avgHoursDiff: 0, // 仮値
+        overtimeHours: stats.overtimeHours,
+        overtimeDiff: 0, // 仮値
+      }).map((item) => ({
+        icon: dashboardMonthlyStatIconMap[item.key],
+        label: item.label,
+        value: item.value,
+        subtext: item.subtext,
+        iconColor: item.iconColorClassName,
+        iconBgColor: item.iconBgColorClassName,
+      }))
     : [];
 
   return (

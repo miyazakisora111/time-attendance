@@ -19,54 +19,25 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
   return (
     <div className="grid grid-cols-2 gap-3">
       {status === "out" && (
-        <Button
-          onClick={() => onAction("in")}
-          disabled={isPending}
-          intent="success"
-          size="lg"
-          className="col-span-2"
-          fullWidth
-        >
+        <Button onClick={() => onAction("in")} disabled={isPending} intent="success" size="lg" className="col-span-2" fullWidth>
           <LogIn size={20} />
           {getActionLabel("in")}
         </Button>
       )}
-
       {status === "in" && (
         <>
-          <Button
-            onClick={() => onAction("break_start")}
-            disabled={isPending}
-            variant="outline"
-            intent="warning"
-            size="lg"
-            fullWidth
-          >
+          <Button onClick={() => onAction("break_start")} disabled={isPending} variant="outline" intent="warning" size="lg" fullWidth>
             <Coffee size={20} />
             {getActionLabel("break_start")}
           </Button>
-          <Button
-            onClick={() => onAction("out")}
-            disabled={isPending}
-            intent="danger"
-            size="lg"
-            fullWidth
-          >
+          <Button onClick={() => onAction("out")} disabled={isPending} intent="danger" size="lg" fullWidth>
             <LogOut size={20} />
             {getActionLabel("out")}
           </Button>
         </>
       )}
-
       {status === "break" && (
-        <Button
-          onClick={() => onAction("break_end")}
-          disabled={isPending}
-          intent="primary"
-          size="lg"
-          className="col-span-2"
-          fullWidth
-        >
+        <Button onClick={() => onAction("break_end")} disabled={isPending} intent="primary" size="lg" className="col-span-2" fullWidth>
           <Clock size={20} />
           {getActionLabel("break_end")}
         </Button>

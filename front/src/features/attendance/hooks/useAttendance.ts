@@ -3,10 +3,10 @@ import { useMemo, useState } from 'react';
 import { type AttendanceStatus } from '@/domain/attendance/attendance';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import {
-  useTodayAttendance,
-  useClockIn,
-  useClockOut,
-} from '@/features/attendance/hooks/useAttendanceData';
+  useTodayAttendanceQuery,
+  useClockInMutation,
+  useClockOutMutation,
+} from '@/features/attendance/hooks/useAttendanceQueries';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
 import { clockActionLabelMap } from '@/shared/presentation/attendance';
 import { type LastAction } from '@/features/attendance/ui/types';
@@ -17,22 +17,22 @@ import type { ClockAction } from '@/domain/attendance/attendance';
  */
 export const useAttendance = () => {
   const currentTime = useCurrentTime();
-  const { data, isLoading, isError } = useTodayAttendance();
-  const { mutate: clockInMutate, isPending: isClockingIn } = useClockIn();
-  const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOut();
+  const { data: todayAttendance, isLoading, isError } = useTodayAttendanceQuery();
+  const { mutate: useClockInMutate, isPending: isClockingIn } = useClockInMutation();
+  const { mutate: useClockOutMutate, isPending: isClockingOut } = useClockOutMutation();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
 
   const isPending = isClockingIn || isClockingOut;
 
   // ステータス
   const status = useMemo<AttendanceStatus>(() => {
-    return (data?.clockAction ?? 'out') as AttendanceStatus;
-  }, [data?.clockAction]);
+    return (todayAttendance?.clockAction ?? 'out') as AttendanceStatus;
+  }, [todayAttendance?.clockAction]);
 
   // 実働時間
   const todayWorkedTime = useMemo(() => {
-    return formatWorkedHours(data?.totalWorkedMs ?? null);
-  }, [data?.totalWorkedMs]);
+    return formatWorkedHours(todayAttendance?.totalWorkedMs ?? null);
+  }, [todayAttendance?.totalWorkedMs]);
 
   // 最後の打刻アクション
   const lastActionView = useMemo(
@@ -57,22 +57,23 @@ export const useAttendance = () => {
       sonner.error(`${label}に失敗しました`);
     };
 
+    const workDate = todayAttendance?.workDate ?? now.toISOString().slice(0, 10);
     switch (clockAction) {
       case 'in': {
-        clockInMutate(
+        useClockInMutate(
           {
             start_time: now.toISOString(),
-            work_date: data?.workDate ?? now.toISOString().slice(0, 10),
+            work_date: workDate,
           },
           { onSuccess, onError }
         );
         break;
       }
       case 'out': {
-        clockOutMutate(
+        useClockOutMutate(
           {
             end_time: now.toISOString(),
-            work_date: data?.workDate ?? now.toISOString().slice(0, 10),
+            work_date: workDate,
           },
           { onSuccess, onError }
         );

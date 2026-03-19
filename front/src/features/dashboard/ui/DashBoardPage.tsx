@@ -1,5 +1,6 @@
 
 import { Container, Typography } from "@/shared/components";
+import { useDashboardData } from "@/features/dashboard/hooks/useDashboard";
 import {
   ClockInOutCard,
   DashboardLayoutGrid,
@@ -8,7 +9,6 @@ import {
   QuickActionsCard,
   RecentRecordsCard,
 } from "@/features/dashboard/ui";
-import { useDashboardData } from "@/features/dashboard/model/useDashboard";
 import { DASHBOARD_TITLE, formatDashboardGreeting } from "@/shared/presentation/dashboard";
 
 export default function DashBoardPage() {

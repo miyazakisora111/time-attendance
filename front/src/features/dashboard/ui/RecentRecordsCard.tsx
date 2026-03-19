@@ -2,7 +2,7 @@ import React from "react";
 import { AlertCircle, Clock, History } from "lucide-react";
 import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
-import { useRecentRecords } from "@/features/dashboard/model/useDashboard";
+import { useRecentRecords } from "@/features/dashboard/hooks/useDashboard";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";
 import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/attendance";
 
@@ -31,7 +31,7 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
             <AlertCircle size={24} />
             <Typography variant="label">データの取得に失敗しました</Typography>
           </div>
-        ) : !records || records.length === 0 ? (
+        ) : !records || (Array.isArray(records) && records.length === 0) ? (
           <div className="flex flex-col items-center justify-center gap-2 p-8 text-gray-500">
             <History size={32} className="text-gray-300" />
             <Typography variant="label">勤怠記録がありません</Typography>
@@ -70,7 +70,7 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
               </thead>
 
               <tbody className="divide-y divide-gray-50">
-                {records.map((record) => (
+                {records?.map((record) => (
                   <tr key={`${record.date}-${record.day}`} className="group transition-colors hover:bg-blue-50/30">
                     <td className="px-3 py-4 font-medium">
                       <div className="flex items-center gap-2 text-gray-900 transition-colors group-hover:text-blue-600">
@@ -94,7 +94,7 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                       {formatHoursText(record.workHours)}
                     </td>
                     <td className="px-3 py-4">
-                      <Badge intent={getAttendanceRecordStatusBadgeIntent(record.status)}>
+                      <Badge intent={getAttendanceRecordStatusBadgeIntent(record.status as never)}>
                         {record.status}
                       </Badge>
                     </td>
