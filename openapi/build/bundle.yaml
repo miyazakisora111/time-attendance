@@ -188,33 +188,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /dashboard/clock:
-    post:
-      operationId: postDashboardClockApi
-      tags:
-        - Dashboard
-      summary: ダッシュボード打刻操作
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DashboardClockRequest'
-      responses:
-        '200':
-          description: 打刻成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DashboardClockResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/ValidationError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
   /auth/calendar:
     get:
       operationId: getCalendarApi
@@ -597,37 +570,6 @@ components:
                   - 休日
         pendingOvertimeRequests:
           type: integer
-    DashboardClockRequest:
-      type: object
-      required:
-        - action
-      properties:
-        action:
-          type: string
-          enum:
-            - in
-            - out
-            - break_start
-            - break_end
-    DashboardClockResponse:
-      type: object
-      required:
-        - action
-        - timestamp
-        - dashboard
-      properties:
-        action:
-          type: string
-          enum:
-            - in
-            - out
-            - break_start
-            - break_end
-        timestamp:
-          type: string
-          format: date-time
-        dashboard:
-          $ref: '#/components/schemas/DashboardResponse'
     CalendarResponse:
       type: array
       items:

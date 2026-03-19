@@ -1,16 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
-  LogIn,
-  LogOut,
-  Coffee,
   MapPin,
   Shield,
-  CheckCircle2,
   History,
 } from 'lucide-react';
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
-import { Button, Card, CardContent, Container, Typography, IconWrapper } from '@/shared/components';
+import type { ClockStatus } from '@/domain/attendance/attendance';
+import { Card, CardContent, Container, Typography, IconWrapper } from '@/shared/components';
+import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
 import {
   EMPTY_TIME_TEXT,
@@ -57,6 +55,7 @@ export function AttendancePage() {
   // ステータスに応じたビュー/アイコン
   const currentStatus = ATTENDANCE_STATUS_VIEW_MAP[status];
   const currentStatusIcon = STATUS_ICON_MAP[status];
+  const clockActionStatus: ClockStatus = status === 'working' ? 'in' : status;
 
   // ヘッダーの日時（日本語フォーマット）
   const headerDateText = formatJapaneseLongDate(currentTime);
@@ -128,51 +127,12 @@ export function AttendancePage() {
             </div>
           </div>
         </Card>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button
-            disabled={isLoading || isPending || status !== 'out'}
-            onClick={() => handleAction('in')}
-            size="lg"
-            variant={status === 'out' ? 'solid' : 'outline'}
-            intent="primary"
-            className="h-24"
-          >
-            <LogIn size={24} />
-            <Typography variant="label">出勤</Typography>
-          </Button>
-          <Button
-            disabled={isLoading || isPending || status !== 'working'}
-            onClick={() => handleAction('break_start')}
-            size="lg"
-            variant={status === 'working' ? 'solid' : 'outline'}
-            intent={status === 'working' ? 'warning' : 'primary'}
-            className="h-24"
-          >
-            <Coffee size={24} />
-            <Typography variant="label">休憩</Typography>
-          </Button>
-          <Button
-            disabled={isLoading || isPending || status !== 'break'}
-            onClick={() => handleAction('break_end')}
-            size="lg"
-            variant={status === 'break' ? 'solid' : 'outline'}
-            intent="primary"
-            className="h-24"
-          >
-            <CheckCircle2 size={24} />
-            <Typography variant="label">戻り</Typography>
-          </Button>
-          <Button
-            disabled={isLoading || isPending || status === 'out'}
-            onClick={() => handleAction('out')}
-            size="lg"
-            variant={status !== 'out' ? 'solid' : 'outline'}
-            intent="primary"
-            className="h-24 bg-gray-900"
-          >
-            <LogOut size={24} />
-            <Typography variant="label">退勤</Typography>
-          </Button>
+        <div className="rounded-3xl border border-gray-100 bg-white p-6">
+          <ClockActionButtons
+            status={clockActionStatus}
+            isPending={isLoading || isPending}
+            onAction={handleAction}
+          />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card variant="elevated" padding="none" className="col-span-1 md:col-span-2 overflow-hidden">

@@ -1,8 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Clock } from "lucide-react";
-import type { ClockAction } from "@/domain/attendance/attendance";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared/components";
-import { useClockInOut, useDashboardData } from "@/features/dashboard/hooks/useDashboard";
+import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
+import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
 import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
@@ -14,18 +15,19 @@ import { getClockStatusBadgeView } from "@/shared/presentation/attendance";
  * 現在の打刻状態を表示し、打刻アクションを実行する。
  */
 export const ClockInOutCard = React.memo(function ClockInOutCard() {
-  const { data } = useDashboardData();
-  const { mutate: clockInOut, isPending } = useClockInOut();
-  const status = data?.clockStatus ?? ("out" as const);
-  const todayRecord = data?.todayRecord;
-  const statusView = getClockStatusBadgeView(status);
-
-  const handleAction = useCallback(
-    (action: ClockAction) => {
-      clockInOut(action);
+  const queryClient = useQueryClient();
+  const {
+    clockStatus: status,
+    todayAttendance,
+    todayWorkedTime,
+    isPending,
+    handleAction,
+  } = useAttendanceClock({
+    onActionSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },
-    [clockInOut]
-  );
+  });
+  const statusView = getClockStatusBadgeView(status);
 
   return (
     <Card variant="elevated">
@@ -47,12 +49,8 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
         />
         <ClockTodayRecord
           status={status}
-          clockInTime={todayRecord?.clockInTime ?? undefined}
-          totalWorkedHours={
-            todayRecord?.totalWorkedHours !== null && todayRecord?.totalWorkedHours !== undefined
-              ? `${todayRecord.totalWorkedHours}h`
-              : undefined
-          }
+          clockInTime={todayAttendance?.startTime ?? undefined}
+          totalWorkedHours={todayWorkedTime}
         />
       </CardContent>
     </Card>

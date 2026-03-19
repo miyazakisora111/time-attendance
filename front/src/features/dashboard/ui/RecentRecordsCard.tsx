@@ -2,7 +2,7 @@ import React from "react";
 import { AlertCircle, Clock, History } from "lucide-react";
 import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Spinner, Typography } from "@/shared/components";
-import { useRecentRecords } from "@/features/dashboard/hooks/useDashboard";
+import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";
 import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/attendance";
 

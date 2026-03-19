@@ -100,15 +100,15 @@ openapi-validators: openapi-bundle openapi-zod
 
 openapi: openapi-zod openapi-client openapi-validators
 
-db-init:
-    @echo "=== PostgreSQL 初期化 ==="
-    @read -p "DB 名 (default: time_attendance): " DB_NAME; \
-    : $$ { DB_NAME:=$${DB_NAME:-time_attendance}; }; \
-    read -p "ユーザー名 (default: app_user): " DB_USER; \
-    : $$ { DB_USER:=$${DB_USER:-app_user}; }; \
-    read -s -p "パスワード（入力は表示されません）: " DB_PASS; echo; \
-    sudo -u postgres psql \
-      -v dbname="$$DB_NAME" \
-      -v dbuser="$$DB_USER" \
-      -v dbpass="$$DB_PASS" \
-      -f database/init.sql
+# TODO: なんかタブが入ってるらしくて動かん
+# db-init:
+#     @read -p "DB 名 (default: time_attendance): " DB_NAME; \
+#     : "$${DB_NAME:=time_attendance}"; \
+#     read -p "ユーザー名 (default: app_user): " DB_USER; \
+#     : "$${DB_USER:=app_user}"; \
+#     read -s -p "パスワード（入力は表示されません）: " DB_PASS; echo; \
+#     sudo -u postgres psql \
+#       -v dbname="$$DB_NAME" \
+#       -v dbuser="$$DB_USER" \
+#       -v dbpass="$$DB_PASS" \
+#       -f database/init.sql

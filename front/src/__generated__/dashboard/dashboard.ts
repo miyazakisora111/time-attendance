@@ -5,12 +5,8 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type {
-  DashboardClockRequest,
-  DashboardClockResponse,
-  DashboardResponse,
-} from ".././model";
-import { customInstance } from "../../shared/http/client";
+import type { DashboardResponse } from ".././model";
+import { customInstance } from "../../lib/http/client";
 
 export const getDashboard = () => {
   /**
@@ -22,20 +18,7 @@ export const getDashboard = () => {
       method: "GET",
     });
   };
-  /**
-   * @summary ダッシュボード打刻操作
-   */
-  const postDashboardClockApi = (
-    dashboardClockRequest: DashboardClockRequest,
-  ) => {
-    return customInstance<DashboardClockResponse>({
-      url: `/dashboard/clock`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: dashboardClockRequest,
-    });
-  };
-  return { getDashboardApi, postDashboardClockApi };
+  return { getDashboardApi };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -44,7 +27,4 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
 export type GetDashboardApiResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getDashboard>["getDashboardApi"]>>
->;
-export type PostDashboardClockApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getDashboard>["postDashboardClockApi"]>>
 >;

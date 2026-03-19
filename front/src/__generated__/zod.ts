@@ -19,7 +19,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.string(), z.array(z.string())).optional(),
+    errors: z.record(z.array(z.string())).optional(),
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
@@ -28,7 +28,7 @@ export namespace components.schemas {
       name: z.string(),
       email: z.string(),
       roles: z.array(z.string()),
-      settings: z.record(z.string(), z.unknown()).nullable().optional(),
+      settings: z.record(z.unknown()).nullable().optional(),
     }),
   });
   export const AttendanceResponse = z.object({
@@ -74,14 +74,6 @@ export namespace components.schemas {
         status: z.enum(["通常", "残業", "休日"]),
       })),
     pendingOvertimeRequests: z.number().int(),
-  });
-  export const DashboardClockRequest = z.object({
-    action: z.enum(["in", "out", "break_start", "break_end"]),
-  });
-  export const DashboardClockResponse = z.object({
-    action: z.enum(["in", "out", "break_start", "break_end"]),
-    timestamp: z.string(),
-    dashboard: components["schemas"]["DashboardResponse"],
   });
   export const CalendarResponse = z.array(z.string());
   export const TeamMember = z.object({
@@ -259,26 +251,6 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  postDashboardClockApi: {
-    /** ダッシュボード打刻操作 */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["DashboardClockRequest"],
-      },
-    },
-    responses: {
-      /** @description 打刻成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DashboardClockResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      409: components["responses"]["Conflict"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
   getCalendarApi: {
     /** 月次カレンダー取得 */
     parameters: {
@@ -374,10 +346,6 @@ export const paths = {
   "/dashboard": {
     /** ダッシュボード集計取得 */
     get: operations["getDashboardApi"],
-  },
-  "/dashboard/clock": {
-    /** ダッシュボード打刻操作 */
-    post: operations["postDashboardClockApi"],
   },
   "/auth/calendar": {
     /** 月次カレンダー取得 */

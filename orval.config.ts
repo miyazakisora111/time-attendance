@@ -11,7 +11,7 @@ export default defineConfig({
             tsconfig: './front/tsconfig.json',
             override: {
                 mutator: {
-                    path: './front/src/shared/http/client.ts', // Axios instance などを定義したファイル
+                    path: './front/src/lib/http/client.ts', // Axios instance などを定義したファイル
                     name: 'customInstance', // mutator で使う関数名
                 },
                 query: {

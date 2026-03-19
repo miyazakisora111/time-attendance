@@ -1,6 +1,6 @@
 
 import { Container, Typography } from "@/shared/components";
-import { useDashboardData } from "@/features/dashboard/hooks/useDashboard";
+import { useDashboardData } from "@/features/dashboard/hooks/useDashboardQueries";
 import {
   ClockInOutCard,
   DashboardLayoutGrid,
