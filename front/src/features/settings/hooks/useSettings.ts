@@ -27,8 +27,6 @@ const useGetSettings = () => {
   return useQuery<AppSettings>({
     queryKey: settingsQueryKeys.current(),
     queryFn: fetchSettings,
-    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-    refetchOnWindowFocus: false,
   });
 };
 

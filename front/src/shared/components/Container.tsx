@@ -37,14 +37,16 @@ const containerVariants = cva(
 );
 
 export interface ContainerProps
-    extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof containerVariants> { }
+    extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
+    VariantProps<typeof containerVariants> {
+    unstableClassName?: string;
+}
 
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
-    ({ size, center, tone, className, ...props }, ref) => (
+    ({ size, center, tone, unstableClassName, ...props }, ref) => (
         <div
             ref={ref}
-            className={cn(containerVariants({ size, center, tone }), className)}
+            className={cn(containerVariants({ size, center, tone }), unstableClassName)}
             {...props}
         />
     )

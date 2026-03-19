@@ -56,7 +56,7 @@ export function AttendancePage() {
   return (
     <Container size="full">
       <div className="max-w-4xl mx-auto space-y-8">
-        <Card variant="elevated" padding="lg" className="relative overflow-hidden border-gray-100">
+        <Card variant="elevated" padding="lg" unstableClassName="relative overflow-hidden border-gray-100">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1">
@@ -87,7 +87,7 @@ export function AttendancePage() {
                 variant="flat"
                 intent={currentStatus.intent}
                 padding="md"
-                className="transition-colors duration-500"
+                unstableClassName="transition-colors duration-500"
               >
                 <div className="flex flex-col items-center text-center">
                   <IconWrapper
@@ -96,16 +96,16 @@ export function AttendancePage() {
                     strokeWidth={2.5}
                     iconColor={currentStatusIcon.iconColor}
                     bgColor="bg-white shadow-sm"
-                    className="w-16 h-16 mb-4 rounded-2xl"
+                    unstableClassName="w-16 h-16 mb-4 rounded-2xl"
                   />
-                  <Typography variant="h3" intent={currentStatus.intent} className="mb-2">
+                  <Typography variant="h3" intent={currentStatus.intent} unstableClassName="mb-2">
                     {currentStatus.title}
                   </Typography>
                   <Typography
                     variant="small"
                     intent={currentStatus.intent}
                     align="center"
-                    className="block leading-relaxed"
+                    unstableClassName="block leading-relaxed"
                   >
                     {currentStatus.description}
                   </Typography>
@@ -122,9 +122,9 @@ export function AttendancePage() {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card variant="elevated" padding="none" className="col-span-1 md:col-span-2 overflow-hidden">
+          <Card variant="elevated" padding="none" unstableClassName="col-span-1 md:col-span-2 overflow-hidden">
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
-              <Typography variant="h3" className="flex items-center gap-2 font-bold">
+              <Typography variant="h3" unstableClassName="flex items-center gap-2 font-bold">
                 <History size={18} className="text-gray-400" />
                 本日の履歴
               </Typography>
@@ -132,7 +132,7 @@ export function AttendancePage() {
                 直近3件を表示
               </Typography>
             </div>
-            <CardContent className="p-6">
+            <CardContent unstableClassName="p-6">
               <div className="space-y-6">
                 <DataStateWrapper
                   isLoading={isLoading}
@@ -163,19 +163,19 @@ export function AttendancePage() {
               </div>
             </CardContent>
           </Card>
-          <Card padding="lg" intent="primary" className="border-none shadow-sm rounded-3xl text-white">
+          <Card padding="lg" intent="primary" unstableClassName="border-none shadow-sm rounded-3xl text-white">
             <div className="flex flex-col justify-between h-full">
               <div>
-                <Typography variant="small" intent="white" className="opacity-80 mb-1 font-medium">
+                <Typography variant="small" intent="white" unstableClassName="opacity-80 mb-1 font-medium">
                   現在の勤務時間
                 </Typography>
-                <Typography variant="h3" intent="white" className="text-4xl mb-6 font-black tracking-tight">
+                <Typography variant="h3" intent="white" unstableClassName="text-4xl mb-6 font-black tracking-tight">
                   {todayWorkedTime ?? EMPTY_TIME_TEXT}
                 </Typography>
               </div>
               <div className="space-y-4 pt-6 border-t border-blue-500/50">
                 <div className="flex items-center justify-between">
-                  <Typography variant="small" className="text-blue-100">
+                  <Typography variant="small" unstableClassName="text-blue-100">
                     休憩合計
                   </Typography>
                   <Typography variant="label" intent="white">
@@ -183,7 +183,7 @@ export function AttendancePage() {
                   </Typography>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Typography variant="small" className="text-blue-100">
+                  <Typography variant="small" unstableClassName="text-blue-100">
                     残業予定
                   </Typography>
                   <Typography variant="label" intent="white">

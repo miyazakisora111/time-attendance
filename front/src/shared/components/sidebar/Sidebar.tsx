@@ -71,7 +71,7 @@ export default function Sidebar({
                     variant="ghost"
                     size="icon"
                     onClick={handleToggle}
-                    className="text-gray-500 hover:text-white hover:bg-gray-800 ml-auto rounded-xl"
+                    unstableClassName="text-gray-500 hover:text-white hover:bg-gray-800 ml-auto rounded-xl"
                 >
                     {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                 </Button>

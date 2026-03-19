@@ -15,19 +15,19 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle unstableClassName="flex items-center gap-2">
             <CalendarIcon className="text-blue-600" />
             {DASHBOARD_MINI_CALENDAR_TITLE}
           </CardTitle>
 
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600" aria-label="前月">
+            <Button variant="ghost" size="icon" unstableClassName="h-8 w-8 text-gray-600" aria-label="前月">
               <ChevronLeft size={16} />
             </Button>
             <Typography variant="label" intent="muted">
               {DASHBOARD_MINI_CALENDAR_MONTH}
             </Typography>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-600" aria-label="翌月">
+            <Button variant="ghost" size="icon" unstableClassName="h-8 w-8 text-gray-600" aria-label="翌月">
               <ChevronRight size={16} />
             </Button>
           </div>

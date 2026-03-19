@@ -25,32 +25,33 @@ const typographyVariants = cva("text-gray-900", {
             white: "text-white",
         },
         align: {
-            left: "text-left",
+            start: "text-left",
             center: "text-center",
-            right: "text-right",
+            end: "text-right",
         },
     },
     defaultVariants: {
         variant: "paragraph",
         intent: "default",
-        align: "left",
+        align: "start",
     },
 });
 
 export interface TypographyProps
-    extends React.HTMLAttributes<HTMLElement>,
+    extends Omit<React.HTMLAttributes<HTMLElement>, "className">,
     VariantProps<typeof typographyVariants> {
     asChild?: boolean;
+    unstableClassName?: string;
 }
 
 export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
-    ({ className, variant, intent, align, asChild = false, ...props }, ref) => {
+    ({ unstableClassName, variant, intent, align, asChild = false, ...props }, ref) => {
         const Comp = asChild ? Slot : "p";
 
         return (
             <Comp
                 ref={ref as unknown as React.Ref<HTMLParagraphElement>}
-                className={cn(typographyVariants({ variant, intent, align }), className)}
+                className={cn(typographyVariants({ variant, intent, align }), unstableClassName)}
                 {...props}
             />
         );

@@ -12,7 +12,7 @@ type Props<T extends FieldValues> = {
     onSubmit?: (data: T) => Promise<void> | void;
     methods?: UseFormReturn<T>;
     formOptions?: UseFormProps<T>;
-    className?: string;
+    unstableClassName?: string;
 };
 
 export const Form = <T extends FieldValues = FieldValues>({
@@ -20,7 +20,7 @@ export const Form = <T extends FieldValues = FieldValues>({
     onSubmit,
     methods,
     formOptions,
-    className,
+    unstableClassName,
 }: Props<T>) => {
     const internalMethods = useForm<T>(formOptions);
     const formMethods = methods ?? internalMethods;
@@ -31,7 +31,7 @@ export const Form = <T extends FieldValues = FieldValues>({
 
     return (
         <RHFFormProvider {...formMethods}>
-            <form onSubmit={handleSubmit} className={className}>
+            <form onSubmit={handleSubmit} className={unstableClassName}>
                 {children}
             </form>
         </RHFFormProvider>

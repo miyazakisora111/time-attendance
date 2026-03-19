@@ -37,15 +37,17 @@ const cardVariants = cva(
 );
 
 export interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {}
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
+    VariantProps<typeof cardVariants> {
+  unstableClassName?: string;
+}
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, variant, padding, intent, ...props }, ref) => {
+  ({ unstableClassName, variant, padding, intent, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn(cardVariants({ variant, padding, intent }), className)}
+        className={cn(cardVariants({ variant, padding, intent }), unstableClassName)}
         {...props}
       />
     );

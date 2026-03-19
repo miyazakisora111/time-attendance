@@ -4,7 +4,7 @@ import { useCurrentTime } from "@/shared/hooks/useCurrentTime";
 import { cva, type VariantProps } from "class-variance-authority";
 import { formatJapaneseLongDate, formatJapaneseTime } from "@/shared/presentation/format";
 
-export const clockVariants = cva(
+const clockVariants = cva(
     "rounded-lg text-center",
     {
         variants: {
@@ -49,14 +49,14 @@ export const Clock = React.memo(function Clock({
     return (
         <div className={clockVariants({ variant, size, fullWidth })}>
             {title && (
-                <Typography variant="caption" intent="muted" className="mb-2 block">
+                <Typography variant="caption" intent="muted" unstableClassName="mb-2 block">
                     {title}
                 </Typography>
             )}
-            <Typography variant="h1" className="mb-1 text-4xl tabular-nums tracking-tight">
+            <Typography variant="h1" unstableClassName="mb-1 text-4xl tabular-nums tracking-tight">
                 {formatJapaneseTime(now)}
             </Typography>
-            <Typography variant="caption" intent="muted" className="block">
+            <Typography variant="caption" intent="muted" unstableClassName="block">
                 {formatJapaneseLongDate(now)}
             </Typography>
         </div>

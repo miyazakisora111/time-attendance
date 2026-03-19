@@ -3,14 +3,18 @@ import { useFormContext, type FieldPath, type FieldError, type FieldValues } fro
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
 
-type TextareaProps<T extends FieldValues> = TextareaHTMLAttributes<HTMLTextAreaElement> & {
+type TextareaNativeProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'>;
+
+type TextareaProps<T extends FieldValues> = TextareaNativeProps & {
     name: FieldPath<T>;
     label: string;
+    unstableClassName?: string;
 };
 
 export const Textarea = <T extends FieldValues>({
     name,
     label,
+    unstableClassName,
     ...props
 }: TextareaProps<T>) => {
     const { register, formState: { errors } } = useFormContext<T>();
@@ -24,7 +28,8 @@ export const Textarea = <T extends FieldValues>({
                 {...props}
                 className={cn(
                     "border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
-                    fieldError ? "border-red-500" : "border-gray-300"
+                    fieldError ? "border-red-500" : "border-gray-300",
+                    unstableClassName
                 )}
             />
             {fieldError && <Error error={fieldError}></Error>}

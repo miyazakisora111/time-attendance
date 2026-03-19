@@ -32,14 +32,14 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
     <Card variant="elevated">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle unstableClassName="flex items-center gap-2">
             <ClockIcon className="text-blue-600" />
             打刻
           </CardTitle>
           <Badge intent={statusView.intent}>{statusView.text}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent unstableClassName="space-y-6">
         <Clock />
         <ClockActionButtons
           status={status}

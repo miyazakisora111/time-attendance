@@ -24,8 +24,6 @@ export const useSchedule = () => {
   const calendarQuery = useQuery({
     queryKey: scheduleQueryKeys.calendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
     queryFn: () => fetchCalendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
-    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-    refetchOnWindowFocus: false,
   });
 
   const schedule = useMemo(

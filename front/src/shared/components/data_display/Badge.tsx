@@ -28,18 +28,19 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
     VariantProps<typeof badgeVariants> {
   asChild?: boolean;
+  unstableClassName?: string;
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, intent, size, asChild = false, ...props }, ref) => {
+  ({ unstableClassName, intent, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "div";
     return (
       <Comp
         ref={ref}
-        className={cn(badgeVariants({ intent, size }), className)}
+        className={cn(badgeVariants({ intent, size }), unstableClassName)}
         {...props}
       />
     );

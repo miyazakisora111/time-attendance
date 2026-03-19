@@ -47,17 +47,17 @@ export function LoginPage() {
   return (
     <Container size="full" tone="blue">
       <Card padding="lg">
-        <Typography variant="h1" className="mb-4">
+        <Typography variant="h1" unstableClassName="mb-4">
           勤怠管理システム
         </Typography>
         <Form<LoginFormData>
           formOptions={{ resolver: zodResolver(validationSchemas.LoginRequest) }}
           onSubmit={onSubmit}
-          className="space-y-4 max-w-md mx-4"
+          unstableClassName="space-y-4 max-w-md mx-4"
         >
           <Input label="メールアドレス" name="email" placeholder="test@test.com" />
           <Input label="パスワード" name="password" type="password" placeholder="Password@1" />
-          <SubmitButton className="w-full" variant="solid" intent="primary">
+          <SubmitButton unstableClassName="w-full" variant="solid" intent="primary">
             ログイン
           </SubmitButton>
         </Form>

@@ -50,11 +50,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
           { label: '休憩中', value: stats.break, icon: Coffee, color: 'text-amber-600', bgColor: 'bg-amber-50' },
           { label: '休暇・欠勤', value: stats.leave, icon: XCircle, color: 'text-gray-400', bgColor: 'bg-gray-50' },
         ].map((stat, i) => (
-          <Card key={i} variant="elevated" padding="lg" className="border-none group">
+          <Card key={i} variant="elevated" padding="lg" unstableClassName="border-none group">
             <div className="flex items-center justify-between">
               <div>
-                <Typography variant="small" intent="muted" className="mb-1">{stat.label}</Typography>
-                <Typography variant="h2" className="text-3xl font-black text-gray-900">{stat.value}</Typography>
+                <Typography variant="small" intent="muted" unstableClassName="mb-1">{stat.label}</Typography>
+                <Typography variant="h2" unstableClassName="text-3xl font-black text-gray-900">{stat.value}</Typography>
               </div>
               <div className={`p-3 rounded-2xl ${stat.bgColor} ${stat.color} group-hover:scale-110 transition-transform`}>
                 <stat.icon size={24} />
@@ -65,11 +65,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
       </div>
 
       {/* Main Content Area */}
-      <Card className="border-none shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
+      <Card unstableClassName="border-none shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
         <div className="p-8 border-b border-gray-50">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <Typography variant="h2" className="text-2xl font-bold text-gray-900">メンバーリスト</Typography>
+              <Typography variant="h2" unstableClassName="text-2xl font-bold text-gray-900">メンバーリスト</Typography>
               <div className="flex gap-1">
                 {departments.map((dept) => (
                   <Button
@@ -78,9 +78,9 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                     intent={filterDept === dept ? "primary" : "secondary"}
                     size="sm"
                     onClick={() => setFilterDept(dept)}
-                    className="px-4 py-1.5 rounded-full shadow-lg shadow-blue-100/20"
+                    unstableClassName="px-4 py-1.5 rounded-full shadow-lg shadow-blue-100/20"
                   >
-                    <Typography variant="label" className={filterDept === dept ? "text-white" : "text-gray-500"}>
+                    <Typography variant="label" unstableClassName={filterDept === dept ? "text-white" : "text-gray-500"}>
                       {dept}
                     </Typography>
                   </Button>
@@ -99,7 +99,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                   className="pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500 w-full md:w-64"
                 />
               </div>
-              <Button variant="solid" intent="primary" className="rounded-xl gap-2 px-6">
+              <Button variant="solid" intent="primary" unstableClassName="rounded-xl gap-2 px-6">
                 <UserPlus size={18} />
                 <Typography variant="label">招待</Typography>
               </Button>
@@ -107,16 +107,16 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
           </div>
         </div>
 
-        <CardContent className="p-0">
+        <CardContent unstableClassName="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50">
-                  <th className="px-8 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">メンバー</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">部署 / 役職</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">ステータス</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">本日の出勤</Typography></th>
-                  <th className="px-8 py-4 text-right"><Typography variant="label" className="text-xs text-gray-400 uppercase tracking-wider">アクション</Typography></th>
+                  <th className="px-8 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">メンバー</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">部署 / 役職</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">ステータス</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">本日の出勤</Typography></th>
+                  <th className="px-8 py-4 text-right"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">アクション</Typography></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -137,22 +137,22 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                             <span>{member.name.charAt(0)}</span>
                           </div>
                           <div>
-                            <Typography variant="label" className="text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</Typography>
+                            <Typography variant="label" unstableClassName="text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</Typography>
                             <Typography variant="small" intent="muted">{member.email}</Typography>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-5">
                         <div className="flex flex-col">
-                          <Typography variant="label" className="inline-flex items-center gap-1.5 text-gray-700">
+                          <Typography variant="label" unstableClassName="inline-flex items-center gap-1.5 text-gray-700">
                             <Building2 size={14} className="text-gray-300" />
                             {member.department}
                           </Typography>
-                          <Typography variant="small" className="text-gray-400 mt-0.5">{member.role}</Typography>
+                          <Typography variant="small" unstableClassName="text-gray-400 mt-0.5">{member.role}</Typography>
                         </div>
                       </td>
                       <td className="px-6 py-5">
-                        <Badge intent={status.intent} className="flex items-center gap-1.5">
+                        <Badge intent={status.intent} unstableClassName="flex items-center gap-1.5">
                           <StatusIcon size={14} />
                           {status.label}
                         </Badge>
@@ -160,22 +160,22 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                       <td className="px-6 py-5">
                         {member.clockInTime ? (
                           <div className="flex flex-col">
-                            <Typography variant="label" className="text-sm text-gray-900 tracking-tight tabular-nums">{member.clockInTime}</Typography>
-                            <Typography variant="small" className="text-green-500 font-bold uppercase tracking-widest text-[10px]">On Time</Typography>
+                            <Typography variant="label" unstableClassName="text-sm text-gray-900 tracking-tight tabular-nums">{member.clockInTime}</Typography>
+                            <Typography variant="small" unstableClassName="text-green-500 font-bold uppercase tracking-widest text-[10px]">On Time</Typography>
                           </div>
                         ) : (
-                          <Typography variant="small" className="text-gray-300 italic">-</Typography>
+                          <Typography variant="small" unstableClassName="text-gray-300 italic">-</Typography>
                         )}
                       </td>
                       <td className="px-8 py-5 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-100">
+                          <Button variant="ghost" size="icon" unstableClassName="h-9 w-9 rounded-xl text-gray-400 hover:text-blue-600 hover:bg-blue-100">
                             <Mail size={18} />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-100">
+                          <Button variant="ghost" size="icon" unstableClassName="h-9 w-9 rounded-xl text-gray-400 hover:text-gray-900 hover:bg-gray-100">
                             <MoreVertical size={18} />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-blue-500 hover:bg-blue-100">
+                          <Button variant="ghost" size="icon" unstableClassName="h-9 w-9 rounded-xl text-blue-500 hover:bg-blue-100">
                             <ChevronRight size={18} />
                           </Button>
                         </div>

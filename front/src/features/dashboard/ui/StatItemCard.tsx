@@ -22,24 +22,24 @@ export const StatItemCard = React.memo(function StatItemCard({
 }: StatItemCardProps) {
   return (
     <Card variant="elevated">
-      <CardHeader className="space-y-0 pb-3">
+      <CardHeader unstableClassName="space-y-0 pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium text-gray-500">{label}</CardTitle>
+          <CardTitle unstableClassName="text-sm font-medium text-gray-500">{label}</CardTitle>
           <IconWrapper
             icon={icon}
             iconColor={iconColor}
             bgColor={iconBgColor}
-            className="h-10 w-10 rounded-xl"
+            unstableClassName="h-10 w-10 rounded-xl"
             strokeWidth={2.5}
             size={20}
           />
         </div>
       </CardHeader>
       <CardContent>
-        <Typography variant="h2" className="text-2xl tabular-nums">
+        <Typography variant="h2" unstableClassName="text-2xl tabular-nums">
           {value}
         </Typography>
-        <Typography variant="small" intent="muted" className="font-medium">
+        <Typography variant="small" intent="muted" unstableClassName="font-medium">
           {subtext}
         </Typography>
       </CardContent>

@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { type AttendanceStatus } from '@/domain/attendance/attendance';
-import { useCurrentTime } from '@/shared/hooks/useCurrentTime';
 import { useAttendanceClock } from '@/features/attendance/hooks/useAttendanceClock';
 import { clockActionLabelMap } from '@/shared/presentation/attendance';
 import { type LastAction } from '@/features/attendance/ui/types';
@@ -9,7 +8,6 @@ import { type LastAction } from '@/features/attendance/ui/types';
  * 勤怠画面の表示状態を管理するカスタムフック。
  */
 export const useAttendance = () => {
-  const currentTime = useCurrentTime();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
   const {
     attendanceStatus,
@@ -36,7 +34,6 @@ export const useAttendance = () => {
 
   return {
     status,
-    currentTime,
     lastAction: lastActionView,
     isLoading,
     isError,

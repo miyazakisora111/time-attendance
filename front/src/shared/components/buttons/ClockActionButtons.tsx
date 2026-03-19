@@ -19,7 +19,7 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
   return (
     <div className="grid grid-cols-2 gap-3">
       {status === "out" && (
-        <Button onClick={() => onAction("in")} disabled={isPending} intent="success" size="lg" className="col-span-2" fullWidth>
+        <Button onClick={() => onAction("in")} disabled={isPending} intent="success" size="lg" unstableClassName="col-span-2" fullWidth>
           <LogIn size={20} />
           {getActionLabel("in")}
         </Button>
@@ -37,7 +37,7 @@ export const ClockActionButtons = React.memo(function ClockActionButtons({
         </>
       )}
       {status === "break" && (
-        <Button onClick={() => onAction("break_end")} disabled={isPending} intent="primary" size="lg" className="col-span-2" fullWidth>
+        <Button onClick={() => onAction("break_end")} disabled={isPending} intent="primary" size="lg" unstableClassName="col-span-2" fullWidth>
           <Clock size={20} />
           {getActionLabel("break_end")}
         </Button>

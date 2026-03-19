@@ -20,7 +20,7 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle unstableClassName="flex items-center gap-2">
           <FileText className="text-blue-600" />
           {DASHBOARD_QUICK_ACTIONS_TITLE}
         </CardTitle>
@@ -36,13 +36,13 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
                 key={action.key}
                 variant="outline"
                 size="lg"
-                className="h-24 flex-col border-dashed bg-transparent"
+                unstableClassName="h-24 flex-col border-dashed bg-transparent"
                 fullWidth
               >
                 <span className={`flex h-10 w-10 items-center justify-center rounded-full ${action.bgColorClassName}`}>
                   <Icon size={20} className={action.colorClassName} strokeWidth={2.5} />
                 </span>
-                <Typography variant="small" className="font-medium text-gray-700">
+                <Typography variant="small" unstableClassName="font-medium text-gray-700">
                   {action.label}
                 </Typography>
               </Button>

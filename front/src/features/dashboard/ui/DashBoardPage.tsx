@@ -16,7 +16,7 @@ export default function DashBoardPage() {
 
   return (
     <div className="min-h-screen from-gray-50 to-blue-50/30">
-      <Container size="lg" className="grid gap-8 py-8">
+      <Container size="lg" unstableClassName="grid gap-8 py-8">
         <header>
           <Typography asChild variant="h1">
             <h1>{DASHBOARD_TITLE}</h1>

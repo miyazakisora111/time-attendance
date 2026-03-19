@@ -10,21 +10,21 @@ type RadioOption = {
 type RadioGroupProps<T extends FieldValues> = {
     name: keyof T & string;
     options: RadioOption[];
-    className?: string;
+    unstableClassName?: string;
     label?: string;
 };
 
 export const RadioGroup = <T extends FieldValues>({
     name,
     options,
-    className,
+    unstableClassName,
     label,
 }: RadioGroupProps<T>) => {
     const { formState: { errors } } = useFormContext<T>();
     const fieldError = errors[name] as FieldError | undefined;
 
     return (
-        <div className={cn("flex flex-col gap-1", className)}>
+        <div className={cn("flex flex-col gap-1", unstableClassName)}>
             {label && <span className="text-sm font-medium">{label}</span>}
 
             <div className="flex gap-4">

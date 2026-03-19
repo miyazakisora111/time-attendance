@@ -18,10 +18,10 @@ export function ErrorModal() {
 							<TriangleAlert size={18} />
 						</div>
 						<div>
-							<Typography variant="h3" className="text-lg font-bold text-gray-900">
+							<Typography variant="h3" unstableClassName="text-lg font-bold text-gray-900">
 								{title}
 							</Typography>
-							<Typography variant="small" intent="muted" className="mt-1 text-sm">
+							<Typography variant="small" intent="muted" unstableClassName="mt-1 text-sm">
 								以下の内容を確認してください
 							</Typography>
 						</div>

@@ -23,13 +23,13 @@ export const ClockTodayRecord = React.memo(function ClockTodayRecord({
       </Typography>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Typography variant="small" intent="muted" className="mb-1 block">
+          <Typography variant="small" intent="muted" unstableClassName="mb-1 block">
             出勤時刻
           </Typography>
           <Typography variant="h3">{isWorking ? clockInTime : EMPTY_TIME_TEXT}</Typography>
         </div>
         <div>
-          <Typography variant="small" intent="muted" className="mb-1 block">
+          <Typography variant="small" intent="muted" unstableClassName="mb-1 block">
             勤務時間
           </Typography>
           <Typography variant="h3">{isWorking ? totalWorkedHours : EMPTY_DURATION_TEXT}</Typography>

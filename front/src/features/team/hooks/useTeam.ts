@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchTeamMembers } from '@/features/team/api/teamApi';
 import type { TeamMember } from '@/domain/team/types';
-import { QUERY_CONFIG } from '@/config/api';
 
 /** 部署フィルタの全件選択値。 */
 const ALL_DEPARTMENTS = 'すべて';

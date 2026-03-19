@@ -16,7 +16,7 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
             children,
             loadingText = '送信中…',
             disabled: disabledProp,
-            className,
+            unstableClassName,
             variant,
             size,
             ...rest
@@ -31,7 +31,7 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
             <Button
                 ref={ref}
                 type="submit"
-                className={className}
+                unstableClassName={unstableClassName}
                 disabled={disabled}
                 variant={variant}
                 size={size}

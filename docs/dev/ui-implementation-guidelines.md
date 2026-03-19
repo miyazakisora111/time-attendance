@@ -19,7 +19,7 @@
 
 - **すべての見た目は class-variance-authority（cva）で管理する**
 - コンポーネントの props に `className` を持たせない  
-  - 例外は `unstable_className` のみ（最終手段・レビュー対象）
+  - 例外は `unstableClassName` のみ（最終手段・レビュー対象）
 - Variants は **最小構成** を厳守する
 
 ### 標準 Variants セット
