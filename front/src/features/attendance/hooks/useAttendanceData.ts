@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/shared/react-query/keys';
-import { fetchAttendance, clockIn, clockOut } from '@/features/attendance/api/attendanceApi';
+import { fetchTodayAttendance, clockIn, clockOut } from '@/features/attendance/api/attendanceApi';
 import { API_CONFIG } from '@/config/api';
 import { type AttendanceView } from '@/features/attendance/ui/types';
 
@@ -11,7 +11,7 @@ const SCOPE = 'attendance' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const attendanceQueryKeys = {
   all: () => scoped.all(),
-  attendance: () => scoped.nest('attendance'),
+  todayAttendance: () => scoped.nest('todayAttendance'),
   clockIn: () => scoped.nest('clockIn'),
   clockOut: () => scoped.nest('clockOut'),
 } as const;
@@ -19,10 +19,10 @@ export const attendanceQueryKeys = {
 /** 
  * 勤怠取得 
  */
-export const useAttendanceDashboard = () => {
+export const useTodayAttendance = () => {
   return useQuery({
-    queryKey: attendanceQueryKeys.attendance(),
-    queryFn: async (): Promise<AttendanceView> => await fetchAttendance(),
+    queryKey: attendanceQueryKeys.todayAttendance(),
+    queryFn: async (): Promise<AttendanceView> => await fetchTodayAttendance(),
     staleTime: API_CONFIG.cacheStaleTimeMs,
   });
 };

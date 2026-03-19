@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { type AttendanceStatus } from '@/domain/attendance/attendance';
 import { useCurrentTime } from '@/features/attendance/hooks/useCurrentTime';
 import {
-  useAttendanceDashboard,
+  useTodayAttendance,
   useClockIn,
   useClockOut,
 } from '@/features/attendance/hooks/useAttendanceData';
@@ -17,7 +17,7 @@ import type { ClockAction } from '@/domain/attendance/attendance';
  */
 export const useAttendance = () => {
   const currentTime = useCurrentTime();
-  const { data, isLoading, isError } = useAttendanceDashboard();
+  const { data, isLoading, isError } = useTodayAttendance();
   const { mutate: clockInMutate, isPending: isClockingIn } = useClockIn();
   const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOut();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);

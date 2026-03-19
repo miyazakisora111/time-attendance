@@ -113,10 +113,15 @@ $COMPOSE exec app php artisan migrate --seed --force
 | Redis | 7 以上 | `redis-server --version` |
 
 ```bash
-# PPA の追加
+# PPAのインストール
 sudo apt-get install -y software-properties-common
 sudo add-apt-repository -y ppa:ondrej/php
 sudo apt-get update
+
+# 証明書のインストール
+sudo apt update
+sudo apt install -y ca-certificates
+sudo update-ca-certificates
 
 # PHPのインストール
 sudo apt-get install -y \
@@ -126,36 +131,36 @@ sudo apt-get install -y \
   unzip
 php -v
 
-# Composer
+# Composerのインストール
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 composer -V
 
-# nvm のインストール
+# nvmのインストール
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 source ~/.bashrc
 
-# Node.js 20 のインストール
+# Node.jsのインストール
 nvm install 20
 nvm use 20
 node -v
 
-# pnpm (corepack 経由)
+# pnpm有効化
 corepack enable
 corepack prepare pnpm@10.6.0 --activate
 pnpm -v
 
-# PostgreSQL 15
+# PostgreSQLのインストール
 sudo apt-get install -y postgresql-15
 psql --version
 
-# Redis 7
+# Redisのインストール
 sudo apt-get install -y redis-server
 redis-server --version
 sudo systemctl enable redis-server
 sudo systemctl status redis-server
 
-# env
+# envの作成
 cd /path/to/time-attendance
 cp back/.env.example back/.env
 cp front/.env.example front/.env
@@ -217,7 +222,7 @@ php artisan jwt:secret --ansi
 # マイグレーション＋初期データの投入
 php artisan migrate --seed
 
-# 開発サーバーの起動（別ターミナルで）
+# 開発サーバーの起動
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 

@@ -10,7 +10,7 @@ import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceVie
 const client = getAttendance();
 
 /** 勤怠を取得 */
-export const fetchAttendance = () => call<AttendanceResponse>(() => client.todayAttendanceApi()).then(toAttendanceView);
+export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.todayAttendanceApi()).then(toAttendanceView);
 
 /** 出勤打刻 */
 export const clockIn = (payload: AttendanceClockInRequest) => call<AttendanceResponse>(() => client.clockInApi(payload));
