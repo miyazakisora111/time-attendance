@@ -5,7 +5,6 @@ import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared/compon
 import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
 import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
-import { ClockDisplay } from "@/features/dashboard/ui/clock/ClockDisplay";
 import { ClockTodayRecord } from "@/features/dashboard/ui/clock/ClockTodayRecord";
 import { getClockStatusBadgeView } from "@/shared/presentation/attendance";
 
@@ -41,7 +40,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <ClockDisplay />
+        <Clock className="to-indigo-50 py-6 text-center" />
         <ClockActionButtons
           status={status}
           isPending={isPending}

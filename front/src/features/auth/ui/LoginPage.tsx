@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast as sonner } from 'sonner';
 import { AppRoutePath } from '@/config/routes';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useAuthStore } from '@/features/auth/hooks/useAuthStore';
+import { useAuthStore } from '@/features/auth/state/useAuthStore';
 import { validationSchemas } from '@/__generated__/zod.validation';
 import { Card, Container, Typography, SubmitButton, Input, Form } from '@/shared/components';
 

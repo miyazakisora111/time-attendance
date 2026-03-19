@@ -1,7 +1,6 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchTodayAttendance, clockIn, clockOut } from '@/api/attendance.api';
-import { API_CONFIG } from '@/config/api';
 import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceView';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { AttendanceClockInRequest } from '@/__generated__/model/attendanceClockInRequest';
@@ -26,7 +25,6 @@ export const useTodayAttendanceQuery = () =>
   useQuery({
     queryKey: attendanceQueryKeys.todayAttendance(),
     queryFn: () => fetchTodayAttendance(),
-    staleTime: API_CONFIG.cacheStaleTimeMs,
     select: (data) => toAttendanceView(data),
   });
 

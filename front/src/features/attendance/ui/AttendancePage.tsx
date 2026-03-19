@@ -1,19 +1,16 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Clock,
   MapPin,
   Shield,
   History,
 } from 'lucide-react';
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import type { ClockStatus } from '@/domain/attendance/attendance';
-import { Card, CardContent, Container, Typography, IconWrapper } from '@/shared/components';
+import { Card, CardContent, Container, Typography, IconWrapper, Clock as ClockComponent } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
 import {
   EMPTY_TIME_TEXT,
-  formatJapaneseLongDate,
-  formatJapaneseTime,
 } from '@/shared/presentation/format';
 import { STATUS_ICON_MAP } from '@/shared/presentation/attendance';
 import type { AttendanceStatus } from '@/domain/attendance/attendance';
@@ -43,7 +40,6 @@ const ATTENDANCE_STATUS_VIEW_MAP: Record<AttendanceStatus, AttendanceStatusView>
 export function AttendancePage() {
   const {
     status,
-    currentTime,
     lastAction,
     isLoading,
     isError,
@@ -57,28 +53,19 @@ export function AttendancePage() {
   const currentStatusIcon = STATUS_ICON_MAP[status];
   const clockActionStatus: ClockStatus = status === 'working' ? 'in' : status;
 
-  // ヘッダーの日時（日本語フォーマット）
-  const headerDateText = formatJapaneseLongDate(currentTime);
-  const headerTimeText = formatJapaneseTime(currentTime);
-
   return (
     <Container size="full">
       <div className="max-w-4xl mx-auto space-y-8">
         <Card variant="elevated" padding="lg" className="relative overflow-hidden border-gray-100">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 text-center md:text-left">
+            <div className="flex-1">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-50 text-gray-500 text-sm font-medium mb-6"
               >
-                <Clock size={16} className="text-blue-500" />
-                {headerDateText}
+                <ClockComponent title={undefined} className="mb-6 md:rounded-lg" />
               </motion.div>
-              <Typography variant="h1" className="text-5xl md:text-6xl tabular-nums font-black mb-4">
-                {headerTimeText}
-              </Typography>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                 <span className="flex items-center gap-1.5">
                   <MapPin size={14} className="text-gray-300" />

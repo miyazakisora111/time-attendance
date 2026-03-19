@@ -1,7 +1,6 @@
 import { useQuery, useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchAuthMe, login, logout } from '@/api/auth.api';
-import { QUERY_CONFIG } from '@/config/api';
 import { toAuthUser } from '@/features/auth/adapters/toAuthUser';
 import type { LoginResult } from '@/domain/auth/types';
 import type { LogoutApi200 } from '@/__generated__/model/logoutApi200';
@@ -29,9 +28,6 @@ export const useAuthme = (
     queryFn: fetchAuthMe,
     select: (data) => toAuthUser(data),
     enabled,
-    retry: false,
-    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-    refetchOnWindowFocus: false,
 });
 
 /**

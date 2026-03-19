@@ -14,6 +14,7 @@ export { Form } from "@/shared/components/forms/Form";
 export { Error } from "@/shared/components/errors/Error";
 export { Card, CardHeader, CardTitle, CardContent } from "@/shared/components/cards";
 export { Container } from "@/shared/components/Container";
+export { Clock, type ClockProps } from "@/shared/components/Clock";
 export { Typography } from "@/shared/components/Typography";
 export { Label } from "@/shared/components/Label";
 export { Badge } from "@/shared/components/data_display/Badge";

@@ -25,8 +25,6 @@ export const useGetTeamMembers = () => {
   return useQuery<TeamMember[]>({
     queryKey: teamQueryKeys.members(),
     queryFn: fetchTeamMembers,
-    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-    refetchOnWindowFocus: false,
   });
 };
 
@@ -40,8 +38,6 @@ export const useTeam = () => {
   const teamQuery = useQuery({
     queryKey: teamQueryKeys.members(),
     queryFn: fetchTeamMembers,
-    staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-    refetchOnWindowFocus: false,
   });
 
   const members = useMemo(() => teamQuery.data ?? [], [teamQuery.data]);

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthme, useLogin, useLogout, authQueryKeys } from '@/features/auth/hooks/useAuthQueries';
-import { useAuthStore } from '@/features/auth/hooks/useAuthStore';
+import { useAuthStore } from '@/features/auth/state/useAuthStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 

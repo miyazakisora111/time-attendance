@@ -3,7 +3,6 @@ import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchDashboard } from '@/api/dashboard.api';
 import type { DashboardResponse } from '@/__generated__/model';
 import { toDashboardViewData } from '@/features/dashboard/adapters/toDashboardViewData';
-import { QUERY_CONFIG } from '@/config/api';
 
 const SCOPE = 'dashboard' as const;
 const scoped = makeScopedKeys(SCOPE);
@@ -18,8 +17,6 @@ export const useDashboardData = () =>
     useQuery<DashboardResponse, Error, ReturnType<typeof toDashboardViewData>>({
         queryKey: dashboardQueryKeys.all(),
         queryFn: fetchDashboard,
-        staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-        refetchOnWindowFocus: false,
         select: (data) => toDashboardViewData(data),
     });
 
@@ -28,8 +25,6 @@ export const useDashboardStats = () =>
     useQuery<DashboardResponse, Error, ReturnType<typeof toDashboardViewData>['stats']>({
         queryKey: dashboardQueryKeys.all(),
         queryFn: fetchDashboard,
-        staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-        refetchOnWindowFocus: false,
         select: (data) => toDashboardViewData(data).stats,
     });
 
@@ -38,7 +33,5 @@ export const useRecentRecords = () =>
     useQuery<DashboardResponse, Error, ReturnType<typeof toDashboardViewData>['recentRecords']>({
         queryKey: dashboardQueryKeys.all(),
         queryFn: fetchDashboard,
-        staleTime: QUERY_CONFIG.defaultStaleTimeMs,
-        refetchOnWindowFocus: false,
         select: (data) => toDashboardViewData(data).recentRecords,
     });

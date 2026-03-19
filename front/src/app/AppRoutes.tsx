@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { PrivateLayout, PublicLayout } from "@/shared/components";
-import { useAuth } from "@/features/auth";
 import { LoginPage } from "@/features/auth/ui/LoginPage";
 import { DashBoardPage } from "@/features/dashboard";
 import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
