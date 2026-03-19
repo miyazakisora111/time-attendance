@@ -17,7 +17,7 @@ const dashboardMonthlyStatIconMap: Record<DashboardMonthlyStatKey, LucideIcon> =
 };
 
 export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
-  const { data: stats, isLoading } = useDashboardStats();
+  const { data: stats, isLoading, isError } = useDashboardStats();
 
   const statsConfig = stats
     ? buildDashboardMonthlyStatsView({
@@ -41,7 +41,7 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-      <AsyncDataState isLoading={isLoading} isEmpty={!stats}>
+      <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={!stats}>
         {statsConfig.map((stat) => (
           <StatItemCard key={stat.label} {...stat} />
         ))}

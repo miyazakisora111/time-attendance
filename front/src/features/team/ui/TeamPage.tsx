@@ -15,7 +15,7 @@ const TeamPage: React.FC = () => {
 
   return (
     <Container size="full">
-      <AsyncDataState isLoading={isLoading} isEmpty={isError} emptyMessage="チーム情報の取得に失敗しました。">
+      <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={!stats && !isError && !isLoading}>
         <TeamPresenter
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

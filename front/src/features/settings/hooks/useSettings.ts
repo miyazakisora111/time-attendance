@@ -6,7 +6,6 @@ import { fetchSettings, updateSettings } from '@/features/settings/api/settingsA
 import { UpdateSettingsRequestTheme, type UpdateSettingsRequest } from '@/__generated__/model';
 import type { AppSettings, SettingsSection } from '@/domain/settings/types';
 import { SETTINGS_SECTION, THEME } from '@/domain/settings/types';
-import { QUERY_CONFIG } from '@/config/api';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /**

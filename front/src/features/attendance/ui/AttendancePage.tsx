@@ -136,8 +136,8 @@ export function AttendancePage() {
               <div className="space-y-6">
                 <AsyncDataState
                   isLoading={isLoading}
+                  isError={isError}
                   isEmpty={!lastAction}
-                  emptyMessage={isError ? '打刻状態の取得に失敗しました' : '本日の打刻履歴はありません'}
                 >
                   <AnimatePresence mode="popLayout">
                     <motion.div

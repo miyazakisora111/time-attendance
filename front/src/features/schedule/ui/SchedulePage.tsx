@@ -9,7 +9,7 @@ const SchedulePage: React.FC = () => {
 
   return (
     <Container size="full">
-      <AsyncDataState isLoading={isLoading} isEmpty={isError} emptyMessage="スケジュールの取得に失敗しました。">
+      <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={schedule.length === 0}>
         <SchedulePresenter
           currentMonth={currentMonth}
           schedule={schedule}
