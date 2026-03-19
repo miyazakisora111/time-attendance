@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/shared/react-query/keys';
-import { me, login, logout } from '@/features/auth/api/authApi';
+import { fetchAuthMe, login, logout } from '@/api/auth.api';
 import { useAuthStore } from '@/features/auth/hook/useAuthStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/shared/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 import { QUERY_CONFIG } from '@/config/api';
+import { toAuthUser } from '@/features/auth/adapters/toAuthUser';
 
 /**
  * React Query キー。
@@ -13,10 +14,10 @@ import { QUERY_CONFIG } from '@/config/api';
 const SCOPE = 'auth' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const authQueryKeys = {
-  all: () => scoped.all(),
-  me: () => scoped.nest('me'),
-  login: () => scoped.nest('login'),
-  logout: () => scoped.nest('logout'),
+    all: () => scoped.all(),
+    me: () => scoped.nest('me'),
+    login: () => scoped.nest('login'),
+    logout: () => scoped.nest('logout'),
 } as const;
 
 export const useAuth = () => {
@@ -28,7 +29,7 @@ export const useAuth = () => {
     // /me クエリ：トークンがあるときだけ問い合わせ
     const authQuery = useQuery<AuthUser>({
         queryKey: authQueryKeys.me(),
-        queryFn: me,
+        queryFn: () => fetchAuthMe().then(toAuthUser),
         enabled: hasToken,
         retry: false,
         staleTime: QUERY_CONFIG.defaultStaleTimeMs,

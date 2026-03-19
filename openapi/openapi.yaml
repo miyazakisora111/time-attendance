@@ -50,8 +50,6 @@ paths:
     $ref: './paths/attendance.yaml#/clockOut'
   /dashboard:
     $ref: './paths/dashboard.yaml#/dashboard'
-  /dashboard/clock:
-    $ref: './paths/dashboard.yaml#/dashboardClock'
   /auth/calendar:
     $ref: './paths/schedule.yaml#/calendar'
   /team/members:

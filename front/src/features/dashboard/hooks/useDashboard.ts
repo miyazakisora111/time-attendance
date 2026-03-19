@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/shared/react-query/keys';
-import { fetchDashboard, clockInOut } from '@/features/dashboard/api/dashboardApi';
+import { clockIn, clockOut } from '@/api/attendance.api';
+import { fetchDashboard } from '@/api/dashboard.api';
 import type { DashboardResponse } from '@/__generated__/model';
-import type { ClockAction } from '@/domain/attendance/attendance';
 import { QUERY_CONFIG } from '@/config/api';
 
 /**
@@ -12,65 +12,46 @@ const SCOPE = 'dashboard' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const dashboardQueryKeys = {
   all: () => scoped.all(),
-  data: () => scoped.nest('data'),
-  stats: () => scoped.nest('stats'),
-  recentRecords: () => scoped.nest('recentRecords'),
-  clockAction: () => scoped.nest('clockAction'),
+  clockIn: () => scoped.nest('clockIn'),
+  clockOut: () => scoped.nest('clockOut'),
 } as const;
 
 /**
- * ダッシュボード情報を取得する。
+ * ダッシュボード情報を取得
  */
-export const useGetDashboard = () => {
+export const useDashboard = () => {
   return useQuery<DashboardResponse>({
-    queryKey: dashboardQueryKeys.data(),
+    queryKey: dashboardQueryKeys.all(),
     queryFn: fetchDashboard,
     staleTime: QUERY_CONFIG.defaultStaleTimeMs,
     refetchOnWindowFocus: false,
   });
 };
 
-/**
- * ダッシュボード統計情報を取得する。
+/** 
+ * 出勤打刻 
  */
-export const useGetDashboardStats = () => {
-  const query = useGetDashboard();
-
-  return {
-    ...query,
-    data: query.data?.stats,
-  };
-};
-
-/**
- * 最近の勤怠記録を取得する。
- */
-export const useGetRecentRecords = () => {
-  const query = useGetDashboard();
-
-  return {
-    ...query,
-    data: query.data?.recentRecords,
-  };
-};
-
-/**
- * 打刻アクションを実行する。
- */
-export const useClockInOut = () => {
+export const useClockIn = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationKey: dashboardQueryKeys.clockAction(),
-    mutationFn: (action: ClockAction) => clockInOut(action),
+    mutationKey: dashboardQueryKeys.clockIn(),
+    mutationFn: (payload: { start_time: string, work_date: string }) => clockIn(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },
   });
 };
 
-// 互換エクスポート
-export const useDashboardData = useGetDashboard;
-export const useDashboardStats = useGetDashboardStats;
-export const useRecentRecords = useGetRecentRecords;
-export const useCreateClockInOut = useClockInOut;
+/** 
+ * 退勤打刻 
+ */
+export const useClockOut = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: dashboardQueryKeys.clockOut(),
+    mutationFn: (payload: { end_time: string, work_date: string }) => clockOut(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
+    },
+  });
+};

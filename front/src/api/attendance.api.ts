@@ -5,12 +5,11 @@ import type {
     AttendanceClockOutRequest,
 } from '@/__generated__/model';
 import { call } from '@/shared/http/result';
-import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceView';
 
 const client = getAttendance();
 
 /** 勤怠を取得 */
-export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.todayAttendanceApi()).then(toAttendanceView);
+export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.todayAttendanceApi());
 
 /** 出勤打刻 */
 export const clockIn = (payload: AttendanceClockInRequest) => call<AttendanceResponse>(() => client.clockInApi(payload));
