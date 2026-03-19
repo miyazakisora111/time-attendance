@@ -16,12 +16,6 @@ export interface AttendanceStatusView {
     intent: 'primary' | 'warning' | 'muted';
 }
 
-/** 打刻ステータスのバッジ */
-export interface ClockStatusBadgeView {
-    text: string;
-    intent: 'default' | 'success' | 'warning';
-}
-
 /** 直近打刻 */
 export interface LastActionView {
     type: string;

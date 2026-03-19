@@ -16,19 +16,39 @@ export type AttendanceStatus =
     | 'break';
 
 /**
- * ダッシュボード表示用の打刻状態。
+ * 打刻状態。
  */
 export type ClockStatus =
     | 'in'
     | 'out'
     | 'break';
 
+
 /**
- * 打刻アクション → 勤怠状態の変換マップ。
+ * 打刻アクション → 勤怠状態
  */
-export const clockActionMap: Record<ClockAction, AttendanceStatus> = {
-    in: 'working',
-    out: 'out',
-    break_start: 'break',
-    break_end: 'working',
-};
+export const actionToAttendanceStatusMap = {
+  in: 'working',
+  out: 'out',
+  break_start: 'break',
+  break_end: 'working',
+} as const satisfies Record<ClockAction, AttendanceStatus>;
+
+/**
+ * 打刻アクション → 打刻状態
+ */
+export const actionToClockStatusMap = {
+  in: 'in',
+  out: 'out',
+  break_start: 'break',
+  break_end: 'in',
+} as const satisfies Record<ClockAction, ClockStatus>;
+
+/**
+ * 打刻状態 → 勤怠状態
+ */
+export const clockStatusToAttendanceStatusMap = {
+  in: 'working',
+  break: 'break',
+  out: 'out',
+} as const satisfies Record<ClockStatus, AttendanceStatus>;

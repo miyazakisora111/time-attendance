@@ -4,7 +4,6 @@ import { FileEdit, FileText, Plane, Stethoscope } from "lucide-react";
 import { Button } from "@/shared/components/buttons/Button";
 import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import {
-  DASHBOARD_QUICK_ACTIONS_TITLE,
   dashboardQuickActions,
   type DashboardQuickActionKey,
 } from "@/shared/presentation/dashboard";
@@ -22,7 +21,7 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
       <CardHeader>
         <CardTitle unstableClassName="flex items-center gap-2">
           <FileText className="text-blue-600" />
-          {DASHBOARD_QUICK_ACTIONS_TITLE}
+          クイックアクション
         </CardTitle>
       </CardHeader>
 

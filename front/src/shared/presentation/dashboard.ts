@@ -5,16 +5,6 @@ import {
   formatSignedJapaneseHours,
 } from '@/shared/presentation/format';
 
-export const DASHBOARD_TITLE = 'ダッシュボード';
-export const DASHBOARD_GREETING_FALLBACK = '本日も1日頑張りましょう！';
-export const DASHBOARD_QUICK_ACTIONS_TITLE = 'クイックアクション';
-export const DASHBOARD_MINI_CALENDAR_TITLE = 'カレンダー';
-export const DASHBOARD_MINI_CALENDAR_MONTH = '2025年12月';
-
-export const formatDashboardGreeting = (name?: string | null): string => {
-  return name ? `${name}さん、${DASHBOARD_GREETING_FALLBACK}` : DASHBOARD_GREETING_FALLBACK;
-};
-
 export type DashboardQuickActionKey =
   | 'paid_leave'
   | 'sick_leave'

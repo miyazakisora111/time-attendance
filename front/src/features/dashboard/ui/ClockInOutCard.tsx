@@ -6,7 +6,7 @@ import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueri
 import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { ClockTodayRecord } from "@/features/dashboard/ui/ClockTodayRecord";
-import { getClockStatusBadgeView } from "@/shared/presentation/attendance";
+import { getClockStatusBadgeView } from "@/shared/presentation/attendance/attendanceStatus";
 
 /**
  * ダッシュボードの打刻カード。
@@ -23,7 +23,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
     handleAction,
   } = useAttendanceClock({
     onActionSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
+      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },
   });
   const statusView = getClockStatusBadgeView(status);

@@ -3,7 +3,7 @@ import { Coffee, Clock, LogIn, LogOut } from "lucide-react";
 import type { ClockStatus } from "@/domain/attendance/attendance";
 import type { ClockAction } from "@/domain/attendance/attendance";
 import { Button } from "@/shared/components/buttons/Button";
-import { getActionLabel } from "@/shared/presentation/attendance";
+import { getActionLabel } from "@/shared/presentation/attendance/clockAction";
 
 interface ClockActionButtonsProps {
   status: ClockStatus;

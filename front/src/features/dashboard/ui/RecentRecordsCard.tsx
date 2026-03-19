@@ -5,7 +5,7 @@ import { AsyncDataState } from "@/shared/components/AsyncDataState";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
 import { formatClockText, formatHoursText } from "@/shared/presentation/format";
-import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/attendance";
+import { getAttendanceRecordStatusBadgeIntent } from "@/shared/presentation/attendance/clockAction";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。

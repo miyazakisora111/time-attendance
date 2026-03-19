@@ -3,8 +3,6 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-reac
 import { Button } from "@/shared/components/buttons/Button";
 import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import {
-  DASHBOARD_MINI_CALENDAR_MONTH,
-  DASHBOARD_MINI_CALENDAR_TITLE,
   dashboardMiniCalendarDays,
   dashboardMiniCalendarDaysOfWeek,
   dashboardMiniCalendarLegends,
@@ -17,7 +15,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
         <div className="flex items-center justify-between">
           <CardTitle unstableClassName="flex items-center gap-2">
             <CalendarIcon className="text-blue-600" />
-            {DASHBOARD_MINI_CALENDAR_TITLE}
+            カレンダー
           </CardTitle>
 
           <div className="flex items-center gap-1">
@@ -25,7 +23,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
               <ChevronLeft size={16} />
             </Button>
             <Typography variant="label" intent="muted">
-              {DASHBOARD_MINI_CALENDAR_MONTH}
+              2025年12月
             </Typography>
             <Button variant="ghost" size="icon" unstableClassName="h-8 w-8 text-gray-600" aria-label="翌月">
               <ChevronRight size={16} />
