@@ -8,7 +8,7 @@ type Props = {
     children: React.ReactNode;
 };
 
-export function DataStateWrapper({
+export function AsyncDataState({
     isLoading,
     isEmpty,
     emptyMessage = "データがありません",

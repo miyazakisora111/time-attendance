@@ -8,7 +8,7 @@ import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import type { ClockStatus } from '@/domain/attendance/attendance';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
-import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
+import { AsyncDataState } from '@/shared/components/AsyncDataState';
 import {
   EMPTY_TIME_TEXT,
 } from '@/shared/presentation/format';
@@ -134,7 +134,7 @@ export function AttendancePage() {
             </div>
             <CardContent unstableClassName="p-6">
               <div className="space-y-6">
-                <DataStateWrapper
+                <AsyncDataState
                   isLoading={isLoading}
                   isEmpty={!lastAction}
                   emptyMessage={isError ? '打刻状態の取得に失敗しました' : '本日の打刻履歴はありません'}
@@ -159,7 +159,7 @@ export function AttendancePage() {
                       </div>
                     </motion.div>
                   </AnimatePresence>
-                </DataStateWrapper>
+                </AsyncDataState>
               </div>
             </CardContent>
           </Card>

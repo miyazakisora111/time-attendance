@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
+import { AsyncDataState } from '@/shared/components/AsyncDataState';
 import { useSettings } from '@/features/settings/hooks/useSettings';
 import { SettingsPresenter } from '@/features/settings/ui/SettingsPresenter';
 
@@ -16,7 +16,7 @@ const SettingsPage: React.FC = () => {
 
   return (
     <Container size="full">
-      <DataStateWrapper isLoading={isLoading}>
+      <AsyncDataState isLoading={isLoading}>
         <SettingsPresenter
           activeSection={activeSection}
           setActiveSection={setActiveSection}
@@ -26,7 +26,7 @@ const SettingsPage: React.FC = () => {
           setLanguage={setLanguage}
           handleSave={isSaving ? () => undefined : handleSave}
         />
-      </DataStateWrapper>
+      </AsyncDataState>
     </Container>
   );
 };

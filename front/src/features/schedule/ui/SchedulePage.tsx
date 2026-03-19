@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
+import { AsyncDataState } from '@/shared/components/AsyncDataState';
 import { useSchedule } from '@/features/schedule/hooks/useSchedule';
 import { SchedulePresenter } from '@/features/schedule/ui/SchedulePresenter';
 
@@ -9,14 +9,14 @@ const SchedulePage: React.FC = () => {
 
   return (
     <Container size="full">
-      <DataStateWrapper isLoading={isLoading} isEmpty={isError} emptyMessage="スケジュールの取得に失敗しました。">
+      <AsyncDataState isLoading={isLoading} isEmpty={isError} emptyMessage="スケジュールの取得に失敗しました。">
         <SchedulePresenter
           currentMonth={currentMonth}
           schedule={schedule}
           nextMonth={nextMonth}
           prevMonth={prevMonth}
         />
-      </DataStateWrapper>
+      </AsyncDataState>
     </Container>
   );
 };

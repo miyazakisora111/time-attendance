@@ -2,7 +2,7 @@ import React from "react";
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
-import { DataStateWrapper } from "@/shared/components/DataStateWrapper";
+import { AsyncDataState } from "@/shared/components/AsyncDataState";
 import { StatItemCard } from "@/features/dashboard/ui/StatItemCard";
 import {
   buildDashboardMonthlyStatsView,
@@ -41,11 +41,11 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
 
   return (
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-      <DataStateWrapper isLoading={isLoading} isEmpty={!stats}>
+      <AsyncDataState isLoading={isLoading} isEmpty={!stats}>
         {statsConfig.map((stat) => (
           <StatItemCard key={stat.label} {...stat} />
         ))}
-      </DataStateWrapper>
+      </AsyncDataState>
     </div>
   );
 });

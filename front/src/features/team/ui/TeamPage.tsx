@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
+import { AsyncDataState } from '@/shared/components/AsyncDataState';
 import { useTeam } from '@/features/team/hooks/useTeam';
 import { TeamPresenter } from '@/features/team/ui/TeamPresenter';
 
@@ -15,7 +15,7 @@ const TeamPage: React.FC = () => {
 
   return (
     <Container size="full">
-      <DataStateWrapper isLoading={isLoading} isEmpty={isError} emptyMessage="チーム情報の取得に失敗しました。">
+      <AsyncDataState isLoading={isLoading} isEmpty={isError} emptyMessage="チーム情報の取得に失敗しました。">
         <TeamPresenter
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -25,7 +25,7 @@ const TeamPage: React.FC = () => {
           stats={stats}
           departments={departments}
         />
-      </DataStateWrapper>
+      </AsyncDataState>
     </Container>
   );
 };
