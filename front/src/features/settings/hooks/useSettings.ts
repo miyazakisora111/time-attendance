@@ -3,9 +3,18 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchSettings, updateSettings } from '@/features/settings/api/settingsApi';
-import { UpdateSettingsRequestTheme, type UpdateSettingsRequest } from '@/__generated__/model';
-import type { AppSettings, SettingsSection } from '@/domain/settings/types';
-import { SETTINGS_SECTION, THEME } from '@/domain/settings/types';
+import type {
+  UpdateSettingsRequest,
+  UpdateSettingsRequestNotifications,
+  UpdateSettingsRequestProfile,
+} from '@/__generated__/model';
+import type {
+  AppSettings,
+  Language,
+  SettingsSection,
+  Theme,
+} from '@/domain/settings/types';
+import { LANGUAGE, SETTINGS_SECTION, THEME } from '@/domain/settings/types';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /**
@@ -18,6 +27,35 @@ export const settingsQueryKeys = {
   current: () => scoped.nest('current'),
   update: () => scoped.nest('update'),
 } as const;
+
+const buildDraftSettings = (settings?: AppSettings): UpdateSettingsRequest => ({
+  profile: {
+    name: settings?.profile.name ?? '',
+    email: settings?.profile.email ?? '',
+  },
+  notifications: {
+    clockInReminder: settings?.notifications.clockInReminder ?? true,
+    approvalNotification: settings?.notifications.approvalNotification ?? true,
+    leaveReminder: settings?.notifications.leaveReminder ?? true,
+  },
+  theme: settings?.theme ?? THEME.Light,
+  language: settings?.language ?? DEFAULT_SETTINGS_LANGUAGE,
+});
+
+const createEmptySecurity = (): AppSettings['security'] => ({
+  twoFactorEnabled: false,
+  emailVerified: false,
+  lastLoginAt: null,
+  passwordLastChangedAt: null,
+});
+
+const createEmptyProfileView = () => ({
+  name: '',
+  email: '',
+  department: '-',
+  role: '-',
+  employeeCode: '-',
+});
 
 /**
  * ユーザー設定を取得する hook。
@@ -54,34 +92,98 @@ export const useSettings = () => {
   const settingsQuery = useGetSettings();
   const updateMutation = useUpdateSettings();
 
-  const theme = useMemo<typeof THEME[keyof typeof THEME]>(
-    () => (draftSettings?.theme as typeof THEME[keyof typeof THEME]) ?? settingsQuery.data?.theme ?? THEME.System,
-    [draftSettings?.theme, settingsQuery.data?.theme],
+  const baseDraft = useMemo(
+    () => buildDraftSettings(settingsQuery.data),
+    [settingsQuery.data],
   );
 
-  const language = useMemo(
-    () => draftSettings?.language ?? settingsQuery.data?.language ?? DEFAULT_SETTINGS_LANGUAGE,
-    [draftSettings?.language, settingsQuery.data?.language],
+  const editingSettings = draftSettings ?? baseDraft;
+
+  const profile = useMemo(
+    () => ({
+      name: editingSettings.profile.name,
+      email: editingSettings.profile.email,
+      department: settingsQuery.data?.profile.department ?? createEmptyProfileView().department,
+      role: settingsQuery.data?.profile.role ?? createEmptyProfileView().role,
+      employeeCode: settingsQuery.data?.profile.employeeCode ?? createEmptyProfileView().employeeCode,
+    }),
+    [editingSettings.profile.email, editingSettings.profile.name, settingsQuery.data?.profile.department, settingsQuery.data?.profile.employeeCode, settingsQuery.data?.profile.role],
+  );
+
+  const notifications = useMemo(
+    () => editingSettings.notifications,
+    [editingSettings.notifications],
+  );
+
+  const theme = useMemo<Theme>(
+    () => editingSettings.theme,
+    [editingSettings.theme],
+  );
+
+  const language = useMemo<Language>(
+    () => editingSettings.language,
+    [editingSettings.language],
+  );
+
+  const security = useMemo(
+    () => settingsQuery.data?.security ?? createEmptySecurity(),
+    [settingsQuery.data?.security],
   );
 
   /**
    * テーマ更新ハンドラー。
    */
-  const setTheme = (nextTheme: typeof THEME[keyof typeof THEME]) => {
+  const setTheme = (nextTheme: Theme) => {
     setDraftSettings((prev) => ({
-      theme: UpdateSettingsRequestTheme[nextTheme as keyof typeof UpdateSettingsRequestTheme],
-      language: prev?.language ?? settingsQuery.data?.language ?? DEFAULT_SETTINGS_LANGUAGE,
+      ...(prev ?? baseDraft),
+      theme: nextTheme,
     }));
   };
 
   /**
    * 言語更新ハンドラー。
    */
-  const setLanguage = (nextLanguage: string) => {
+  const setLanguage = (nextLanguage: Language) => {
     setDraftSettings((prev) => ({
-      theme: prev?.theme ?? UpdateSettingsRequestTheme[settingsQuery.data?.theme ?? THEME.Light],
+      ...(prev ?? baseDraft),
       language: nextLanguage,
     }));
+  };
+
+  /**
+   * プロフィール更新ハンドラー。
+   */
+  const setProfileField = (field: keyof UpdateSettingsRequestProfile, value: string) => {
+    setDraftSettings((prev) => ({
+      ...(prev ?? baseDraft),
+      profile: {
+        ...(prev?.profile ?? baseDraft.profile),
+        [field]: value,
+      },
+    }));
+  };
+
+  /**
+   * 通知設定更新ハンドラー。
+   */
+  const setNotification = (
+    key: keyof UpdateSettingsRequestNotifications,
+    value: boolean,
+  ) => {
+    setDraftSettings((prev) => ({
+      ...(prev ?? baseDraft),
+      notifications: {
+        ...(prev?.notifications ?? baseDraft.notifications),
+        [key]: value,
+      },
+    }));
+  };
+
+  /**
+   * 編集内容を破棄してサーバー値へ戻す。
+   */
+  const handleReset = () => {
+    setDraftSettings(null);
   };
 
   /**
@@ -89,10 +191,7 @@ export const useSettings = () => {
    */
   const handleSave = async () => {
     try {
-      await updateMutation.mutateAsync({
-        theme: UpdateSettingsRequestTheme[theme as keyof typeof UpdateSettingsRequestTheme],
-        language,
-      });
+      await updateMutation.mutateAsync(editingSettings);
 
       setDraftSettings(null);
 
@@ -106,13 +205,22 @@ export const useSettings = () => {
 
   return {
     isLoading: settingsQuery.isLoading,
+    isError: settingsQuery.isError,
     isSaving: updateMutation.isPending,
+    hasData: settingsQuery.data != null,
     activeSection,
     setActiveSection,
+    profile,
+    setProfileField,
+    notifications,
+    setNotification,
+    security,
     theme,
     setTheme,
     language,
     setLanguage,
+    handleReset,
     handleSave,
+    languageOptions: [LANGUAGE.Ja, LANGUAGE.En],
   };
 };

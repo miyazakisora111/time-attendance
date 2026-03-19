@@ -1,13 +1,41 @@
 UpdateSettingsRequest:
   type: object
   required:
+    - profile
+    - notifications
     - theme
     - language
   properties:
+    profile:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 255
+    notifications:
+      type: object
+      required:
+        - clockInReminder
+        - approvalNotification
+        - leaveReminder
+      properties:
+        clockInReminder:
+          type: boolean
+        approvalNotification:
+          type: boolean
+        leaveReminder:
+          type: boolean
     theme:
       type: string
-      enum: [light, dark, system]
+      enum: [light, dark]
     language:
       type: string
-      minLength: 1
-      maxLength: 32
+      enum: [ja, en]

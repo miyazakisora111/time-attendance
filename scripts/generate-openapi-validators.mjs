@@ -34,6 +34,60 @@ const readYaml = async (filePath) => {
   return YAML.parse(content) ?? {};
 };
 
+const normalizeGeneratedZodContent = (content) => {
+  let cursor = 0;
+  let normalized = '';
+
+  while (cursor < content.length) {
+    const recordIndex = content.indexOf('z.record(', cursor);
+
+    if (recordIndex === -1) {
+      normalized += content.slice(cursor);
+      break;
+    }
+
+    normalized += content.slice(cursor, recordIndex);
+
+    const argsStart = recordIndex + 'z.record('.length;
+    let depth = 1;
+    let hasTopLevelComma = false;
+    let innerCursor = argsStart;
+
+    while (innerCursor < content.length && depth > 0) {
+      const char = content[innerCursor];
+
+      if (char === '(') {
+        depth += 1;
+      } else if (char === ')') {
+        depth -= 1;
+      } else if (char === ',' && depth === 1) {
+        hasTopLevelComma = true;
+      }
+
+      innerCursor += 1;
+    }
+
+    const rawArgs = content.slice(argsStart, innerCursor - 1).trim();
+    normalized += hasTopLevelComma
+      ? `z.record(${rawArgs})`
+      : `z.record(z.string(), ${rawArgs})`;
+    cursor = innerCursor;
+  }
+
+  return normalized;
+};
+
+const normalizeGeneratedZodFile = async () => {
+  const zodFile = await fs.readFile(zodGeneratedPath, 'utf-8');
+  const normalized = normalizeGeneratedZodContent(zodFile);
+
+  if (normalized !== zodFile) {
+    await fs.writeFile(zodGeneratedPath, normalized, 'utf-8');
+  }
+
+  return normalized;
+};
+
 const normalizeFieldType = (type) => {
   switch (type) {
     case 'uuid':
@@ -679,7 +733,7 @@ const main = async () => {
   const schemas = bundle?.components?.schemas ?? {};
   const fieldSpecsByKey = buildFieldSpecMap(fieldsDoc);
 
-  const zodFile = await fs.readFile(zodGeneratedPath, 'utf-8');
+  const zodFile = await normalizeGeneratedZodFile();
   const exportedZodSchemaNames = Array.from(zodFile.matchAll(/export const (\w+)\s*=/g)).map((match) => match[1]);
 
   const { resolveSchema } = createResolver(schemas);

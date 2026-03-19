@@ -4,7 +4,6 @@
 export const THEME = {
   Light: 'light',
   Dark: 'dark',
-  System: 'system',
 } as const;
 
 /**
@@ -13,11 +12,57 @@ export const THEME = {
 export type Theme = typeof THEME[keyof typeof THEME];
 
 /**
+ * 言語定数。
+ */
+export const LANGUAGE = {
+  Ja: 'ja',
+  En: 'en',
+} as const;
+
+/**
+ * 言語型。
+ */
+export type Language = typeof LANGUAGE[keyof typeof LANGUAGE];
+
+/**
+ * プロフィール設定。
+ */
+export interface AppSettingsProfile {
+  name: string;
+  email: string;
+  department: string;
+  role: string;
+  employeeCode: string;
+}
+
+/**
+ * 通知設定。
+ */
+export interface AppSettingsNotifications {
+  clockInReminder: boolean;
+  approvalNotification: boolean;
+  leaveReminder: boolean;
+}
+
+/**
+ * セキュリティ設定。
+ */
+export interface AppSettingsSecurity {
+  twoFactorEnabled: boolean;
+  emailVerified: boolean;
+  lastLoginAt: string | null;
+  passwordLastChangedAt: string | null;
+}
+
+/**
  * ユーザー設定。
  */
 export interface AppSettings {
-  language: string;
+  profile: AppSettingsProfile;
+  notifications: AppSettingsNotifications;
+  security: AppSettingsSecurity;
   theme: Theme;
+  language: Language;
 }
 
 /**

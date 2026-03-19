@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container } from '@/shared/components';
-import { AsyncDataState } from '@/shared/components/AsyncDataState';
+import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { useTeam } from '@/features/team/hooks/useTeam';
 import { TeamPresenter } from '@/features/team/ui/TeamPresenter';
 
@@ -15,7 +15,11 @@ const TeamPage: React.FC = () => {
 
   return (
     <Container size="full">
-      <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={!stats && !isError && !isLoading}>
+      <AsyncDataState
+        isLoading={isLoading}
+        isError={isError}
+        isEmpty={Array.isArray(filteredMembers) && filteredMembers.length === 0}
+      >
         <TeamPresenter
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

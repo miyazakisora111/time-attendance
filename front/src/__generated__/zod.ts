@@ -19,7 +19,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
-    errors: z.record(z.array(z.string())).optional(),
+    errors: z.record(z.string(), z.array(z.string())).optional(),
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
@@ -28,7 +28,7 @@ export namespace components.schemas {
       name: z.string(),
       email: z.string(),
       roles: z.array(z.string()),
-      settings: z.record(z.unknown()).nullable().optional(),
+      settings: z.record(z.string(), z.unknown()).nullable().optional(),
     }),
   });
   export const AttendanceResponse = z.object({
@@ -75,7 +75,32 @@ export namespace components.schemas {
       })),
     pendingOvertimeRequests: z.number().int(),
   });
-  export const CalendarResponse = z.array(z.string());
+  export const CalendarSummary = z.object({
+    totalWorkHours: z.number(),
+    targetHours: z.number(),
+    scheduledWorkDays: z.number().int(),
+    overtimeHours: z.number(),
+    paidLeaveDays: z.number(),
+    remainingPaidLeaveDays: z.number(),
+  });
+  export const CalendarDay = z.object({
+    date: z.string(),
+    label: z.string(),
+    dayOfWeek: z.string(),
+    status: z.enum(["working", "off", "holiday", "pending"]),
+    shift: z.string().nullable().optional(),
+    timeRange: z.string().nullable().optional(),
+    location: z.string().nullable().optional(),
+    note: z.string().nullable().optional(),
+    isToday: z.boolean(),
+    isHoliday: z.boolean(),
+  });
+  export const CalendarResponse = z.object({
+    year: z.number().int(),
+    month: z.number().int(),
+    summary: components["schemas"]["CalendarSummary"],
+    days: z.array(components["schemas"]["CalendarDay"]),
+  });
   export const TeamMember = z.object({
     id: z.string(),
     name: z.string(),
@@ -89,12 +114,39 @@ export namespace components.schemas {
     members: z.array(components["schemas"]["TeamMember"]),
   });
   export const SettingsResponse = z.object({
-    theme: z.enum(["light", "dark", "system"]),
-    language: z.string(),
+    profile: z.object({
+      name: z.string(),
+      email: z.string(),
+      department: z.string(),
+      role: z.string(),
+      employeeCode: z.string(),
+    }),
+    notifications: z.object({
+      clockInReminder: z.boolean(),
+      approvalNotification: z.boolean(),
+      leaveReminder: z.boolean(),
+    }),
+    security: z.object({
+      twoFactorEnabled: z.boolean(),
+      emailVerified: z.boolean(),
+      lastLoginAt: z.string().nullable().optional(),
+      passwordLastChangedAt: z.string().nullable().optional(),
+    }),
+    theme: z.enum(["light", "dark"]),
+    language: z.enum(["ja", "en"]),
   });
   export const UpdateSettingsRequest = z.object({
-    theme: z.enum(["light", "dark", "system"]),
-    language: z.string(),
+    profile: z.object({
+      name: z.string(),
+      email: z.string(),
+    }),
+    notifications: z.object({
+      clockInReminder: z.boolean(),
+      approvalNotification: z.boolean(),
+      leaveReminder: z.boolean(),
+    }),
+    theme: z.enum(["light", "dark"]),
+    language: z.enum(["ja", "en"]),
   });
 }
 export namespace components.responses {

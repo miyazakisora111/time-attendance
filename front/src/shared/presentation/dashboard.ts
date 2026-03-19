@@ -25,9 +25,16 @@ export const dashboardQuickActions: ReadonlyArray<DashboardQuickActionView> = [
   { key: 'monthly_report', label: '月次レポート', colorClassName: 'text-green-600', bgColorClassName: 'bg-green-100/50' },
 ];
 
+interface DashboardMiniCalendarSource {
+  date: string;
+  status: 'working' | 'off' | 'holiday' | 'pending';
+  isToday: boolean;
+  isHoliday: boolean;
+}
+
 export interface DashboardMiniCalendarDay {
+  key: string;
   day: string;
-  date: number;
   isWorkday?: boolean;
   isHoliday?: boolean;
   isToday?: boolean;
@@ -35,40 +42,29 @@ export interface DashboardMiniCalendarDay {
 
 export const dashboardMiniCalendarDaysOfWeek = DAYS_OF_WEEK;
 
-export const dashboardMiniCalendarDays: ReadonlyArray<DashboardMiniCalendarDay> = [
-  { day: '', date: 0 },
-  { day: '1', date: 1, isWorkday: true },
-  { day: '2', date: 2, isWorkday: true },
-  { day: '3', date: 3, isWorkday: true },
-  { day: '4', date: 4, isWorkday: true },
-  { day: '5', date: 5, isWorkday: true },
-  { day: '6', date: 6, isHoliday: true },
-  { day: '7', date: 7, isHoliday: true },
-  { day: '8', date: 8, isWorkday: true },
-  { day: '9', date: 9, isWorkday: true },
-  { day: '10', date: 10, isWorkday: true },
-  { day: '11', date: 11, isWorkday: true },
-  { day: '12', date: 12, isWorkday: true },
-  { day: '13', date: 13, isHoliday: true },
-  { day: '14', date: 14, isHoliday: true },
-  { day: '15', date: 15, isWorkday: true },
-  { day: '16', date: 16, isToday: true, isWorkday: true },
-  { day: '17', date: 17, isWorkday: true },
-  { day: '18', date: 18, isWorkday: true },
-  { day: '19', date: 19, isWorkday: true },
-  { day: '20', date: 20, isHoliday: true },
-  { day: '21', date: 21, isHoliday: true },
-  { day: '22', date: 22, isWorkday: true },
-  { day: '23', date: 23, isWorkday: true },
-  { day: '24', date: 24, isWorkday: true },
-  { day: '25', date: 25, isWorkday: true },
-  { day: '26', date: 26, isWorkday: true },
-  { day: '27', date: 27, isHoliday: true },
-  { day: '28', date: 28, isHoliday: true },
-  { day: '29', date: 29, isWorkday: true },
-  { day: '30', date: 30, isWorkday: true },
-  { day: '31', date: 31, isWorkday: true },
-];
+export const buildDashboardMiniCalendarDays = (
+  days: ReadonlyArray<DashboardMiniCalendarSource>,
+): DashboardMiniCalendarDay[] => {
+  if (days.length === 0) {
+    return [];
+  }
+
+  const firstDate = new Date(`${days[0].date}T00:00:00`);
+  const leadingBlankDays = Array.from({ length: firstDate.getDay() }, (_, index) => ({
+    key: `blank-${index}`,
+    day: '',
+  }));
+
+  const mappedDays = days.map((day) => ({
+    key: day.date,
+    day: String(new Date(`${day.date}T00:00:00`).getDate()),
+    isWorkday: day.status === 'working',
+    isHoliday: day.isHoliday,
+    isToday: day.isToday,
+  }));
+
+  return [...leadingBlankDays, ...mappedDays];
+};
 
 export const dashboardMiniCalendarLegends = [
   {

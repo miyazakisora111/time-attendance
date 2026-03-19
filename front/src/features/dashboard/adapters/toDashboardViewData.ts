@@ -5,7 +5,7 @@ import type { DashboardViewData } from "@/features/dashboard/ui/types";
  * API応答をダッシュボード表示用データに変換
  */
 export const toDashboardViewData = (
-  response: DashboardResponse
+  response: DashboardResponse,
 ): DashboardViewData => ({
   user: {
     id: response.user.id,
@@ -26,9 +26,13 @@ export const toDashboardViewData = (
   })),
   stats: {
     totalHours: response.stats.totalHours,
+    targetHours: response.stats.targetHours,
     workDays: response.stats.workDays,
+    remainingDays: response.stats.remainingDays,
     avgHours: response.stats.avgHours,
+    avgHoursDiff: response.stats.avgHoursDiff,
     overtimeHours: response.stats.overtimeHours,
+    overtimeDiff: response.stats.overtimeDiff,
   },
   pendingOvertimeRequests: response.pendingOvertimeRequests,
 });

@@ -8,7 +8,7 @@ import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import type { ClockStatus } from '@/domain/attendance/attendance';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
-import { AsyncDataState } from '@/shared/components/AsyncDataState';
+import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { EMPTY_TIME_TEXT } from '@/shared/presentation/format';
 import { STATUS_ICON_MAP } from '@/shared/presentation/attendance/attendanceStatus';
 import type { AttendanceStatus } from '@/domain/attendance/attendance';

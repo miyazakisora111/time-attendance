@@ -6,11 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateSettingsRequestTheme =
-  (typeof UpdateSettingsRequestTheme)[keyof typeof UpdateSettingsRequestTheme];
+export type CalendarDayStatus =
+  (typeof CalendarDayStatus)[keyof typeof CalendarDayStatus];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateSettingsRequestTheme = {
-  light: "light",
-  dark: "dark",
+export const CalendarDayStatus = {
+  working: "working",
+  off: "off",
+  holiday: "holiday",
+  pending: "pending",
 } as const;

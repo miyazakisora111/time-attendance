@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type UpdateSettingsRequestTheme =
-  (typeof UpdateSettingsRequestTheme)[keyof typeof UpdateSettingsRequestTheme];
+export type UpdateSettingsRequestLanguage =
+  (typeof UpdateSettingsRequestLanguage)[keyof typeof UpdateSettingsRequestLanguage];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const UpdateSettingsRequestTheme = {
-  light: "light",
-  dark: "dark",
+export const UpdateSettingsRequestLanguage = {
+  ja: "ja",
+  en: "en",
 } as const;

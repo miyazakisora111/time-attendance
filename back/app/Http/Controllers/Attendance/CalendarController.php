@@ -32,8 +32,7 @@ class CalendarController extends BaseController
      */
     public function index(CalendarIndexRequest $request): JsonResponse
     {
-        // 日付を取得する。
-        $result = $this->service->getDates(
+        $result = $this->service->getCalendar(
             year: $request->input('year'),
             month: $request->input('month'),
         );

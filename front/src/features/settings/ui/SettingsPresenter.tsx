@@ -1,29 +1,54 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, Bell, Lock, Moon, Sun, Shield, Save, 
-  ChevronRight, Monitor, SmartphoneNfc, Clock, AlertCircle, FileText, Calendar 
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  AlertCircle,
+  Bell,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Lock,
+  Monitor,
+  Moon,
+  Save,
+  Shield,
+  Sun,
+  User,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, Button, Typography, Label } from '@/shared/components';
-import type { SettingsSection } from '@/domain/settings/types';
+import { Button, Card, CardContent, CardHeader, CardTitle, Label, Typography } from '@/shared/components';
+import type { AppSettingsNotifications, AppSettingsSecurity, SettingsSection } from '@/domain/settings/types';
+import type { UpdateSettingsRequestProfile } from '@/__generated__/model';
 import {
   settingsLanguageOptions,
   settingsNotificationItems,
   settingsSections,
-  settingsSecurityActionLabels,
   settingsThemeOptions,
+  type SettingsLanguageCode,
   type SettingsNotificationKey,
   type SettingsThemeMode,
 } from '@/shared/presentation/settings';
 
+type SettingsProfileView = Pick<UpdateSettingsRequestProfile, 'name' | 'email'> & {
+  department: string;
+  role: string;
+  employeeCode: string;
+};
+
 interface SettingsPresenterProps {
+  isSaving: boolean;
   activeSection: SettingsSection;
   setActiveSection: (section: SettingsSection) => void;
+  profile: SettingsProfileView;
+  setProfileField: (field: keyof UpdateSettingsRequestProfile, value: string) => void;
+  notifications: AppSettingsNotifications;
+  setNotification: (key: SettingsNotificationKey, value: boolean) => void;
+  security: AppSettingsSecurity;
   theme: SettingsThemeMode;
   setTheme: (theme: SettingsThemeMode) => void;
-  language: string;
-  setLanguage: (lang: string) => void;
+  language: SettingsLanguageCode;
+  setLanguage: (lang: SettingsLanguageCode) => void;
+  handleReset: () => void;
   handleSave: () => void;
 }
 
@@ -37,29 +62,49 @@ const settingsSectionIconMap: Record<SettingsSection, LucideIcon> = {
 const settingsThemeIconMap: Record<SettingsThemeMode, LucideIcon> = {
   light: Sun,
   dark: Moon,
-  system: Monitor,
 };
 
 const settingsNotificationIconMap: Record<SettingsNotificationKey, LucideIcon> = {
-  clock_missing: Clock,
-  approval: FileText,
-  leave_reminder: Calendar,
+  clockInReminder: Clock,
+  approvalNotification: FileText,
+  leaveReminder: Calendar,
+};
+
+const formatDateTime = (value?: string | null): string => {
+  if (!value) {
+    return '未記録';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '未記録';
+  }
+
+  return date.toLocaleString('ja-JP');
 };
 
 export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
+  isSaving,
   activeSection,
   setActiveSection,
+  profile,
+  setProfileField,
+  notifications,
+  setNotification,
+  security,
   theme,
   setTheme,
   language,
   setLanguage,
+  handleReset,
   handleSave,
 }) => {
+  const profileInitial = profile.name.trim().charAt(0) || 'U';
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Nav */}
-        <aside className="w-full md:w-64 shrink-0">
+    <div className="mx-auto max-w-6xl">
+      <div className="flex flex-col gap-8 md:flex-row">
+        <aside className="w-full shrink-0 md:w-64">
           <div className="space-y-1">
             {settingsSections.map((section) => {
               const SectionIcon = settingsSectionIconMap[section.id];
@@ -67,13 +112,16 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
               return (
                 <Button
                   key={section.id}
-                  variant={activeSection === section.id ? "solid" : "ghost"}
-                  intent={activeSection === section.id ? "primary" : "secondary"}
+                  variant={activeSection === section.id ? 'solid' : 'ghost'}
+                  intent={activeSection === section.id ? 'primary' : 'secondary'}
                   onClick={() => setActiveSection(section.id)}
-                  unstableClassName="w-full justify-start gap-3 px-4 py-3 rounded-2xl h-auto"
+                  unstableClassName="h-auto w-full justify-start gap-3 rounded-2xl px-4 py-3"
                 >
                   <SectionIcon size={18} />
-                  <Typography variant="label" unstableClassName={activeSection === section.id ? "text-white" : "text-gray-500"}>
+                  <Typography
+                    variant="label"
+                    unstableClassName={activeSection === section.id ? 'text-white' : 'text-gray-500'}
+                  >
                     {section.label}
                   </Typography>
                 </Button>
@@ -82,7 +130,6 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
           </div>
         </aside>
 
-        {/* Main Content */}
         <div className="flex-1 space-y-6">
           <AnimatePresence mode="wait">
             {activeSection === 'profile' && (
@@ -94,41 +141,52 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                 className="space-y-6"
               >
                 <Card variant="elevated" padding="none" unstableClassName="overflow-hidden border-none shadow-md">
-                  <CardHeader unstableClassName="bg-gray-50/50 p-8 border-b border-gray-100">
-                    <CardTitle unstableClassName="text-xl font-bold flex items-center gap-2">
-                       <User className="text-blue-600" size={20} />
-                       プロフィール設定
+                  <CardHeader unstableClassName="border-b border-gray-100 bg-gray-50/50 p-8">
+                    <CardTitle unstableClassName="flex items-center gap-2 text-xl font-bold">
+                      <User className="text-blue-600" size={20} />
+                      プロフィール設定
                     </CardTitle>
                   </CardHeader>
-                  <CardContent unstableClassName="p-8 space-y-6">
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-8 pb-6 border-b border-gray-50">
-                      <div className="relative group">
-                        <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-xl">
-                          田
-                        </div>
-                        <Button 
-                          variant="ghost"
-                          size="icon"
-                          unstableClassName="absolute -bottom-2 -right-2 p-2 bg-white rounded-xl shadow-md text-gray-400 hover:text-blue-600 transition-colors border border-gray-100 w-9 h-9"
-                        >
-                          <SmartphoneNfc size={16} />
-                        </Button>
+                  <CardContent unstableClassName="space-y-6 p-8">
+                    <div className="flex flex-col items-start gap-8 border-b border-gray-50 pb-6 md:flex-row md:items-center">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl font-bold text-white shadow-xl">
+                        {profileInitial}
                       </div>
                       <div className="space-y-1">
-                        <Typography variant="h3" unstableClassName="font-bold text-lg text-gray-900">田中 太郎</Typography>
-                        <Typography variant="small" intent="muted">営業部 / 正社員</Typography>
-                        <Typography variant="small" intent="muted" unstableClassName="text-xs">社員番号: EMP-2024001</Typography>
+                        <Typography variant="h3" unstableClassName="text-lg font-bold text-gray-900">
+                          {profile.name || '-'}
+                        </Typography>
+                        <Typography variant="small" intent="muted">
+                          {profile.department} / {profile.role}
+                        </Typography>
+                        <Typography variant="small" intent="muted" unstableClassName="text-xs">
+                          社員番号: {profile.employeeCode}
+                        </Typography>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <div className="space-y-2">
-                        <Label><Typography variant="label">姓名</Typography></Label>
-                        <input type="text" defaultValue="田中 太郎" className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500" />
+                        <Label>
+                          <Typography variant="label">姓名</Typography>
+                        </Label>
+                        <input
+                          type="text"
+                          value={profile.name}
+                          onChange={(event) => setProfileField('name', event.target.value)}
+                          className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
                       <div className="space-y-2">
-                        <Label><Typography variant="label">メールアドレス</Typography></Label>
-                        <input type="email" defaultValue="t.tanaka@example.com" className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500" />
+                        <Label>
+                          <Typography variant="label">メールアドレス</Typography>
+                        </Label>
+                        <input
+                          type="email"
+                          value={profile.email}
+                          onChange={(event) => setProfileField('email', event.target.value)}
+                          className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -144,33 +202,40 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <Card unstableClassName="border-none shadow-sm rounded-3xl">
-                  <CardHeader unstableClassName="p-8 border-b border-gray-100">
-                    <CardTitle unstableClassName="text-xl font-bold flex items-center gap-2">
+                <Card unstableClassName="rounded-3xl border-none shadow-sm">
+                  <CardHeader unstableClassName="border-b border-gray-100 p-8">
+                    <CardTitle unstableClassName="flex items-center gap-2 text-xl font-bold">
                       <Bell className="text-blue-600" size={20} />
                       通知設定
                     </CardTitle>
                   </CardHeader>
-                  <CardContent unstableClassName="p-8 space-y-6">
+                  <CardContent unstableClassName="space-y-6 p-8">
                     {settingsNotificationItems.map((item) => {
                       const ItemIcon = settingsNotificationIconMap[item.id];
 
                       return (
-                        <div key={item.id} className="flex items-center justify-between py-4 border-b border-gray-50 last:border-none">
-                        <div className="flex items-center gap-4">
-                          <div className="p-3 bg-gray-50 rounded-2xl text-gray-400">
-                            <ItemIcon size={20} />
+                        <div key={item.id} className="flex items-center justify-between border-b border-gray-50 py-4 last:border-none">
+                          <div className="flex items-center gap-4">
+                            <div className="rounded-2xl bg-gray-50 p-3 text-gray-400">
+                              <ItemIcon size={20} />
+                            </div>
+                            <div>
+                              <Typography variant="label">{item.title}</Typography>
+                              <Typography variant="small" unstableClassName="block text-gray-500">
+                                {item.description}
+                              </Typography>
+                            </div>
                           </div>
-                          <div>
-                            <Typography variant="label">{item.title}</Typography>
-                            <Typography variant="small" unstableClassName="block text-gray-500">{item.description}</Typography>
-                          </div>
+                          <label className="relative inline-flex cursor-pointer items-center">
+                            <input
+                              type="checkbox"
+                              checked={notifications[item.id]}
+                              onChange={(event) => setNotification(item.id, event.target.checked)}
+                              className="peer sr-only"
+                            />
+                            <div className="h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                          </label>
                         </div>
-                        <div className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" defaultChecked className="sr-only peer" />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </div>
-                      </div>
                       );
                     })}
                   </CardContent>
@@ -186,27 +251,32 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <Card unstableClassName="border-none shadow-sm rounded-3xl">
-                  <CardHeader unstableClassName="p-8 border-b border-gray-100">
+                <Card unstableClassName="rounded-3xl border-none shadow-sm">
+                  <CardHeader unstableClassName="border-b border-gray-100 p-8">
                     <CardTitle unstableClassName="text-xl font-bold">外観・表示設定</CardTitle>
                   </CardHeader>
-                  <CardContent unstableClassName="p-8 space-y-8">
+                  <CardContent unstableClassName="space-y-8 p-8">
                     <div className="space-y-4">
-                      <Label><Typography variant="label">テーマ設定</Typography></Label>
-                      <div className="grid grid-cols-3 gap-4">
+                      <Label>
+                        <Typography variant="label">テーマ設定</Typography>
+                      </Label>
+                      <div className="grid grid-cols-2 gap-4">
                         {settingsThemeOptions.map((option) => {
                           const ThemeIcon = settingsThemeIconMap[option.id];
 
                           return (
                             <Button
                               key={option.id}
-                              variant={theme === option.id ? "solid" : "ghost"}
-                              intent={theme === option.id ? "primary" : "secondary"}
+                              variant={theme === option.id ? 'solid' : 'ghost'}
+                              intent={theme === option.id ? 'primary' : 'secondary'}
                               onClick={() => setTheme(option.id)}
-                              unstableClassName="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all h-auto"
+                              unstableClassName="h-auto flex-col items-center gap-3 rounded-2xl border-2 p-4"
                             >
                               <ThemeIcon size={24} />
-                              <Typography variant="label" unstableClassName={theme === option.id ? "text-white" : "text-gray-500"}>
+                              <Typography
+                                variant="label"
+                                unstableClassName={theme === option.id ? 'text-white' : 'text-gray-500'}
+                              >
                                 {option.label}
                               </Typography>
                             </Button>
@@ -216,14 +286,18 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                     </div>
 
                     <div className="space-y-4">
-                      <Label><Typography variant="label">使用言語</Typography></Label>
-                      <select 
+                      <Label>
+                        <Typography variant="label">使用言語</Typography>
+                      </Label>
+                      <select
                         value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                        className="w-full p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500"
+                        onChange={(event) => setLanguage(event.target.value as SettingsLanguageCode)}
+                        className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
                       >
                         {settingsLanguageOptions.map((option) => (
-                          <option key={option} value={option}>{option}</option>
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
                         ))}
                       </select>
                     </div>
@@ -240,35 +314,55 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                <Card unstableClassName="border-none shadow-sm rounded-3xl">
-                  <CardHeader unstableClassName="p-8 border-b border-gray-100">
-                    <CardTitle unstableClassName="text-xl font-bold flex items-center gap-2">
+                <Card unstableClassName="rounded-3xl border-none shadow-sm">
+                  <CardHeader unstableClassName="border-b border-gray-100 p-8">
+                    <CardTitle unstableClassName="flex items-center gap-2 text-xl font-bold">
                       <Shield className="text-red-500" size={20} />
                       セキュリティ設定
                     </CardTitle>
                   </CardHeader>
-                  <CardContent unstableClassName="p-8 space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-red-50 rounded-2xl border border-red-100">
-                        <div className="flex items-center gap-3">
-                          <AlertCircle className="text-red-500" size={20} />
-                          <div>
-                            <Typography variant="label" unstableClassName="text-red-900">2要素認証が未設定です</Typography>
-                            <Typography variant="small" unstableClassName="text-red-700 block">アカウントの保護を強化するために設定を推奨します。</Typography>
-                          </div>
+                  <CardContent unstableClassName="space-y-6 p-8">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div className="rounded-2xl border border-gray-100 bg-white p-4">
+                        <Typography variant="small" intent="muted">メール認証</Typography>
+                        <div className="mt-2 flex items-center gap-2">
+                          {security.emailVerified ? (
+                            <CheckCircle2 size={18} className="text-green-600" />
+                          ) : (
+                            <AlertCircle size={18} className="text-amber-600" />
+                          )}
+                          <Typography variant="label">
+                            {security.emailVerified ? '認証済み' : '未認証'}
+                          </Typography>
                         </div>
-                        <Button variant="outline" size="sm" unstableClassName="bg-white border-red-200 text-red-600 hover:bg-red-50 rounded-xl">
-                          設定する
-                        </Button>
                       </div>
 
-                      <div className="space-y-4 pt-4">
-                        {settingsSecurityActionLabels.map((label) => (
-                          <Button key={label} variant="outline" unstableClassName="w-full justify-between h-14 rounded-2xl px-6 group">
-                            <Typography variant="label">{label}</Typography>
-                            <ChevronRight size={18} className="text-gray-300 group-hover:text-gray-900 transition-colors" />
-                          </Button>
-                        ))}
+                      <div className="rounded-2xl border border-gray-100 bg-white p-4">
+                        <Typography variant="small" intent="muted">2要素認証</Typography>
+                        <div className="mt-2 flex items-center gap-2">
+                          {security.twoFactorEnabled ? (
+                            <CheckCircle2 size={18} className="text-green-600" />
+                          ) : (
+                            <AlertCircle size={18} className="text-amber-600" />
+                          )}
+                          <Typography variant="label">
+                            {security.twoFactorEnabled ? '有効' : '未設定'}
+                          </Typography>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-gray-100 bg-white p-4">
+                        <Typography variant="small" intent="muted">最終ログイン</Typography>
+                        <Typography variant="label" unstableClassName="mt-2 block">
+                          {formatDateTime(security.lastLoginAt)}
+                        </Typography>
+                      </div>
+
+                      <div className="rounded-2xl border border-gray-100 bg-white p-4">
+                        <Typography variant="small" intent="muted">パスワード最終変更</Typography>
+                        <Typography variant="label" unstableClassName="mt-2 block">
+                          {formatDateTime(security.passwordLastChangedAt)}
+                        </Typography>
                       </div>
                     </div>
                   </CardContent>
@@ -277,19 +371,19 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
             )}
           </AnimatePresence>
 
-          {/* Bottom Actions */}
           <div className="flex items-center justify-end gap-3 pt-6">
-            <Button variant="ghost" unstableClassName="rounded-xl">
+            <Button variant="ghost" unstableClassName="rounded-xl" onClick={handleReset} disabled={isSaving}>
               <Typography variant="label" unstableClassName="text-gray-500">リセット</Typography>
             </Button>
-            <Button 
+            <Button
               onClick={handleSave}
               variant="solid"
               intent="primary"
-              unstableClassName="px-8 h-12 rounded-xl shadow-lg shadow-blue-100 gap-2"
+              unstableClassName="h-12 gap-2 rounded-xl px-8 shadow-lg shadow-blue-100"
+              disabled={isSaving}
             >
               <Save size={18} />
-              <Typography variant="label">変更を保存</Typography>
+              <Typography variant="label">{isSaving ? '保存中...' : '変更を保存'}</Typography>
             </Button>
           </div>
         </div>

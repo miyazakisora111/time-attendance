@@ -143,6 +143,11 @@ user:
     label: ユーザー設定
     required: false
     description: ユーザー個別設定
+  employeeCode:
+    type: string
+    label: 社員番号
+    required: false
+    description: 画面表示用の社員番号
 
 user_settings:
   theme:
@@ -157,6 +162,21 @@ user_settings:
     description: 表示言語
 
 user_notification_settings:
+  clockInReminder:
+    type: boolean
+    label: 打刻忘れ通知
+    required: true
+    description: 打刻忘れ通知の有効フラグ
+  approvalNotification:
+    type: boolean
+    label: 承認通知
+    required: true
+    description: 承認通知の有効フラグ
+  leaveReminder:
+    type: boolean
+    label: 休暇リマインド通知
+    required: true
+    description: 休暇通知の有効フラグ
   clock_in_reminder:
     type: boolean
     label: 打刻忘れ通知
@@ -290,6 +310,88 @@ schedule:
     label: 日付
     required: true
     description: カレンダー日付
+  label:
+    type: string
+    label: 日付表示
+    required: true
+    description: 画面表示用の日付ラベル
+  dayOfWeek:
+    type: string
+    label: 曜日
+    required: true
+    description: 日本語曜日ラベル
+  status:
+    type: enum
+    label: スケジュール状態
+    required: true
+    description: working/off/holiday/pending
+  shift:
+    type: string
+    label: 勤務区分
+    required: false
+    description: シフト名称
+  timeRange:
+    type: string
+    label: 勤務時間帯
+    required: false
+    description: 画面表示用勤務時間帯
+  location:
+    type: string
+    label: 勤務場所
+    required: false
+    description: 勤務場所表示
+  totalWorkHours:
+    type: number
+    label: 総労働時間
+    required: true
+    description: 月次合計労働時間
+  scheduledWorkDays:
+    type: integer
+    label: 予定勤務日数
+    required: true
+    description: 当月の予定勤務日数
+  paidLeaveDays:
+    type: number
+    label: 有給取得日数
+    required: true
+    description: 当月の有給取得日数
+  remainingPaidLeaveDays:
+    type: number
+    label: 残有給日数
+    required: true
+    description: 残っている有給日数
+  isToday:
+    type: boolean
+    label: 今日フラグ
+    required: true
+    description: 当日かどうか
+  isHoliday:
+    type: boolean
+    label: 休日フラグ
+    required: true
+    description: 祝日または公休日かどうか
+
+security:
+  twoFactorEnabled:
+    type: boolean
+    label: 二要素認証設定
+    required: true
+    description: 二要素認証が有効かどうか
+  emailVerified:
+    type: boolean
+    label: メール認証状態
+    required: true
+    description: メールアドレス認証済みかどうか
+  lastLoginAt:
+    type: datetime
+    label: 最終ログイン日時
+    required: false
+    description: 直近ログイン日時
+  passwordLastChangedAt:
+    type: datetime
+    label: パスワード更新日時
+    required: false
+    description: パスワードが最後に更新された日時
 
 common:
   success:

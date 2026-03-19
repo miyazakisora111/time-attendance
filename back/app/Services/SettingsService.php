@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\LoginHistory;
 use App\Models\User;
+use App\Models\UserNotificationSetting;
 use App\Models\UserSetting;
 
 /**
@@ -15,16 +17,39 @@ final class SettingsService extends BaseService
     /**
      * ログインユーザー設定を取得する。
      *
-     * @return array{theme: string, language: string}
+     * @return array<string, mixed>
      */
     public function getSettings(): array
     {
         $user = $this->resolveUser();
-        $user->loadMissing('userSetting');
+        $user->loadMissing(['userSetting', 'userNotificationSetting', 'department', 'role']);
+
+        $latestLogin = LoginHistory::query()
+            ->user($user->id)
+            ->latestLogin()
+            ->first();
 
         return [
+            'profile' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'department' => $user->department?->name ?? '未所属',
+                'role' => $user->role?->name ?? 'メンバー',
+                'employeeCode' => sprintf('EMP-%07d', max((int) ($user->sort_order ?? 0), 1)),
+            ],
+            'notifications' => [
+                'clockInReminder' => $user->userNotificationSetting?->clock_in_reminder ?? true,
+                'approvalNotification' => $user->userNotificationSetting?->approval_notification ?? true,
+                'leaveReminder' => $user->userNotificationSetting?->leave_reminder ?? true,
+            ],
+            'security' => [
+                'twoFactorEnabled' => false,
+                'emailVerified' => $user->email_verified_at !== null,
+                'lastLoginAt' => $latestLogin?->logged_in_at?->toIso8601String(),
+                'passwordLastChangedAt' => null,
+            ],
             'theme' => $user->userSetting?->theme ?? 'light',
-            'language' => $user->userSetting?->language ?? '日本語',
+            'language' => $user->userSetting?->language ?? 'ja',
         ];
     }
 
@@ -32,24 +57,36 @@ final class SettingsService extends BaseService
      * ログインユーザー設定を更新する。
      *
      * @param array<string, mixed> $input
-     * @return array{theme: string, language: string}
+     * @return array<string, mixed>
      */
     public function updateSettings(array $input): array
     {
-        $user = $this->resolveUser();
+        return $this->transaction(function () use ($input): array {
+            $user = $this->resolveUser();
 
-        $setting = UserSetting::query()->firstOrNew([
-            'user_id' => $user->id,
-        ]);
+            $user->fill([
+                'name' => (string) data_get($input, 'profile.name', $user->name),
+                'email' => (string) data_get($input, 'profile.email', $user->email),
+            ]);
+            $user->save();
 
-        $setting->theme = (string) $input['theme'];
-        $setting->language = (string) $input['language'];
-        $setting->save();
+            $setting = UserSetting::query()->firstOrNew([
+                'user_id' => $user->id,
+            ]);
+            $setting->theme = (string) $input['theme'];
+            $setting->language = (string) $input['language'];
+            $setting->save();
 
-        return [
-            'theme' => $setting->theme,
-            'language' => $setting->language,
-        ];
+            $notificationSetting = UserNotificationSetting::query()->firstOrNew([
+                'user_id' => $user->id,
+            ]);
+            $notificationSetting->clock_in_reminder = (bool) data_get($input, 'notifications.clockInReminder', true);
+            $notificationSetting->approval_notification = (bool) data_get($input, 'notifications.approvalNotification', true);
+            $notificationSetting->leave_reminder = (bool) data_get($input, 'notifications.leaveReminder', true);
+            $notificationSetting->save();
+
+            return $this->getSettings();
+        });
     }
 
     /**

@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Calendar as CalendarIcon, ChevronLeft, ChevronRight, 
-  Download, Filter, Clock, MapPin, Info, 
-  AlertCircle
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Filter,
+  Clock,
+  MapPin,
+  Info,
+  CalendarDays,
 } from 'lucide-react';
-import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
+import { Badge, Button, Card, CardContent, Typography } from '@/shared/components';
 import { cn } from '@/shared/utils/style';
-import type { DaySchedule } from '@/domain/schedule/types';
-import { formatJapaneseYearMonth } from '@/shared/presentation/format';
+import type { DaySchedule, ScheduleSummary } from '@/domain/schedule/types';
+import {
+  formatJapaneseDays,
+  formatJapaneseHours,
+  formatJapaneseYearMonth,
+} from '@/shared/presentation/format';
 import {
   getScheduleShiftLabel,
   getScheduleStatusView,
@@ -18,6 +28,7 @@ import {
 interface SchedulePresenterProps {
   currentMonth: Date;
   schedule: DaySchedule[];
+  summary: ScheduleSummary;
   nextMonth: () => void;
   prevMonth: () => void;
 }
@@ -25,127 +36,194 @@ interface SchedulePresenterProps {
 export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
   currentMonth,
   schedule,
+  summary,
   nextMonth,
   prevMonth,
 }) => {
+  const [showOnlyWorkingDays, setShowOnlyWorkingDays] = useState(false);
   const monthName = formatJapaneseYearMonth(currentMonth);
+
+  const visibleSchedule = useMemo(
+    () => (showOnlyWorkingDays ? schedule.filter((day) => day.status === 'working') : schedule),
+    [schedule, showOnlyWorkingDays],
+  );
+
+  const workProgress = summary.targetHours > 0
+    ? Math.min(Math.round((summary.totalWorkHours / summary.targetHours) * 100), 100)
+    : 0;
+
+  const handleExport = () => {
+    const csv = [
+      ['日付', '曜日', '勤務区分', '時間帯', '勤務場所', '備考'].join(','),
+      ...schedule.map((day) => [
+        day.date,
+        day.dayOfWeek,
+        getScheduleShiftLabel(day),
+        getScheduleTimeRangeText(day.timeRange),
+        day.location ?? '-',
+        day.note ?? '-',
+      ].map((value) => `"${value.replaceAll('"', '""')}"`).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `schedule-${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-8">
-      {/* Calendar Header */}
       <Card variant="elevated" padding="none" unstableClassName="overflow-hidden border-none shadow-md">
-        <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-6">
-            <div className="w-14 h-14 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-100">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-100">
               <CalendarIcon size={24} />
             </div>
             <div>
-              <Typography variant="h2" unstableClassName="text-2xl font-bold text-gray-900">{monthName}</Typography>
-              <Typography variant="small" intent="muted" unstableClassName="italic">Your Work Schedule</Typography>
+              <Typography variant="h2" unstableClassName="text-2xl font-bold text-gray-900">
+                {monthName}
+              </Typography>
+              <Typography variant="small" intent="muted" unstableClassName="italic">
+                API から取得した月次スケジュールを表示しています
+              </Typography>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 bg-gray-100 p-1.5 rounded-2xl">
+          <div className="flex items-center gap-3 rounded-2xl bg-gray-100 p-1.5">
             <Button variant="ghost" size="icon" onClick={prevMonth} unstableClassName="h-10 w-10 rounded-xl hover:bg-white hover:shadow-sm">
               <ChevronLeft size={20} className="text-gray-500" />
             </Button>
-            <Typography variant="label" unstableClassName="px-4 text-gray-700">{monthName}</Typography>
+            <Typography variant="label" unstableClassName="px-4 text-gray-700">
+              {monthName}
+            </Typography>
             <Button variant="ghost" size="icon" onClick={nextMonth} unstableClassName="h-10 w-10 rounded-xl hover:bg-white hover:shadow-sm">
               <ChevronRight size={20} className="text-gray-500" />
             </Button>
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" intent="secondary" unstableClassName="rounded-xl gap-2">
+            <Button
+              variant={showOnlyWorkingDays ? 'solid' : 'outline'}
+              intent={showOnlyWorkingDays ? 'primary' : 'secondary'}
+              unstableClassName="rounded-xl gap-2"
+              onClick={() => setShowOnlyWorkingDays((previous) => !previous)}
+            >
               <Filter size={18} />
-              <Typography variant="label">表示切替</Typography>
+              <Typography variant="label">{showOnlyWorkingDays ? '全件表示' : '勤務日のみ'}</Typography>
             </Button>
-            <Button variant="solid" intent="primary" unstableClassName="rounded-xl gap-2 shadow-lg shadow-blue-100">
+            <Button variant="solid" intent="primary" unstableClassName="rounded-xl gap-2 shadow-lg shadow-blue-100" onClick={handleExport}>
               <Download size={18} />
-              <Typography variant="label">エクスポート</Typography>
+              <Typography variant="label">CSV エクスポート</Typography>
             </Button>
           </div>
         </div>
       </Card>
 
-      {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card variant="elevated" intent="primary" padding="lg" unstableClassName="border-none text-white">
-          <Typography variant="small" intent="white" unstableClassName="mb-1 font-medium italic">今月の総労働時間</Typography>
-          <Typography variant="h2" intent="white" unstableClassName="text-4xl font-black mb-6">154.5h</Typography>
-          <div className="flex items-center gap-2 text-xs font-bold bg-white/20 w-fit px-3 py-1 rounded-full text-white">
+          <Typography variant="small" intent="white" unstableClassName="mb-1 font-medium italic">
+            今月の総労働時間
+          </Typography>
+          <Typography variant="h2" intent="white" unstableClassName="mb-6 text-4xl font-black">
+            {formatJapaneseHours(summary.totalWorkHours)}
+          </Typography>
+          <div className="flex w-fit items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
             <Info size={14} />
-            <Typography variant="small" intent="white">所定: 160h に対し 96%</Typography>
+            <Typography variant="small" intent="white">
+              所定: {formatJapaneseHours(summary.targetHours)} に対し {workProgress}%
+            </Typography>
           </div>
         </Card>
 
         <Card variant="elevated" padding="lg" unstableClassName="border-none">
-          <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">今月の残業時間</Typography>
-          <Typography variant="h2" unstableClassName="text-4xl font-black text-gray-900 mb-6">12.0h</Typography>
+          <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">
+            今月の残業時間
+          </Typography>
+          <Typography variant="h2" unstableClassName="mb-6 text-4xl font-black text-gray-900">
+            {formatJapaneseHours(summary.overtimeHours)}
+          </Typography>
           <div className="flex items-center gap-4">
-            <Typography variant="small" unstableClassName="flex items-center gap-1 text-orange-500 font-bold"><Clock size={14} /> 定内: 8h</Typography>
-            <Typography variant="small" unstableClassName="flex items-center gap-1 text-orange-500 font-bold"><AlertCircle size={14} /> 定外: 4h</Typography>
+            <Typography variant="small" unstableClassName="flex items-center gap-1 text-orange-500 font-bold">
+              <Clock size={14} />
+              勤務日数: {formatJapaneseDays(summary.scheduledWorkDays)}
+            </Typography>
           </div>
         </Card>
 
         <Card variant="elevated" padding="lg" unstableClassName="border-none">
-          <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">有給取得日数</Typography>
-          <Typography variant="h2" unstableClassName="text-4xl font-black text-blue-600 mb-6">2.0日</Typography>
+          <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">
+            有給取得日数
+          </Typography>
+          <Typography variant="h2" unstableClassName="mb-6 text-4xl font-black text-blue-600">
+            {formatJapaneseDays(summary.paidLeaveDays)}
+          </Typography>
           <Typography variant="small" intent="primary" unstableClassName="font-bold">
-            残り: 12.5日
+            残り: {formatJapaneseDays(summary.remainingPaidLeaveDays)}
           </Typography>
         </Card>
       </div>
 
-      {/* Schedule Grid/List */}
       <div className="space-y-3">
-        {schedule.map((day, index) => {
+        {visibleSchedule.map((day, index) => {
           const styles = getScheduleStatusView(day.status);
+
           return (
             <motion.div
+              key={day.isoDate}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.02 }}
-              key={day.date}
             >
               <Card unstableClassName={`border-none shadow-sm hover:shadow-md transition-all ${day.isToday ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}>
                 <CardContent unstableClassName={`p-0 ${styles.bg}`}>
-                  <div className={`flex flex-col md:flex-row md:items-center gap-6 p-5 ${styles.border}`}>
-                    {/* Date & Day */}
+                  <div className={`flex flex-col gap-6 p-5 md:flex-row md:items-center ${styles.border}`}>
                     <div className="w-20 text-center md:text-left">
-                      <Typography variant="label" unstableClassName="text-lg font-black text-gray-900 tracking-tight block leading-tight">{day.date}</Typography>
-                      <Typography variant="small" unstableClassName="font-bold text-gray-400 uppercase tracking-widest text-[10px]">{day.isToday ? 'Today' : 'Weekday'}</Typography>
+                      <Typography variant="label" unstableClassName="block text-lg font-black leading-tight tracking-tight text-gray-900">
+                        {day.date}
+                      </Typography>
+                      <Typography variant="small" unstableClassName="font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                        {day.isToday ? `今日 / ${day.dayOfWeek}` : day.dayOfWeek}
+                      </Typography>
                     </div>
 
-                    {/* Shift Info */}
-                    <div className="flex-1 flex flex-col md:flex-row md:items-center gap-6">
+                    <div className="flex flex-1 flex-col gap-6 md:flex-row md:items-center">
                       <div>
-                        <Typography variant="label" unstableClassName={cn("block text-sm", styles.text)}>{getScheduleShiftLabel(day)}</Typography>
-                        <div className="flex items-center gap-3 mt-1">
+                        <Typography variant="label" unstableClassName={cn('block text-sm', styles.text)}>
+                          {getScheduleShiftLabel(day)}
+                        </Typography>
+                        <div className="mt-1 flex flex-wrap items-center gap-3">
                           <Typography variant="small" intent="muted" unstableClassName="flex items-center gap-1 font-medium">
                             <Clock size={12} />
                             {getScheduleTimeRangeText(day.timeRange)}
                           </Typography>
                           <Typography variant="small" intent="muted" unstableClassName="flex items-center gap-1 font-medium">
                             <MapPin size={12} />
-                            Office-A
+                            {day.location ?? '未設定'}
                           </Typography>
+                          {day.note ? (
+                            <Typography variant="small" intent="muted" unstableClassName="flex items-center gap-1 font-medium">
+                              <CalendarDays size={12} />
+                              {day.note}
+                            </Typography>
+                          ) : null}
                         </div>
                       </div>
 
-                      <div className="flex-1 hidden md:block">
-                        <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                          {day.status === 'working' && <div className="h-full w-full bg-blue-500/30" />}
+                      <div className="hidden flex-1 md:block">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-100">
+                          {day.status === 'working' ? <div className="h-full w-full bg-blue-500/30" /> : null}
                         </div>
                       </div>
                     </div>
 
-                    {/* Status & Action */}
-                    <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-none border-gray-100 pt-4 md:pt-0">
+                    <div className="flex items-center justify-between gap-6 border-t border-gray-100 pt-4 md:justify-end md:border-none md:pt-0">
                       <Badge intent={styles.intent}>{styles.badgeLabel}</Badge>
-                      <Button variant="ghost" size="sm" unstableClassName="rounded-lg">
-                        <Typography variant="small" intent="primary" unstableClassName="font-bold">詳細</Typography>
-                      </Button>
+                      <Typography variant="small" intent="muted">
+                        {day.isHoliday ? '予定外の勤務はありません' : '勤務予定を表示'}
+                      </Typography>
                     </div>
                   </div>
                 </CardContent>

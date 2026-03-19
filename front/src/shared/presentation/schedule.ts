@@ -1,8 +1,4 @@
-import {
-  DAY_SCHEDULE_STATUS,
-  type DaySchedule,
-  type DayScheduleStatus,
-} from '@/domain/schedule/types';
+import type { DaySchedule, DayScheduleStatus } from '@/domain/schedule/types';
 import { EMPTY_TIME_RANGE_TEXT } from '@/shared/presentation/format';
 
 type ScheduleBadgeIntent = 'default' | 'danger' | 'outline' | 'warning';
@@ -16,9 +12,6 @@ interface ScheduleStatusView {
   shiftFallback: string;
 }
 
-const DEFAULT_WORK_SHIFT_LABEL = '通常勤務';
-const DEFAULT_WORK_TIME_RANGE = '09:00 - 18:00';
-
 const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
   working: {
     border: 'border-l-4 border-blue-500',
@@ -26,20 +19,20 @@ const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
     text: 'text-gray-900',
     intent: 'default',
     badgeLabel: '出社',
-    shiftFallback: '休み',
+    shiftFallback: '通常勤務',
   },
   holiday: {
     border: 'border-l-4 border-red-500',
     bg: 'bg-red-50/30',
     text: 'text-red-700',
     intent: 'danger',
-    badgeLabel: '休暇',
-    shiftFallback: '休み',
+    badgeLabel: '祝日',
+    shiftFallback: '祝日',
   },
   off: {
     border: 'border-l-4 border-gray-300',
     bg: 'bg-gray-50/50',
-    text: 'text-gray-400',
+    text: 'text-gray-500',
     intent: 'outline',
     badgeLabel: '公休',
     shiftFallback: '公休日',
@@ -50,28 +43,8 @@ const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
     text: 'text-amber-700',
     intent: 'warning',
     badgeLabel: '休暇',
-    shiftFallback: '休み',
+    shiftFallback: '有給休暇',
   },
-};
-
-export const toScheduleRows = (dates: string[], today = new Date()): DaySchedule[] => {
-  const todayText = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
-    today.getDate(),
-  ).padStart(2, '0')}`;
-
-  return dates.map((isoDate) => {
-    const date = new Date(`${isoDate}T00:00:00`);
-    const dayOfWeek = date.getDay();
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-
-    return {
-      date: `${date.getMonth() + 1}/${date.getDate()}`,
-      status: isWeekend ? DAY_SCHEDULE_STATUS.Off : DAY_SCHEDULE_STATUS.Working,
-      shift: isWeekend ? undefined : DEFAULT_WORK_SHIFT_LABEL,
-      timeRange: isWeekend ? undefined : DEFAULT_WORK_TIME_RANGE,
-      isToday: isoDate === todayText,
-    };
-  });
 };
 
 export const getScheduleStatusView = (status: DayScheduleStatus): ScheduleStatusView => {

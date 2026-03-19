@@ -947,11 +947,130 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "string",
-                    "format": "date",
-                    "example": "2026-03-15"
+                  "type": "object",
+                  "required": [
+                    "year",
+                    "month",
+                    "summary",
+                    "days"
+                  ],
+                  "properties": {
+                    "year": {
+                      "type": "integer",
+                      "minimum": 2000,
+                      "maximum": 2100
+                    },
+                    "month": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 12
+                    },
+                    "summary": {
+                      "type": "object",
+                      "required": [
+                        "totalWorkHours",
+                        "targetHours",
+                        "scheduledWorkDays",
+                        "overtimeHours",
+                        "paidLeaveDays",
+                        "remainingPaidLeaveDays"
+                      ],
+                      "properties": {
+                        "totalWorkHours": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 154.5
+                        },
+                        "targetHours": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 160
+                        },
+                        "scheduledWorkDays": {
+                          "type": "integer",
+                          "example": 20
+                        },
+                        "overtimeHours": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 12
+                        },
+                        "paidLeaveDays": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 2
+                        },
+                        "remainingPaidLeaveDays": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 12.5
+                        }
+                      }
+                    },
+                    "days": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "date",
+                          "label",
+                          "dayOfWeek",
+                          "status",
+                          "isToday",
+                          "isHoliday"
+                        ],
+                        "properties": {
+                          "date": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-03-19"
+                          },
+                          "label": {
+                            "type": "string",
+                            "example": "3/19"
+                          },
+                          "dayOfWeek": {
+                            "type": "string",
+                            "example": "木"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "working",
+                              "off",
+                              "holiday",
+                              "pending"
+                            ]
+                          },
+                          "shift": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "通常勤務"
+                          },
+                          "timeRange": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "09:00 - 18:00"
+                          },
+                          "location": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "Office-A"
+                          },
+                          "note": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "春分の日"
+                          },
+                          "isToday": {
+                            "type": "boolean"
+                          },
+                          "isHoliday": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -1137,21 +1256,103 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "profile",
+                    "notifications",
+                    "security",
                     "theme",
                     "language"
                   ],
                   "properties": {
+                    "profile": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "email",
+                        "department",
+                        "role",
+                        "employeeCode"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "田中 太郎"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "example": "t.tanaka@example.com"
+                        },
+                        "department": {
+                          "type": "string",
+                          "example": "営業部"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "正社員"
+                        },
+                        "employeeCode": {
+                          "type": "string",
+                          "example": "EMP-2024001"
+                        }
+                      }
+                    },
+                    "notifications": {
+                      "type": "object",
+                      "required": [
+                        "clockInReminder",
+                        "approvalNotification",
+                        "leaveReminder"
+                      ],
+                      "properties": {
+                        "clockInReminder": {
+                          "type": "boolean"
+                        },
+                        "approvalNotification": {
+                          "type": "boolean"
+                        },
+                        "leaveReminder": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "security": {
+                      "type": "object",
+                      "required": [
+                        "twoFactorEnabled",
+                        "emailVerified"
+                      ],
+                      "properties": {
+                        "twoFactorEnabled": {
+                          "type": "boolean"
+                        },
+                        "emailVerified": {
+                          "type": "boolean"
+                        },
+                        "lastLoginAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "passwordLastChangedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        }
+                      }
+                    },
                     "theme": {
                       "type": "string",
                       "enum": [
                         "light",
-                        "dark",
-                        "system"
+                        "dark"
                       ]
                     },
                     "language": {
                       "type": "string",
-                      "example": "日本語"
+                      "enum": [
+                        "ja",
+                        "en"
+                      ]
                     }
                   }
                 }
@@ -1205,22 +1406,63 @@
               "schema": {
                 "type": "object",
                 "required": [
+                  "profile",
+                  "notifications",
                   "theme",
                   "language"
                 ],
                 "properties": {
+                  "profile": {
+                    "type": "object",
+                    "required": [
+                      "name",
+                      "email"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                      }
+                    }
+                  },
+                  "notifications": {
+                    "type": "object",
+                    "required": [
+                      "clockInReminder",
+                      "approvalNotification",
+                      "leaveReminder"
+                    ],
+                    "properties": {
+                      "clockInReminder": {
+                        "type": "boolean"
+                      },
+                      "approvalNotification": {
+                        "type": "boolean"
+                      },
+                      "leaveReminder": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
                   "theme": {
                     "type": "string",
                     "enum": [
                       "light",
-                      "dark",
-                      "system"
+                      "dark"
                     ]
                   },
                   "language": {
                     "type": "string",
-                    "minLength": 1,
-                    "maxLength": 32
+                    "enum": [
+                      "ja",
+                      "en"
+                    ]
                   }
                 }
               }
@@ -1235,21 +1477,103 @@
                 "schema": {
                   "type": "object",
                   "required": [
+                    "profile",
+                    "notifications",
+                    "security",
                     "theme",
                     "language"
                   ],
                   "properties": {
+                    "profile": {
+                      "type": "object",
+                      "required": [
+                        "name",
+                        "email",
+                        "department",
+                        "role",
+                        "employeeCode"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "田中 太郎"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "example": "t.tanaka@example.com"
+                        },
+                        "department": {
+                          "type": "string",
+                          "example": "営業部"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "正社員"
+                        },
+                        "employeeCode": {
+                          "type": "string",
+                          "example": "EMP-2024001"
+                        }
+                      }
+                    },
+                    "notifications": {
+                      "type": "object",
+                      "required": [
+                        "clockInReminder",
+                        "approvalNotification",
+                        "leaveReminder"
+                      ],
+                      "properties": {
+                        "clockInReminder": {
+                          "type": "boolean"
+                        },
+                        "approvalNotification": {
+                          "type": "boolean"
+                        },
+                        "leaveReminder": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "security": {
+                      "type": "object",
+                      "required": [
+                        "twoFactorEnabled",
+                        "emailVerified"
+                      ],
+                      "properties": {
+                        "twoFactorEnabled": {
+                          "type": "boolean"
+                        },
+                        "emailVerified": {
+                          "type": "boolean"
+                        },
+                        "lastLoginAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "passwordLastChangedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        }
+                      }
+                    },
                     "theme": {
                       "type": "string",
                       "enum": [
                         "light",
-                        "dark",
-                        "system"
+                        "dark"
                       ]
                     },
                     "language": {
                       "type": "string",
-                      "example": "日本語"
+                      "enum": [
+                        "ja",
+                        "en"
+                      ]
                     }
                   }
                 }
@@ -1765,12 +2089,234 @@
           }
         }
       },
+      "CalendarSummary": {
+        "type": "object",
+        "required": [
+          "totalWorkHours",
+          "targetHours",
+          "scheduledWorkDays",
+          "overtimeHours",
+          "paidLeaveDays",
+          "remainingPaidLeaveDays"
+        ],
+        "properties": {
+          "totalWorkHours": {
+            "type": "number",
+            "format": "float",
+            "example": 154.5
+          },
+          "targetHours": {
+            "type": "number",
+            "format": "float",
+            "example": 160
+          },
+          "scheduledWorkDays": {
+            "type": "integer",
+            "example": 20
+          },
+          "overtimeHours": {
+            "type": "number",
+            "format": "float",
+            "example": 12
+          },
+          "paidLeaveDays": {
+            "type": "number",
+            "format": "float",
+            "example": 2
+          },
+          "remainingPaidLeaveDays": {
+            "type": "number",
+            "format": "float",
+            "example": 12.5
+          }
+        }
+      },
+      "CalendarDay": {
+        "type": "object",
+        "required": [
+          "date",
+          "label",
+          "dayOfWeek",
+          "status",
+          "isToday",
+          "isHoliday"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03-19"
+          },
+          "label": {
+            "type": "string",
+            "example": "3/19"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "example": "木"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "working",
+              "off",
+              "holiday",
+              "pending"
+            ]
+          },
+          "shift": {
+            "type": "string",
+            "nullable": true,
+            "example": "通常勤務"
+          },
+          "timeRange": {
+            "type": "string",
+            "nullable": true,
+            "example": "09:00 - 18:00"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "example": "Office-A"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "example": "春分の日"
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "isHoliday": {
+            "type": "boolean"
+          }
+        }
+      },
       "CalendarResponse": {
-        "type": "array",
-        "items": {
-          "type": "string",
-          "format": "date",
-          "example": "2026-03-15"
+        "type": "object",
+        "required": [
+          "year",
+          "month",
+          "summary",
+          "days"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2100
+          },
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "summary": {
+            "type": "object",
+            "required": [
+              "totalWorkHours",
+              "targetHours",
+              "scheduledWorkDays",
+              "overtimeHours",
+              "paidLeaveDays",
+              "remainingPaidLeaveDays"
+            ],
+            "properties": {
+              "totalWorkHours": {
+                "type": "number",
+                "format": "float",
+                "example": 154.5
+              },
+              "targetHours": {
+                "type": "number",
+                "format": "float",
+                "example": 160
+              },
+              "scheduledWorkDays": {
+                "type": "integer",
+                "example": 20
+              },
+              "overtimeHours": {
+                "type": "number",
+                "format": "float",
+                "example": 12
+              },
+              "paidLeaveDays": {
+                "type": "number",
+                "format": "float",
+                "example": 2
+              },
+              "remainingPaidLeaveDays": {
+                "type": "number",
+                "format": "float",
+                "example": 12.5
+              }
+            }
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "date",
+                "label",
+                "dayOfWeek",
+                "status",
+                "isToday",
+                "isHoliday"
+              ],
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2026-03-19"
+                },
+                "label": {
+                  "type": "string",
+                  "example": "3/19"
+                },
+                "dayOfWeek": {
+                  "type": "string",
+                  "example": "木"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "working",
+                    "off",
+                    "holiday",
+                    "pending"
+                  ]
+                },
+                "shift": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "通常勤務"
+                },
+                "timeRange": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "09:00 - 18:00"
+                },
+                "location": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "Office-A"
+                },
+                "note": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "春分の日"
+                },
+                "isToday": {
+                  "type": "boolean"
+                },
+                "isHoliday": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
         }
       },
       "TeamMember": {
@@ -1875,43 +2421,166 @@
       "SettingsResponse": {
         "type": "object",
         "required": [
+          "profile",
+          "notifications",
+          "security",
           "theme",
           "language"
         ],
         "properties": {
+          "profile": {
+            "type": "object",
+            "required": [
+              "name",
+              "email",
+              "department",
+              "role",
+              "employeeCode"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "田中 太郎"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "example": "t.tanaka@example.com"
+              },
+              "department": {
+                "type": "string",
+                "example": "営業部"
+              },
+              "role": {
+                "type": "string",
+                "example": "正社員"
+              },
+              "employeeCode": {
+                "type": "string",
+                "example": "EMP-2024001"
+              }
+            }
+          },
+          "notifications": {
+            "type": "object",
+            "required": [
+              "clockInReminder",
+              "approvalNotification",
+              "leaveReminder"
+            ],
+            "properties": {
+              "clockInReminder": {
+                "type": "boolean"
+              },
+              "approvalNotification": {
+                "type": "boolean"
+              },
+              "leaveReminder": {
+                "type": "boolean"
+              }
+            }
+          },
+          "security": {
+            "type": "object",
+            "required": [
+              "twoFactorEnabled",
+              "emailVerified"
+            ],
+            "properties": {
+              "twoFactorEnabled": {
+                "type": "boolean"
+              },
+              "emailVerified": {
+                "type": "boolean"
+              },
+              "lastLoginAt": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "passwordLastChangedAt": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              }
+            }
+          },
           "theme": {
             "type": "string",
             "enum": [
               "light",
-              "dark",
-              "system"
+              "dark"
             ]
           },
           "language": {
             "type": "string",
-            "example": "日本語"
+            "enum": [
+              "ja",
+              "en"
+            ]
           }
         }
       },
       "UpdateSettingsRequest": {
         "type": "object",
         "required": [
+          "profile",
+          "notifications",
           "theme",
           "language"
         ],
         "properties": {
+          "profile": {
+            "type": "object",
+            "required": [
+              "name",
+              "email"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 255
+              }
+            }
+          },
+          "notifications": {
+            "type": "object",
+            "required": [
+              "clockInReminder",
+              "approvalNotification",
+              "leaveReminder"
+            ],
+            "properties": {
+              "clockInReminder": {
+                "type": "boolean"
+              },
+              "approvalNotification": {
+                "type": "boolean"
+              },
+              "leaveReminder": {
+                "type": "boolean"
+              }
+            }
+          },
           "theme": {
             "type": "string",
             "enum": [
               "light",
-              "dark",
-              "system"
+              "dark"
             ]
           },
           "language": {
             "type": "string",
-            "minLength": 1,
-            "maxLength": 32
+            "enum": [
+              "ja",
+              "en"
+            ]
           }
         }
       }

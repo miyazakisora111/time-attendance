@@ -29,9 +29,13 @@ export interface DashboardRecentRecord {
 /** 月別統計 */
 export interface DashboardStats {
   totalHours: number;
+  targetHours: number;
   workDays: number;
+  remainingDays: number;
   avgHours: number;
+  avgHoursDiff: number;
   overtimeHours: number;
+  overtimeDiff: number;
 }
 
 /** ダッシュボードの統合データ */

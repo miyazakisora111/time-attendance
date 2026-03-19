@@ -13,5 +13,4 @@ export type SettingsResponseTheme =
 export const SettingsResponseTheme = {
   light: "light",
   dark: "dark",
-  system: "system",
 } as const;

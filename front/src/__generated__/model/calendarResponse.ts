@@ -5,5 +5,20 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
+import type { CalendarDay } from "./calendarDay";
+import type { CalendarSummary } from "./calendarSummary";
 
-export type CalendarResponse = string[];
+export interface CalendarResponse {
+  days: CalendarDay[];
+  /**
+   * @minimum 1
+   * @maximum 12
+   */
+  month: number;
+  summary: CalendarSummary;
+  /**
+   * @minimum 2000
+   * @maximum 2100
+   */
+  year: number;
+}

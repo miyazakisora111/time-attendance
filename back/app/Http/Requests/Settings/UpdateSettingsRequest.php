@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Settings;
 
 use App\Http\Requests\BaseRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * 設定更新リクエスト。
@@ -18,9 +19,23 @@ final class UpdateSettingsRequest extends BaseRequest
      */
     public function rules(): array
     {
+        $userId = auth()->id();
+
         return [
-            'theme' => ['required', 'string', 'in:light,dark,system'],
-            'language' => ['required', 'string', 'max:32'],
+            'profile' => ['required', 'array'],
+            'profile.name' => ['required', 'string', 'max:120'],
+            'profile.email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($userId),
+            ],
+            'notifications' => ['required', 'array'],
+            'notifications.clockInReminder' => ['required', 'boolean'],
+            'notifications.approvalNotification' => ['required', 'boolean'],
+            'notifications.leaveReminder' => ['required', 'boolean'],
+            'theme' => ['required', 'string', 'in:light,dark'],
+            'language' => ['required', 'string', 'in:ja,en'],
         ];
     }
 }

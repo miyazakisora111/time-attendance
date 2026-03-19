@@ -1,9 +1,10 @@
-import type { SettingsSection } from '@/domain/settings/types';
+import type { AppSettingsNotifications, Language, SettingsSection, Theme } from '@/domain/settings/types';
 
-export type SettingsThemeMode = 'light' | 'dark' | 'system';
-export type SettingsNotificationKey = 'clock_missing' | 'approval' | 'leave_reminder';
+export type SettingsThemeMode = Theme;
+export type SettingsLanguageCode = Language;
+export type SettingsNotificationKey = keyof AppSettingsNotifications;
 
-export const DEFAULT_SETTINGS_LANGUAGE = '日本語';
+export const DEFAULT_SETTINGS_LANGUAGE: SettingsLanguageCode = 'ja';
 
 export const settingsSections: ReadonlyArray<{
   id: SettingsSection;
@@ -21,15 +22,12 @@ export const settingsThemeOptions: ReadonlyArray<{
 }> = [
   { id: 'light', label: 'ライト' },
   { id: 'dark', label: 'ダーク' },
-  { id: 'system', label: 'システム' },
 ];
 
-export const settingsLanguageOptions = [
-  DEFAULT_SETTINGS_LANGUAGE,
-  'English',
-  '简体中文',
-  '繁體中文',
-] as const;
+export const settingsLanguageOptions: ReadonlyArray<{ value: SettingsLanguageCode; label: string }> = [
+  { value: 'ja', label: '日本語' },
+  { value: 'en', label: 'English' },
+];
 
 export const settingsNotificationItems: ReadonlyArray<{
   id: SettingsNotificationKey;
@@ -37,17 +35,17 @@ export const settingsNotificationItems: ReadonlyArray<{
   description: string;
 }> = [
   {
-    id: 'clock_missing',
+    id: 'clockInReminder',
     title: '打刻忘れ通知',
     description: '定時を過ぎても打刻がない場合に通知します',
   },
   {
-    id: 'approval',
+    id: 'approvalNotification',
     title: '申請承認通知',
     description: '申請が承認または却下された場合に通知します',
   },
   {
-    id: 'leave_reminder',
+    id: 'leaveReminder',
     title: '休暇リマインド',
     description: '取得予定の休暇の1日前に通知します',
   },
