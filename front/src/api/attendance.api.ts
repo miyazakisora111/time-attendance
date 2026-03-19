@@ -4,7 +4,7 @@ import type {
     AttendanceClockInRequest,
     AttendanceClockOutRequest,
 } from '@/__generated__/model';
-import { call } from '@/shared/http/result';
+import { call } from '@/lib/http/result';
 
 const client = getAttendance();
 

@@ -1,6 +1,6 @@
 import { getSchedule } from '@/__generated__/schedule/schedule';
 import type { CalendarResponse } from '@/__generated__/model';
-import { call } from '@/shared/http/result';
+import { call } from '@/lib/http/result';
 
 const client = getSchedule();
 

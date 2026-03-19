@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { makeScopedKeys } from '@/shared/react-query/keys';
+import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchTeamMembers } from '@/features/team/api/teamApi';
 import type { TeamMember } from '@/domain/team/types';
 import { QUERY_CONFIG } from '@/config/api';

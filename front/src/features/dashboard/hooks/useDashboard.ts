@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { makeScopedKeys } from '@/shared/react-query/keys';
+import { makeScopedKeys } from '@/lib/query/keys';
 import { clockIn, clockOut } from '@/api/attendance.api';
 import { fetchDashboard } from '@/api/dashboard.api';
 import type { DashboardResponse } from '@/__generated__/model';

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { makeScopedKeys } from '@/shared/react-query/keys';
+import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchTodayAttendance, clockIn, clockOut } from '@/api/attendance.api';
 import { API_CONFIG } from '@/config/api';
 import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceView';

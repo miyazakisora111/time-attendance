@@ -11,7 +11,7 @@ import type {
   LogoutApi200,
   UserResponse,
 } from ".././model";
-import { customInstance } from "../../shared/http/client";
+import { customInstance } from "../../lib/http/client";
 
 export const getAuth = () => {
   /**

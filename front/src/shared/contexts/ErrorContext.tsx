@@ -5,7 +5,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { setApiErrorHandler } from '@/shared/http/client';
+import { setApiErrorHandler } from '@/lib/http/client';
 import {
   ErrorContext,
   initialState,

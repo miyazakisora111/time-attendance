@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
-import { makeScopedKeys } from '@/shared/react-query/keys';
+import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchSettings, updateSettings } from '@/features/settings/api/settingsApi';
 import { UpdateSettingsRequestTheme, type UpdateSettingsRequest } from '@/__generated__/model';
 import type { AppSettings, SettingsSection } from '@/domain/settings/types';

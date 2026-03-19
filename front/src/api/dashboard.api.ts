@@ -1,6 +1,6 @@
 import { getDashboard } from '@/__generated__/dashboard/dashboard';
 import type { DashboardResponse } from '@/__generated__/model';
-import { call } from '@/shared/http/result';
+import { call } from '@/lib/http/result';
 
 const client = getDashboard();
 

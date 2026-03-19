@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { makeScopedKeys } from '@/shared/react-query/keys';
+import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchAuthMe, login, logout } from '@/api/auth.api';
 import { useAuthStore } from '@/features/auth/hook/useAuthStore';
-import { getAuthToken, setAuthToken, clearAuthToken } from '@/shared/http/client';
+import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 import { QUERY_CONFIG } from '@/config/api';
 import { toAuthUser } from '@/features/auth/adapters/toAuthUser';

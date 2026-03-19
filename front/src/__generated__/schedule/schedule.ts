@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CalendarResponse, GetCalendarApiParams } from ".././model";
-import { customInstance } from "../../shared/http/client";
+import { customInstance } from "../../lib/http/client";
 
 export const getSchedule = () => {
   /**

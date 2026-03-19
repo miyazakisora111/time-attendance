@@ -3,7 +3,7 @@ import type { LoginResponse } from '@/__generated__/model/loginResponse';
 import type { UserResponse } from '@/__generated__/model/userResponse';
 import type { LogoutApi200 } from '@/__generated__/model/logoutApi200';
 import type { LoginRequest } from '@/__generated__/model';
-import { call } from '@/shared/http/result';
+import { call } from '@/lib/http/result';
 
 const client = getAuth();
 
