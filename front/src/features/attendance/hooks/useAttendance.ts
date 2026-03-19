@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { type AttendanceStatus } from '@/domain/attendance/attendance';
-import { useCurrentTime } from '@/shared/hooks/attendance/useCurrentTime';
+import { useCurrentTime } from '@/shared/hooks/useCurrentTime';
 import { useAttendanceClock } from '@/features/attendance/hooks/useAttendanceClock';
 import { clockActionLabelMap } from '@/shared/presentation/attendance';
 import { type LastAction } from '@/features/attendance/ui/types';

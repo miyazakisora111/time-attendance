@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
 import { DataStateWrapper } from "@/shared/components/DataStateWrapper";
-import { StatItemCard } from "@/features/dashboard/ui/stats/StatItemCard";
+import { StatItemCard } from "@/features/dashboard/ui/StatItemCard";
 import {
   buildDashboardMonthlyStatsView,
   type DashboardMonthlyStatKey,

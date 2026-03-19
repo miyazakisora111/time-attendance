@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import type { ClockStatus } from '@/domain/attendance/attendance';
-import { Card, CardContent, Container, Typography, IconWrapper, Clock as ClockComponent } from '@/shared/components';
+import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { DataStateWrapper } from '@/shared/components/DataStateWrapper';
 import {
@@ -64,7 +64,7 @@ export function AttendancePage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <ClockComponent title={undefined} className="mb-6 md:rounded-lg" />
+                <Clock title={undefined} size="md" />
               </motion.div>
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
                 <span className="flex items-center gap-1.5">
