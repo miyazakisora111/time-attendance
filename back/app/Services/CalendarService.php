@@ -16,7 +16,10 @@ use Illuminate\Support\Collection;
 /**
  * カレンダーのサービスクラス
  */
-class CalendarService extends BaseService
+/**
+ * カレンダーのサービスクラス
+ */
+final class CalendarService extends BaseService
 {
     private const DEFAULT_SHIFT = '通常勤務';
     private const DEFAULT_TIME_RANGE = '09:00 - 18:00';
@@ -24,15 +27,15 @@ class CalendarService extends BaseService
 
     /**
      * 指定された年月のカレンダー情報を取得する。
-     * 
+     *
+     * @param User $user 対象ユーザー
      * @param int $year 対象年
      * @param int $month 対象月
      *
      * @return array<string, mixed>
      */
-    public function getCalendar(int $year, int $month): array
+    public function getCalendar(User $user, int $year, int $month): array
     {
-        $user = $this->resolveUser();
         $start = Carbon::create($year, $month, 1)->startOfMonth();
         $end = $start->copy()->endOfMonth();
         $today = today()->toDateString();
@@ -41,12 +44,12 @@ class CalendarService extends BaseService
             ->user($user->id)
             ->month($year, $month)
             ->get()
-            ->keyBy(fn (Attendance $attendance): string => $attendance->work_date?->toDateString() ?? '');
+            ->keyBy(fn(Attendance $attendance): string => $attendance->work_date?->toDateString() ?? '');
 
         $holidays = Holiday::query()
             ->month($year, $month)
             ->get()
-            ->keyBy(fn (Holiday $holiday): string => $holiday->holiday_date?->toDateString() ?? '');
+            ->keyBy(fn(Holiday $holiday): string => $holiday->holiday_date?->toDateString() ?? '');
 
         $paidLeaves = PaidLeaveRequest::query()
             ->user($user->id)
@@ -54,7 +57,7 @@ class CalendarService extends BaseService
             ->whereYear('leave_date', $year)
             ->whereMonth('leave_date', $month)
             ->get()
-            ->keyBy(fn (PaidLeaveRequest $request): string => $request->leave_date?->toDateString() ?? '');
+            ->keyBy(fn(PaidLeaveRequest $request): string => $request->leave_date?->toDateString() ?? '');
 
         $days = [];
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
@@ -90,23 +93,6 @@ class CalendarService extends BaseService
             'summary' => $this->buildSummary($user, $year, $month, collect($days), $attendances, $paidLeaves),
             'days' => $days,
         ];
-    }
-
-    /**
-     * 認証ユーザーを解決する。
-     */
-    private function resolveUser(): User
-    {
-        /** @var User|null $authUser */
-        $authUser = auth()->user();
-        if ($authUser instanceof User) {
-            return $authUser;
-        }
-
-        /** @var User $fallback */
-        $fallback = User::query()->active()->ordered()->firstOrFail();
-
-        return $fallback;
     }
 
     /**
@@ -173,9 +159,9 @@ class CalendarService extends BaseService
         Collection $attendances,
         Collection $paidLeaves,
     ): array {
-        $scheduledWorkDays = $days->filter(fn (array $day): bool => $day['status'] === 'working')->count();
+        $scheduledWorkDays = $days->filter(fn(array $day): bool => $day['status'] === 'working')->count();
         $totalWorkHours = round((float) $attendances
-            ->map(fn (Attendance $attendance): float => ($attendance->calculateWorkedMinutes() ?? ($attendance->worked_minutes ?? 0)) / 60)
+            ->map(fn(Attendance $attendance): float => ($attendance->calculateWorkedMinutes() ?? ($attendance->worked_minutes ?? 0)) / 60)
             ->sum(), 1);
 
         $overtimeHours = round((float) OvertimeRequest::query()
@@ -184,7 +170,7 @@ class CalendarService extends BaseService
             ->whereYear('work_date', $year)
             ->whereMonth('work_date', $month)
             ->get()
-            ->sum(fn (OvertimeRequest $request): float => $request->getDurationHours()), 1);
+            ->sum(fn(OvertimeRequest $request): float => $request->getDurationHours()), 1);
 
         $paidLeaveDays = round((float) $paidLeaves->sum('days'), 1);
         $grantedDays = round((float) PaidLeaveGrant::query()

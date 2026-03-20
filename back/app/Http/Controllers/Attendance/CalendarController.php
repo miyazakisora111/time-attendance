@@ -13,11 +13,11 @@ use Illuminate\Http\JsonResponse;
 /**
  * カレンダーのコントローラー
  */
-class CalendarController extends BaseController
+final class CalendarController extends BaseController
 {
     /**
      * コンストラクタ
-     * 
+     *
      * @param CalendarService $service カレンダーのサービス
      */
     public function __construct(
@@ -33,8 +33,9 @@ class CalendarController extends BaseController
     public function index(CalendarIndexRequest $request): JsonResponse
     {
         $result = $this->service->getCalendar(
-            year: $request->input('year'),
-            month: $request->input('month'),
+            user: $this->resolveUser(),
+            year: (int) $request->input('year'),
+            month: (int) $request->input('month'),
         );
 
         return ApiResponse::success($result);

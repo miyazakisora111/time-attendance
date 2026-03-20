@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Exceptions\DomainException;
@@ -9,7 +11,10 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-class AttendanceService extends BaseService
+/**
+ * 勤怠サービス
+ */
+final class AttendanceService extends BaseService
 {
     private const DEFAULT_TIMEZONE = 'Asia/Tokyo';
 
@@ -104,7 +109,7 @@ class AttendanceService extends BaseService
             ->orderBy('clock_in_at')
             ->get();
 
-        return $records->map(fn (Attendance $attendance): array => $attendance->toLocalTimePayload())
+        return $records->map(fn(Attendance $attendance): array => $attendance->toLocalTimePayload())
             ->values()
             ->all();
     }

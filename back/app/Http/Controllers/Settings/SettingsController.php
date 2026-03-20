@@ -24,20 +24,30 @@ final class SettingsController extends BaseController
 
     /**
      * ログインユーザー設定を返す。
+     *
+     * @return JsonResponse Jsonレスポンス
      */
     public function show(): JsonResponse
     {
-        $result = $this->service->getSettings();
+        $result = $this->service->getSettings(
+            user: $this->resolveUser(),
+        );
 
         return ApiResponse::success($result);
     }
 
     /**
      * ログインユーザー設定を更新する。
+     *
+     * @param UpdateSettingsRequest $request 設定更新リクエスト
+     * @return JsonResponse Jsonレスポンス
      */
     public function update(UpdateSettingsRequest $request): JsonResponse
     {
-        $result = $this->service->updateSettings($request->validated());
+        $result = $this->service->updateSettings(
+            user: $this->resolveUser(),
+            input: $request->validated(),
+        );
 
         return ApiResponse::success($result);
     }

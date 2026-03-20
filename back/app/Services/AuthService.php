@@ -10,7 +10,10 @@ use App\Models\User;
 use App\ValueObjects\Email;
 use Tymon\JWTAuth\JWTGuard;
 
-class AuthService extends BaseService
+/**
+ * 認証サービス
+ */
+final class AuthService extends BaseService
 {
     /**
      * Eメールとパスワードでユーザーを認証する。
@@ -50,6 +53,11 @@ class AuthService extends BaseService
         return $this->respondWithToken($token);
     }
 
+    /**
+     * JWT トークンをリフレッシュする。
+     *
+     * @return array<string, mixed>
+     */
     public function refresh(): array
     {
         $guard = $this->guard();
@@ -63,11 +71,21 @@ class AuthService extends BaseService
         return $this->respondWithToken($token);
     }
 
+    /**
+     * ログアウトする。
+     *
+     * @return void
+     */
     public function logout(): void
     {
         $this->guard()->logout();
     }
 
+    /**
+     * 認証済みユーザーの情報を取得する。
+     *
+     * @return array<string, mixed>
+     */
     public function getUser(): array
     {
         $guard = $this->guard();
@@ -104,6 +122,11 @@ class AuthService extends BaseService
         ];
     }
 
+    /**
+     * JWT ガードを取得する。
+     *
+     * @return JWTGuard
+     */
     private function guard(): JWTGuard
     {
         /** @var JWTGuard $guard */

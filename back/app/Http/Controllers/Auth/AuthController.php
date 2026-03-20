@@ -54,9 +54,15 @@ final class AuthController extends BaseController
         return ApiResponse::success();
     }
 
-    public function refresh()
+    /**
+     * トークンをリフレッシュする。
+     *
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function refresh(): JsonResponse
     {
         $result = $this->service->refresh();
+
         return ApiResponse::success($result);
     }
 

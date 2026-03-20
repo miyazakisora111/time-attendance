@@ -5,18 +5,30 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\Dashboard\DashboardClockRequest;
 use App\Http\Responses\ApiResponse;
-use App\Models\User;
 use App\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class DashboardController extends BaseController
+/**
+ * ダッシュボードのコントローラー
+ */
+final class DashboardController extends BaseController
 {
+    /**
+     * コンストラクタ
+     *
+     * @param DashboardService $service ダッシュボードのサービス
+     */
     public function __construct(
         private readonly DashboardService $service,
     ) {}
 
+    /**
+     * ダッシュボード情報を取得する。
+     *
+     * @return JsonResponse Jsonレスポンス
+     */
     public function show(): JsonResponse
     {
         $result = $this->service->getDashboard(
@@ -26,27 +38,19 @@ class DashboardController extends BaseController
         return ApiResponse::success($result);
     }
 
-    public function clock(Request $request): JsonResponse
+    /**
+     * 打刻アクション（出勤・退勤・休憩開始・休憩終了）を実行する。
+     *
+     * @param DashboardClockRequest $request 打刻リクエスト
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function clock(DashboardClockRequest $request): JsonResponse
     {
         $result = $this->service->clock(
             user: $this->resolveUser(),
-            action: (string) $request->input('action', ''),
+            action: $request->action(),
         );
 
         return ApiResponse::success($result);
-    }
-
-    private function resolveUser(): User
-    {
-        /** @var User|null $authUser */
-        $authUser = auth()->user();
-        if ($authUser instanceof User) {
-            return $authUser;
-        }
-
-        /** @var User $fallback */
-        $fallback = User::query()->active()->ordered()->firstOrFail();
-
-        return $fallback;
     }
 }

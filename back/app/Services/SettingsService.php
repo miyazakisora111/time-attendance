@@ -17,11 +17,11 @@ final class SettingsService extends BaseService
     /**
      * ログインユーザー設定を取得する。
      *
+     * @param User $user 対象ユーザー
      * @return array<string, mixed>
      */
-    public function getSettings(): array
+    public function getSettings(User $user): array
     {
-        $user = $this->resolveUser();
         $user->loadMissing(['userSetting', 'userNotificationSetting', 'department', 'role']);
 
         $latestLogin = LoginHistory::query()
@@ -59,10 +59,16 @@ final class SettingsService extends BaseService
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
-    public function updateSettings(array $input): array
+    /**
+     * ログインユーザー設定を更新する。
+     *
+     * @param User $user 対象ユーザー
+     * @param array<string, mixed> $input バリデーション済み入力
+     * @return array<string, mixed>
+     */
+    public function updateSettings(User $user, array $input): array
     {
-        return $this->transaction(function () use ($input): array {
-            $user = $this->resolveUser();
+        return $this->transaction(function () use ($user, $input): array {
 
             $user->fill([
                 'name' => (string) data_get($input, 'profile.name', $user->name),
@@ -85,24 +91,7 @@ final class SettingsService extends BaseService
             $notificationSetting->leave_reminder = (bool) data_get($input, 'notifications.leaveReminder', true);
             $notificationSetting->save();
 
-            return $this->getSettings();
+            return $this->getSettings($user);
         });
-    }
-
-    /**
-     * 認証ユーザーを解決する。
-     */
-    private function resolveUser(): User
-    {
-        /** @var User|null $authUser */
-        $authUser = auth()->user();
-        if ($authUser instanceof User) {
-            return $authUser;
-        }
-
-        /** @var User $fallback */
-        $fallback = User::query()->active()->ordered()->firstOrFail();
-
-        return $fallback;
     }
 }

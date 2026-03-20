@@ -12,8 +12,17 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
-class DashboardService extends BaseService
+/**
+ * ダッシュボードサービス
+ */
+final class DashboardService extends BaseService
 {
+    /**
+     * ダッシュボード情報を取得する。
+     *
+     * @param User $user 対象ユーザー
+     * @return array<string, mixed>
+     */
     public function getDashboard(User $user): array
     {
         $todayAttendance = Attendance::query()
@@ -37,6 +46,15 @@ class DashboardService extends BaseService
         ];
     }
 
+    /**
+     * 打刻アクションを実行する。
+     *
+     * @param User $user 対象ユーザー
+     * @param string $action 打刻アクション（in/out/break_start/break_end）
+     * @return array<string, mixed>
+     *
+     * @throws DomainException
+     */
     public function clock(User $user, string $action): array
     {
         return $this->transaction(function () use ($user, $action): array {
@@ -137,7 +155,7 @@ class DashboardService extends BaseService
 
         $totalHours = $this->sumWorkHours($currentAttendances);
         $workDays = $currentAttendances
-            ->filter(fn (Attendance $attendance): bool => $attendance->clock_in_at !== null || $attendance->start_time !== null)
+            ->filter(fn(Attendance $attendance): bool => $attendance->clock_in_at !== null || $attendance->start_time !== null)
             ->count();
         $targetHours = $workDays * 8;
         $avgHours = $workDays > 0 ? round($totalHours / $workDays, 1) : 0.0;
@@ -244,7 +262,8 @@ class DashboardService extends BaseService
     private function sumWorkHours(Collection $attendances): float
     {
         return round((float) $attendances
-            ->map(fn (Attendance $attendance): float =>
+            ->map(
+                fn(Attendance $attendance): float =>
                 $this->calculateWorkHours($attendance->clock_in_at, $attendance->clock_out_at, $attendance->worked_minutes) ?? 0.0
             )
             ->sum(), 1);
@@ -259,7 +278,7 @@ class DashboardService extends BaseService
             ->whereMonth('work_date', $month)
             ->get();
 
-        return round((float) $overtimes->sum(fn (OvertimeRequest $overtime): float => $overtime->getDurationHours()), 1);
+        return round((float) $overtimes->sum(fn(OvertimeRequest $overtime): float => $overtime->getDurationHours()), 1);
     }
 
     private function calculateWorkHours(
