@@ -69,6 +69,16 @@ attendance:
     label: 備考
     required: false
     description: 管理用メモ
+  from:
+    type: date
+    label: 開始日
+    required: true
+    description: 検索期間の開始日
+  to:
+    type: date
+    label: 終了日
+    required: true
+    description: 検索期間の終了日
 
 attendance_break:
   id:

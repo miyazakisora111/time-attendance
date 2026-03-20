@@ -709,6 +709,424 @@
         }
       }
     },
+    "/attendances": {
+      "get": {
+        "operationId": "listAttendancesApi",
+        "tags": [
+          "Attendance"
+        ],
+        "summary": "勤怠一覧取得",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "勤怠一覧",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "user_id",
+                      "work_date",
+                      "start_time"
+                    ],
+                    "properties": {
+                      "user_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "work_date": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "start_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                      },
+                      "end_time": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "バリデーションエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "バリデーションエラー"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "サーバーエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "storeAttendanceApi",
+        "tags": [
+          "Attendance"
+        ],
+        "summary": "勤怠の新規登録",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "work_date",
+                  "start_time"
+                ],
+                "properties": {
+                  "work_date": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true
+                  },
+                  "note": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "登録成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "user_id",
+                    "work_date",
+                    "start_time"
+                  ],
+                  "properties": {
+                    "user_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "work_date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "start_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "end_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "バリデーションエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "バリデーションエラー"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "サーバーエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendances/{attendance}": {
+      "patch": {
+        "operationId": "updateAttendanceApi",
+        "tags": [
+          "Attendance"
+        ],
+        "summary": "勤怠の更新",
+        "parameters": [
+          {
+            "name": "attendance",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true
+                  },
+                  "note": {
+                    "type": "string",
+                    "nullable": true,
+                    "maxLength": 500
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "user_id",
+                    "work_date",
+                    "start_time"
+                  ],
+                  "properties": {
+                    "user_id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "work_date": {
+                      "type": "string",
+                      "format": "date"
+                    },
+                    "start_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "end_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "リソース未存在エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "バリデーションエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "バリデーションエラー"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "サーバーエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/dashboard": {
       "get": {
         "operationId": "getDashboardApi",
@@ -887,6 +1305,274 @@
                     "message": {
                       "type": "string",
                       "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "サーバーエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dashboard/clock": {
+      "post": {
+        "operationId": "dashboardClockApi",
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "打刻アクション（出勤・退勤・休憩開始・休憩終了）",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "in",
+                      "out",
+                      "break_start",
+                      "break_end"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "打刻成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "user",
+                    "clockStatus",
+                    "todayRecord",
+                    "stats",
+                    "recentRecords",
+                    "pendingOvertimeRequests"
+                  ],
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "clockStatus": {
+                      "type": "string",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "todayRecord": {
+                      "type": "object",
+                      "required": [
+                        "clockInTime",
+                        "totalWorkedHours"
+                      ],
+                      "properties": {
+                        "clockInTime": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "09:00"
+                        },
+                        "totalWorkedHours": {
+                          "type": "number",
+                          "format": "float",
+                          "nullable": true,
+                          "example": 5.5
+                        }
+                      }
+                    },
+                    "stats": {
+                      "type": "object",
+                      "required": [
+                        "totalHours",
+                        "targetHours",
+                        "workDays",
+                        "remainingDays",
+                        "avgHours",
+                        "avgHoursDiff",
+                        "overtimeHours",
+                        "overtimeDiff"
+                      ],
+                      "properties": {
+                        "totalHours": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "targetHours": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "workDays": {
+                          "type": "integer"
+                        },
+                        "remainingDays": {
+                          "type": "integer"
+                        },
+                        "avgHours": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "avgHoursDiff": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "overtimeHours": {
+                          "type": "number",
+                          "format": "float"
+                        },
+                        "overtimeDiff": {
+                          "type": "number",
+                          "format": "float"
+                        }
+                      }
+                    },
+                    "recentRecords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "date",
+                          "day",
+                          "clockIn",
+                          "clockOut",
+                          "workHours",
+                          "status"
+                        ],
+                        "properties": {
+                          "date": {
+                            "type": "string",
+                            "example": "2026/03/14"
+                          },
+                          "day": {
+                            "type": "string",
+                            "example": "土"
+                          },
+                          "clockIn": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "09:00"
+                          },
+                          "clockOut": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "18:00"
+                          },
+                          "workHours": {
+                            "type": "number",
+                            "format": "float",
+                            "nullable": true,
+                            "example": 8
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "通常",
+                              "残業",
+                              "休日"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "pendingOvertimeRequests": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "認証エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "排他エラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "エラーが発生しました"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "バリデーションエラー",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "バリデーションエラー"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
                     }
                   }
                 }
@@ -1642,121 +2328,43 @@
     }
   },
   "components": {
-    "responses": {
-      "Unauthorized": {
-        "description": "認証エラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "エラーが発生しました"
-                }
-              }
-            }
-          }
-        }
-      },
-      "ValidationError": {
-        "description": "バリデーションエラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "バリデーションエラー"
-                },
-                "errors": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "InternalServerError": {
-        "description": "サーバーエラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "エラーが発生しました"
-                }
-              }
-            }
-          }
-        }
-      },
-      "Conflict": {
-        "description": "排他エラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "エラーが発生しました"
-                }
-              }
-            }
-          }
-        }
-      },
-      "Forbidden": {
-        "description": "認可エラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "エラーが発生しました"
-                }
-              }
-            }
-          }
-        }
-      },
-      "NotFound": {
-        "description": "リソース未存在エラー",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "エラーが発生しました"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "securitySchemes": {
-      "BearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
     "schemas": {
+      "CalendarIndexRequest": {
+        "type": "object",
+        "required": [
+          "year",
+          "month"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2100
+          },
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          }
+        }
+      },
+      "AttendanceIndexRequest": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
       "LoginRequest": {
         "type": "object",
         "required": [
@@ -1936,6 +2544,53 @@
           }
         }
       },
+      "AttendanceStoreRequest": {
+        "type": "object",
+        "required": [
+          "work_date",
+          "start_time"
+        ],
+        "properties": {
+          "work_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500
+          }
+        }
+      },
+      "AttendanceUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 500
+          }
+        }
+      },
       "DashboardResponse": {
         "type": "object",
         "required": [
@@ -2086,6 +2741,23 @@
           },
           "pendingOvertimeRequests": {
             "type": "integer"
+          }
+        }
+      },
+      "DashboardClockRequest": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "in",
+              "out",
+              "break_start",
+              "break_end"
+            ]
           }
         }
       },
@@ -2583,6 +3255,120 @@
             ]
           }
         }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "認証エラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "エラーが発生しました"
+                }
+              }
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "description": "バリデーションエラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "バリデーションエラー"
+                },
+                "errors": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "サーバーエラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "エラーが発生しました"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "排他エラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "エラーが発生しました"
+                }
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "リソース未存在エラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "エラーが発生しました"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "認可エラー",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "エラーが発生しました"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }

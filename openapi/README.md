@@ -19,9 +19,9 @@ openapi/
 │   ├── responses.yaml            # 共通エラーレスポンス (401/403/404/409/422/500)
 │   └── schemas/                  # リクエスト/レスポンス型定義
 │       ├── auth/                 #   LoginRequest, LoginResponse, UserResponse
-│       ├── attendance/           #   AttendanceClockInRequest, ClockOutRequest, Response
-│       ├── dashboard/            #   DashboardResponse
-│       ├── schedule/             #   CalendarResponse, CalendarSummary, CalendarDay
+│       ├── attendance/           #   ClockIn/Out, Index, Store, Update Request, Response
+│       ├── dashboard/            #   DashboardClockRequest, DashboardResponse
+│       ├── schedule/             #   CalendarIndexRequest, CalendarResponse, CalendarSummary, CalendarDay
 │       ├── settings/             #   SettingsResponse, UpdateSettingsRequest
 │       ├── team/                 #   TeamMembersResponse, TeamMember
 │       └── common/               #   ErrorResponse, ValidationErrorResponse
@@ -173,6 +173,46 @@ LoginRequest:
       example: "t.tanaka@example.com"   # ← この値が examples/ に反映される
 ```
 
+## FormRequest 連携
+
+OpenAPI スキーマから生成された `OpenApiGeneratedRules.php` は、Laravel の FormRequest と連携してバリデーションルールを自動適用する。
+
+```mermaid
+flowchart LR
+    S[OpenAPI schemas] -->|generate-openapi-validators.mjs| R[OpenApiGeneratedRules.php<br/>SCHEMA_RULES / SCHEMA_ATTRIBUTES]
+    R -->|schema()| BR[BaseRequest::rules]
+    R -->|schemaAttributes()| BA[BaseRequest::attributes]
+    BR --> FR[FormRequest extends BaseRequest<br/>$schemaName = 'XXXRequest']
+    BA --> FR
+    FR --> C[Controller メソッド]
+
+    style S fill:#e1f5fe
+    style R fill:#fce4ec
+    style FR fill:#fff3e0
+```
+
+**FormRequest の作り方:**
+
+```php
+// back/app/Http/Requests/Attendance/AttendanceStoreRequest.php
+class AttendanceStoreRequest extends BaseRequest
+{
+    protected string $schemaName = 'AttendanceStoreRequest';
+}
+```
+
+`$schemaName` を指定するだけで、OpenAPI スキーマに基づくバリデーションルールとフィールド名が自動適用される。
+
+| FormRequest | スキーマ名 | 用途 |
+|---|---|---|
+| `LoginRequest` | `LoginRequest` | ログイン |
+| `DashboardClockRequest` | `DashboardClockRequest` | ダッシュボード打刻 |
+| `CalendarIndexRequest` | `CalendarIndexRequest` | カレンダー (year/month) |
+| `AttendanceIndexRequest` | `AttendanceIndexRequest` | 勤怠一覧 (from/to) |
+| `AttendanceStoreRequest` | `AttendanceStoreRequest` | 勤怠登録 |
+| `AttendanceUpdateRequest` | `AttendanceUpdateRequest` | 勤怠更新 |
+| `UpdateSettingsRequest` | `UpdateSettingsRequest` | 設定更新 |
+
 ## CI/CD 統合
 
 ```mermaid
@@ -210,7 +250,9 @@ flowchart TD
 1. `openapi/components/schemas/{domain}/` にリクエスト/レスポンスのスキーマ YAML を作成
 2. `openapi/paths/{domain}.yaml` にパス定義を追加（`$ref` でスキーマ参照）
 3. `openapi/openapi.yaml` の `paths:` セクションに新パスを追記
-4. `openapi/schema/fields.yaml` にフィールドメタデータを追加（必要に応じて）
-5. `openapi/examples/{domain}/` にサンプル JSON を作成
-6. `make openapi` で全コード生成を実行
-7. `make front-typecheck` で型整合性を確認
+4. クエリパラメータ用スキーマは `openapi.yaml` の `components.schemas` にも `$ref` を追記
+5. `openapi/schema/fields.yaml` にフィールドメタデータを追加（必要に応じて）
+6. `make openapi` で全コード生成を実行（OpenApiGeneratedRules.php も自動更新される）
+7. `back/app/Http/Requests/{Domain}/` に FormRequest クラスを作成し `$schemaName` を設定
+8. コントローラーメソッドに FormRequest を型ヒントで注入
+9. `make front-typecheck` で型整合性を確認

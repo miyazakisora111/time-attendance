@@ -38,11 +38,26 @@ final class OpenApiGeneratedRules
             'work_date' => ['required', 'string', 'date_format:Y-m-d'],
             'end_time' => ['sometimes', 'string', 'date_format:H:i'],
         ],
+        'AttendanceIndexRequest' => [
+            'from' => ['required', 'string', 'date_format:Y-m-d'],
+            'to' => ['required', 'string', 'date_format:Y-m-d'],
+        ],
         'AttendanceResponse' => [
             'user_id' => ['required', 'string'],
             'work_date' => ['required', 'string', 'date_format:Y-m-d'],
             'start_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
             'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+        ],
+        'AttendanceStoreRequest' => [
+            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
+            'start_time' => ['sometimes', 'string', 'date_format:H:i'],
+            'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'note' => ['sometimes', 'nullable', 'string', 'max:500'],
+        ],
+        'AttendanceUpdateRequest' => [
+            'start_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'CalendarDay' => [
             'date' => ['required', 'string', 'date_format:Y-m-d'],
@@ -55,6 +70,10 @@ final class OpenApiGeneratedRules
             'note' => ['sometimes', 'nullable', 'string'],
             'isToday' => ['required', 'boolean'],
             'isHoliday' => ['required', 'boolean'],
+        ],
+        'CalendarIndexRequest' => [
+            'year' => ['required', 'integer', 'min:2000', 'max:2100'],
+            'month' => ['required', 'integer', 'min:1', 'max:12'],
         ],
         'CalendarResponse' => [
             'year' => ['required', 'integer', 'min:2000', 'max:2100'],
@@ -86,6 +105,9 @@ final class OpenApiGeneratedRules
             'overtimeHours' => ['required', 'numeric'],
             'paidLeaveDays' => ['required', 'numeric'],
             'remainingPaidLeaveDays' => ['required', 'numeric'],
+        ],
+        'DashboardClockRequest' => [
+            'action' => ['required', 'in:in,out,break_start,break_end'],
         ],
         'DashboardResponse' => [
             'user' => ['required', 'array'],
@@ -204,11 +226,26 @@ final class OpenApiGeneratedRules
             'work_date' => '勤務日',
             'end_time' => '退勤時刻',
         ],
+        'AttendanceIndexRequest' => [
+            'from' => '開始日',
+            'to' => '終了日',
+        ],
         'AttendanceResponse' => [
             'user_id' => 'ユーザーID',
             'work_date' => '勤務日',
             'start_time' => '出勤時刻',
             'end_time' => '退勤時刻',
+        ],
+        'AttendanceStoreRequest' => [
+            'work_date' => '勤務日',
+            'start_time' => '出勤時刻',
+            'end_time' => '退勤時刻',
+            'note' => '備考',
+        ],
+        'AttendanceUpdateRequest' => [
+            'start_time' => '出勤時刻',
+            'end_time' => '退勤時刻',
+            'note' => '備考',
         ],
         'CalendarDay' => [
             'date' => '日付',
@@ -221,6 +258,10 @@ final class OpenApiGeneratedRules
             'note' => '備考',
             'isToday' => '今日フラグ',
             'isHoliday' => '休日フラグ',
+        ],
+        'CalendarIndexRequest' => [
+            'year' => '年',
+            'month' => '月',
         ],
         'CalendarResponse' => [
             'year' => '年',
@@ -252,6 +293,9 @@ final class OpenApiGeneratedRules
             'overtimeHours' => '残業時間',
             'paidLeaveDays' => '有給取得日数',
             'remainingPaidLeaveDays' => '残有給日数',
+        ],
+        'DashboardClockRequest' => [
+            'action' => '打刻アクション',
         ],
         'DashboardResponse' => [
             'user' => 'user',

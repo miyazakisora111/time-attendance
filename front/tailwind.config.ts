@@ -5,7 +5,7 @@ const config: Config = {
         "./index.html",
         "./src/**/*.{ts,tsx}",
     ],
-    darkMode: "class", // class 戦略
+    darkMode: "class",
     plugins: [],
 };
 

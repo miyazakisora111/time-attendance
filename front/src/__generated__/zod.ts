@@ -7,6 +7,14 @@
 import { z } from 'zod';
 
 export namespace components.schemas {
+  export const CalendarIndexRequest = z.object({
+    year: z.number().int(),
+    month: z.number().int(),
+  });
+  export const AttendanceIndexRequest = z.object({
+    from: z.string(),
+    to: z.string(),
+  });
   export const LoginRequest = z.object({
     email: z.string(),
     password: z.string(),
@@ -45,6 +53,17 @@ export namespace components.schemas {
     work_date: z.string(),
     end_time: z.string(),
   });
+  export const AttendanceStoreRequest = z.object({
+    work_date: z.string(),
+    start_time: z.string(),
+    end_time: z.string().nullable().optional(),
+    note: z.string().nullable().optional(),
+  });
+  export const AttendanceUpdateRequest = z.object({
+    start_time: z.string().nullable().optional(),
+    end_time: z.string().nullable().optional(),
+    note: z.string().nullable().optional(),
+  });
   export const DashboardResponse = z.object({
     user: z.object({
       id: z.string(),
@@ -74,6 +93,9 @@ export namespace components.schemas {
         status: z.enum(["通常", "残業", "休日"]),
       })),
     pendingOvertimeRequests: z.number().int(),
+  });
+  export const DashboardClockRequest = z.object({
+    action: z.enum(["in", "out", "break_start", "break_end"]),
   });
   export const CalendarSummary = z.object({
     totalWorkHours: z.number(),
@@ -174,14 +196,14 @@ export namespace components.responses {
       "application/json": components["schemas"]["ErrorResponse"],
     },
   };
-  /** @description 認可エラー */
-  export const Forbidden = {
+  /** @description リソース未存在エラー */
+  export const NotFound = {
     content: {
       "application/json": components["schemas"]["ErrorResponse"],
     },
   };
-  /** @description リソース未存在エラー */
-  export const NotFound = {
+  /** @description 認可エラー */
+  export const Forbidden = {
     content: {
       "application/json": components["schemas"]["ErrorResponse"],
     },
@@ -290,6 +312,70 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
+  listAttendancesApi: {
+    /** 勤怠一覧取得 */
+    parameters: {
+      query: z.object({
+        from: z.string(),
+        to: z.string(),
+      }),
+    },
+    responses: {
+      /** @description 勤怠一覧 */
+      200: {
+        content: {
+          "application/json": z.array(components["schemas"]["AttendanceResponse"]),
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  storeAttendanceApi: {
+    /** 勤怠の新規登録 */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttendanceStoreRequest"],
+      },
+    },
+    responses: {
+      /** @description 登録成功 */
+      201: {
+        content: {
+          "application/json": components["schemas"]["AttendanceResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  updateAttendanceApi: {
+    /** 勤怠の更新 */
+    parameters: {
+      path: z.object({
+        attendance: z.string(),
+      }),
+    },
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AttendanceUpdateRequest"],
+      },
+    },
+    responses: {
+      /** @description 更新成功 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AttendanceResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      404: components["responses"]["NotFound"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
   getDashboardApi: {
     /** ダッシュボード集計取得 */
     responses: {
@@ -300,6 +386,26 @@ export const operations = {
         },
       },
       401: components["responses"]["Unauthorized"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  dashboardClockApi: {
+    /** 打刻アクション（出勤・退勤・休憩開始・休憩終了） */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DashboardClockRequest"],
+      },
+    },
+    responses: {
+      /** @description 打刻成功 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DashboardResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      409: components["responses"]["Conflict"],
+      422: components["responses"]["ValidationError"],
       500: components["responses"]["InternalServerError"],
     },
   },
@@ -395,9 +501,23 @@ export const paths = {
     /** 退勤打刻 */
     post: operations["clockOutApi"],
   },
+  "/attendances": {
+    /** 勤怠一覧取得 */
+    get: operations["listAttendancesApi"],
+    /** 勤怠の新規登録 */
+    post: operations["storeAttendanceApi"],
+  },
+  "/attendances/{attendance}": {
+    /** 勤怠の更新 */
+    patch: operations["updateAttendanceApi"],
+  },
   "/dashboard": {
     /** ダッシュボード集計取得 */
     get: operations["getDashboardApi"],
+  },
+  "/dashboard/clock": {
+    /** 打刻アクション（出勤・退勤・休憩開始・休憩終了） */
+    post: operations["dashboardClockApi"],
   },
   "/auth/calendar": {
     /** 月次カレンダー取得 */

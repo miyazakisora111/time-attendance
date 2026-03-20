@@ -1,0 +1,20 @@
+AttendanceStoreRequest:
+  type: object
+  required:
+    - work_date
+    - start_time
+  properties:
+    work_date:
+      type: string
+      format: date
+    start_time:
+      type: string
+      format: date-time
+    end_time:
+      type: string
+      format: date-time
+      nullable: true
+    note:
+      type: string
+      nullable: true
+      maxLength: 500

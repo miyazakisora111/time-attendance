@@ -22,15 +22,7 @@ class CalendarIndexRequest extends BaseRequest
     ];
 
     /**
-     * バリデーションルールを定義する。
-     *
-     * @return array<string, array<int, string>> バリデーションルール
+     * {@inheritdoc}
      */
-    public function rules(): array
-    {
-        return [
-            'year'  => ['required', 'integer', 'min:2000', 'max:2100'],
-            'month' => ['required', 'integer', 'min:1', 'max:12'],
-        ];
-    }
+    protected string $schemaName = 'CalendarIndexRequest';
 }

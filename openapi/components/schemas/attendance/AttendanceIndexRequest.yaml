@@ -1,0 +1,12 @@
+AttendanceIndexRequest:
+  type: object
+  required:
+    - from
+    - to
+  properties:
+    from:
+      type: string
+      format: date
+    to:
+      type: string
+      format: date

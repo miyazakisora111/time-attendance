@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseRequest;
-use App\Http\Requests\Generated\OpenApiGeneratedRules;
-use App\ValueObjects\Email;
 
 /**
  * ログインのリクエストクラス
@@ -14,32 +12,9 @@ use App\ValueObjects\Email;
 class LoginRequest extends BaseRequest
 {
     /**
-     * バリデーションルールを定義する。
+     * OpenAPI スキーマ名
      *
-     * @return array<string, array<int, string>> バリデーションルール
+     * @var string
      */
-    public function rules(): array
-    {
-        return OpenApiGeneratedRules::schema('LoginRequest');
-    }
-
-    /**
-     * バリデーション属性名を返す。
-     *
-     * @return array<string, string>
-     */
-    public function attributes(): array
-    {
-        return OpenApiGeneratedRules::schemaAttributes('LoginRequest');
-    }
-
-    public function email(): Email
-    {
-        return new Email($this->validated('email'));
-    }
-
-    public function password(): string
-    {
-        return (string) $this->validated('password');
-    }
+    protected string $schemaName = 'LoginRequest';
 }

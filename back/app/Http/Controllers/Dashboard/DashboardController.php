@@ -48,7 +48,7 @@ final class DashboardController extends BaseController
     {
         $result = $this->service->clock(
             user: $this->resolveUser(),
-            action: $request->action(),
+            action: (string) $request->input('action'),
         );
 
         return ApiResponse::success($result);

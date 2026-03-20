@@ -1,0 +1,15 @@
+AttendanceUpdateRequest:
+  type: object
+  properties:
+    start_time:
+      type: string
+      format: date-time
+      nullable: true
+    end_time:
+      type: string
+      format: date-time
+      nullable: true
+    note:
+      type: string
+      nullable: true
+      maxLength: 500

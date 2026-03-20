@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\Generated\OpenApiGeneratedRules;
 
 /**
  * 既定のフォームリクエストクラス
  */
 abstract class BaseRequest extends FormRequest
 {
+    /**
+     * OpenAPI スキーマ名
+     *
+     * @var string
+     */
+    protected string $schemaName;
+
     /**
      * 正規化対象フィールド定義
      *
@@ -27,6 +35,22 @@ abstract class BaseRequest extends FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules(): array
+    {
+        return OpenApiGeneratedRules::schema($this->schemaName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributes(): array
+    {
+        return OpenApiGeneratedRules::schemaAttributes($this->schemaName);
     }
 
     /**

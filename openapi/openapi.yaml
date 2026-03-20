@@ -37,31 +37,42 @@ tags:
 
 paths:
   /login:
-    $ref: './paths/auth.yaml#/login'
+    $ref: "./paths/auth.yaml#/login"
   /logout:
-    $ref: './paths/auth.yaml#/logout'
+    $ref: "./paths/auth.yaml#/logout"
   /authme:
-    $ref: './paths/auth.yaml#/authMe'
+    $ref: "./paths/auth.yaml#/authMe"
   /attendances/attendance:
-    $ref: './paths/attendance.yaml#/attendance'
+    $ref: "./paths/attendance.yaml#/attendance"
   /attendances/clock-in:
-    $ref: './paths/attendance.yaml#/clockIn'
+    $ref: "./paths/attendance.yaml#/clockIn"
   /attendances/clock-out:
-    $ref: './paths/attendance.yaml#/clockOut'
+    $ref: "./paths/attendance.yaml#/clockOut"
+  /attendances:
+    $ref: "./paths/attendance.yaml#/attendances"
+  /attendances/{attendance}:
+    $ref: "./paths/attendance.yaml#/attendanceUpdate"
   /dashboard:
-    $ref: './paths/dashboard.yaml#/dashboard'
+    $ref: "./paths/dashboard.yaml#/dashboard"
+  /dashboard/clock:
+    $ref: "./paths/dashboard.yaml#/dashboardClock"
   /auth/calendar:
-    $ref: './paths/schedule.yaml#/calendar'
+    $ref: "./paths/schedule.yaml#/calendar"
   /team/members:
-    $ref: './paths/team.yaml#/teamMembers'
+    $ref: "./paths/team.yaml#/teamMembers"
   /settings:
-    $ref: './paths/settings.yaml#/settings'
+    $ref: "./paths/settings.yaml#/settings"
 
 components:
+  schemas:
+    CalendarIndexRequest:
+      $ref: "./components/schemas/schedule/CalendarIndexRequest.yaml#/CalendarIndexRequest"
+    AttendanceIndexRequest:
+      $ref: "./components/schemas/attendance/AttendanceIndexRequest.yaml#/AttendanceIndexRequest"
   responses:
-    $ref: './components/responses.yaml'
+    $ref: "./components/responses.yaml"
   securitySchemes:
-    $ref: './components/securitySchemes.yaml'
+    $ref: "./components/securitySchemes.yaml"
 
 security:
   - BearerAuth: []
