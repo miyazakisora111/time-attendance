@@ -3,39 +3,39 @@ Unauthorized:
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ErrorResponse.yaml#/ErrorResponse'
+        $ref: "./schemas/common/ErrorResponse.yaml#/ErrorResponse"
 
 Forbidden:
   description: 認可エラー
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ErrorResponse.yaml#/ErrorResponse'
+        $ref: "./schemas/common/ErrorResponse.yaml#/ErrorResponse"
 
 ValidationError:
   description: バリデーションエラー
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ValidationErrorResponse.yaml#/ValidationErrorResponse'
+        $ref: "./schemas/common/ValidationErrorResponse.yaml#/ValidationErrorResponse"
 
 Conflict:
   description: 排他エラー
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ErrorResponse.yaml#/ErrorResponse'
+        $ref: "./schemas/common/ErrorResponse.yaml#/ErrorResponse"
 
 NotFound:
   description: リソース未存在エラー
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ErrorResponse.yaml#/ErrorResponse'
+        $ref: "./schemas/common/ErrorResponse.yaml#/ErrorResponse"
 
 InternalServerError:
   description: サーバーエラー
   content:
     application/json:
       schema:
-        $ref: './schemas/error/ErrorResponse.yaml#/ErrorResponse'
+        $ref: "./schemas/common/ErrorResponse.yaml#/ErrorResponse"

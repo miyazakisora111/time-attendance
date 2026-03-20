@@ -1,0 +1,23 @@
+{
+  "_comment": "⚠️  AUTO-GENERATED — DO NOT EDIT MANUALLY. Re-run: make openapi-examples",
+  "profile": {
+    "name": "田中 太郎",
+    "email": "t.tanaka@example.com",
+    "department": "営業部",
+    "role": "正社員",
+    "employeeCode": "EMP-2024001"
+  },
+  "notifications": {
+    "clockInReminder": true,
+    "approvalNotification": true,
+    "leaveReminder": true
+  },
+  "security": {
+    "twoFactorEnabled": true,
+    "emailVerified": true,
+    "lastLoginAt": "2019-08-24T14:15:22Z",
+    "passwordLastChangedAt": "2019-08-24T14:15:22Z"
+  },
+  "theme": "light",
+  "language": "ja"
+}

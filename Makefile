@@ -15,7 +15,7 @@ BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 
 .PHONY: setup up build down restart logs ps sh init migrate seed fresh test optimize \
 	front-install front-dev front-build front-typecheck front-lint local-back health \
-	openapi-bundle openapi-client openapi-zod openapi-validators openapi
+	openapi-lint openapi-bundle openapi-client openapi-zod openapi-validators openapi-examples openapi openapi-clean
 
 setup:
 	@[ -f .env ] || cp .env.example .env
@@ -87,7 +87,15 @@ local-back:
 health:
 	@curl -fsS http://localhost:$${APP_PORT:-8000}/api/health && echo
 
-openapi-bundle:
+# ────────────────────────────────────────
+# OpenAPI
+# ────────────────────────────────────────
+
+openapi-lint:
+	npx @redocly/cli lint $(OPENAPI_DIR)/openapi.yaml
+
+openapi-bundle: openapi-lint
+	@mkdir -p $(OPENAPI_DIR)/build
 	npx @redocly/cli bundle $(OPENAPI_DIR)/openapi.yaml -o $(BUNDLE)
 	npx @redocly/cli bundle $(OPENAPI_DIR)/openapi.yaml --dereferenced --ext json -o $(BUNDLE_JSON)
 
@@ -101,4 +109,12 @@ openapi-validators: openapi-bundle openapi-zod
 	node scripts/generate-openapi-validators.mjs
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
-openapi: openapi-zod openapi-client openapi-validators
+openapi-examples: openapi-bundle
+	node scripts/generate-openapi-examples.mjs
+
+openapi-clean:
+	rm -rf $(OPENAPI_DIR)/build/*
+	rm -rf $(OPENAPI_DIR)/examples/*
+	rm -rf $(FRONT_DIR)/src/__generated__/*
+
+openapi: openapi-zod openapi-client openapi-validators openapi-examples

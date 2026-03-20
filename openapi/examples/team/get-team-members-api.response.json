@@ -1,0 +1,14 @@
+{
+  "_comment": "⚠️  AUTO-GENERATED — DO NOT EDIT MANUALLY. Re-run: make openapi-examples",
+  "members": [
+    {
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+      "name": "string",
+      "role": "string",
+      "department": "string",
+      "status": "working",
+      "clockInTime": "09:00",
+      "email": "user@example.com"
+    }
+  ]
+}

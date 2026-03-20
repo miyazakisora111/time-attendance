@@ -14,7 +14,7 @@ const zodGeneratedPath = path.join(rootDir, 'front/src/__generated__/zod.ts');
 const frontOutputPath = path.join(rootDir, 'front/src/__generated__/zod.validation.ts');
 const labelOutputPath = path.join(rootDir, 'front/src/__generated__/field-labels.json');
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
-const fieldsPath = path.join(rootDir, 'schema/fields.yaml');
+const fieldsPath = path.join(rootDir, 'openapi/schema/fields.yaml');
 
 const escapeSingleQuote = (value) => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 const escapeRegexForLaravel = (value) => value.replace(/\//g, '\\/');
@@ -645,23 +645,23 @@ const renderBackFile = (schemaNames, schemaRuleMap, labels) => {
   });
 
   lines.push('    ];');
-    lines.push('');
-    lines.push('    /**');
-    lines.push('     * @var array<string, array<string, string>>');
-    lines.push('     */');
-    lines.push('    private const SCHEMA_ATTRIBUTES = [');
+  lines.push('');
+  lines.push('    /**');
+  lines.push('     * @var array<string, array<string, string>>');
+  lines.push('     */');
+  lines.push('    private const SCHEMA_ATTRIBUTES = [');
 
-    schemaNames.forEach((schemaName) => {
-      lines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
-      const rules = schemaRuleMap[schemaName] ?? {};
-      Object.keys(rules).forEach((pathKey) => {
-        const label = fieldLabelFromRulePath(pathKey, labels);
-        lines.push(`            '${escapeSingleQuote(pathKey)}' => '${escapeSingleQuote(label)}',`);
-      });
-      lines.push('        ],');
+  schemaNames.forEach((schemaName) => {
+    lines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
+    const rules = schemaRuleMap[schemaName] ?? {};
+    Object.keys(rules).forEach((pathKey) => {
+      const label = fieldLabelFromRulePath(pathKey, labels);
+      lines.push(`            '${escapeSingleQuote(pathKey)}' => '${escapeSingleQuote(label)}',`);
     });
+    lines.push('        ],');
+  });
 
-    lines.push('    ];');
+  lines.push('    ];');
   lines.push('}');
   lines.push('');
 

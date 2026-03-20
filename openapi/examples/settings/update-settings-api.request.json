@@ -1,0 +1,14 @@
+{
+  "_comment": "⚠️  AUTO-GENERATED — DO NOT EDIT MANUALLY. Re-run: make openapi-examples",
+  "profile": {
+    "name": "string",
+    "email": "user@example.com"
+  },
+  "notifications": {
+    "clockInReminder": true,
+    "approvalNotification": true,
+    "leaveReminder": true
+  },
+  "theme": "light",
+  "language": "ja"
+}

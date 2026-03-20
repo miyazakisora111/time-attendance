@@ -5,15 +5,19 @@
     "type": "module",
     "scripts": {
         "generate:api": "npm run openapi:generate",
-        "openapi:bundle": "npx @redocly/cli bundle ./openapi/openapi.yaml -o ./openapi/build/bundle.yaml && npx @redocly/cli bundle ./openapi/openapi.yaml --dereferenced --ext json -o ./openapi/build/bundle.json",
+        "openapi:lint": "npx @redocly/cli lint ./openapi/openapi.yaml",
+        "openapi:bundle": "npm run openapi:lint && npx @redocly/cli bundle ./openapi/openapi.yaml -o ./openapi/build/bundle.yaml && npx @redocly/cli bundle ./openapi/openapi.yaml --dereferenced --ext json -o ./openapi/build/bundle.json",
         "openapi:client": "npx --prefix ./front orval",
         "openapi:zod": "npx --prefix ./front openapi-zod ./openapi/build/bundle.yaml -o ./front/src/__generated__/zod.ts",
         "openapi:validators": "node ./scripts/generate-openapi-validators.mjs && npx prettier --write ./front/src/__generated__/zod.validation.ts",
-        "openapi:generate": "npm run openapi:bundle && npm run openapi:zod && npm run openapi:client && npm run openapi:validators"
+        "openapi:examples": "node ./scripts/generate-openapi-examples.mjs",
+        "openapi:clean": "rm -rf ./openapi/build/* ./openapi/examples/* ./front/src/__generated__/*",
+        "openapi:generate": "npm run openapi:bundle && npm run openapi:zod && npm run openapi:client && npm run openapi:validators && npm run openapi:examples"
     },
     "devDependencies": {
         "@orval/core": "^8.5.1",
         "@redocly/cli": "^1.0.0",
+        "openapi-sampler": "^1.7.2",
         "openapi-typescript": "^6.0.0",
         "openapi-zod-client": "^1.18.3",
         "orval": "^6.0.0",
