@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchDashboard } from '@/api/dashboard.api';
 import type { DashboardResponse } from '@/__generated__/model';
-import { toDashboardViewData } from '@/features/dashboard/adapters/toDashboardViewData';
+import { toDashboardView } from '@/features/dashboard/mappers/toDashboardView';
 import type { DashboardViewData } from '@/features/dashboard/ui/types';
 
 const SCOPE = 'dashboard' as const;
@@ -11,7 +11,7 @@ export const dashboardQueryKeys = {
   all: () => scoped.all(),
 } as const;
 
-const selectDashboard = (data: DashboardResponse): DashboardViewData => toDashboardViewData(data);
+const selectDashboard = (data: DashboardResponse): DashboardViewData => toDashboardView(data);
 
 /** ダッシュボードデータを取得 */
 export const useDashboard = () =>

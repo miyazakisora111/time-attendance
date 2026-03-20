@@ -4,7 +4,7 @@ import type { CalendarResponse } from '@/__generated__/model';
 import type { ScheduleMonthData } from '@/domain/schedule/types';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchCalendar } from '@/features/schedule/api/scheduleApi';
-import { toScheduleMonthData } from '@/features/schedule/adapters/toScheduleMonthData';
+import { toScheduleMonthView } from '@/features/schedule/mappers/toScheduleMonthView';
 
 /**
  * React Query キー。
@@ -39,7 +39,7 @@ export const useSchedule = () => {
   const calendarQuery = useQuery<CalendarResponse, Error, ScheduleMonthData>({
     queryKey: scheduleQueryKeys.calendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
     queryFn: () => fetchCalendar(currentMonth.getFullYear(), currentMonth.getMonth() + 1),
-    select: toScheduleMonthData,
+    select: toScheduleMonthView,
   });
 
   /** 翌月へ移動する。 */

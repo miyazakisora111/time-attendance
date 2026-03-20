@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1.7
-
 FROM php:8.4-fpm-bookworm AS php_base
 
 WORKDIR /var/www/html

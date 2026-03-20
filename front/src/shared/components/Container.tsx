@@ -10,7 +10,7 @@ const containerVariants = cva(
                 sm: "max-w-md",
                 md: "max-w-3xl",
                 lg: "max-w-6xl",
-                full: "max-w-full",
+                full: "max-w-full min-h-screen",
             },
             center: {
                 true: "flex min-h-screen items-center justify-center",

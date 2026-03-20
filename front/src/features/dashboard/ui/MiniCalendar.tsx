@@ -22,7 +22,6 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
             <CalendarIcon className="text-blue-600" />
             カレンダー
           </CardTitle>
-
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" unstableClassName="h-8 w-8 text-gray-600" aria-label="前月" onClick={prevMonth}>
               <ChevronLeft size={16} />
@@ -36,7 +35,6 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
           </div>
         </div>
       </CardHeader>
-
       <CardContent>
         <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={calendarDays.length === 0}>
           <div className="grid grid-cols-7 gap-1">
@@ -55,7 +53,6 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
                 {day}
               </div>
             ))}
-
             {calendarDays.map((day) => (
               <div
                 key={day.key}
@@ -77,7 +74,6 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
               </div>
             ))}
           </div>
-
           <div className="mt-4 flex gap-4 border-t border-gray-100 pt-4">
             {dashboardMiniCalendarLegends.map((legend) => (
               <div key={legend.key} className="flex items-center gap-1.5">

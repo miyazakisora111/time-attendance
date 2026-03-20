@@ -16,11 +16,6 @@ const labelOutputPath = path.join(rootDir, 'front/src/__generated__/field-labels
 const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
 const fieldsPath = path.join(rootDir, 'schema/fields.yaml');
 
-const LABEL_OVERRIDES = {
-  email: 'メールアドレス',
-  password: 'パスワード',
-};
-
 const escapeSingleQuote = (value) => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 const escapeRegexForLaravel = (value) => value.replace(/\//g, '\\/');
 
@@ -204,7 +199,7 @@ const buildLabelMap = (schemaNames, schemaMap, resolveSchema, fieldSpecsByKey) =
       return;
     }
 
-    labels[fieldKey] = LABEL_OVERRIDES[fieldKey] ?? fieldKey;
+    labels[fieldKey] = fieldKey;
   };
 
   const walk = (rawSchema, pathParts = []) => {

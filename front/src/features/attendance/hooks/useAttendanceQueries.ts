@@ -1,7 +1,7 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchTodayAttendance, clockIn, clockOut } from '@/api/attendance.api';
-import { toAttendanceView } from '@/features/attendance/adapters/toAttendanceView';
+import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { AttendanceClockInRequest } from '@/__generated__/model/attendanceClockInRequest';
 import type { AttendanceClockOutRequest } from '@/__generated__/model/attendanceClockOutRequest';

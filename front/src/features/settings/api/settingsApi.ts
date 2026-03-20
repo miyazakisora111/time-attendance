@@ -1,7 +1,7 @@
 import { getSettings } from '@/__generated__/settings/settings';
 import type { SettingsResponse, UpdateSettingsRequest } from '@/__generated__/model';
 import { call } from '@/lib/http/result';
-import { toAppSettings } from '@/features/settings/adapters/toAppSettings';
+import { toAppSettings } from '@/features/settings/mappers/toAppSettings';
 
 const client = getSettings();
 

@@ -1,0 +1,1 @@
+export type Mapper<S, T> = (src: Readonly<S>) => Readonly<T>;

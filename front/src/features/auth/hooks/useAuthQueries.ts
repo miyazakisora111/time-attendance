@@ -1,7 +1,7 @@
 import { useQuery, useMutation, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchAuthMe, login, logout } from '@/api/auth.api';
-import { toAuthUser } from '@/features/auth/adapters/toAuthUser';
+import { toAuthUser } from '@/features/auth/mappers/toAuthUser';
 import type { LoginResult } from '@/domain/auth/types';
 import type { LogoutApi200 } from '@/__generated__/model/logoutApi200';
 import type { LoginRequest } from '@/__generated__/model';

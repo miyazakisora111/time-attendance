@@ -45,9 +45,9 @@ export function LoginPage() {
   };
 
   return (
-    <Container size="full" tone="blue">
+    <Container size="full" tone="blue" center>
       <Card padding="lg">
-        <Typography variant="h1" unstableClassName="mb-4">
+        <Typography variant="h3" unstableClassName="mb-4">
           勤怠管理システム
         </Typography>
         <Form<LoginFormData>

@@ -21,7 +21,7 @@ export default function DashBoardPage() {
             <h1>ダッシュボード</h1>
           </Typography>
           <Typography variant="body" intent="muted">
-            {name ? `${name}さん、本日も1日頑張りましょう！` : '本日も1日頑張りましょう！'}
+            {name ? `${name}さん、` : ""}本日も1日頑張りましょう！
           </Typography>
         </header>
         <DashboardLayoutGrid

@@ -1,7 +1,7 @@
 import { getTeam } from '@/__generated__/team/team';
 import type { TeamMembersResponse } from '@/__generated__/model';
 import { call } from '@/lib/http/result';
-import { toTeamMembers } from '@/features/team/adapters/toTeamMembers';
+import { toTeamMembers } from '@/features/team/mappers/toTeamMembers';
 
 const client = getTeam();
 

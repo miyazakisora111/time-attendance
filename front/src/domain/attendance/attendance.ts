@@ -2,27 +2,26 @@
  * 打刻アクション。
  */
 export type ClockAction =
-    | 'in'
-    | 'out'
-    | 'break_start'
-    | 'break_end';
+  | 'in'
+  | 'out'
+  | 'break_start'
+  | 'break_end';
 
 /**
  * 勤怠状態。
  */
 export type AttendanceStatus =
-    | 'working'
-    | 'out'
-    | 'break';
+  | 'working'
+  | 'out'
+  | 'break';
 
 /**
  * 打刻状態。
  */
 export type ClockStatus =
-    | 'in'
-    | 'out'
-    | 'break';
-
+  | 'in'
+  | 'out'
+  | 'break';
 
 /**
  * 打刻アクション → 勤怠状態
@@ -52,3 +51,18 @@ export const clockStatusToAttendanceStatusMap = {
   break: 'break',
   out: 'out',
 } as const satisfies Record<ClockStatus, AttendanceStatus>;
+
+/**
+ * 打刻アクションを取得
+ */
+export const resolveClockAction = (
+  start?: string | null,
+  end?: string | null,
+): ClockAction => start && !end ? "in" : "out";
+
+/**
+ * 勤務中かどうかを判定
+ */
+export const isWorking = (status: ClockStatus): boolean => {
+  return status !== "out";
+};
