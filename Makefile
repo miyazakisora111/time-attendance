@@ -4,15 +4,18 @@ INFRA_DIR := infra
 OPENAPI_DIR := openapi
 
 ENV ?= dev
-DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.$(ENV).yml
+ifeq ($(ENV),prod)
+  DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.prod.yml
+else
+  DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.override.yml
+endif
 
 BUNDLE := $(OPENAPI_DIR)/build/bundle.yaml
 BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 
 .PHONY: setup up build down restart logs ps sh init migrate seed fresh test optimize \
 	front-install front-dev front-build front-typecheck front-lint local-back health \
-	openapi-bundle openapi-client openapi-zod openapi-validators openapi \
-	db-init
+	openapi-bundle openapi-client openapi-zod openapi-validators openapi
 
 setup:
 	@[ -f .env ] || cp .env.example .env
@@ -99,16 +102,3 @@ openapi-validators: openapi-bundle openapi-zod
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi: openapi-zod openapi-client openapi-validators
-
-# TODO: なんかタブが入ってるらしくて動かん
-# db-init:
-#     @read -p "DB 名 (default: time_attendance): " DB_NAME; \
-#     : "$${DB_NAME:=time_attendance}"; \
-#     read -p "ユーザー名 (default: app_user): " DB_USER; \
-#     : "$${DB_USER:=app_user}"; \
-#     read -s -p "パスワード（入力は表示されません）: " DB_PASS; echo; \
-#     sudo -u postgres psql \
-#       -v dbname="$$DB_NAME" \
-#       -v dbuser="$$DB_USER" \
-#       -v dbpass="$$DB_PASS" \
-#       -f database/init.sql

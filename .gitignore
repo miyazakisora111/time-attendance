@@ -21,6 +21,7 @@
 # Frontend
 /front/.env
 /front/.env.*
+/front/.env.local
 !/front/.env.example
 /front/node_modules
 /front/dist
@@ -31,3 +32,7 @@ node_modules
 # Secrets
 *.pem
 *.key
+
+# Docker volumes
+postgres_data/
+redis_data/
