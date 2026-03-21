@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { PrivateLayout, PublicLayout } from "@/shared/components";
 import { LoginPage } from "@/features/auth/ui/LoginPage";
+import { useAuth } from "@/features/auth";
 import { DashBoardPage } from "@/features/dashboard";
 import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
 import TeamPage from "@/features/team";
@@ -13,9 +14,9 @@ import { AppRoutePath } from "@/config/routes";
  */
 export const AppRoutes = () => {
     // TODO:後で戻す
-    // const { isAuthenticated } = useAuth();
-    const isAuthenticated = true;
-    
+    const { isAuthenticated } = useAuth();
+    // const isAuthenticated = true;
+
     return (
         <Routes>
             {/* デフォルトルート */}
