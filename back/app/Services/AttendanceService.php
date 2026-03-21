@@ -17,12 +17,10 @@ use Illuminate\Support\Str;
  */
 final class AttendanceService extends BaseService
 {
-    private const DEFAULT_TIMEZONE = 'Asia/Tokyo';
-
     public function clockIn(User $user): array
     {
         return $this->transaction(function () use ($user): array {
-            $timezone = $user->timezone ?? self::DEFAULT_TIMEZONE;
+            $timezone = $this->resolveTimezone($user->timezone ?? null);
             $now = CarbonImmutable::now($timezone);
 
             $openAttendance = Attendance::query()
@@ -46,7 +44,7 @@ final class AttendanceService extends BaseService
                 'start_time' => $now->format('H:i:s'),
             ]);
 
-            return $attendance->fresh()->toLocalTimePayload();
+            return $attendance->toLocalTimePayload();
         });
     }
 
@@ -64,7 +62,7 @@ final class AttendanceService extends BaseService
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
-            $timezone = $attendance->work_timezone ?: self::DEFAULT_TIMEZONE;
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
 
             if ($attendance->clock_in_at !== null && $now->lte($attendance->clock_in_at->setTimezone($timezone))) {
@@ -83,13 +81,13 @@ final class AttendanceService extends BaseService
                 'end_time' => $now->format('H:i:s'),
             ]);
 
-            return $attendance->fresh()->toLocalTimePayload();
+            return $attendance->toLocalTimePayload();
         });
     }
 
     public function getToday(User $user): array
     {
-        $timezone = $user->timezone ?? self::DEFAULT_TIMEZONE;
+        $timezone = $this->resolveTimezone($user->timezone ?? null);
         $today = CarbonImmutable::today($timezone)->toDateString();
 
         $attendance = Attendance::query()
@@ -139,10 +137,10 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($attendance, $input): array {
             $base = [
                 'work_date' => $attendance->work_date?->toDateString(),
-                'clock_in_local_time' => $attendance->clock_in_at?->setTimezone($attendance->work_timezone ?: self::DEFAULT_TIMEZONE)->format('H:i'),
-                'clock_out_local_time' => $attendance->clock_out_at?->setTimezone($attendance->work_timezone ?: self::DEFAULT_TIMEZONE)->format('H:i'),
+                'clock_in_local_time' => $attendance->clock_in_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i'),
+                'clock_out_local_time' => $attendance->clock_out_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i'),
                 'clock_out_next_day' => $attendance->isCrossDayShift(),
-                'work_timezone' => $attendance->work_timezone ?: self::DEFAULT_TIMEZONE,
+                'work_timezone' => $this->resolveTimezone($attendance->work_timezone),
                 'break_minutes' => $attendance->break_minutes,
                 'note' => $attendance->note,
             ];
@@ -156,7 +154,7 @@ final class AttendanceService extends BaseService
 
     private function buildAttendancePayload(array $input): array
     {
-        $timezone = Arr::get($input, 'work_timezone', self::DEFAULT_TIMEZONE);
+        $timezone = $this->resolveTimezone(Arr::get($input, 'work_timezone'));
         $workDate = (string) Arr::get($input, 'work_date');
         $clockInLocal = (string) Arr::get($input, 'clock_in_local_time');
         $clockOutLocal = Arr::get($input, 'clock_out_local_time');

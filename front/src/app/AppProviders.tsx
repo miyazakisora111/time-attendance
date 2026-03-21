@@ -15,7 +15,6 @@ interface Props {
  * アプリ全体に提供するグローバル Provider をまとめたコンポーネント
  */
 export function AppProviders({ children }: Props) {
-    // NOTE:再レンダーでも同一インスタンスを保持する。
     const [queryClient] = React.useState(() => createQueryClient());
 
     return (

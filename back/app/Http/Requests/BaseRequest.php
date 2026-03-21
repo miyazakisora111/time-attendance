@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Http\Requests\Generated\OpenApiGeneratedRules;
+use App\__Generated__\OpenApiGeneratedRules;
 
 /**
  * 既定のフォームリクエストクラス

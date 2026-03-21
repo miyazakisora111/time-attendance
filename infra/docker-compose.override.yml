@@ -33,6 +33,16 @@ services:
   db:
     ports:
       - "${DB_PORT:-5432}:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "listen_addresses=*"
+      - "-c"
+      - "log_statement=all"
+      - "-c"
+      - "log_connections=on"
+      - "-c"
+      - "log_disconnections=on"
 
   redis:
     ports:

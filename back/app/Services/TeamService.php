@@ -14,8 +14,6 @@ use Carbon\CarbonImmutable;
  */
 final class TeamService extends BaseService
 {
-    private const DEFAULT_TIMEZONE = 'Asia/Tokyo';
-
     /**
      * メンバー一覧を返す。
      *
@@ -45,7 +43,7 @@ final class TeamService extends BaseService
      */
     private function mapUserToMember(User $user): array
     {
-        $timezone = $user->timezone ?? self::DEFAULT_TIMEZONE;
+        $timezone = $this->resolveTimezone($user->timezone ?? null);
         $today = CarbonImmutable::today($timezone)->toDateString();
 
         $attendance = Attendance::query()

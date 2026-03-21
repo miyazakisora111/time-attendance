@@ -20,13 +20,4 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
-    public function boot(): void
-    {
-        // Email を取得するマクロ
-        Request::macro('emailVO', function () {
-            /** @var \App\Http\Requests\BaseRequest $this */
-            return new Email($this->validated('email'));
-        });
-    }
 }

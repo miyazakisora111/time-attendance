@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Generated;
+namespace App\__Generated__;
 
 /**
  * OpenAPI から自動生成されたバリデーションルール。
@@ -30,7 +30,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-                'AttendanceClockInRequest' => [
+        'AttendanceClockInRequest' => [
             'work_date' => ['required', 'string', 'date_format:Y-m-d'],
             'start_time' => ['sometimes', 'string', 'date_format:H:i'],
         ],
@@ -270,7 +270,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-                'AttendanceClockInRequest' => [
+        'AttendanceClockInRequest' => [
             'work_date' => '勤務日',
             'start_time' => '出勤時刻',
         ],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Illuminate\Auth\AuthenticationException;
+use App\Exceptions\DomainException;
 use App\DTO\UserProfile;
 use App\Models\User;
 use App\ValueObjects\Email;
@@ -39,14 +39,13 @@ final class AuthService extends BaseService
         $token = $guard->attempt($credentials);
 
         if (!is_string($token) || $token === '') {
-            throw new AuthenticationException('認証に失敗しました');
+            throw new DomainException('認証に失敗しました');
         }
 
         /** @var User|null $user */
         $user = $guard->user();
-
         if (!$user instanceof User) {
-            throw new AuthenticationException('ユーザーの取得に失敗しました');
+            throw new DomainException('ユーザーの取得に失敗しました');
         }
 
         $user->update([

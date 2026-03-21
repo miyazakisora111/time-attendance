@@ -16,13 +16,9 @@ use Illuminate\Support\Collection;
 /**
  * カレンダーのサービスクラス
  */
-/**
- * カレンダーのサービスクラス
- */
 final class CalendarService extends BaseService
 {
     private const DEFAULT_SHIFT = '通常勤務';
-    private const DEFAULT_TIME_RANGE = '09:00 - 18:00';
     private const DEFAULT_LOCATION = 'Office-A';
 
     /**
@@ -192,11 +188,4 @@ final class CalendarService extends BaseService
         ];
     }
 
-    /**
-     * 日本語曜日を返す。
-     */
-    private function weekdayJa(Carbon $date): string
-    {
-        return ['日', '月', '火', '水', '木', '金', '土'][$date->dayOfWeek];
-    }
 }

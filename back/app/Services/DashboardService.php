@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\OvertimeRequest;
@@ -44,97 +43,6 @@ final class DashboardService extends BaseService
                 ->pending()
                 ->count(),
         ];
-    }
-
-    /**
-     * 打刻アクションを実行する。
-     *
-     * @param User $user 対象ユーザー
-     * @param string $action 打刻アクション（in/out/break_start/break_end）
-     * @return array<string, mixed>
-     *
-     * @throws DomainException
-     */
-    public function clock(User $user, string $action): array
-    {
-        return $this->transaction(function () use ($user, $action): array {
-            $attendance = Attendance::query()
-                ->firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'work_date' => today()->toDateString(),
-                    ]
-                );
-
-            if ($action === 'in') {
-                if ($attendance->clock_in_at !== null || $attendance->start_time !== null) {
-                    throw new DomainException('既に出勤済みです', 'ALREADY_CLOCKED_IN');
-                }
-
-                $attendance->update([
-                    'clock_in_at' => now(),
-                    'start_time' => now()->format('H:i:s'),
-                ]);
-            } elseif ($action === 'out') {
-                if ($attendance->clock_in_at === null && $attendance->start_time === null) {
-                    throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
-                }
-
-                if ($attendance->clock_out_at !== null || $attendance->end_time !== null) {
-                    throw new DomainException('既に退勤済みです', 'ALREADY_CLOCKED_OUT');
-                }
-
-                $workedMinutes = $attendance->clock_in_at !== null
-                    ? $attendance->clock_in_at->diffInMinutes(now())
-                    : null;
-
-                $attendance->update([
-                    'clock_out_at' => now(),
-                    'worked_minutes' => $workedMinutes,
-                    'end_time' => now()->format('H:i:s'),
-                ]);
-            } elseif ($action === 'break_start') {
-                if ($attendance->start_time === null || $attendance->end_time !== null) {
-                    throw new DomainException('勤務中のみ休憩を開始できます', 'INVALID_BREAK_START');
-                }
-
-                $activeBreak = AttendanceBreak::query()
-                    ->where('attendance_id', $attendance->id)
-                    ->whereNull('break_end')
-                    ->first();
-
-                if ($activeBreak !== null) {
-                    throw new DomainException('既に休憩中です', 'ALREADY_ON_BREAK');
-                }
-
-                AttendanceBreak::query()->create([
-                    'attendance_id' => $attendance->id,
-                    'break_start' => now()->format('H:i:s'),
-                ]);
-            } elseif ($action === 'break_end') {
-                $activeBreak = AttendanceBreak::query()
-                    ->where('attendance_id', $attendance->id)
-                    ->whereNull('break_end')
-                    ->latest('break_start')
-                    ->first();
-
-                if ($activeBreak === null) {
-                    throw new DomainException('進行中の休憩がありません', 'NO_ACTIVE_BREAK');
-                }
-
-                $activeBreak->update([
-                    'break_end' => now()->format('H:i:s'),
-                ]);
-            } else {
-                throw new DomainException('不正なアクションです', 'INVALID_ACTION');
-            }
-
-            return [
-                'action' => $action,
-                'timestamp' => now()->toIso8601String(),
-                'dashboard' => $this->getDashboard($user),
-            ];
-        });
     }
 
     private function buildStats(User $user): array
@@ -198,9 +106,9 @@ final class DashboardService extends BaseService
                 return [
                     'date' => $date->format('Y/m/d'),
                     'day' => $this->weekdayJa($date),
-                    'clockIn' => $attendance->clock_in_at?->setTimezone($attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo'))->format('H:i')
+                    'clockIn' => $attendance->clock_in_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i')
                         ?? (is_string($attendance->start_time) ? substr($attendance->start_time, 0, 5) : null),
-                    'clockOut' => $attendance->clock_out_at?->setTimezone($attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo'))->format('H:i')
+                    'clockOut' => $attendance->clock_out_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i')
                         ?? (is_string($attendance->end_time) ? substr($attendance->end_time, 0, 5) : null),
                     'workHours' => $workHours,
                     'status' => $workHours === null
@@ -250,7 +158,7 @@ final class DashboardService extends BaseService
             fallbackEndTime: now(),
         );
 
-        $timezone = $attendance->work_timezone ?? config('app.timezone', 'Asia/Tokyo');
+        $timezone = $this->resolveTimezone($attendance->work_timezone);
 
         return [
             'clockInTime' => $attendance->clock_in_at?->setTimezone($timezone)->format('H:i')
@@ -281,32 +189,6 @@ final class DashboardService extends BaseService
         return round((float) $overtimes->sum(fn(OvertimeRequest $overtime): float => $overtime->getDurationHours()), 1);
     }
 
-    private function calculateWorkHours(
-        mixed $startAt,
-        mixed $endAt,
-        ?int $workedMinutes = null,
-        ?Carbon $fallbackEndTime = null,
-    ): ?float {
-        if ($workedMinutes !== null) {
-            return round($workedMinutes / 60, 1);
-        }
-
-        if ($startAt === null) {
-            return null;
-        }
-
-        $start = Carbon::parse((string) $startAt);
-        $end = $endAt !== null
-            ? Carbon::parse((string) $endAt)
-            : $fallbackEndTime;
-
-        if ($end === null || $end->lt($start)) {
-            return null;
-        }
-
-        return round($end->diffInMinutes($start) / 60, 1);
-    }
-
     private function remainingBusinessDaysInMonth(Carbon $date): int
     {
         $cursor = $date->copy()->addDay()->startOfDay();
@@ -323,10 +205,4 @@ final class DashboardService extends BaseService
         return $count;
     }
 
-    private function weekdayJa(Carbon $date): string
-    {
-        $days = ['日', '月', '火', '水', '木', '金', '土'];
-
-        return $days[$date->dayOfWeek];
-    }
 }

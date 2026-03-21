@@ -15,8 +15,6 @@ use Illuminate\Cache\RateLimiting\Limit;
  */
 class RouteServiceProvider extends ServiceProvider
 {
-    public const HOME = '/';
-
     public function boot(): void
     {
         // 制限時間の設定
@@ -35,7 +33,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
-            // Web（動作確認用）
+            // Web
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
