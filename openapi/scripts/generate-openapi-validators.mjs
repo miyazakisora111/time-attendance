@@ -573,7 +573,7 @@ const renderFrontFile = async (schemaNames, schemas, toZodExpr) => {
     schemaLines.push('  }),');
   });
 
-  return render('zod-validation-template.ts', { schemas: schemaLines.join('\n') });
+  return render('zod-validation.tpl', { schemas: schemaLines.join('\n') });
 };
 
 const fieldLabelFromRulePath = (pathKey, labels) => {
@@ -607,7 +607,7 @@ const renderBackFile = async (schemaNames, schemaRuleMap, labels) => {
     attributesLines.push('        ],');
   });
 
-  return render('laravel-validation-template.php', {
+  return render('laravel-validation.tpl', {
     rules: rulesLines.join('\n'),
     attributes: attributesLines.join('\n'),
   });

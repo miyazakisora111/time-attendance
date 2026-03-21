@@ -9,7 +9,7 @@ const labels = labelsJson as Record<string, string>;
 const labelOf = (field: string): string => labels[field] ?? field;
 
 export const validationSchemas = {
-{ { schemas } }
+    {{schemas}}
 } as const ;
 
 export type ValidationSchemaName = keyof typeof validationSchemas;

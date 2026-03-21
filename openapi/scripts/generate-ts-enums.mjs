@@ -59,7 +59,7 @@ const renderTsEnum = async (name, schema) => {
         .map((v) => `  '${v}',`)
         .join('\n');
 
-    return render('ts-enum-template.ts', { name, description, cases });
+    return render('ts-enum.tpl', { name, description, cases });
 };
 
 // ────────────────────────────────────────
@@ -76,7 +76,7 @@ const main = async () => {
 
     await ensureDir(outputPath);
 
-    const header = await render('ts-enum-header-template.ts', {});
+    const header = await render('ts-enum-header.tpl', {});
 
     const blocks = [];
 

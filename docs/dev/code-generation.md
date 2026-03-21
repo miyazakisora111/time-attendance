@@ -40,11 +40,11 @@ make openapi
 openapi/scripts/
 ├── templates/                          # テンプレートファイル
 │   ├── render.mjs                      #   テンプレートエンジン
-│   ├── ts-enum-template.ts             #   TS Enum テンプレート
-│   ├── ts-enum-header-template.ts      #   TS Enum ヘッダー
-│   ├── php-enum-template.tpl.php       #   PHP Enum テンプレート
-│   ├── zod-validation-template.ts      #   Zod バリデーション
-│   └── laravel-validation-template.php #   Laravel バリデーション
+│   ├── ts-enum.tpl             #   TS Enum テンプレート
+│   ├── ts-enum-header.tpl      #   TS Enum ヘッダー
+│   ├── php-enum.tpl       #   PHP Enum テンプレート
+│   ├── zod-validation.tpl      #   Zod バリデーション
+│   └── laravel-validation.tpl #   Laravel バリデーション
 ├── generate-php-enums.mjs
 ├── generate-ts-enums.mjs
 ├── generate-openapi-validators.mjs
@@ -58,7 +58,7 @@ openapi/scripts/
 ```javascript
 import { render } from './templates/render.mjs';
 
-const output = await render('ts-enum-template.ts', {
+const output = await render('ts-enum.tpl', {
   name: 'ClockAction',
   description: '打刻アクション',
   cases: "  'in',\n  'out',",

@@ -61,7 +61,7 @@ const renderPhpEnum = async (name, schema) => {
         .map((v) => `    case ${toCaseName(v)} = '${v}';`)
         .join('\n');
 
-    return render('php-enum-template.tpl.php', { name, description, cases });
+    return render('php-enum.tpl', { name, description, cases });
 };
 
 // ────────────────────────────────────────
