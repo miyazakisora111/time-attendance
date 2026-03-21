@@ -5,9 +5,9 @@ OPENAPI_DIR := openapi
 
 ENV ?= dev
 ifeq ($(ENV),prod)
-  DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.prod.yml
+  DC := docker compose --env-file .env -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.prod.yml
 else
-  DC := docker compose -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.override.yml
+  DC := docker compose --env-file .env -f $(INFRA_DIR)/docker-compose.yml -f $(INFRA_DIR)/docker-compose.override.yml
 endif
 
 BUNDLE := $(OPENAPI_DIR)/build/bundle.yaml
