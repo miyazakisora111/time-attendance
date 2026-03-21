@@ -3,6 +3,7 @@ import { toast as sonner } from 'sonner';
 import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
+import { ApiErrorCode, isApiError } from '@/lib/http/api-error';
 
 /**
  * Axios共通インスタンス。
@@ -110,27 +111,39 @@ const extractErrorMessages = (data: unknown): string[] => {
 };
 
 /**
- * ステータスコードに応じてエラー通知を振り分ける。
+ * エラーコードとステータスに応じてエラー通知を振り分ける。
  *
  * @param status HTTPステータス
  * @param data エラーレスポンス
  */
 const notifyByStatus = (status: number | undefined, data: unknown): void => {
   const messages = extractErrorMessages(data);
+  const code = isApiError(data) ? data.code : undefined;
 
-  // 未ログイン状態の 401 はグローバル通知しない。
-  if (status === HttpStatusCode.Unauthorized) {
+  // 認証エラー（401）はグローバル通知しない（トークン削除のみ）。
+  if (code === ApiErrorCode.Auth || status === HttpStatusCode.Unauthorized) {
     return;
   }
 
-  // 422 と 4xx ドメインエラーは中央モーダルへ通知する。
+  // バリデーションエラーは中央モーダルへ通知する。
+  if (code === ApiErrorCode.Validation) {
+    apiErrorHandler?.({
+      status,
+      title: ApiErrorTitle.Validation,
+      messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
+    });
+    return;
+  }
+
+  // ドメインエラー・権限エラー・Not Found は中央モーダルへ通知する。
   if (
-    status === HttpStatusCode.UnprocessableEntity ||
+    code === ApiErrorCode.Domain ||
+    code === ApiErrorCode.Forbidden ||
+    code === ApiErrorCode.NotFound ||
     (
       status !== undefined &&
       status >= HttpStatusCode.ClientErrorMin &&
-      status <= HttpStatusCode.ClientErrorMax &&
-      status !== HttpStatusCode.Unauthorized
+      status <= HttpStatusCode.ClientErrorMax
     )
   ) {
     apiErrorHandler?.({

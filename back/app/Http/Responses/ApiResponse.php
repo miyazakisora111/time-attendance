@@ -41,17 +41,20 @@ final class ApiResponse
      * @param string $message エラーメッセージ
      * @param int    $status  HTTPステータスコード
      * @param array<string, mixed> $errors バリデーションエラーや詳細情報
+     * @param string $code    エラーコード
      *
      * @return JsonResponse
      */
     public static function error(
         string $message,
         int $status,
-        array $errors = []
+        array $errors = [],
+        string $code = 'INTERNAL_ERROR'
     ): JsonResponse {
         return response()->json([
             'success' => false,
             'message' => $message,
+            'code'    => $code,
             'errors'  => $errors !== [] ? $errors : null,
         ], $status);
     }

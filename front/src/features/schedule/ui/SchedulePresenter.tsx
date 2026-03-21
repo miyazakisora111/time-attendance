@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Badge, Button, Card, CardContent, Typography } from '@/shared/components';
 import { cn } from '@/shared/utils/style';
+import { stack } from '@/shared/design-system/layout';
 import type { DaySchedule, ScheduleSummary } from '@/domain/schedule/types';
 import {
   formatJapaneseDays,
@@ -75,7 +76,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
   };
 
   return (
-    <div className="space-y-8">
+    <div className={stack.xl}>
       <Card variant="elevated" padding="none" unstableClassName="overflow-hidden border-none shadow-md">
         <div className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-6">
@@ -83,23 +84,23 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
               <CalendarIcon size={24} />
             </div>
             <div>
-              <Typography variant="h2" unstableClassName="text-2xl font-bold text-gray-900">
+              <Typography variant="h2">
                 {monthName}
               </Typography>
-              <Typography variant="small" intent="muted" unstableClassName="italic">
+              <Typography variant="small" intent="muted">
                 API から取得した月次スケジュールを表示しています
               </Typography>
             </div>
           </div>
 
           <div className="flex items-center gap-3 rounded-2xl bg-gray-100 p-1.5">
-            <Button variant="ghost" size="icon" onClick={prevMonth} unstableClassName="h-10 w-10 rounded-xl hover:bg-white hover:shadow-sm">
+            <Button variant="ghost" size="icon" onClick={prevMonth}>
               <ChevronLeft size={20} className="text-gray-500" />
             </Button>
-            <Typography variant="label" unstableClassName="px-4 text-gray-700">
+            <Typography variant="label" unstableClassName="px-4">
               {monthName}
             </Typography>
-            <Button variant="ghost" size="icon" onClick={nextMonth} unstableClassName="h-10 w-10 rounded-xl hover:bg-white hover:shadow-sm">
+            <Button variant="ghost" size="icon" onClick={nextMonth}>
               <ChevronRight size={20} className="text-gray-500" />
             </Button>
           </div>
@@ -108,13 +109,13 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
             <Button
               variant={showOnlyWorkingDays ? 'solid' : 'outline'}
               intent={showOnlyWorkingDays ? 'primary' : 'secondary'}
-              unstableClassName="rounded-xl gap-2"
+              unstableClassName="gap-2"
               onClick={() => setShowOnlyWorkingDays((previous) => !previous)}
             >
               <Filter size={18} />
               <Typography variant="label">{showOnlyWorkingDays ? '全件表示' : '勤務日のみ'}</Typography>
             </Button>
-            <Button variant="solid" intent="primary" unstableClassName="rounded-xl gap-2 shadow-lg shadow-blue-100" onClick={handleExport}>
+            <Button variant="solid" intent="primary" unstableClassName="gap-2" onClick={handleExport}>
               <Download size={18} />
               <Typography variant="label">CSV エクスポート</Typography>
             </Button>
@@ -124,10 +125,10 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <Card variant="elevated" intent="primary" padding="lg" unstableClassName="border-none text-white">
-          <Typography variant="small" intent="white" unstableClassName="mb-1 font-medium italic">
+          <Typography variant="small" intent="white" unstableClassName="mb-1 font-medium">
             今月の総労働時間
           </Typography>
-          <Typography variant="h2" intent="white" unstableClassName="mb-6 text-4xl font-black">
+          <Typography variant="h2" intent="white" unstableClassName="mb-6">
             {formatJapaneseHours(summary.totalWorkHours)}
           </Typography>
           <div className="flex w-fit items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white">
@@ -142,7 +143,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
           <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">
             今月の残業時間
           </Typography>
-          <Typography variant="h2" unstableClassName="mb-6 text-4xl font-black text-gray-900">
+          <Typography variant="h2" unstableClassName="mb-6">
             {formatJapaneseHours(summary.overtimeHours)}
           </Typography>
           <div className="flex items-center gap-4">
@@ -157,7 +158,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
           <Typography variant="small" intent="muted" unstableClassName="mb-1 font-medium">
             有給取得日数
           </Typography>
-          <Typography variant="h2" unstableClassName="mb-6 text-4xl font-black text-blue-600">
+          <Typography variant="h2" intent="primary" unstableClassName="mb-6">
             {formatJapaneseDays(summary.paidLeaveDays)}
           </Typography>
           <Typography variant="small" intent="primary" unstableClassName="font-bold">
@@ -166,7 +167,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
         </Card>
       </div>
 
-      <div className="space-y-3">
+      <div className={stack.sm}>
         {visibleSchedule.map((day, index) => {
           const styles = getScheduleStatusView(day.status);
 
@@ -181,10 +182,10 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
                 <CardContent unstableClassName={`p-0 ${styles.bg}`}>
                   <div className={`flex flex-col gap-6 p-5 md:flex-row md:items-center ${styles.border}`}>
                     <div className="w-20 text-center md:text-left">
-                      <Typography variant="label" unstableClassName="block text-lg font-black leading-tight tracking-tight text-gray-900">
+                      <Typography variant="label" unstableClassName="block text-lg font-black leading-tight tracking-tight">
                         {day.date}
                       </Typography>
-                      <Typography variant="small" unstableClassName="font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                      <Typography variant="small" intent="muted" unstableClassName="font-bold uppercase tracking-widest text-[10px]">
                         {day.isToday ? `今日 / ${day.dayOfWeek}` : day.dayOfWeek}
                       </Typography>
                     </div>

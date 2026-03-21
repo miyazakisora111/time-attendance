@@ -6,12 +6,13 @@ namespace App\Exceptions;
 
 use App\Http\Responses\ApiResponse;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Auth\AuthenticationException as FrameworkAuthenticationException;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
-use Throwable;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -29,53 +30,57 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        // ドメイン例外
-        $this->renderable(function (\App\Exceptions\DomainException $e, $request) {
-            $status = $this->normalizeStatusCode($e->getCode());
-
-            Log::channel('api')->warning('Domain exception', $this->buildContext($request, $e, $status));
-
-            return ApiResponse::error(
-                message: $e->getMessage(),
-                status: $status
-            );
-        });
-
-        $this->renderable(function (AuthenticationException $e, $request) {
-            Log::channel('api')->warning('Authentication exception', $this->buildContext($request, $e, 401));
-
-            return ApiResponse::error(
-                message: $e->getMessage(),
-                status: 401
-            );
-        });
-
         // 検証エラー
         $this->renderable(function (ValidationException $e, $request) {
             return ApiResponse::error(
                 message: 'Validation failed',
                 status: 422,
-                errors: $e->errors()
+                errors: $e->errors(),
+                code: 'VALIDATION_ERROR'
             );
         });
 
-        // 未認証
-        $this->renderable(function (FrameworkAuthenticationException $e, $request) {
-            Log::channel('api')->warning('Framework authentication exception', $this->buildContext($request, $e, 401));
+        // ドメイン例外
+        $this->renderable(function (DomainException $e, $request) {
+            Log::channel('api')->warning('Domain exception', $this->buildContext($request, $e, 400));
 
             return ApiResponse::error(
-                message: 'Unauthenticated',
-                status: 401
+                message: $e->getMessage(),
+                status: 400,
+                code: $e->getErrorCode()
             );
         });
 
-        // 権限なし
+        // 認証エラー（Laravel 標準）
+        $this->renderable(function (AuthenticationException $e, $request) {
+            Log::channel('api')->warning('Authentication exception', $this->buildContext($request, $e, 401));
+
+            return ApiResponse::error(
+                message: $e->getMessage(),
+                status: 401,
+                code: 'AUTH_ERROR'
+            );
+        });
+
+        // 認可エラー（Laravel 標準）
         $this->renderable(function (AuthorizationException $e, $request) {
             Log::channel('api')->warning('Authorization exception', $this->buildContext($request, $e, 403));
 
             return ApiResponse::error(
-                message: 'Forbidden',
-                status: 403
+                message: $e->getMessage(),
+                status: 403,
+                code: 'FORBIDDEN_ERROR'
+            );
+        });
+
+        // モデル未検出
+        $this->renderable(function (ModelNotFoundException $e, $request) {
+            Log::channel('api')->warning('Model not found', $this->buildContext($request, $e, 404));
+
+            return ApiResponse::error(
+                message: 'Not Found',
+                status: 404,
+                code: 'NOT_FOUND'
             );
         });
 
@@ -91,17 +96,18 @@ class Handler extends ExceptionHandler
 
             return ApiResponse::error(
                 message: $status >= 500 ? 'Internal Server Error' : $e->getMessage(),
-                status: $status
+                status: $status,
+                code: 'INTERNAL_ERROR'
             );
         });
     }
 
     /**
-     * 例外コードを HTTP ステータスに正規化
+     * 例外コードを HTTP ステータスに正規化する。
      */
-    private function normalizeStatusCode(int $code): int
+    private function normalizeStatusCode(int $code, int $default = 500): int
     {
-        return $code >= 400 && $code < 600 ? $code : 500;
+        return $code >= 400 && $code < 600 ? $code : $default;
     }
 
     private function resolveThrowableStatus(Throwable $e): int

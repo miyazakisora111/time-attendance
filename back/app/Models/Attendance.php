@@ -155,6 +155,12 @@ class Attendance extends Model
     {
         $timezone = $this->work_timezone ?? config('app.timezone', 'Asia/Tokyo');
 
+        $clockInLocal = $this->clock_in_at?->setTimezone($timezone)->format('H:i')
+            ?? (is_string($this->start_time) ? substr($this->start_time, 0, 5) : null);
+
+        $clockOutLocal = $this->clock_out_at?->setTimezone($timezone)->format('H:i')
+            ?? (is_string($this->end_time) ? substr($this->end_time, 0, 5) : null);
+
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
@@ -162,8 +168,11 @@ class Attendance extends Model
             'work_timezone' => $timezone,
             'clock_in_at' => $this->clock_in_at?->setTimezone($timezone)->toIso8601String(),
             'clock_out_at' => $this->clock_out_at?->setTimezone($timezone)->toIso8601String(),
-            'clock_in_local_time' => $this->clock_in_at?->setTimezone($timezone)->format('H:i'),
-            'clock_out_local_time' => $this->clock_out_at?->setTimezone($timezone)->format('H:i'),
+            'clock_in_local_time' => $clockInLocal,
+            'clock_out_local_time' => $clockOutLocal,
+            // OpenAPI spec 互換（フロントエンドが参照するフィールド）
+            'start_time' => $clockInLocal,
+            'end_time' => $clockOutLocal,
             'clock_out_next_day' => $this->isCrossDayShift(),
             'break_minutes' => $this->break_minutes,
             'worked_minutes' => $this->worked_minutes,

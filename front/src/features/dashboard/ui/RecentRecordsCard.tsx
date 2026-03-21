@@ -32,31 +32,13 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100/50">
-                  <th className="px-3 py-4 text-left">
-                    <Typography variant="label" unstableClassName="text-[10px] uppercase tracking-wider text-gray-400">
-                      日付
-                    </Typography>
-                  </th>
-                  <th className="px-3 py-4 text-left">
-                    <Typography variant="label" unstableClassName="text-[10px] uppercase tracking-wider text-gray-400">
-                      出勤
-                    </Typography>
-                  </th>
-                  <th className="px-3 py-4 text-left">
-                    <Typography variant="label" unstableClassName="text-[10px] uppercase tracking-wider text-gray-400">
-                      退勤
-                    </Typography>
-                  </th>
-                  <th className="px-3 py-4 text-left">
-                    <Typography variant="label" unstableClassName="text-[10px] uppercase tracking-wider text-gray-400">
-                      勤務時間
-                    </Typography>
-                  </th>
-                  <th className="px-3 py-4 text-left">
-                    <Typography variant="label" unstableClassName="text-[10px] uppercase tracking-wider text-gray-400">
-                      状態
-                    </Typography>
-                  </th>
+                  {['日付', '出勤', '退勤', '勤務時間', '状態'].map((label) => (
+                    <th key={label} className="px-3 py-4 text-left">
+                      <Typography variant="caption" unstableClassName="text-[10px] uppercase tracking-wider">
+                        {label}
+                      </Typography>
+                    </th>
+                  ))}
                 </tr>
               </thead>
 

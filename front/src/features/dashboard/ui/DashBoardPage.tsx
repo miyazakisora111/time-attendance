@@ -1,4 +1,5 @@
 import { Container, Typography } from "@/shared/components";
+import { stack } from "@/shared/design-system/layout";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
 import {
   ClockInOutCard,
@@ -14,9 +15,9 @@ export default function DashBoardPage() {
   const name = dashboardData?.user?.name;
 
   return (
-    <div className="min-h-screen from-gray-50 to-blue-50/30">
-      <Container size="lg" unstableClassName="grid gap-8 py-8">
-        <header>
+    <div className="min-h-screen">
+      <Container size="lg" unstableClassName={`grid gap-8 py-8`}>
+        <header className={stack.sm}>
           <Typography asChild variant="h1">
             <h1>ダッシュボード</h1>
           </Typography>

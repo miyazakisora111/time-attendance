@@ -2,6 +2,7 @@ import { type SelectHTMLAttributes } from 'react';
 import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
+import { inputVariants } from '@/shared/design-system/variants/input';
 
 type SelectOption = {
     value: string | number;
@@ -34,8 +35,7 @@ export const Select = <T extends FieldValues>({
                 {...register(name)}
                 {...props}
                 className={cn(
-                    "border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
-                    fieldError ? "border-red-500" : "border-gray-300",
+                    inputVariants({ variant: fieldError ? 'error' : 'default' }),
                     unstableClassName
                 )}
             >

@@ -2,6 +2,7 @@ import { type InputHTMLAttributes } from 'react';
 import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
+import { switchTrackVariants } from '@/shared/design-system/variants/input';
 
 type SwitchNativeProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>;
 
@@ -31,8 +32,8 @@ export const Switch = <T extends FieldValues>({
                 />
                 <div
                     className={cn(
-                        "w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-2 peer-focus:ring-blue-500 peer-checked:bg-blue-500 transition-colors",
-                        fieldError && "ring-1 ring-red-500",
+                        switchTrackVariants(),
+                        fieldError && 'ring-1 ring-red-500',
                         unstableClassName
                     )}
                 />

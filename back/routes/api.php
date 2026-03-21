@@ -17,45 +17,38 @@ Route::get('/health', function () {
     ]);
 });
 
+// --- 認証不要 ---
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
-Route::post('/logout', [AuthController::class, 'logout'])->middleware(['auth:api', 'throttle:60,1']);
-Route::get('/authme', [AuthController::class, 'me'])->middleware(['auth:api', 'throttle:60,1']);
 
-Route::prefix('auth')->middleware('throttle:5,1')->group(function () {
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-});
+// --- 認証必須 ---
+Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
+    // Auth
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/authme', [AuthController::class, 'me']);
+    Route::post('/auth/refresh', [AuthController::class, 'refresh']);
 
-Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
-Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
-Route::get('/today', [AttendanceController::class, 'today']);
-Route::get('/dashboard', [DashboardController::class, 'show']);
-Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'show']);
+    Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
-Route::prefix('attendances')->group(function () {
-    Route::get('/attendance', [AttendanceController::class, 'today']);
-    Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
-    Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
-});
-
-Route::middleware(['auth:api'])->group(function () {
-    Route::prefix('auth')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me', [AuthController::class, 'me']);
-        Route::get('/calendar', [CalendarController::class, 'index']);
-    })->middleware('throttle:60,1');
-
-    Route::prefix('attendances')->middleware('throttle:60,1')->group(function () {
+    // Attendance
+    Route::prefix('attendances')->group(function () {
+        Route::get('/attendance', [AttendanceController::class, 'today']);
+        Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
+        Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
         Route::get('/', [AttendanceController::class, 'index']);
         Route::post('/', [AttendanceController::class, 'store']);
         Route::patch('/{attendance}', [AttendanceController::class, 'update']);
     });
 
-    Route::prefix('team')->middleware('throttle:60,1')->group(function () {
-        Route::get('/members', [TeamController::class, 'index']);
-    });
+    // Calendar
+    Route::get('/auth/calendar', [CalendarController::class, 'index']);
 
-    Route::prefix('settings')->middleware('throttle:60,1')->group(function () {
+    // Team
+    Route::get('/team/members', [TeamController::class, 'index']);
+
+    // Settings
+    Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'show']);
         Route::put('/', [SettingsController::class, 'update']);
     });

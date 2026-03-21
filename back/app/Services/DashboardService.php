@@ -68,7 +68,7 @@ final class DashboardService extends BaseService
 
             if ($action === 'in') {
                 if ($attendance->clock_in_at !== null || $attendance->start_time !== null) {
-                    throw new DomainException('既に出勤済みです', 409);
+                    throw new DomainException('既に出勤済みです', 'ALREADY_CLOCKED_IN');
                 }
 
                 $attendance->update([
@@ -77,11 +77,11 @@ final class DashboardService extends BaseService
                 ]);
             } elseif ($action === 'out') {
                 if ($attendance->clock_in_at === null && $attendance->start_time === null) {
-                    throw new DomainException('出勤していません', 409);
+                    throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
                 }
 
                 if ($attendance->clock_out_at !== null || $attendance->end_time !== null) {
-                    throw new DomainException('既に退勤済みです', 409);
+                    throw new DomainException('既に退勤済みです', 'ALREADY_CLOCKED_OUT');
                 }
 
                 $workedMinutes = $attendance->clock_in_at !== null
@@ -95,7 +95,7 @@ final class DashboardService extends BaseService
                 ]);
             } elseif ($action === 'break_start') {
                 if ($attendance->start_time === null || $attendance->end_time !== null) {
-                    throw new DomainException('勤務中のみ休憩を開始できます', 409);
+                    throw new DomainException('勤務中のみ休憩を開始できます', 'INVALID_BREAK_START');
                 }
 
                 $activeBreak = AttendanceBreak::query()
@@ -104,7 +104,7 @@ final class DashboardService extends BaseService
                     ->first();
 
                 if ($activeBreak !== null) {
-                    throw new DomainException('既に休憩中です', 409);
+                    throw new DomainException('既に休憩中です', 'ALREADY_ON_BREAK');
                 }
 
                 AttendanceBreak::query()->create([
@@ -119,14 +119,14 @@ final class DashboardService extends BaseService
                     ->first();
 
                 if ($activeBreak === null) {
-                    throw new DomainException('進行中の休憩がありません', 409);
+                    throw new DomainException('進行中の休憩がありません', 'NO_ACTIVE_BREAK');
                 }
 
                 $activeBreak->update([
                     'break_end' => now()->format('H:i:s'),
                 ]);
             } else {
-                throw new DomainException('不正なアクションです', 422);
+                throw new DomainException('不正なアクションです', 'INVALID_ACTION');
             }
 
             return [

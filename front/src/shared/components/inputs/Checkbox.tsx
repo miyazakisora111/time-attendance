@@ -2,6 +2,7 @@ import { type InputHTMLAttributes } from 'react';
 import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
+import { checkableVariants } from '@/shared/design-system/variants/input';
 
 type CheckboxNativeProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>;
 
@@ -27,8 +28,9 @@ export const Checkbox = <T extends FieldValues>({
                 {...register(name)}
                 {...props}
                 className={cn(
-                    "h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-500",
-                    fieldError && "border-red-500",
+                    checkableVariants(),
+                    'rounded',
+                    fieldError && 'border-red-500',
                     unstableClassName
                 )}
             />

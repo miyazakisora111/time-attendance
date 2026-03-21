@@ -42,7 +42,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
 
     const workedHours =
         todayAttendance?.totalWorkedMs != null
-            ? todayAttendance.totalWorkedMs / (1000 * 60 * 60)
+            ? todayAttendance.totalWorkedMs / 60
             : null;
     const todayWorkedTime = formatWorkedHours(workedHours);
 

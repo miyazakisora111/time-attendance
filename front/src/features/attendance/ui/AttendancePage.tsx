@@ -11,6 +11,7 @@ import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButto
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { EMPTY_TIME_TEXT } from '@/shared/presentation/format';
 import { STATUS_ICON_MAP } from '@/shared/presentation/attendance/attendanceStatus';
+import { stack } from '@/shared/design-system/layout';
 import type { AttendanceStatus } from '@/domain/attendance/attendance';
 import type { AttendanceStatusView } from '@/features/attendance/ui/types';
 
@@ -53,7 +54,7 @@ export function AttendancePage() {
 
   return (
     <Container size="full">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className={`max-w-4xl mx-auto ${stack.xl}`}>
         <Card variant="elevated" padding="lg" unstableClassName="relative overflow-hidden border-gray-100">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
@@ -122,7 +123,7 @@ export function AttendancePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card variant="elevated" padding="none" unstableClassName="col-span-1 md:col-span-2 overflow-hidden">
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
-              <Typography variant="h3" unstableClassName="flex items-center gap-2 font-bold">
+              <Typography variant="h3" unstableClassName="flex items-center gap-2">
                 <History size={18} className="text-gray-400" />
                 本日の履歴
               </Typography>
@@ -131,7 +132,7 @@ export function AttendancePage() {
               </Typography>
             </div>
             <CardContent unstableClassName="p-6">
-              <div className="space-y-6">
+              <div className={stack.lg}>
                 <AsyncDataState
                   isLoading={isLoading}
                   isError={isError}
@@ -151,9 +152,9 @@ export function AttendancePage() {
                         </Typography>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-black text-gray-900 tracking-tight">
+                        <Typography variant="h3" unstableClassName="tracking-tight tabular-nums">
                           {lastAction?.time}
-                        </p>
+                        </Typography>
                       </div>
                     </motion.div>
                   </AnimatePresence>
@@ -167,11 +168,11 @@ export function AttendancePage() {
                 <Typography variant="small" intent="white" unstableClassName="opacity-80 mb-1 font-medium">
                   現在の勤務時間
                 </Typography>
-                <Typography variant="h3" intent="white" unstableClassName="text-4xl mb-6 font-black tracking-tight">
+                <Typography variant="h3" intent="white" unstableClassName="mb-6 tracking-tight">
                   {todayWorkedTime ?? EMPTY_TIME_TEXT}
                 </Typography>
               </div>
-              <div className="space-y-4 pt-6 border-t border-blue-500/50">
+              <div className={`${stack.md} pt-6 border-t border-blue-500/50`}>
                 <div className="flex items-center justify-between">
                   <Typography variant="small" unstableClassName="text-blue-100">
                     休憩合計

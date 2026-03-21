@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Exceptions\AuthenticationException;
+use Illuminate\Auth\AuthenticationException;
 use App\DTO\UserProfile;
 use App\Models\User;
 use App\ValueObjects\Email;

@@ -24,7 +24,9 @@ export const StatItemCard = React.memo(function StatItemCard({
     <Card variant="elevated">
       <CardHeader unstableClassName="space-y-0 pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle unstableClassName="text-sm font-medium text-gray-500">{label}</CardTitle>
+          <CardTitle unstableClassName="text-sm">
+            <Typography variant="caption">{label}</Typography>
+          </CardTitle>
           <IconWrapper
             icon={icon}
             iconColor={iconColor}

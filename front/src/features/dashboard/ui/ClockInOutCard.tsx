@@ -7,6 +7,7 @@ import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClo
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { ClockTodayRecord } from "@/features/dashboard/ui/ClockTodayRecord";
 import { getClockStatusBadgeView } from "@/shared/presentation/attendance/attendanceStatus";
+import { stack } from "@/shared/design-system/layout";
 
 /**
  * ダッシュボードの打刻カード。
@@ -39,7 +40,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
           <Badge intent={statusView.intent}>{statusView.text}</Badge>
         </div>
       </CardHeader>
-      <CardContent unstableClassName="space-y-6">
+      <CardContent unstableClassName={stack.lg}>
         <Clock />
         <ClockActionButtons
           status={status}

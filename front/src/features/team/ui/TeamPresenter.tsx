@@ -1,11 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Users, UserPlus, Search, MoreVertical, Mail, 
-  Building2, CheckCircle2, Clock, Coffee, XCircle, 
-  ChevronRight 
+import {
+  Users, UserPlus, Search, MoreVertical, Mail,
+  Building2, CheckCircle2, Clock, Coffee, XCircle,
+  ChevronRight
 } from 'lucide-react';
 import { Card, CardContent, Button, Typography, Badge } from '@/shared/components';
+import { inputVariants } from '@/shared/design-system/variants/input';
+import { stack } from '@/shared/design-system/layout';
 import type { TeamMember } from '@/domain/team/types';
 import { getTeamMemberStatusView } from '@/shared/presentation/team';
 
@@ -41,7 +43,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
   departments,
 }) => {
   return (
-    <div className="space-y-8">
+    <div className={stack.xl}>
       {/* Stats Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
@@ -80,7 +82,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                     onClick={() => setFilterDept(dept)}
                     unstableClassName="px-4 py-1.5 rounded-full shadow-lg shadow-blue-100/20"
                   >
-                    <Typography variant="label" unstableClassName={filterDept === dept ? "text-white" : "text-gray-500"}>
+                    <Typography variant="label" intent={filterDept === dept ? 'white' : 'muted'}>
                       {dept}
                     </Typography>
                   </Button>
@@ -96,7 +98,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                   placeholder="名前や部署で検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 focus:ring-blue-500 w-full md:w-64"
+                  className={`${inputVariants({ variant: 'filled' })} pl-10 w-full md:w-64`}
                 />
               </div>
               <Button variant="solid" intent="primary" unstableClassName="rounded-xl gap-2 px-6">
@@ -112,11 +114,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50">
-                  <th className="px-8 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">メンバー</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">部署 / 役職</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">ステータス</Typography></th>
-                  <th className="px-6 py-4"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">本日の出勤</Typography></th>
-                  <th className="px-8 py-4 text-right"><Typography variant="label" unstableClassName="text-xs text-gray-400 uppercase tracking-wider">アクション</Typography></th>
+                  <th className="px-8 py-4"><Typography variant="caption">メンバー</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="caption">部署 / 役職</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="caption">ステータス</Typography></th>
+                  <th className="px-6 py-4"><Typography variant="caption">本日の出勤</Typography></th>
+                  <th className="px-8 py-4 text-right"><Typography variant="caption">アクション</Typography></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -124,11 +126,11 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                   const status = getTeamMemberStatusView(member.status);
                   const StatusIcon = teamMemberStatusIconMap[member.status];
                   return (
-                    <motion.tr 
+                    <motion.tr
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03 }}
-                      key={member.id} 
+                      key={member.id}
                       className="group hover:bg-blue-50/30 transition-colors"
                     >
                       <td className="px-8 py-5">

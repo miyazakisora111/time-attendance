@@ -1,6 +1,7 @@
 import { TriangleAlert, X } from 'lucide-react';
 import { Button, Typography } from '@/shared/components';
 import { useError } from '@/shared/contexts/useError';
+import { stack } from '@/shared/design-system/layout';
 
 export function ErrorModal() {
 	const { isOpen, title, messages, closeError } = useError();
@@ -18,7 +19,7 @@ export function ErrorModal() {
 							<TriangleAlert size={18} />
 						</div>
 						<div>
-							<Typography variant="h3" unstableClassName="text-lg font-bold text-gray-900">
+							<Typography variant="h3" unstableClassName="text-lg">
 								{title}
 							</Typography>
 							<Typography variant="small" intent="muted" unstableClassName="mt-1 text-sm">
@@ -37,7 +38,7 @@ export function ErrorModal() {
 				</div>
 
 				<div className="max-h-72 overflow-y-auto px-6 py-4">
-					<ul className="space-y-2">
+					<ul className={stack.sm}>
 						{messages.map((message, index) => (
 							<li
 								key={`${message}-${index}`}

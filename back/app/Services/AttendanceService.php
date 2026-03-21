@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -32,7 +33,7 @@ final class AttendanceService extends BaseService
                 ->first();
 
             if ($openAttendance !== null) {
-                throw new DomainException('未退勤の勤務が存在します', 409);
+                throw new DomainException('未退勤の勤務が存在します', 'OPEN_ATTENDANCE_EXISTS');
             }
 
             $attendance = Attendance::query()->create([
@@ -60,14 +61,14 @@ final class AttendanceService extends BaseService
                 ->first();
 
             if ($attendance === null) {
-                throw new DomainException('出勤していません', 409);
+                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
             $timezone = $attendance->work_timezone ?: self::DEFAULT_TIMEZONE;
             $now = CarbonImmutable::now($timezone);
 
             if ($attendance->clock_in_at !== null && $now->lte($attendance->clock_in_at->setTimezone($timezone))) {
-                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 422);
+                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
             }
 
             $workedMinutes = $attendance->clock_in_at?->diffInMinutes($now);
@@ -132,7 +133,7 @@ final class AttendanceService extends BaseService
     public function update(User $user, Attendance $attendance, array $input): array
     {
         if ($attendance->user_id !== $user->id) {
-            throw new DomainException('対象データにアクセスできません', 403);
+            throw new AuthorizationException('対象データにアクセスできません');
         }
 
         return $this->transaction(function () use ($attendance, $input): array {
@@ -172,7 +173,7 @@ final class AttendanceService extends BaseService
             $clockOutAt = $this->parseLocalDateTime($clockOutDate, $clockOutLocal, $timezone);
 
             if ($clockOutAt->lte($clockInAt)) {
-                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 422);
+                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
             }
         }
 
@@ -200,7 +201,7 @@ final class AttendanceService extends BaseService
         $dateTime = CarbonImmutable::createFromFormat('Y-m-d H:i', sprintf('%s %s', $date, $time), $timezone);
 
         if ($dateTime === false) {
-            throw new DomainException('日時の解釈に失敗しました', 422);
+            throw new DomainException('日時の解釈に失敗しました', 'DATETIME_PARSE_ERROR');
         }
 
         return $dateTime;

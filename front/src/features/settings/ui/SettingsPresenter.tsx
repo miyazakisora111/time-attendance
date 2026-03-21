@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, Label, Typography } from '@/shared/components';
+import { inputVariants } from '@/shared/design-system/variants/input';
+import { stack } from '@/shared/design-system/layout';
 import type { AppSettingsNotifications, AppSettingsSecurity, SettingsSection } from '@/domain/settings/types';
 import type { UpdateSettingsRequestProfile } from '@/__generated__/model';
 import {
@@ -105,7 +107,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
     <div className="mx-auto max-w-6xl">
       <div className="flex flex-col gap-8 md:flex-row">
         <aside className="w-full shrink-0 md:w-64">
-          <div className="space-y-1">
+          <div className={stack.xs}>
             {settingsSections.map((section) => {
               const SectionIcon = settingsSectionIconMap[section.id];
 
@@ -120,7 +122,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                   <SectionIcon size={18} />
                   <Typography
                     variant="label"
-                    unstableClassName={activeSection === section.id ? 'text-white' : 'text-gray-500'}
+                    intent={activeSection === section.id ? 'white' : 'muted'}
                   >
                     {section.label}
                   </Typography>
@@ -174,7 +176,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                           type="text"
                           value={profile.name}
                           onChange={(event) => setProfileField('name', event.target.value)}
-                          className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                          className={inputVariants({ variant: 'filled' })}
                         />
                       </div>
                       <div className="space-y-2">
@@ -185,7 +187,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                           type="email"
                           value={profile.email}
                           onChange={(event) => setProfileField('email', event.target.value)}
-                          className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                          className={inputVariants({ variant: 'filled' })}
                         />
                       </div>
                     </div>
@@ -233,7 +235,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                               onChange={(event) => setNotification(item.id, event.target.checked)}
                               className="peer sr-only"
                             />
-                            <div className="h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                            <div className="h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white" />
                           </label>
                         </div>
                       );
@@ -275,7 +277,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                               <ThemeIcon size={24} />
                               <Typography
                                 variant="label"
-                                unstableClassName={theme === option.id ? 'text-white' : 'text-gray-500'}
+                                intent={theme === option.id ? 'white' : 'muted'}
                               >
                                 {option.label}
                               </Typography>
@@ -292,7 +294,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                       <select
                         value={language}
                         onChange={(event) => setLanguage(event.target.value as SettingsLanguageCode)}
-                        className="w-full rounded-xl border-none bg-gray-50 p-3 text-sm focus:ring-2 focus:ring-blue-500"
+                        className={inputVariants({ variant: 'filled' })}
                       >
                         {settingsLanguageOptions.map((option) => (
                           <option key={option.value} value={option.value}>
@@ -372,8 +374,8 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
           </AnimatePresence>
 
           <div className="flex items-center justify-end gap-3 pt-6">
-            <Button variant="ghost" unstableClassName="rounded-xl" onClick={handleReset} disabled={isSaving}>
-              <Typography variant="label" unstableClassName="text-gray-500">リセット</Typography>
+            <Button variant="ghost" onClick={handleReset} disabled={isSaving}>
+              <Typography variant="label" intent="muted">リセット</Typography>
             </Button>
             <Button
               onClick={handleSave}
