@@ -4,7 +4,7 @@ import {
     AlertCircle,
     type LucideIcon,
 } from 'lucide-react';
-import type { AttendanceStatus } from '@/domain/attendance/attendance';
+import type { AttendanceStatus } from '@/__generated__/enums';
 
 export type AttendanceStatusIconSpec = {
     icon: LucideIcon;

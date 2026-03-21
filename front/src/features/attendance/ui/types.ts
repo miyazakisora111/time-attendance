@@ -1,4 +1,4 @@
-import type { ClockAction } from '@/domain/attendance/attendance';
+import type { ClockAction } from '@/__generated__/enums';
 
 /** 勤怠 */
 export type AttendanceView = {

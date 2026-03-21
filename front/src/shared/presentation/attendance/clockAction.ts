@@ -1,4 +1,4 @@
-import type { ClockAction } from '@/domain/attendance/attendance';
+import type { ClockAction } from '@/__generated__/enums';
 import type { VariantProps } from 'class-variance-authority';
 import type { badgeVariants } from '@/shared/design-system/variants/badge';
 

@@ -8,13 +8,9 @@ import type {
   UpdateSettingsRequestNotifications,
   UpdateSettingsRequestProfile,
 } from '@/__generated__/model';
-import type {
-  AppSettings,
-  Language,
-  SettingsSection,
-  Theme,
-} from '@/domain/settings/types';
-import { LANGUAGE, SETTINGS_SECTION, THEME } from '@/domain/settings/types';
+import type { AppSettings, SettingsSection } from '@/domain/settings/types';
+import { SETTINGS_SECTION } from '@/domain/settings/types';
+import { ThemeType, LanguageCode } from '@/__generated__/enums';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /**
@@ -38,7 +34,7 @@ const buildDraftSettings = (settings?: AppSettings): UpdateSettingsRequest => ({
     approvalNotification: settings?.notifications.approvalNotification ?? true,
     leaveReminder: settings?.notifications.leaveReminder ?? true,
   },
-  theme: settings?.theme ?? THEME.Light,
+  theme: settings?.theme ?? ThemeType.Light,
   language: settings?.language ?? DEFAULT_SETTINGS_LANGUAGE,
 });
 
@@ -115,12 +111,12 @@ export const useSettings = () => {
     [editingSettings.notifications],
   );
 
-  const theme = useMemo<Theme>(
+  const theme = useMemo<ThemeType>(
     () => editingSettings.theme,
     [editingSettings.theme],
   );
 
-  const language = useMemo<Language>(
+  const language = useMemo<LanguageCode>(
     () => editingSettings.language,
     [editingSettings.language],
   );
@@ -133,7 +129,7 @@ export const useSettings = () => {
   /**
    * テーマ更新ハンドラー。
    */
-  const setTheme = (nextTheme: Theme) => {
+  const setTheme = (nextTheme: ThemeType) => {
     setDraftSettings((prev) => ({
       ...(prev ?? baseDraft),
       theme: nextTheme,
@@ -143,7 +139,7 @@ export const useSettings = () => {
   /**
    * 言語更新ハンドラー。
    */
-  const setLanguage = (nextLanguage: Language) => {
+  const setLanguage = (nextLanguage: LanguageCode) => {
     setDraftSettings((prev) => ({
       ...(prev ?? baseDraft),
       language: nextLanguage,
@@ -221,6 +217,6 @@ export const useSettings = () => {
     setLanguage,
     handleReset,
     handleSave,
-    languageOptions: [LANGUAGE.Ja, LANGUAGE.En],
+    languageOptions: [LanguageCode.Ja, LanguageCode.En],
   };
 };

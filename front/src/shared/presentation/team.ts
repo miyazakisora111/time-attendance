@@ -1,4 +1,4 @@
-import type { MemberStatus } from '@/domain/team/types';
+import type { TeamMemberStatus } from '@/__generated__/enums';
 
 type TeamMemberBadgeIntent = 'default' | 'primary' | 'success' | 'warning';
 
@@ -7,7 +7,7 @@ interface TeamMemberStatusView {
   intent: TeamMemberBadgeIntent;
 }
 
-const teamMemberStatusViewMap: Record<MemberStatus, TeamMemberStatusView> = {
+const teamMemberStatusViewMap: Record<TeamMemberStatus, TeamMemberStatusView> = {
   working: { label: '勤務中', intent: 'success' },
   break: { label: '休憩中', intent: 'warning' },
   leave: { label: '休暇', intent: 'primary' },
@@ -27,7 +27,7 @@ export interface TeamMember {
   /** 所属部署 */
   department: string;
   /** 勤務ステータス */
-  status: MemberStatus;
+  status: TeamMemberStatus;
   /** 出勤時刻 */
   clockInTime?: string;
   /** メールアドレス */
@@ -36,6 +36,6 @@ export interface TeamMember {
   avatar?: string;
 }
 
-export const getTeamMemberStatusView = (status: MemberStatus): TeamMemberStatusView => {
+export const getTeamMemberStatusView = (status: TeamMemberStatus): TeamMemberStatusView => {
   return teamMemberStatusViewMap[status];
 };

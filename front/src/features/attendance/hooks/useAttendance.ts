@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { type AttendanceStatus } from '@/domain/attendance/attendance';
+import type { AttendanceStatus } from '@/__generated__/enums';
 import { useAttendanceClock } from '@/features/attendance/hooks/useAttendanceClock';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 import { type LastAction } from '@/features/attendance/ui/types';

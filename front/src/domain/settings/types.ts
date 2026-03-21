@@ -1,28 +1,4 @@
-/**
- * テーマ定数。
- */
-export const THEME = {
-  Light: 'light',
-  Dark: 'dark',
-} as const;
-
-/**
- * テーマ型。
- */
-export type Theme = typeof THEME[keyof typeof THEME];
-
-/**
- * 言語定数。
- */
-export const LANGUAGE = {
-  Ja: 'ja',
-  En: 'en',
-} as const;
-
-/**
- * 言語型。
- */
-export type Language = typeof LANGUAGE[keyof typeof LANGUAGE];
+import type { ThemeType, LanguageCode } from '@/__generated__/enums';
 
 /**
  * プロフィール設定。
@@ -61,8 +37,8 @@ export interface AppSettings {
   profile: AppSettingsProfile;
   notifications: AppSettingsNotifications;
   security: AppSettingsSecurity;
-  theme: Theme;
-  language: Language;
+  theme: ThemeType;
+  language: LanguageCode;
 }
 
 /**

@@ -5,14 +5,13 @@ import {
   History,
 } from 'lucide-react';
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
-import type { ClockStatus } from '@/domain/attendance/attendance';
+import type { ClockStatus, AttendanceStatus } from '@/__generated__/enums';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { EMPTY_TIME_TEXT } from '@/shared/utils/format';
 import { getAttendanceStatusIconSpec } from '@/shared/presentation/attendance/attendanceStatus';
 import { stack } from '@/shared/design-system/layout';
-import type { AttendanceStatus } from '@/domain/attendance/attendance';
 
 /** 勤怠ステータス */
 export interface AttendanceStatusView {

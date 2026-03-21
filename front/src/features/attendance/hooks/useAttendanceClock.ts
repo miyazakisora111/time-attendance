@@ -1,11 +1,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
+import type { AttendanceStatus, ClockAction, ClockStatus } from '@/__generated__/enums';
 import {
     actionToClockStatusMap,
     clockStatusToAttendanceStatusMap,
-    type AttendanceStatus,
-    type ClockAction,
-    type ClockStatus
 } from '@/domain/attendance/attendance';
 import {
     attendanceQueryKeys,

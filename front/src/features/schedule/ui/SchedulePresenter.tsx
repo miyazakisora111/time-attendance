@@ -14,7 +14,8 @@ import {
 import { Badge, Button, Card, CardContent, Typography } from '@/shared/components';
 import { cn } from '@/shared/utils/style';
 import { stack } from '@/shared/design-system/layout';
-import type { DaySchedule, ScheduleSummary, DayScheduleStatus } from '@/domain/schedule/types';
+import type { DaySchedule, ScheduleSummary } from '@/domain/schedule/types';
+import type { CalendarDayStatus } from '@/__generated__/enums';
 import {
   formatJapaneseDays,
   formatJapaneseHours,
@@ -33,7 +34,7 @@ interface ScheduleStatusView {
   shiftFallback: string;
 }
 
-const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
+const scheduleStatusViewMap: Record<CalendarDayStatus, ScheduleStatusView> = {
   working: {
     border: 'border-l-4 border-blue-500',
     bg: 'bg-white',
@@ -68,7 +69,7 @@ const scheduleStatusViewMap: Record<DayScheduleStatus, ScheduleStatusView> = {
   },
 };
 
-const getScheduleStatusView = (status: DayScheduleStatus): ScheduleStatusView => {
+const getScheduleStatusView = (status: CalendarDayStatus): ScheduleStatusView => {
   return scheduleStatusViewMap[status];
 };
 

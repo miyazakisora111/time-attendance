@@ -1,4 +1,4 @@
-import type { ClockStatus } from '@/domain/attendance/attendance';
+import type { ClockStatus } from '@/__generated__/enums';
 import type { VariantProps } from 'class-variance-authority';
 import type { badgeVariants } from '@/shared/design-system/variants/badge';
 

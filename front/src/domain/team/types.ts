@@ -1,17 +1,4 @@
-/**
- * チームメンバーの勤務状態定数。
- */
-export const MEMBER_STATUS = {
-  Working: 'working',
-  Break: 'break',
-  Off: 'off',
-  Leave: 'leave',
-} as const;
-
-/**
- * チームメンバーの勤務状態。
- */
-export type MemberStatus = typeof MEMBER_STATUS[keyof typeof MEMBER_STATUS];
+import type { TeamMemberStatus } from '@/__generated__/enums';
 
 /**
  * チームメンバー情報。
@@ -22,6 +9,6 @@ export interface TeamMember {
   email: string;
   department: string;
   role: string;
-  status: MemberStatus;
+  status: TeamMemberStatus;
   clockInTime: string | null;
 }
