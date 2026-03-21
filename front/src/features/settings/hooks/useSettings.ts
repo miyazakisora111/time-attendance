@@ -10,7 +10,7 @@ import type {
 } from '@/__generated__/model';
 import type { AppSettings, SettingsSection } from '@/domain/settings/types';
 import { SETTINGS_SECTION } from '@/domain/settings/types';
-import { ThemeType, LanguageCode } from '@/__generated__/enums';
+import type { ThemeType, LanguageCode } from '@/__generated__/enums';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
 
 /**
@@ -34,7 +34,7 @@ const buildDraftSettings = (settings?: AppSettings): UpdateSettingsRequest => ({
     approvalNotification: settings?.notifications.approvalNotification ?? true,
     leaveReminder: settings?.notifications.leaveReminder ?? true,
   },
-  theme: settings?.theme ?? ThemeType.Light,
+  theme: settings?.theme ?? 'light',
   language: settings?.language ?? DEFAULT_SETTINGS_LANGUAGE,
 });
 
@@ -217,6 +217,6 @@ export const useSettings = () => {
     setLanguage,
     handleReset,
     handleSave,
-    languageOptions: [LanguageCode.Ja, LanguageCode.En],
+    languageOptions: ['ja', 'en'] as const,
   };
 };

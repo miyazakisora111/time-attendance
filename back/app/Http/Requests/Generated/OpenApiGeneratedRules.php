@@ -133,7 +133,7 @@ final class OpenApiGeneratedRules
             'recentRecords.*.clockIn' => ['required', 'nullable', 'string'],
             'recentRecords.*.clockOut' => ['required', 'nullable', 'string'],
             'recentRecords.*.workHours' => ['required', 'nullable', 'numeric'],
-            'recentRecords.*.status' => ['required', 'in:通常,残業,休日'],
+            'recentRecords.*.status' => ['required', 'in:working,out,break'],
             'pendingOvertimeRequests' => ['required', 'integer'],
         ],
         'ErrorResponse' => [
@@ -204,7 +204,8 @@ final class OpenApiGeneratedRules
             'user.roles' => ['required', 'array'],
             'user.roles.*' => ['required', 'string'],
             'user.settings' => ['sometimes', 'nullable', 'array'],
-            'user.settings.*' => ['sometimes', 'array'],
+            'user.settings.theme' => ['required', 'in:light,dark'],
+            'user.settings.language' => ['required', 'in:ja,en'],
         ],
         'ValidationErrorResponse' => [
             'message' => ['sometimes', 'string'],
@@ -392,7 +393,8 @@ final class OpenApiGeneratedRules
             'user.roles' => 'ロール一覧',
             'user.roles.*' => 'ロール一覧',
             'user.settings' => 'ユーザー設定',
-            'user.settings.*' => 'ユーザー設定',
+            'user.settings.theme' => 'テーマ設定',
+            'user.settings.language' => '言語設定',
         ],
         'ValidationErrorResponse' => [
             'message' => 'メッセージ',

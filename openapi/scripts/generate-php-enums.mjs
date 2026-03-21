@@ -7,7 +7,7 @@
  * back/app/Enums/Generated/*.php を生成する。
  *
  * 使い方:
- *   node scripts/generate-php-enums.mjs
+ *   node openapi/scripts/generate-php-enums.mjs
  *
  * ⚠️ 生成先の PHP ファイルは自動生成物のため手動編集禁止。
  */
@@ -16,13 +16,14 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
+import { render } from './templates/render.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 
 const enumsDir = path.join(rootDir, 'openapi/components/enums');
-const outputDir = path.join(rootDir, 'back/app/Enums/Generated');
+const outputDir = path.join(rootDir, 'back/app/__Generated__/Enums');
 
 // ────────────────────────────────────────
 // ヘルパー
@@ -50,9 +51,9 @@ const ensureDir = async (filePath) => {
  *
  * @param {string} name        enum 名 (例: "ClockAction")
  * @param {object} schema      パース済み YAML オブジェクト
- * @returns {string}           PHP ソースコード
+ * @returns {Promise<string>}  PHP ソースコード
  */
-const renderPhpEnum = (name, schema) => {
+const renderPhpEnum = async (name, schema) => {
     const values = schema.enum ?? [];
     const description = schema.description ?? `${name} 列挙型`;
 
@@ -60,55 +61,7 @@ const renderPhpEnum = (name, schema) => {
         .map((v) => `    case ${toCaseName(v)} = '${v}';`)
         .join('\n');
 
-    const labelEntries = values
-        .map((v) => `            self::${toCaseName(v)} => '${v}',`)
-        .join('\n');
-
-    const valuesArray = values
-        .map((v) => `            self::${toCaseName(v)},`)
-        .join('\n');
-
-    return `<?php
-
-declare(strict_types=1);
-
-namespace App\\Enums\\Generated;
-
-/**
- * ${description}
- *
- * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
- * Source: openapi/components/enums/${name}.yaml
- */
-enum ${name}: string
-{
-${cases}
-
-    /**
-     * 表示用ラベルを返す
-     */
-    public function label(): string
-    {
-        return match ($this) {
-${labelEntries}
-        };
-    }
-
-    /**
-     * 全ケースの値配列を返す
-     *
-     * @return list<string>
-     */
-    public static function values(): array
-    {
-        return array_map(
-            static fn (self $case): string => $case->value,
-            self::cases(),
-        );
-    }
-}
-`;
+    return render('php-enum-template.tpl.php', { name, description, cases });
 };
 
 // ────────────────────────────────────────
@@ -139,7 +92,7 @@ const main = async () => {
             continue;
         }
 
-        const phpCode = renderPhpEnum(name, schema);
+        const phpCode = await renderPhpEnum(name, schema);
         const outPath = path.join(outputDir, `${name}.php`);
         await fs.writeFile(outPath, phpCode, 'utf-8');
         generated.push({ name, values: schema.enum, file });

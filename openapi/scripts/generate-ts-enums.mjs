@@ -7,12 +7,11 @@
  * front/src/__generated__/enums.ts を生成する。
  *
  * 出力形式:
- *   - const オブジェクト（値 → 値 のマッピング）
- *   - Union 型 (type ClockAction = 'in' | 'out' | ...)
- *   - values 配列 (readonly string[])
+ *   - const 配列 (readonly tuple)
+ *   - Union 型 (type X = (typeof X)[number])
  *
  * 使い方:
- *   node scripts/generate-ts-enums.mjs
+ *   node openapi/scripts/generate-ts-enums.mjs
  *
  * ⚠️ 生成先の TS ファイルは自動生成物のため手動編集禁止。
  */
@@ -21,6 +20,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
+import { render } from './templates/render.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,13 +32,6 @@ const outputPath = path.join(rootDir, 'front/src/__generated__/enums.ts');
 // ────────────────────────────────────────
 // ヘルパー
 // ────────────────────────────────────────
-
-/** "break_start" → "BreakStart" */
-const toPascalCase = (value) =>
-    String(value)
-        .split(/[_\-\s]+/)
-        .map((s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
-        .join('');
 
 /** ディレクトリが存在しなければ作成 */
 const ensureDir = async (filePath) => {
@@ -55,34 +48,18 @@ const ensureDir = async (filePath) => {
  *
  * @param {string} name     enum 名 (例: "ClockAction")
  * @param {object} schema   パース済み YAML スキーマ
- * @returns {string}        TypeScript ソースコード断片
+ * @returns {Promise<string>}  TypeScript ソースコード断片
  */
-const renderTsEnum = (name, schema) => {
+const renderTsEnum = async (name, schema) => {
     const values = schema.enum ?? [];
     const description = schema.description ?? name;
 
-    // const object entries: { BreakStart: 'break_start' as const, ... }
-    const constEntries = values
-        .map((v) => `  ${toPascalCase(v)}: '${v}' as const,`)
+    // const array entries: 'in', 'out', ...
+    const cases = values
+        .map((v) => `  '${v}',`)
         .join('\n');
 
-    // Union type: 'in' | 'out' | 'break_start' | 'break_end'
-    const unionType = values.map((v) => `'${v}'`).join(' | ');
-
-    // values 配列
-    const valuesArray = values.map((v) => `'${v}'`).join(', ');
-
-    return `
-/**
- * ${description}
- * @source openapi/components/enums/${name}.yaml
- */
-export const ${name} = {
-${constEntries}
-} as const;
-export type ${name} = (typeof ${name})[keyof typeof ${name}];
-export const ${name}Values = [${valuesArray}] as const;
-`;
+    return render('ts-enum-template.ts', { name, description, cases });
 };
 
 // ────────────────────────────────────────
@@ -99,15 +76,7 @@ const main = async () => {
 
     await ensureDir(outputPath);
 
-    const header = `/**
- * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
- * Source: openapi/components/enums/*.yaml
- */
-
-/* eslint-disable */
-/* prettier-ignore */
-`;
+    const header = await render('ts-enum-header-template.ts', {});
 
     const blocks = [];
 
@@ -122,7 +91,7 @@ const main = async () => {
             continue;
         }
 
-        blocks.push(renderTsEnum(name, schema));
+        blocks.push(await renderTsEnum(name, schema));
     }
 
     const output = header + blocks.join('\n');

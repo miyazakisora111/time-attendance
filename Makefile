@@ -107,27 +107,27 @@ openapi-zod: openapi-bundle
 	npx --prefix $(FRONT_DIR) openapi-zod $(BUNDLE) -o $(FRONT_DIR)/src/__generated__/zod.ts
 
 openapi-validators: openapi-bundle openapi-zod
-	node scripts/generate-openapi-validators.mjs
+	node openapi/scripts/generate-openapi-validators.mjs
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi-examples: openapi-bundle
-	node scripts/generate-openapi-examples.mjs
+	node openapi/scripts/generate-openapi-examples.mjs
 
 openapi-clean:
 	rm -rf $(OPENAPI_DIR)/build/*
 	rm -rf $(OPENAPI_DIR)/examples/*
 	rm -rf $(FRONT_DIR)/src/__generated__/*
-	rm -rf $(BACK_DIR)/app/Enums/Generated/*
+	rm -rf $(BACK_DIR)/app/__Generated__/Enums/*
 
 openapi-enums:
-	node scripts/generate-php-enums.mjs
-	node scripts/generate-ts-enums.mjs
+	node openapi/scripts/generate-php-enums.mjs
+	node openapi/scripts/generate-ts-enums.mjs
 
 openapi-enums-check:
 	@echo "=== Checking generated enums are up-to-date ==="
-	@node scripts/generate-php-enums.mjs
-	@node scripts/generate-ts-enums.mjs
-	@git diff --exit-code $(BACK_DIR)/app/Enums/Generated/ $(FRONT_DIR)/src/__generated__/enums.ts \
+	@node openapi/scripts/generate-php-enums.mjs
+	@node openapi/scripts/generate-ts-enums.mjs
+	@git diff --exit-code $(BACK_DIR)/app/__Generated__/Enums/ $(FRONT_DIR)/src/__generated__/enums.ts \
 		|| (echo "❌ Generated enums are out of date. Run: make openapi-enums" && exit 1)
 	@echo "✅ Generated enums are up-to-date"
 

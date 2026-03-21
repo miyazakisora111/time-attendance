@@ -115,7 +115,7 @@ export const validationSchemas = {
         clockIn: z.string().trim().min(1, `${labelOf("clockIn")}は必須です。`).nullable(),
         clockOut: z.string().trim().min(1, `${labelOf("clockOut")}は必須です。`).nullable(),
         workHours: z.number().nullable(),
-        status: z.enum(['通常', '残業', '休日']),
+        status: z.enum(['working', 'out', 'break']),
       })),
     pendingOvertimeRequests: z.number().int(),
   }),
@@ -190,7 +190,10 @@ export const validationSchemas = {
         name: z.string().trim().min(1, `${labelOf("name")}は必須です。`),
         email: z.string().trim().min(1, `${labelOf("email")}は必須です。`).email(`${labelOf("email")}の形式が正しくありません。`),
         roles: z.array(z.string().trim().min(1, `${labelOf("item")}は必須です。`)),
-        settings: z.record(z.string(), z.unknown()).nullable().optional(),
+        settings: z.object({
+        theme: z.enum(['light', 'dark']).optional(),
+        language: z.enum(['ja', 'en']).optional(),
+      }).nullable().optional(),
       }),
   }),
   ValidationErrorResponse: generatedComponents.schemas.ValidationErrorResponse.extend({

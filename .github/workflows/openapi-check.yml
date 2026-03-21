@@ -4,10 +4,10 @@ on:
   pull_request:
     paths:
       - "openapi/**"
-      - "scripts/generate-*.mjs"
+      - "openapi/scripts/generate-*.mjs"
       - "orval.config.ts"
       - "front/src/__generated__/**"
-      - "back/app/Enums/Generated/**"
+      - "back/app/__Generated__/Enums/**"
       - "back/app/Http/Requests/Generated/**"
 
 concurrency:
@@ -55,12 +55,12 @@ jobs:
       # Enum の生成 → diff チェック
       - name: Generate enums
         run: |
-          node scripts/generate-php-enums.mjs
-          node scripts/generate-ts-enums.mjs
+          node openapi/scripts/generate-php-enums.mjs
+          node openapi/scripts/generate-ts-enums.mjs
 
       - name: Check enum drift
         run: |
-          if ! git diff --exit-code back/app/Enums/Generated/ front/src/__generated__/enums.ts; then
+          if ! git diff --exit-code back/app/__Generated__/Enums/ front/src/__generated__/enums.ts; then
             echo ""
             echo "❌ Generated enums are out of date."
             echo "   Run: make openapi-enums"
@@ -78,7 +78,7 @@ jobs:
 
       - name: Check validator drift
         run: |
-          node scripts/generate-openapi-validators.mjs
+          node openapi/scripts/generate-openapi-validators.mjs
           if ! git diff --exit-code back/app/Http/Requests/Generated/; then
             echo ""
             echo "❌ Generated Laravel validation rules are out of date."

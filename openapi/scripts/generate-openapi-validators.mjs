@@ -4,6 +4,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
+import { render } from './templates/render.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -544,32 +545,20 @@ const createLaravelBuilder = (resolveSchema, fieldSpecsByKey) => {
   return { buildRules };
 };
 
-const renderFrontFile = (schemaNames, schemas, toZodExpr) => {
-  const lines = [];
-
-  lines.push('// This file is auto-generated. Do not edit manually.');
-  lines.push('// Source: openapi/build/bundle.json + front/src/__generated__/zod.ts + field-labels.json');
-  lines.push('');
-  lines.push("import { z } from 'zod';");
-  lines.push("import { components as generatedComponents } from './zod';");
-  lines.push("import labelsJson from './field-labels.json';");
-  lines.push('');
-  lines.push('const labels = labelsJson as Record<string, string>;');
-  lines.push('const labelOf = (field: string): string => labels[field] ?? field;');
-  lines.push('');
-  lines.push('export const validationSchemas = {');
+const renderFrontFile = async (schemaNames, schemas, toZodExpr) => {
+  const schemaLines = [];
 
   schemaNames.forEach((schemaName) => {
     const schema = schemas[schemaName];
     const resolved = schema && typeof schema === 'object' ? schema : {};
 
     if (!resolved.properties || typeof resolved.properties !== 'object') {
-      lines.push(`  ${schemaName}: generatedComponents.schemas.${schemaName},`);
+      schemaLines.push(`  ${schemaName}: generatedComponents.schemas.${schemaName},`);
       return;
     }
 
     const requiredSet = new Set(Array.isArray(resolved.required) ? resolved.required : []);
-    lines.push(`  ${schemaName}: generatedComponents.schemas.${schemaName}.extend({`);
+    schemaLines.push(`  ${schemaName}: generatedComponents.schemas.${schemaName}.extend({`);
 
     Object.entries(resolved.properties).forEach(([propertyName, propertySchema]) => {
       const expr = toZodExpr(propertySchema, requiredSet.has(propertyName), [schemaName, propertyName]);
@@ -578,18 +567,13 @@ const renderFrontFile = (schemaNames, schemas, toZodExpr) => {
         .map((line, index) => (index === 0 ? line : `      ${line}`))
         .join('\n');
 
-      lines.push(`    ${propertyName}: ${indentedExpr},`);
+      schemaLines.push(`    ${propertyName}: ${indentedExpr},`);
     });
 
-    lines.push('  }),');
+    schemaLines.push('  }),');
   });
 
-  lines.push('} as const;');
-  lines.push('');
-  lines.push('export type ValidationSchemaName = keyof typeof validationSchemas;');
-  lines.push('');
-
-  return `${lines.join('\n')}`;
+  return render('zod-validation-template.ts', { schemas: schemaLines.join('\n') });
 };
 
 const fieldLabelFromRulePath = (pathKey, labels) => {
@@ -598,74 +582,35 @@ const fieldLabelFromRulePath = (pathKey, labels) => {
   return labels[field] ?? field;
 };
 
-const renderBackFile = (schemaNames, schemaRuleMap, labels) => {
-  const lines = [];
-
-  lines.push('<?php');
-  lines.push('');
-  lines.push('declare(strict_types=1);');
-  lines.push('');
-  lines.push('namespace App\\Http\\Requests\\Generated;');
-  lines.push('');
-  lines.push('/**');
-  lines.push(' * OpenAPI から自動生成されたバリデーションルール。');
-  lines.push(' * 直接編集しないこと。');
-  lines.push(' */');
-  lines.push('final class OpenApiGeneratedRules');
-  lines.push('{');
-  lines.push('    /**');
-  lines.push('     * @return array<string, array<int, string>>');
-  lines.push('     */');
-  lines.push('    public static function schema(string $schema): array');
-  lines.push('    {');
-  lines.push('        return self::SCHEMA_RULES[$schema] ?? [];');
-  lines.push('    }');
-  lines.push('');
-  lines.push('    /**');
-  lines.push('     * @return array<string, string>');
-  lines.push('     */');
-  lines.push('    public static function schemaAttributes(string $schema): array');
-  lines.push('    {');
-  lines.push('        return self::SCHEMA_ATTRIBUTES[$schema] ?? [];');
-  lines.push('    }');
-  lines.push('');
-  lines.push('    /**');
-  lines.push('     * @var array<string, array<string, array<int, string>>>');
-  lines.push('     */');
-  lines.push('    private const SCHEMA_RULES = [');
+const renderBackFile = async (schemaNames, schemaRuleMap, labels) => {
+  const rulesLines = [];
 
   schemaNames.forEach((schemaName) => {
-    lines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
+    rulesLines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
     const rules = schemaRuleMap[schemaName] ?? {};
     Object.entries(rules).forEach(([pathKey, pathRules]) => {
       const serializedRules = pathRules.map((rule) => `'${escapeSingleQuote(rule)}'`).join(', ');
-      lines.push(`            '${escapeSingleQuote(pathKey)}' => [${serializedRules}],`);
+      rulesLines.push(`            '${escapeSingleQuote(pathKey)}' => [${serializedRules}],`);
     });
-    lines.push('        ],');
+    rulesLines.push('        ],');
   });
 
-  lines.push('    ];');
-  lines.push('');
-  lines.push('    /**');
-  lines.push('     * @var array<string, array<string, string>>');
-  lines.push('     */');
-  lines.push('    private const SCHEMA_ATTRIBUTES = [');
+  const attributesLines = [];
 
   schemaNames.forEach((schemaName) => {
-    lines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
+    attributesLines.push(`        '${escapeSingleQuote(schemaName)}' => [`);
     const rules = schemaRuleMap[schemaName] ?? {};
     Object.keys(rules).forEach((pathKey) => {
       const label = fieldLabelFromRulePath(pathKey, labels);
-      lines.push(`            '${escapeSingleQuote(pathKey)}' => '${escapeSingleQuote(label)}',`);
+      attributesLines.push(`            '${escapeSingleQuote(pathKey)}' => '${escapeSingleQuote(label)}',`);
     });
-    lines.push('        ],');
+    attributesLines.push('        ],');
   });
 
-  lines.push('    ];');
-  lines.push('}');
-  lines.push('');
-
-  return lines.join('\n');
+  return render('laravel-validation-template.php', {
+    rules: rulesLines.join('\n'),
+    attributes: attributesLines.join('\n'),
+  });
 };
 
 const ensureDir = async (targetPath) => {
@@ -754,8 +699,8 @@ const main = async () => {
     schemaRuleMap[schemaName] = rules;
   });
 
-  const frontFile = renderFrontFile(candidates, resolvedSchemas, toZodExpr);
-  const backFile = renderBackFile(candidates, schemaRuleMap, labels);
+  const frontFile = await renderFrontFile(candidates, resolvedSchemas, toZodExpr);
+  const backFile = await renderBackFile(candidates, schemaRuleMap, labels);
   const mismatches = buildMismatchReport(candidates, resolvedSchemas, fieldSpecsByKey);
 
   await ensureDir(frontOutputPath);
