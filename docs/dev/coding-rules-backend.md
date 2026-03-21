@@ -2,7 +2,7 @@
 
 ## PHP 全般
 
-- PHP 8.4 の機能を積極的に利用する
+- PHP 8.2+ の機能を積極的に利用する
 - `declare(strict_types=1);` を全ファイルの先頭に記述する
 - 型宣言は必須。戻り値型・引数型・プロパティ型すべて明示する
 - `readonly` プロパティを積極的に使う
@@ -16,7 +16,7 @@
 | メソッド | camelCase | `clockIn()` |
 | プロパティ | camelCase | `$userId` |
 | 定数 | UPPER_SNAKE | `MAX_BREAK_MINUTES` |
-| DB カラム | snake_case | `clocked_in_at` |
+| DB カラム | snake_case | `clock_in_at` |
 | ルート | kebab-case | `/attendance-records` |
 | Enum case | UPPER_SNAKE | `BREAK_START` |
 
@@ -25,14 +25,14 @@
 - 1 アクション = 1 メソッドを目安にする
 - ビジネスロジックは **絶対に書かない**。Service に委譲する
 - コンストラクタインジェクションで Service を注入する
-- 認証ユーザーは `$this->resolveUser()` で取得する
+- 認証ユーザーは `$this->resolveUser()` で取得する（`auth()->user()` 禁止）
 - レスポンスは `ApiResponse::success()` / `ApiResponse::error()` を使う
 
 ```php
 public function store(ClockRequest $request): JsonResponse
 {
-    $result = $this->attendanceService->clockIn($this->resolveUser(), $request->validated());
-    return ApiResponse::success($result, '打刻が完了しました');
+    $result = $this->attendanceService->clockIn($this->resolveUser());
+    return ApiResponse::success($result, '出勤を記録しました');
 }
 ```
 
@@ -42,16 +42,37 @@ public function store(ClockRequest $request): JsonResponse
 - メソッド名は **動詞始まり**: `clockIn()`, `getUser()`, `updateSettings()`
 - ビジネスルール違反は `DomainException`（`App\Exceptions\DomainException`）を投げる
   - PHP 標準の `\DomainException` は使わないこと
-- 副作用のある処理は `$this->transaction()` でラップする
-- ログは `$this->log()` / `$this->logError()` を使う
+- 副作用のある処理は `$this->transaction()` でラップする（`DB::transaction()` 直接呼び出し禁止）
+- ログは `$this->log()` / `$this->logWarning()` / `$this->logError()` を使う
+- タイムゾーン解決は `$this->resolveTimezone()` を使う（ハードコード禁止）
+- 曜日表示は `$this->weekdayJa()` を使う
+- 勤務時間計算は `$this->calculateWorkHours()` を使う
+
+### BaseService 提供メソッド一覧
+
+| メソッド | 用途 |
+|---|---|
+| `log($message, $context)` | INFO ログ記録 |
+| `logWarning($message, $context)` | WARNING ログ記録 |
+| `logError($message, $context)` | ERROR ログ記録 |
+| `transaction($callback)` | トランザクション実行（コミット後ログ） |
+| `resolveTimezone($timezone)` | null/空文字 → `DEFAULT_TIMEZONE` 解決 |
+| `weekdayJa($date)` | Carbon → 「日」〜「土」 |
+| `calculateWorkHours($startAt, $endAt, $workedMinutes, $fallbackEndTime)` | 勤務時間(時間)算出 |
 
 ## Model
 
-- UUID 主キーを使う（`HasUuid` トレイト）
-- 日付は `immutable_datetime` でキャストする
-- `$fillable` ではなく `$guarded = []` + DTO/FormRequest でフィルタする方針は避ける。`$fillable` を明示する
+- UUID 主キーを使う（`booted()` フックで自動生成）
+- 日付は `immutable_datetime` / `immutable_date` でキャストする
+- `$fillable` を明示する（`$guarded = []` は使わない）
 - スコープは `scope` プレフィクスをつける: `scopeActive()`, `scopeMonth()`
 - ドメインに密接なメソッドはモデルに置いてよい: `isClockedIn()`, `calculateWorkedMinutes()`
+
+## DTO / ValueObject
+
+- DTO は `BaseDTO` を継承し、`readonly` コンストラクタプロモーションを使う
+- ValueObject は `BaseValueObject` を継承し、`assert()` で妥当性検証を行う
+- ValueObject のバリデーション失敗は `App\Exceptions\DomainException` を使う
 
 ## 例外
 
@@ -67,6 +88,7 @@ public function store(ClockRequest $request): JsonResponse
 - ルールは OpenAPI 定義から `OpenApiGeneratedRules::schema()` で自動取得する
 - 追加ルールが必要な場合のみ `rules()` をオーバーライドする
 - `$schemaName` プロパティに OpenAPI スキーマ名を設定する
+- 数値・真偽値フィールドは `$filters` で正規化する（全角→半角変換含む）
 
 ## テスト
 

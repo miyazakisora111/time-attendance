@@ -204,5 +204,4 @@ final class DashboardService extends BaseService
 
         return $count;
     }
-
 }

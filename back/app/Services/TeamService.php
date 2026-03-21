@@ -27,7 +27,7 @@ final class TeamService extends BaseService
             ->get();
 
         $members = $users
-            ->map(fn (User $user): array => $this->mapUserToMember($user))
+            ->map(fn(User $user): array => $this->mapUserToMember($user))
             ->values()
             ->all();
 

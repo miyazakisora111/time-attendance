@@ -187,5 +187,4 @@ final class CalendarService extends BaseService
             'remainingPaidLeaveDays' => max(round($grantedDays - $usedDays, 1), 0),
         ];
     }
-
 }
