@@ -3,12 +3,92 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-reac
 import { Card, CardContent, CardHeader, CardTitle, Typography, Button } from "@/shared/components";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { useDashboardCalendar } from "@/features/dashboard/hooks/useDashboardCalendar";
-import {
-  buildDashboardMiniCalendarDays,
-  dashboardMiniCalendarDaysOfWeek,
-  dashboardMiniCalendarLegends,
-} from "@/shared/presentation/dashboard";
 import { formatJapaneseYearMonth } from "@/shared/presentation/format";
+
+export const DAYS_OF_WEEK = ["日", "月", "火", "水", "木", "金", "土"] as const;
+
+export type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
+
+export const DAY_INDEX_MAP = {
+  0: "日",
+  1: "月",
+  2: "火",
+  3: "水",
+  4: "木",
+  5: "金",
+  6: "土",
+} as const;
+
+export const DAY_KEYS = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+] as const;
+
+export type DayKey = (typeof DAY_KEYS)[number];
+
+const dashboardMiniCalendarLegends = [
+  {
+    key: 'workday',
+    label: '出勤',
+    swatchClassName: 'h-3 w-3 rounded-sm border border-green-200 bg-green-100',
+  },
+  {
+    key: 'holiday',
+    label: '休日',
+    swatchClassName: 'h-3 w-3 rounded-sm border border-red-200 bg-red-100',
+  },
+  {
+    key: 'today',
+    label: '今日',
+    swatchClassName: 'h-3 w-3 rounded-sm bg-blue-600',
+  },
+] as const;
+
+interface DashboardMiniCalendarSource {
+  date: string;
+  status: 'working' | 'off' | 'holiday' | 'pending';
+  isToday: boolean;
+  isHoliday: boolean;
+}
+
+interface DashboardMiniCalendarDay {
+  key: string;
+  day: string;
+  isWorkday?: boolean;
+  isHoliday?: boolean;
+  isToday?: boolean;
+}
+
+const dashboardMiniCalendarDaysOfWeek = DAYS_OF_WEEK;
+
+const buildDashboardMiniCalendarDays = (
+  days: ReadonlyArray<DashboardMiniCalendarSource>,
+): DashboardMiniCalendarDay[] => {
+  if (days.length === 0) {
+    return [];
+  }
+
+  const firstDate = new Date(`${days[0].date}T00:00:00`);
+  const leadingBlankDays = Array.from({ length: firstDate.getDay() }, (_, index) => ({
+    key: `blank-${index}`,
+    day: '',
+  }));
+
+  const mappedDays = days.map((day) => ({
+    key: day.date,
+    day: String(new Date(`${day.date}T00:00:00`).getDate()),
+    isWorkday: day.status === 'working',
+    isHoliday: day.isHoliday,
+    isToday: day.isToday,
+  }));
+
+  return [...leadingBlankDays, ...mappedDays];
+};
 
 export const MiniCalendar = React.memo(function MiniCalendar() {
   const { currentMonth, calendar, isLoading, isError, nextMonth, prevMonth } = useDashboardCalendar();

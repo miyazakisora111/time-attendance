@@ -4,7 +4,6 @@
 !.env.example
 .DS_Store
 .idea
-.vscode
 
 # Backend
 /back/.env

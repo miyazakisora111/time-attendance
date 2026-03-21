@@ -8,6 +8,8 @@ services:
   app:
     build:
       target: dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - ../back:/var/www/html
       - ./php/xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini:ro

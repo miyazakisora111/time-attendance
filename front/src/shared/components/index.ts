@@ -17,5 +17,5 @@ export { Container } from "@/shared/components/Container";
 export { Clock, type ClockProps } from "@/shared/components/Clock";
 export { Typography } from "@/shared/components/Typography";
 export { Label } from "@/shared/components/Label";
-export { Badge } from "@/shared/components/data_display/Badge";
+export { Badge } from "@/shared/components/data-display/Badge";
 export { IconWrapper } from "@/shared/components/icons/IconWrapper";

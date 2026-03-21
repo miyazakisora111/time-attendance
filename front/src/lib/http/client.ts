@@ -182,19 +182,34 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // ネットワークエラーなどでレスポンスがない場合はトースト表示する。
+    // ネットワークエラー
     if (!error.response) {
+      console.error('[API ERROR] Network Error', {
+        message: error.message,
+        config: error.config,
+      });
+
       sonner.error(ApiErrorMessage.NetworkError);
       return Promise.reject(error);
     }
 
-    // 認証エラー時はクライアント側トークンを削除する。
-    if (error.response.status === HttpStatusCode.Unauthorized) {
+    const { status, data } = error.response;
+
+    // ログを出力
+    console.error('[API ERROR]', {
+      status,
+      url: error.config?.url,
+      method: error.config?.method,
+      request: error.config?.data,
+      response: data,
+    });
+
+    // 認証エラー
+    if (status === HttpStatusCode.Unauthorized) {
       clearAuthToken();
     }
 
-    // ステータスコードに応じてエラー通知を振り分ける。
-    notifyByStatus(error.response.status, error.response.data);
+    notifyByStatus(status, data);
 
     return Promise.reject(error);
   }
