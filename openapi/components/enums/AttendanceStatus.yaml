@@ -1,0 +1,7 @@
+AttendanceStatus:
+  type: string
+  description: 勤怠レコードの勤務区分
+  enum:
+    - working
+    - out
+    - break

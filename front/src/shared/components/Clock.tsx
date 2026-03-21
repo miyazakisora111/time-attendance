@@ -2,7 +2,7 @@ import React from "react";
 import { Typography } from "@/shared/components/Typography";
 import { useCurrentTime } from "@/shared/hooks/useCurrentTime";
 import { cva, type VariantProps } from "class-variance-authority";
-import { formatJapaneseLongDate, formatJapaneseTime } from "@/shared/presentation/format";
+import { formatJapaneseLongDate, formatJapaneseTime } from "@/shared/utils/format";
 
 const clockVariants = cva(
     "rounded-lg text-center",

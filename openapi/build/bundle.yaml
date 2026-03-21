@@ -44,11 +44,7 @@ paths:
       summary: ログイン
       security: []
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
+        $ref: '#/components/requestBodies/LoginBody'
       responses:
         '200':
           description: ログイン成功
@@ -74,11 +70,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Logged out successfully
+                $ref: '#/components/schemas/LogoutResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '500':
@@ -124,11 +116,7 @@ paths:
         - Attendance
       summary: 出勤打刻
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AttendanceClockInRequest'
+        $ref: '#/components/requestBodies/AttendanceClockInBody'
       responses:
         '200':
           description: 出勤成功
@@ -151,11 +139,7 @@ paths:
         - Attendance
       summary: 退勤打刻
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AttendanceClockOutRequest'
+        $ref: '#/components/requestBodies/AttendanceClockOutBody'
       responses:
         '200':
           description: 退勤成功
@@ -178,18 +162,8 @@ paths:
         - Attendance
       summary: 勤怠一覧取得
       parameters:
-        - name: from
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
-        - name: to
-          in: query
-          required: true
-          schema:
-            type: string
-            format: date
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
       responses:
         '200':
           description: 勤怠一覧
@@ -211,11 +185,7 @@ paths:
         - Attendance
       summary: 勤怠の新規登録
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AttendanceStoreRequest'
+        $ref: '#/components/requestBodies/AttendanceStoreBody'
       responses:
         '201':
           description: 登録成功
@@ -236,18 +206,9 @@ paths:
         - Attendance
       summary: 勤怠の更新
       parameters:
-        - name: attendance
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/PathAttendanceId'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AttendanceUpdateRequest'
+        $ref: '#/components/requestBodies/AttendanceUpdateBody'
       responses:
         '200':
           description: 更新成功
@@ -287,11 +248,7 @@ paths:
         - Dashboard
       summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DashboardClockRequest'
+        $ref: '#/components/requestBodies/DashboardClockBody'
       responses:
         '200':
           description: 打刻成功
@@ -314,20 +271,8 @@ paths:
         - Schedule
       summary: 月次カレンダー取得
       parameters:
-        - name: year
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 2000
-            maximum: 2100
-        - name: month
-          in: query
-          required: true
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 12
+        - $ref: '#/components/parameters/QueryYear'
+        - $ref: '#/components/parameters/QueryMonth'
       responses:
         '200':
           description: 対象月の日付一覧
@@ -381,11 +326,7 @@ paths:
         - Settings
       summary: ユーザー設定更新
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateSettingsRequest'
+        $ref: '#/components/requestBodies/UpdateSettingsBody'
       responses:
         '200':
           description: 更新後ユーザー設定
@@ -401,32 +342,64 @@ paths:
           $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
-    CalendarIndexRequest:
-      type: object
-      required:
-        - year
-        - month
-      properties:
-        year:
-          type: integer
-          minimum: 2000
-          maximum: 2100
-        month:
-          type: integer
-          minimum: 1
-          maximum: 12
-    AttendanceIndexRequest:
-      type: object
-      required:
-        - from
-        - to
-      properties:
-        from:
-          type: string
-          format: date
-        to:
-          type: string
-          format: date
+    ClockAction:
+      type: string
+      description: 打刻アクション種別
+      enum:
+        - in
+        - out
+        - break_start
+        - break_end
+    ClockStatus:
+      type: string
+      description: 現在の打刻状態
+      enum:
+        - out
+        - in
+        - break
+    ThemeType:
+      type: string
+      description: UIテーマ設定
+      enum:
+        - light
+        - dark
+    LanguageCode:
+      type: string
+      description: 表示言語コード
+      enum:
+        - ja
+        - en
+    CalendarDayStatus:
+      type: string
+      description: カレンダー日付の勤務状態
+      enum:
+        - working
+        - 'off'
+        - holiday
+        - pending
+    TeamMemberStatus:
+      type: string
+      description: チームメンバーの勤務状態
+      enum:
+        - working
+        - break
+        - 'off'
+        - leave
+    AttendanceStatus:
+      type: string
+      description: 勤怠レコードの勤務区分
+      enum:
+        - working
+        - out
+        - break
+    UserStatus:
+      type: string
+      description: ユーザーアカウントの状態
+      enum:
+        - active
+        - inactive
+        - suspended
+        - deleted
     LoginRequest:
       type: object
       required:
@@ -450,24 +423,13 @@ components:
         token:
           type: string
           description: JWT access token
-    ErrorResponse:
+    LogoutResponse:
       type: object
+      description: ログアウト成功レスポンス
       properties:
         message:
           type: string
-          example: エラーが発生しました
-    ValidationErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: バリデーションエラー
-        errors:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
+          example: Logged out successfully
     UserResponse:
       type: object
       description: ユーザー情報
@@ -508,32 +470,15 @@ components:
             settings:
               type: object
               nullable: true
-              description: ユーザー設定（任意のキーを許容、存在しない場合は null）
-              additionalProperties: true
+              description: ユーザー設定
+              properties:
+                theme:
+                  $ref: '#/components/schemas/ThemeType'
+                language:
+                  $ref: '#/components/schemas/LanguageCode'
               example:
                 theme: dark
                 language: ja
-    AttendanceResponse:
-      type: object
-      required:
-        - user_id
-        - work_date
-        - start_time
-      properties:
-        user_id:
-          type: string
-          format: uuid
-        work_date:
-          type: string
-          format: date
-        start_time:
-          type: string
-          format: date-time
-          nullable: true
-        end_time:
-          type: string
-          format: date-time
-          nullable: true
     AttendanceClockInRequest:
       type: object
       required:
@@ -593,6 +538,46 @@ components:
           type: string
           nullable: true
           maxLength: 500
+    AttendanceResponse:
+      type: object
+      required:
+        - user_id
+        - work_date
+        - start_time
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        work_date:
+          type: string
+          format: date
+        start_time:
+          type: string
+          format: date-time
+          nullable: true
+        end_time:
+          type: string
+          format: date-time
+          nullable: true
+    AttendanceIndexRequest:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+    DashboardClockRequest:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          $ref: '#/components/schemas/ClockAction'
     DashboardResponse:
       type: object
       required:
@@ -604,124 +589,153 @@ components:
         - pendingOvertimeRequests
       properties:
         user:
-          type: object
-          required:
-            - id
-            - name
-          properties:
-            id:
-              type: string
-              format: uuid
-            name:
-              type: string
+          $ref: '#/components/schemas/DashboardUser'
         clockStatus:
-          type: string
-          enum:
-            - out
-            - in
-            - break
+          $ref: '#/components/schemas/ClockStatus'
         todayRecord:
-          type: object
-          required:
-            - clockInTime
-            - totalWorkedHours
-          properties:
-            clockInTime:
-              type: string
-              nullable: true
-              example: '09:00'
-            totalWorkedHours:
-              type: number
-              format: float
-              nullable: true
-              example: 5.5
+          $ref: '#/components/schemas/DashboardTodayRecord'
         stats:
-          type: object
-          required:
-            - totalHours
-            - targetHours
-            - workDays
-            - remainingDays
-            - avgHours
-            - avgHoursDiff
-            - overtimeHours
-            - overtimeDiff
-          properties:
-            totalHours:
-              type: number
-              format: float
-            targetHours:
-              type: number
-              format: float
-            workDays:
-              type: integer
-            remainingDays:
-              type: integer
-            avgHours:
-              type: number
-              format: float
-            avgHoursDiff:
-              type: number
-              format: float
-            overtimeHours:
-              type: number
-              format: float
-            overtimeDiff:
-              type: number
-              format: float
+          $ref: '#/components/schemas/DashboardStats'
         recentRecords:
           type: array
           items:
-            type: object
-            required:
-              - date
-              - day
-              - clockIn
-              - clockOut
-              - workHours
-              - status
-            properties:
-              date:
-                type: string
-                example: 2026/03/14
-              day:
-                type: string
-                example: 土
-              clockIn:
-                type: string
-                nullable: true
-                example: '09:00'
-              clockOut:
-                type: string
-                nullable: true
-                example: '18:00'
-              workHours:
-                type: number
-                format: float
-                nullable: true
-                example: 8
-              status:
-                type: string
-                enum:
-                  - 通常
-                  - 残業
-                  - 休日
+            $ref: '#/components/schemas/DashboardRecentRecord'
         pendingOvertimeRequests:
           type: integer
-    DashboardClockRequest:
+    DashboardUser:
+      type: object
+      description: ダッシュボード用ユーザー情報
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    DashboardTodayRecord:
+      type: object
+      description: 今日の勤怠レコード
+      required:
+        - clockInTime
+        - totalWorkedHours
+      properties:
+        clockInTime:
+          type: string
+          nullable: true
+          example: '09:00'
+        totalWorkedHours:
+          type: number
+          format: float
+          nullable: true
+          example: 5.5
+    DashboardStats:
+      type: object
+      description: ダッシュボード月次統計
+      required:
+        - totalHours
+        - targetHours
+        - workDays
+        - remainingDays
+        - avgHours
+        - avgHoursDiff
+        - overtimeHours
+        - overtimeDiff
+      properties:
+        totalHours:
+          type: number
+          format: float
+        targetHours:
+          type: number
+          format: float
+        workDays:
+          type: integer
+        remainingDays:
+          type: integer
+        avgHours:
+          type: number
+          format: float
+        avgHoursDiff:
+          type: number
+          format: float
+        overtimeHours:
+          type: number
+          format: float
+        overtimeDiff:
+          type: number
+          format: float
+    DashboardRecentRecord:
+      type: object
+      description: 直近の勤怠レコード
+      required:
+        - date
+        - day
+        - clockIn
+        - clockOut
+        - workHours
+        - status
+      properties:
+        date:
+          type: string
+          example: 2026/03/14
+        day:
+          type: string
+          example: 土
+        clockIn:
+          type: string
+          nullable: true
+          example: '09:00'
+        clockOut:
+          type: string
+          nullable: true
+          example: '18:00'
+        workHours:
+          type: number
+          format: float
+          nullable: true
+          example: 8
+        status:
+          $ref: '#/components/schemas/AttendanceStatus'
+    CalendarIndexRequest:
       type: object
       required:
-        - action
+        - year
+        - month
       properties:
-        action:
-          type: string
-          enum:
-            - in
-            - out
-            - break_start
-            - break_end
+        year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+    CalendarResponse:
+      type: object
+      required:
+        - year
+        - month
+        - summary
+        - days
+      properties:
+        year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        summary:
+          $ref: '#/components/schemas/CalendarSummary'
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarDay'
     CalendarSummary:
       type: object
+      description: カレンダー月次サマリー
       required:
         - totalWorkHours
         - targetHours
@@ -755,6 +769,7 @@ components:
           example: 12.5
     CalendarDay:
       type: object
+      description: カレンダー1日分の情報
       required:
         - date
         - label
@@ -774,12 +789,7 @@ components:
           type: string
           example: 木
         status:
-          type: string
-          enum:
-            - working
-            - 'off'
-            - holiday
-            - pending
+          $ref: '#/components/schemas/CalendarDayStatus'
         shift:
           type: string
           nullable: true
@@ -800,30 +810,127 @@ components:
           type: boolean
         isHoliday:
           type: boolean
-    CalendarResponse:
+    SettingsResponse:
       type: object
       required:
-        - year
-        - month
-        - summary
-        - days
+        - profile
+        - notifications
+        - security
+        - theme
+        - language
       properties:
-        year:
-          type: integer
-          minimum: 2000
-          maximum: 2100
-        month:
-          type: integer
-          minimum: 1
-          maximum: 12
-        summary:
-          $ref: '#/components/schemas/CalendarSummary'
-        days:
+        profile:
+          $ref: '#/components/schemas/SettingsProfile'
+        notifications:
+          $ref: '#/components/schemas/SettingsNotifications'
+        security:
+          $ref: '#/components/schemas/SettingsSecurity'
+        theme:
+          $ref: '#/components/schemas/ThemeType'
+        language:
+          $ref: '#/components/schemas/LanguageCode'
+    UpdateSettingsRequest:
+      type: object
+      required:
+        - profile
+        - notifications
+        - theme
+        - language
+      properties:
+        profile:
+          $ref: '#/components/schemas/UpdateSettingsProfile'
+        notifications:
+          $ref: '#/components/schemas/SettingsNotifications'
+        theme:
+          $ref: '#/components/schemas/ThemeType'
+        language:
+          $ref: '#/components/schemas/LanguageCode'
+    SettingsProfile:
+      type: object
+      description: ユーザープロフィール情報（レスポンス用）
+      required:
+        - name
+        - email
+        - department
+        - role
+        - employeeCode
+      properties:
+        name:
+          type: string
+          example: 田中 太郎
+        email:
+          type: string
+          format: email
+          example: t.tanaka@example.com
+        department:
+          type: string
+          example: 営業部
+        role:
+          type: string
+          example: 正社員
+        employeeCode:
+          type: string
+          example: EMP-2024001
+    UpdateSettingsProfile:
+      type: object
+      description: ユーザープロフィール更新（リクエスト用）
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 255
+    SettingsNotifications:
+      type: object
+      description: 通知設定
+      required:
+        - clockInReminder
+        - approvalNotification
+        - leaveReminder
+      properties:
+        clockInReminder:
+          type: boolean
+        approvalNotification:
+          type: boolean
+        leaveReminder:
+          type: boolean
+    SettingsSecurity:
+      type: object
+      description: セキュリティ設定
+      required:
+        - twoFactorEnabled
+        - emailVerified
+      properties:
+        twoFactorEnabled:
+          type: boolean
+        emailVerified:
+          type: boolean
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+        passwordLastChangedAt:
+          type: string
+          format: date-time
+          nullable: true
+    TeamMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
           type: array
           items:
-            $ref: '#/components/schemas/CalendarDay'
+            $ref: '#/components/schemas/TeamMember'
     TeamMember:
       type: object
+      description: チームメンバー情報
       required:
         - id
         - name
@@ -842,12 +949,7 @@ components:
         department:
           type: string
         status:
-          type: string
-          enum:
-            - working
-            - break
-            - 'off'
-            - leave
+          $ref: '#/components/schemas/TeamMemberStatus'
         clockInTime:
           type: string
           nullable: true
@@ -855,135 +957,110 @@ components:
         email:
           type: string
           format: email
-    TeamMembersResponse:
+    ErrorResponse:
       type: object
-      required:
-        - members
       properties:
-        members:
-          type: array
-          items:
-            $ref: '#/components/schemas/TeamMember'
-    SettingsResponse:
+        message:
+          type: string
+          example: エラーが発生しました
+    ValidationErrorResponse:
       type: object
-      required:
-        - profile
-        - notifications
-        - security
-        - theme
-        - language
       properties:
-        profile:
-          type: object
-          required:
-            - name
-            - email
-            - department
-            - role
-            - employeeCode
-          properties:
-            name:
-              type: string
-              example: 田中 太郎
-            email:
-              type: string
-              format: email
-              example: t.tanaka@example.com
-            department:
-              type: string
-              example: 営業部
-            role:
-              type: string
-              example: 正社員
-            employeeCode:
-              type: string
-              example: EMP-2024001
-        notifications:
-          type: object
-          required:
-            - clockInReminder
-            - approvalNotification
-            - leaveReminder
-          properties:
-            clockInReminder:
-              type: boolean
-            approvalNotification:
-              type: boolean
-            leaveReminder:
-              type: boolean
-        security:
-          type: object
-          required:
-            - twoFactorEnabled
-            - emailVerified
-          properties:
-            twoFactorEnabled:
-              type: boolean
-            emailVerified:
-              type: boolean
-            lastLoginAt:
-              type: string
-              format: date-time
-              nullable: true
-            passwordLastChangedAt:
-              type: string
-              format: date-time
-              nullable: true
-        theme:
+        message:
           type: string
-          enum:
-            - light
-            - dark
-        language:
-          type: string
-          enum:
-            - ja
-            - en
-    UpdateSettingsRequest:
-      type: object
-      required:
-        - profile
-        - notifications
-        - theme
-        - language
-      properties:
-        profile:
+          example: バリデーションエラー
+        errors:
           type: object
-          required:
-            - name
-            - email
-          properties:
-            name:
+          additionalProperties:
+            type: array
+            items:
               type: string
-              minLength: 1
-              maxLength: 120
-            email:
-              type: string
-              format: email
-              maxLength: 255
-        notifications:
-          type: object
-          required:
-            - clockInReminder
-            - approvalNotification
-            - leaveReminder
-          properties:
-            clockInReminder:
-              type: boolean
-            approvalNotification:
-              type: boolean
-            leaveReminder:
-              type: boolean
-        theme:
-          type: string
-          enum:
-            - light
-            - dark
-        language:
-          type: string
-          enum:
-            - ja
-            - en
+  parameters:
+    QueryDateFrom:
+      name: from
+      in: query
+      required: true
+      description: 検索期間の開始日
+      schema:
+        type: string
+        format: date
+    QueryDateTo:
+      name: to
+      in: query
+      required: true
+      description: 検索期間の終了日
+      schema:
+        type: string
+        format: date
+    PathAttendanceId:
+      name: attendance
+      in: path
+      required: true
+      description: 勤怠レコードID
+      schema:
+        type: string
+        format: uuid
+    QueryYear:
+      name: year
+      in: query
+      required: true
+      description: 対象年
+      schema:
+        type: integer
+        minimum: 2000
+        maximum: 2100
+    QueryMonth:
+      name: month
+      in: query
+      required: true
+      description: 対象月
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 12
+  requestBodies:
+    LoginBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+    AttendanceClockInBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceClockInRequest'
+    AttendanceClockOutBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceClockOutRequest'
+    AttendanceStoreBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceStoreRequest'
+    AttendanceUpdateBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceUpdateRequest'
+    DashboardClockBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DashboardClockRequest'
+    UpdateSettingsBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSettingsRequest'
   responses:
     Unauthorized:
       description: 認証エラー

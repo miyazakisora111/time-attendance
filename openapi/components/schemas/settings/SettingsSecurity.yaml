@@ -1,0 +1,19 @@
+SettingsSecurity:
+  type: object
+  description: セキュリティ設定
+  required:
+    - twoFactorEnabled
+    - emailVerified
+  properties:
+    twoFactorEnabled:
+      type: boolean
+    emailVerified:
+      type: boolean
+    lastLoginAt:
+      type: string
+      format: date-time
+      nullable: true
+    passwordLastChangedAt:
+      type: string
+      format: date-time
+      nullable: true

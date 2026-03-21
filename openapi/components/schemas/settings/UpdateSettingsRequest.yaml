@@ -7,35 +7,10 @@ UpdateSettingsRequest:
     - language
   properties:
     profile:
-      type: object
-      required:
-        - name
-        - email
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 120
-        email:
-          type: string
-          format: email
-          maxLength: 255
+      $ref: "./UpdateSettingsProfile.yaml#/UpdateSettingsProfile"
     notifications:
-      type: object
-      required:
-        - clockInReminder
-        - approvalNotification
-        - leaveReminder
-      properties:
-        clockInReminder:
-          type: boolean
-        approvalNotification:
-          type: boolean
-        leaveReminder:
-          type: boolean
+      $ref: "./SettingsNotifications.yaml#/SettingsNotifications"
     theme:
-      type: string
-      enum: [light, dark]
+      $ref: "../../enums/ThemeType.yaml#/ThemeType"
     language:
-      type: string
-      enum: [ja, en]
+      $ref: "../../enums/LanguageCode.yaml#/LanguageCode"

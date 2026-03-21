@@ -1,0 +1,32 @@
+DashboardRecentRecord:
+  type: object
+  description: 直近の勤怠レコード
+  required:
+    - date
+    - day
+    - clockIn
+    - clockOut
+    - workHours
+    - status
+  properties:
+    date:
+      type: string
+      example: "2026/03/14"
+    day:
+      type: string
+      example: "土"
+    clockIn:
+      type: string
+      nullable: true
+      example: "09:00"
+    clockOut:
+      type: string
+      nullable: true
+      example: "18:00"
+    workHours:
+      type: number
+      format: float
+      nullable: true
+      example: 8.0
+    status:
+      $ref: "../../enums/AttendanceStatus.yaml#/AttendanceStatus"

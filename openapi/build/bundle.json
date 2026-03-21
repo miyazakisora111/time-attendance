@@ -191,6 +191,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "ログアウト成功レスポンス",
                   "properties": {
                     "message": {
                       "type": "string",
@@ -296,8 +297,25 @@
                         "settings": {
                           "type": "object",
                           "nullable": true,
-                          "description": "ユーザー設定（任意のキーを許容、存在しない場合は null）",
-                          "additionalProperties": true,
+                          "description": "ユーザー設定",
+                          "properties": {
+                            "theme": {
+                              "type": "string",
+                              "description": "UIテーマ設定",
+                              "enum": [
+                                "light",
+                                "dark"
+                              ]
+                            },
+                            "language": {
+                              "type": "string",
+                              "description": "表示言語コード",
+                              "enum": [
+                                "ja",
+                                "en"
+                              ]
+                            }
+                          },
                           "example": {
                             "theme": "dark",
                             "language": "ja"
@@ -721,6 +739,7 @@
             "name": "from",
             "in": "query",
             "required": true,
+            "description": "検索期間の開始日",
             "schema": {
               "type": "string",
               "format": "date"
@@ -730,6 +749,7 @@
             "name": "to",
             "in": "query",
             "required": true,
+            "description": "検索期間の終了日",
             "schema": {
               "type": "string",
               "format": "date"
@@ -982,6 +1002,7 @@
             "name": "attendance",
             "in": "path",
             "required": true,
+            "description": "勤怠レコードID",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -1152,6 +1173,7 @@
                   "properties": {
                     "user": {
                       "type": "object",
+                      "description": "ダッシュボード用ユーザー情報",
                       "required": [
                         "id",
                         "name"
@@ -1168,6 +1190,7 @@
                     },
                     "clockStatus": {
                       "type": "string",
+                      "description": "現在の打刻状態",
                       "enum": [
                         "out",
                         "in",
@@ -1176,6 +1199,7 @@
                     },
                     "todayRecord": {
                       "type": "object",
+                      "description": "今日の勤怠レコード",
                       "required": [
                         "clockInTime",
                         "totalWorkedHours"
@@ -1196,6 +1220,7 @@
                     },
                     "stats": {
                       "type": "object",
+                      "description": "ダッシュボード月次統計",
                       "required": [
                         "totalHours",
                         "targetHours",
@@ -1243,6 +1268,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "直近の勤怠レコード",
                         "required": [
                           "date",
                           "day",
@@ -1278,10 +1304,11 @@
                           },
                           "status": {
                             "type": "string",
+                            "description": "勤怠レコードの勤務区分",
                             "enum": [
-                              "通常",
-                              "残業",
-                              "休日"
+                              "working",
+                              "out",
+                              "break"
                             ]
                           }
                         }
@@ -1349,6 +1376,7 @@
                 "properties": {
                   "action": {
                     "type": "string",
+                    "description": "打刻アクション種別",
                     "enum": [
                       "in",
                       "out",
@@ -1379,6 +1407,7 @@
                   "properties": {
                     "user": {
                       "type": "object",
+                      "description": "ダッシュボード用ユーザー情報",
                       "required": [
                         "id",
                         "name"
@@ -1395,6 +1424,7 @@
                     },
                     "clockStatus": {
                       "type": "string",
+                      "description": "現在の打刻状態",
                       "enum": [
                         "out",
                         "in",
@@ -1403,6 +1433,7 @@
                     },
                     "todayRecord": {
                       "type": "object",
+                      "description": "今日の勤怠レコード",
                       "required": [
                         "clockInTime",
                         "totalWorkedHours"
@@ -1423,6 +1454,7 @@
                     },
                     "stats": {
                       "type": "object",
+                      "description": "ダッシュボード月次統計",
                       "required": [
                         "totalHours",
                         "targetHours",
@@ -1470,6 +1502,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "直近の勤怠レコード",
                         "required": [
                           "date",
                           "day",
@@ -1505,10 +1538,11 @@
                           },
                           "status": {
                             "type": "string",
+                            "description": "勤怠レコードの勤務区分",
                             "enum": [
-                              "通常",
-                              "残業",
-                              "休日"
+                              "working",
+                              "out",
+                              "break"
                             ]
                           }
                         }
@@ -1610,6 +1644,7 @@
             "name": "year",
             "in": "query",
             "required": true,
+            "description": "対象年",
             "schema": {
               "type": "integer",
               "minimum": 2000,
@@ -1620,6 +1655,7 @@
             "name": "month",
             "in": "query",
             "required": true,
+            "description": "対象月",
             "schema": {
               "type": "integer",
               "minimum": 1,
@@ -1653,6 +1689,7 @@
                     },
                     "summary": {
                       "type": "object",
+                      "description": "カレンダー月次サマリー",
                       "required": [
                         "totalWorkHours",
                         "targetHours",
@@ -1697,6 +1734,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "カレンダー1日分の情報",
                         "required": [
                           "date",
                           "label",
@@ -1721,6 +1759,7 @@
                           },
                           "status": {
                             "type": "string",
+                            "description": "カレンダー日付の勤務状態",
                             "enum": [
                               "working",
                               "off",
@@ -1844,6 +1883,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "チームメンバー情報",
                         "required": [
                           "id",
                           "name",
@@ -1868,6 +1908,7 @@
                           },
                           "status": {
                             "type": "string",
+                            "description": "チームメンバーの勤務状態",
                             "enum": [
                               "working",
                               "break",
@@ -1951,6 +1992,7 @@
                   "properties": {
                     "profile": {
                       "type": "object",
+                      "description": "ユーザープロフィール情報（レスポンス用）",
                       "required": [
                         "name",
                         "email",
@@ -1984,6 +2026,7 @@
                     },
                     "notifications": {
                       "type": "object",
+                      "description": "通知設定",
                       "required": [
                         "clockInReminder",
                         "approvalNotification",
@@ -2003,6 +2046,7 @@
                     },
                     "security": {
                       "type": "object",
+                      "description": "セキュリティ設定",
                       "required": [
                         "twoFactorEnabled",
                         "emailVerified"
@@ -2028,6 +2072,7 @@
                     },
                     "theme": {
                       "type": "string",
+                      "description": "UIテーマ設定",
                       "enum": [
                         "light",
                         "dark"
@@ -2035,6 +2080,7 @@
                     },
                     "language": {
                       "type": "string",
+                      "description": "表示言語コード",
                       "enum": [
                         "ja",
                         "en"
@@ -2100,6 +2146,7 @@
                 "properties": {
                   "profile": {
                     "type": "object",
+                    "description": "ユーザープロフィール更新（リクエスト用）",
                     "required": [
                       "name",
                       "email"
@@ -2119,6 +2166,7 @@
                   },
                   "notifications": {
                     "type": "object",
+                    "description": "通知設定",
                     "required": [
                       "clockInReminder",
                       "approvalNotification",
@@ -2138,6 +2186,7 @@
                   },
                   "theme": {
                     "type": "string",
+                    "description": "UIテーマ設定",
                     "enum": [
                       "light",
                       "dark"
@@ -2145,6 +2194,7 @@
                   },
                   "language": {
                     "type": "string",
+                    "description": "表示言語コード",
                     "enum": [
                       "ja",
                       "en"
@@ -2172,6 +2222,7 @@
                   "properties": {
                     "profile": {
                       "type": "object",
+                      "description": "ユーザープロフィール情報（レスポンス用）",
                       "required": [
                         "name",
                         "email",
@@ -2205,6 +2256,7 @@
                     },
                     "notifications": {
                       "type": "object",
+                      "description": "通知設定",
                       "required": [
                         "clockInReminder",
                         "approvalNotification",
@@ -2224,6 +2276,7 @@
                     },
                     "security": {
                       "type": "object",
+                      "description": "セキュリティ設定",
                       "required": [
                         "twoFactorEnabled",
                         "emailVerified"
@@ -2249,6 +2302,7 @@
                     },
                     "theme": {
                       "type": "string",
+                      "description": "UIテーマ設定",
                       "enum": [
                         "light",
                         "dark"
@@ -2256,6 +2310,7 @@
                     },
                     "language": {
                       "type": "string",
+                      "description": "表示言語コード",
                       "enum": [
                         "ja",
                         "en"
@@ -2329,41 +2384,79 @@
   },
   "components": {
     "schemas": {
-      "CalendarIndexRequest": {
-        "type": "object",
-        "required": [
-          "year",
-          "month"
-        ],
-        "properties": {
-          "year": {
-            "type": "integer",
-            "minimum": 2000,
-            "maximum": 2100
-          },
-          "month": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 12
-          }
-        }
+      "ClockAction": {
+        "type": "string",
+        "description": "打刻アクション種別",
+        "enum": [
+          "in",
+          "out",
+          "break_start",
+          "break_end"
+        ]
       },
-      "AttendanceIndexRequest": {
-        "type": "object",
-        "required": [
-          "from",
-          "to"
-        ],
-        "properties": {
-          "from": {
-            "type": "string",
-            "format": "date"
-          },
-          "to": {
-            "type": "string",
-            "format": "date"
-          }
-        }
+      "ClockStatus": {
+        "type": "string",
+        "description": "現在の打刻状態",
+        "enum": [
+          "out",
+          "in",
+          "break"
+        ]
+      },
+      "ThemeType": {
+        "type": "string",
+        "description": "UIテーマ設定",
+        "enum": [
+          "light",
+          "dark"
+        ]
+      },
+      "LanguageCode": {
+        "type": "string",
+        "description": "表示言語コード",
+        "enum": [
+          "ja",
+          "en"
+        ]
+      },
+      "CalendarDayStatus": {
+        "type": "string",
+        "description": "カレンダー日付の勤務状態",
+        "enum": [
+          "working",
+          "off",
+          "holiday",
+          "pending"
+        ]
+      },
+      "TeamMemberStatus": {
+        "type": "string",
+        "description": "チームメンバーの勤務状態",
+        "enum": [
+          "working",
+          "break",
+          "off",
+          "leave"
+        ]
+      },
+      "AttendanceStatus": {
+        "type": "string",
+        "description": "勤怠レコードの勤務区分",
+        "enum": [
+          "working",
+          "out",
+          "break"
+        ]
+      },
+      "UserStatus": {
+        "type": "string",
+        "description": "ユーザーアカウントの状態",
+        "enum": [
+          "active",
+          "inactive",
+          "suspended",
+          "deleted"
+        ]
       },
       "LoginRequest": {
         "type": "object",
@@ -2396,30 +2489,13 @@
           }
         }
       },
-      "ErrorResponse": {
+      "LogoutResponse": {
         "type": "object",
+        "description": "ログアウト成功レスポンス",
         "properties": {
           "message": {
             "type": "string",
-            "example": "エラーが発生しました"
-          }
-        }
-      },
-      "ValidationErrorResponse": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "バリデーションエラー"
-          },
-          "errors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
+            "example": "Logged out successfully"
           }
         }
       },
@@ -2471,42 +2547,31 @@
               "settings": {
                 "type": "object",
                 "nullable": true,
-                "description": "ユーザー設定（任意のキーを許容、存在しない場合は null）",
-                "additionalProperties": true,
+                "description": "ユーザー設定",
+                "properties": {
+                  "theme": {
+                    "type": "string",
+                    "description": "UIテーマ設定",
+                    "enum": [
+                      "light",
+                      "dark"
+                    ]
+                  },
+                  "language": {
+                    "type": "string",
+                    "description": "表示言語コード",
+                    "enum": [
+                      "ja",
+                      "en"
+                    ]
+                  }
+                },
                 "example": {
                   "theme": "dark",
                   "language": "ja"
                 }
               }
             }
-          }
-        }
-      },
-      "AttendanceResponse": {
-        "type": "object",
-        "required": [
-          "user_id",
-          "work_date",
-          "start_time"
-        ],
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "work_date": {
-            "type": "string",
-            "format": "date"
-          },
-          "start_time": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "end_time": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
           }
         }
       },
@@ -2591,6 +2656,69 @@
           }
         }
       },
+      "AttendanceResponse": {
+        "type": "object",
+        "required": [
+          "user_id",
+          "work_date",
+          "start_time"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "work_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "AttendanceIndexRequest": {
+        "type": "object",
+        "required": [
+          "from",
+          "to"
+        ],
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date"
+          },
+          "to": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "DashboardClockRequest": {
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "打刻アクション種別",
+            "enum": [
+              "in",
+              "out",
+              "break_start",
+              "break_end"
+            ]
+          }
+        }
+      },
       "DashboardResponse": {
         "type": "object",
         "required": [
@@ -2604,6 +2732,7 @@
         "properties": {
           "user": {
             "type": "object",
+            "description": "ダッシュボード用ユーザー情報",
             "required": [
               "id",
               "name"
@@ -2620,6 +2749,7 @@
           },
           "clockStatus": {
             "type": "string",
+            "description": "現在の打刻状態",
             "enum": [
               "out",
               "in",
@@ -2628,6 +2758,7 @@
           },
           "todayRecord": {
             "type": "object",
+            "description": "今日の勤怠レコード",
             "required": [
               "clockInTime",
               "totalWorkedHours"
@@ -2648,6 +2779,7 @@
           },
           "stats": {
             "type": "object",
+            "description": "ダッシュボード月次統計",
             "required": [
               "totalHours",
               "targetHours",
@@ -2695,6 +2827,7 @@
             "type": "array",
             "items": {
               "type": "object",
+              "description": "直近の勤怠レコード",
               "required": [
                 "date",
                 "day",
@@ -2730,10 +2863,11 @@
                 },
                 "status": {
                   "type": "string",
+                  "description": "勤怠レコードの勤務区分",
                   "enum": [
-                    "通常",
-                    "残業",
-                    "休日"
+                    "working",
+                    "out",
+                    "break"
                   ]
                 }
               }
@@ -2744,123 +2878,153 @@
           }
         }
       },
-      "DashboardClockRequest": {
+      "DashboardUser": {
         "type": "object",
+        "description": "ダッシュボード用ユーザー情報",
         "required": [
-          "action"
+          "id",
+          "name"
         ],
         "properties": {
-          "action": {
+          "id": {
             "type": "string",
-            "enum": [
-              "in",
-              "out",
-              "break_start",
-              "break_end"
-            ]
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
           }
         }
       },
-      "CalendarSummary": {
+      "DashboardTodayRecord": {
         "type": "object",
+        "description": "今日の勤怠レコード",
         "required": [
-          "totalWorkHours",
-          "targetHours",
-          "scheduledWorkDays",
-          "overtimeHours",
-          "paidLeaveDays",
-          "remainingPaidLeaveDays"
+          "clockInTime",
+          "totalWorkedHours"
         ],
         "properties": {
-          "totalWorkHours": {
+          "clockInTime": {
+            "type": "string",
+            "nullable": true,
+            "example": "09:00"
+          },
+          "totalWorkedHours": {
             "type": "number",
             "format": "float",
-            "example": 154.5
+            "nullable": true,
+            "example": 5.5
+          }
+        }
+      },
+      "DashboardStats": {
+        "type": "object",
+        "description": "ダッシュボード月次統計",
+        "required": [
+          "totalHours",
+          "targetHours",
+          "workDays",
+          "remainingDays",
+          "avgHours",
+          "avgHoursDiff",
+          "overtimeHours",
+          "overtimeDiff"
+        ],
+        "properties": {
+          "totalHours": {
+            "type": "number",
+            "format": "float"
           },
           "targetHours": {
             "type": "number",
-            "format": "float",
-            "example": 160
+            "format": "float"
           },
-          "scheduledWorkDays": {
-            "type": "integer",
-            "example": 20
+          "workDays": {
+            "type": "integer"
+          },
+          "remainingDays": {
+            "type": "integer"
+          },
+          "avgHours": {
+            "type": "number",
+            "format": "float"
+          },
+          "avgHoursDiff": {
+            "type": "number",
+            "format": "float"
           },
           "overtimeHours": {
             "type": "number",
-            "format": "float",
-            "example": 12
+            "format": "float"
           },
-          "paidLeaveDays": {
+          "overtimeDiff": {
             "type": "number",
-            "format": "float",
-            "example": 2
-          },
-          "remainingPaidLeaveDays": {
-            "type": "number",
-            "format": "float",
-            "example": 12.5
+            "format": "float"
           }
         }
       },
-      "CalendarDay": {
+      "DashboardRecentRecord": {
         "type": "object",
+        "description": "直近の勤怠レコード",
         "required": [
           "date",
-          "label",
-          "dayOfWeek",
-          "status",
-          "isToday",
-          "isHoliday"
+          "day",
+          "clockIn",
+          "clockOut",
+          "workHours",
+          "status"
         ],
         "properties": {
           "date": {
             "type": "string",
-            "format": "date",
-            "example": "2026-03-19"
+            "example": "2026/03/14"
           },
-          "label": {
+          "day": {
             "type": "string",
-            "example": "3/19"
+            "example": "土"
           },
-          "dayOfWeek": {
+          "clockIn": {
             "type": "string",
-            "example": "木"
+            "nullable": true,
+            "example": "09:00"
+          },
+          "clockOut": {
+            "type": "string",
+            "nullable": true,
+            "example": "18:00"
+          },
+          "workHours": {
+            "type": "number",
+            "format": "float",
+            "nullable": true,
+            "example": 8
           },
           "status": {
             "type": "string",
+            "description": "勤怠レコードの勤務区分",
             "enum": [
               "working",
-              "off",
-              "holiday",
-              "pending"
+              "out",
+              "break"
             ]
+          }
+        }
+      },
+      "CalendarIndexRequest": {
+        "type": "object",
+        "required": [
+          "year",
+          "month"
+        ],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "minimum": 2000,
+            "maximum": 2100
           },
-          "shift": {
-            "type": "string",
-            "nullable": true,
-            "example": "通常勤務"
-          },
-          "timeRange": {
-            "type": "string",
-            "nullable": true,
-            "example": "09:00 - 18:00"
-          },
-          "location": {
-            "type": "string",
-            "nullable": true,
-            "example": "Office-A"
-          },
-          "note": {
-            "type": "string",
-            "nullable": true,
-            "example": "春分の日"
-          },
-          "isToday": {
-            "type": "boolean"
-          },
-          "isHoliday": {
-            "type": "boolean"
+          "month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
           }
         }
       },
@@ -2885,6 +3049,7 @@
           },
           "summary": {
             "type": "object",
+            "description": "カレンダー月次サマリー",
             "required": [
               "totalWorkHours",
               "targetHours",
@@ -2929,6 +3094,7 @@
             "type": "array",
             "items": {
               "type": "object",
+              "description": "カレンダー1日分の情報",
               "required": [
                 "date",
                 "label",
@@ -2953,6 +3119,7 @@
                 },
                 "status": {
                   "type": "string",
+                  "description": "カレンダー日付の勤務状態",
                   "enum": [
                     "working",
                     "off",
@@ -2991,102 +3158,109 @@
           }
         }
       },
-      "TeamMember": {
+      "CalendarSummary": {
         "type": "object",
+        "description": "カレンダー月次サマリー",
         "required": [
-          "id",
-          "name",
-          "role",
-          "department",
-          "status",
-          "email"
+          "totalWorkHours",
+          "targetHours",
+          "scheduledWorkDays",
+          "overtimeHours",
+          "paidLeaveDays",
+          "remainingPaidLeaveDays"
         ],
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+          "totalWorkHours": {
+            "type": "number",
+            "format": "float",
+            "example": 154.5
           },
-          "name": {
-            "type": "string"
+          "targetHours": {
+            "type": "number",
+            "format": "float",
+            "example": 160
           },
-          "role": {
-            "type": "string"
+          "scheduledWorkDays": {
+            "type": "integer",
+            "example": 20
           },
-          "department": {
-            "type": "string"
+          "overtimeHours": {
+            "type": "number",
+            "format": "float",
+            "example": 12
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "working",
-              "break",
-              "off",
-              "leave"
-            ]
+          "paidLeaveDays": {
+            "type": "number",
+            "format": "float",
+            "example": 2
           },
-          "clockInTime": {
-            "type": "string",
-            "nullable": true,
-            "example": "09:00"
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
+          "remainingPaidLeaveDays": {
+            "type": "number",
+            "format": "float",
+            "example": 12.5
           }
         }
       },
-      "TeamMembersResponse": {
+      "CalendarDay": {
         "type": "object",
+        "description": "カレンダー1日分の情報",
         "required": [
-          "members"
+          "date",
+          "label",
+          "dayOfWeek",
+          "status",
+          "isToday",
+          "isHoliday"
         ],
         "properties": {
-          "members": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": [
-                "id",
-                "name",
-                "role",
-                "department",
-                "status",
-                "email"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "role": {
-                  "type": "string"
-                },
-                "department": {
-                  "type": "string"
-                },
-                "status": {
-                  "type": "string",
-                  "enum": [
-                    "working",
-                    "break",
-                    "off",
-                    "leave"
-                  ]
-                },
-                "clockInTime": {
-                  "type": "string",
-                  "nullable": true,
-                  "example": "09:00"
-                },
-                "email": {
-                  "type": "string",
-                  "format": "email"
-                }
-              }
-            }
+          "date": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-03-19"
+          },
+          "label": {
+            "type": "string",
+            "example": "3/19"
+          },
+          "dayOfWeek": {
+            "type": "string",
+            "example": "木"
+          },
+          "status": {
+            "type": "string",
+            "description": "カレンダー日付の勤務状態",
+            "enum": [
+              "working",
+              "off",
+              "holiday",
+              "pending"
+            ]
+          },
+          "shift": {
+            "type": "string",
+            "nullable": true,
+            "example": "通常勤務"
+          },
+          "timeRange": {
+            "type": "string",
+            "nullable": true,
+            "example": "09:00 - 18:00"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "example": "Office-A"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true,
+            "example": "春分の日"
+          },
+          "isToday": {
+            "type": "boolean"
+          },
+          "isHoliday": {
+            "type": "boolean"
           }
         }
       },
@@ -3102,6 +3276,7 @@
         "properties": {
           "profile": {
             "type": "object",
+            "description": "ユーザープロフィール情報（レスポンス用）",
             "required": [
               "name",
               "email",
@@ -3135,6 +3310,7 @@
           },
           "notifications": {
             "type": "object",
+            "description": "通知設定",
             "required": [
               "clockInReminder",
               "approvalNotification",
@@ -3154,6 +3330,7 @@
           },
           "security": {
             "type": "object",
+            "description": "セキュリティ設定",
             "required": [
               "twoFactorEnabled",
               "emailVerified"
@@ -3179,6 +3356,7 @@
           },
           "theme": {
             "type": "string",
+            "description": "UIテーマ設定",
             "enum": [
               "light",
               "dark"
@@ -3186,6 +3364,7 @@
           },
           "language": {
             "type": "string",
+            "description": "表示言語コード",
             "enum": [
               "ja",
               "en"
@@ -3204,6 +3383,7 @@
         "properties": {
           "profile": {
             "type": "object",
+            "description": "ユーザープロフィール更新（リクエスト用）",
             "required": [
               "name",
               "email"
@@ -3223,6 +3403,7 @@
           },
           "notifications": {
             "type": "object",
+            "description": "通知設定",
             "required": [
               "clockInReminder",
               "approvalNotification",
@@ -3242,6 +3423,7 @@
           },
           "theme": {
             "type": "string",
+            "description": "UIテーマ設定",
             "enum": [
               "light",
               "dark"
@@ -3249,10 +3431,534 @@
           },
           "language": {
             "type": "string",
+            "description": "表示言語コード",
             "enum": [
               "ja",
               "en"
             ]
+          }
+        }
+      },
+      "SettingsProfile": {
+        "type": "object",
+        "description": "ユーザープロフィール情報（レスポンス用）",
+        "required": [
+          "name",
+          "email",
+          "department",
+          "role",
+          "employeeCode"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "田中 太郎"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "t.tanaka@example.com"
+          },
+          "department": {
+            "type": "string",
+            "example": "営業部"
+          },
+          "role": {
+            "type": "string",
+            "example": "正社員"
+          },
+          "employeeCode": {
+            "type": "string",
+            "example": "EMP-2024001"
+          }
+        }
+      },
+      "UpdateSettingsProfile": {
+        "type": "object",
+        "description": "ユーザープロフィール更新（リクエスト用）",
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 255
+          }
+        }
+      },
+      "SettingsNotifications": {
+        "type": "object",
+        "description": "通知設定",
+        "required": [
+          "clockInReminder",
+          "approvalNotification",
+          "leaveReminder"
+        ],
+        "properties": {
+          "clockInReminder": {
+            "type": "boolean"
+          },
+          "approvalNotification": {
+            "type": "boolean"
+          },
+          "leaveReminder": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SettingsSecurity": {
+        "type": "object",
+        "description": "セキュリティ設定",
+        "required": [
+          "twoFactorEnabled",
+          "emailVerified"
+        ],
+        "properties": {
+          "twoFactorEnabled": {
+            "type": "boolean"
+          },
+          "emailVerified": {
+            "type": "boolean"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "passwordLastChangedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "TeamMembersResponse": {
+        "type": "object",
+        "required": [
+          "members"
+        ],
+        "properties": {
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "チームメンバー情報",
+              "required": [
+                "id",
+                "name",
+                "role",
+                "department",
+                "status",
+                "email"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "string"
+                },
+                "department": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "description": "チームメンバーの勤務状態",
+                  "enum": [
+                    "working",
+                    "break",
+                    "off",
+                    "leave"
+                  ]
+                },
+                "clockInTime": {
+                  "type": "string",
+                  "nullable": true,
+                  "example": "09:00"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TeamMember": {
+        "type": "object",
+        "description": "チームメンバー情報",
+        "required": [
+          "id",
+          "name",
+          "role",
+          "department",
+          "status",
+          "email"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "description": "チームメンバーの勤務状態",
+            "enum": [
+              "working",
+              "break",
+              "off",
+              "leave"
+            ]
+          },
+          "clockInTime": {
+            "type": "string",
+            "nullable": true,
+            "example": "09:00"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "エラーが発生しました"
+          }
+        }
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "バリデーションエラー"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "QueryDateFrom": {
+        "name": "from",
+        "in": "query",
+        "required": true,
+        "description": "検索期間の開始日",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "QueryDateTo": {
+        "name": "to",
+        "in": "query",
+        "required": true,
+        "description": "検索期間の終了日",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "PathAttendanceId": {
+        "name": "attendance",
+        "in": "path",
+        "required": true,
+        "description": "勤怠レコードID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "QueryYear": {
+        "name": "year",
+        "in": "query",
+        "required": true,
+        "description": "対象年",
+        "schema": {
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 2100
+        }
+      },
+      "QueryMonth": {
+        "name": "month",
+        "in": "query",
+        "required": true,
+        "description": "対象月",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        }
+      }
+    },
+    "requestBodies": {
+      "LoginBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 1,
+                  "maxLength": 255
+                },
+                "password": {
+                  "type": "string",
+                  "format": "password",
+                  "minLength": 8,
+                  "maxLength": 255,
+                  "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AttendanceClockInBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "work_date",
+                "start_time"
+              ],
+              "properties": {
+                "work_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "start_time": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AttendanceClockOutBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "work_date",
+                "end_time"
+              ],
+              "properties": {
+                "work_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "end_time": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AttendanceStoreBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "work_date",
+                "start_time"
+              ],
+              "properties": {
+                "work_date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "start_time": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "end_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "note": {
+                  "type": "string",
+                  "nullable": true,
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "AttendanceUpdateBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "start_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "end_time": {
+                  "type": "string",
+                  "format": "date-time",
+                  "nullable": true
+                },
+                "note": {
+                  "type": "string",
+                  "nullable": true,
+                  "maxLength": 500
+                }
+              }
+            }
+          }
+        }
+      },
+      "DashboardClockBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "action"
+              ],
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "打刻アクション種別",
+                  "enum": [
+                    "in",
+                    "out",
+                    "break_start",
+                    "break_end"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "UpdateSettingsBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "profile",
+                "notifications",
+                "theme",
+                "language"
+              ],
+              "properties": {
+                "profile": {
+                  "type": "object",
+                  "description": "ユーザープロフィール更新（リクエスト用）",
+                  "required": [
+                    "name",
+                    "email"
+                  ],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "maxLength": 255
+                    }
+                  }
+                },
+                "notifications": {
+                  "type": "object",
+                  "description": "通知設定",
+                  "required": [
+                    "clockInReminder",
+                    "approvalNotification",
+                    "leaveReminder"
+                  ],
+                  "properties": {
+                    "clockInReminder": {
+                      "type": "boolean"
+                    },
+                    "approvalNotification": {
+                      "type": "boolean"
+                    },
+                    "leaveReminder": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "theme": {
+                  "type": "string",
+                  "description": "UIテーマ設定",
+                  "enum": [
+                    "light",
+                    "dark"
+                  ]
+                },
+                "language": {
+                  "type": "string",
+                  "description": "表示言語コード",
+                  "enum": [
+                    "ja",
+                    "en"
+                  ]
+                }
+              }
+            }
           }
         }
       }

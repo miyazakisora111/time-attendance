@@ -1,0 +1,6 @@
+LanguageCode:
+  type: string
+  description: 表示言語コード
+  enum:
+    - ja
+    - en

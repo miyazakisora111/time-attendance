@@ -1,0 +1,89 @@
+name: OpenAPI SSOT Check
+
+on:
+  pull_request:
+    paths:
+      - "openapi/**"
+      - "scripts/generate-*.mjs"
+      - "orval.config.ts"
+      - "front/src/__generated__/**"
+      - "back/app/Enums/Generated/**"
+      - "back/app/Http/Requests/Generated/**"
+
+concurrency:
+  group: openapi-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  openapi-lint:
+    name: OpenAPI Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+      - run: npx @redocly/cli lint openapi/openapi.yaml
+
+  codegen-check:
+    name: Generated Code Drift Check
+    runs-on: ubuntu-latest
+    needs: openapi-lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - run: pnpm install --frozen-lockfile
+      - run: cd front && pnpm install --frozen-lockfile
+
+      # Enum の生成 → diff チェック
+      - name: Generate enums
+        run: |
+          node scripts/generate-php-enums.mjs
+          node scripts/generate-ts-enums.mjs
+
+      - name: Check enum drift
+        run: |
+          if ! git diff --exit-code back/app/Enums/Generated/ front/src/__generated__/enums.ts; then
+            echo ""
+            echo "❌ Generated enums are out of date."
+            echo "   Run: make openapi-enums"
+            echo "   Then commit the updated generated files."
+            exit 1
+          fi
+          echo "✅ Enums are up-to-date"
+
+      # OpenAPI バンドル → バリデーションルール生成 → diff チェック
+      - name: Generate bundle and validators
+        run: |
+          mkdir -p openapi/build
+          npx @redocly/cli bundle openapi/openapi.yaml -o openapi/build/bundle.yaml
+          npx @redocly/cli bundle openapi/openapi.yaml --dereferenced --ext json -o openapi/build/bundle.json
+
+      - name: Check validator drift
+        run: |
+          node scripts/generate-openapi-validators.mjs
+          if ! git diff --exit-code back/app/Http/Requests/Generated/; then
+            echo ""
+            echo "❌ Generated Laravel validation rules are out of date."
+            echo "   Run: make openapi"
+            echo "   Then commit the updated generated files."
+            exit 1
+          fi
+          echo "✅ Laravel validation rules are up-to-date"

@@ -1,7 +1,7 @@
 import React from "react";
 import { type ClockStatus, isWorking } from "@/domain/attendance/attendance";
 import { Typography } from "@/shared/components";
-import { EMPTY_DURATION_TEXT, EMPTY_TIME_TEXT } from "@/shared/presentation/format";
+import { EMPTY_DURATION_TEXT, EMPTY_TIME_TEXT } from "@/shared/utils/format";
 
 interface ClockTodayRecordProps {
   status: ClockStatus;

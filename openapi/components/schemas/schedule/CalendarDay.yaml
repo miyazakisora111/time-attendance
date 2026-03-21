@@ -1,0 +1,43 @@
+CalendarDay:
+  type: object
+  description: カレンダー1日分の情報
+  required:
+    - date
+    - label
+    - dayOfWeek
+    - status
+    - isToday
+    - isHoliday
+  properties:
+    date:
+      type: string
+      format: date
+      example: "2026-03-19"
+    label:
+      type: string
+      example: "3/19"
+    dayOfWeek:
+      type: string
+      example: "木"
+    status:
+      $ref: "../../enums/CalendarDayStatus.yaml#/CalendarDayStatus"
+    shift:
+      type: string
+      nullable: true
+      example: "通常勤務"
+    timeRange:
+      type: string
+      nullable: true
+      example: "09:00 - 18:00"
+    location:
+      type: string
+      nullable: true
+      example: "Office-A"
+    note:
+      type: string
+      nullable: true
+      example: "春分の日"
+    isToday:
+      type: boolean
+    isHoliday:
+      type: boolean

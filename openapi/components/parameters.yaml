@@ -1,0 +1,46 @@
+PathAttendanceId:
+  name: attendance
+  in: path
+  required: true
+  description: 勤怠レコードID
+  schema:
+    type: string
+    format: uuid
+
+QueryDateFrom:
+  name: from
+  in: query
+  required: true
+  description: 検索期間の開始日
+  schema:
+    type: string
+    format: date
+
+QueryDateTo:
+  name: to
+  in: query
+  required: true
+  description: 検索期間の終了日
+  schema:
+    type: string
+    format: date
+
+QueryYear:
+  name: year
+  in: query
+  required: true
+  description: 対象年
+  schema:
+    type: integer
+    minimum: 2000
+    maximum: 2100
+
+QueryMonth:
+  name: month
+  in: query
+  required: true
+  description: 対象月
+  schema:
+    type: integer
+    minimum: 1
+    maximum: 12

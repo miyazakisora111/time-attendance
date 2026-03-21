@@ -1,0 +1,8 @@
+ClockAction:
+  type: string
+  description: 打刻アクション種別
+  enum:
+    - in
+    - out
+    - break_start
+    - break_end

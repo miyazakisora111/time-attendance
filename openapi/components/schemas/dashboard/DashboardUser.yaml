@@ -1,0 +1,12 @@
+DashboardUser:
+  type: object
+  description: ダッシュボード用ユーザー情報
+  required:
+    - id
+    - name
+  properties:
+    id:
+      type: string
+      format: uuid
+    name:
+      type: string

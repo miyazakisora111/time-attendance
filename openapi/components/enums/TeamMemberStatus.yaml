@@ -1,0 +1,8 @@
+TeamMemberStatus:
+  type: string
+  description: チームメンバーの勤務状態
+  enum:
+    - working
+    - break
+    - off
+    - leave

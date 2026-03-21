@@ -9,12 +9,17 @@ import type { ClockStatus } from '@/domain/attendance/attendance';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
-import { EMPTY_TIME_TEXT } from '@/shared/presentation/format';
-import { STATUS_ICON_MAP } from '@/shared/presentation/attendance/attendanceStatus';
+import { EMPTY_TIME_TEXT } from '@/shared/utils/format';
+import { getAttendanceStatusIconSpec } from '@/shared/presentation/attendance/attendanceStatus';
 import { stack } from '@/shared/design-system/layout';
 import type { AttendanceStatus } from '@/domain/attendance/attendance';
-import type { AttendanceStatusView } from '@/features/attendance/ui/types';
 
+/** 勤怠ステータス */
+export interface AttendanceStatusView {
+  title: string;
+  description: string;
+  intent: 'primary' | 'warning' | 'muted';
+}
 const ATTENDANCE_STATUS_VIEW_MAP: Record<AttendanceStatus, AttendanceStatusView> = {
   working: {
     title: '勤務中',
@@ -49,7 +54,7 @@ export function AttendancePage() {
 
   // ステータスに応じたビュー/アイコン
   const currentStatus = ATTENDANCE_STATUS_VIEW_MAP[status];
-  const currentStatusIcon = STATUS_ICON_MAP[status];
+  const currentStatusIcon = getAttendanceStatusIconSpec(status);
   const clockActionStatus: ClockStatus = status === 'working' ? 'in' : status;
 
   return (
@@ -146,7 +151,7 @@ export function AttendancePage() {
                     >
                       <div className="w-1.5 h-10 rounded-full bg-blue-500" />
                       <div className="flex-1">
-                        <Typography variant="label">{lastAction?.type}</Typography>
+                        <Typography variant="label">{lastAction?.label}</Typography>
                         <Typography variant="small" intent="muted">
                           打刻完了
                         </Typography>

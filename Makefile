@@ -15,7 +15,8 @@ BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 
 .PHONY: setup up build down restart logs ps sh init migrate seed fresh test optimize \
 	front-install front-dev front-build front-typecheck front-lint local-back health \
-	openapi-lint openapi-bundle openapi-client openapi-zod openapi-validators openapi-examples openapi openapi-clean
+	openapi-lint openapi-bundle openapi-client openapi-zod openapi-validators openapi-examples openapi openapi-clean \
+	openapi-enums openapi-enums-check
 
 setup:
 	@[ -f .env ] || cp .env.example .env
@@ -116,5 +117,18 @@ openapi-clean:
 	rm -rf $(OPENAPI_DIR)/build/*
 	rm -rf $(OPENAPI_DIR)/examples/*
 	rm -rf $(FRONT_DIR)/src/__generated__/*
+	rm -rf $(BACK_DIR)/app/Enums/Generated/*
 
-openapi: openapi-zod openapi-client openapi-validators openapi-examples
+openapi-enums:
+	node scripts/generate-php-enums.mjs
+	node scripts/generate-ts-enums.mjs
+
+openapi-enums-check:
+	@echo "=== Checking generated enums are up-to-date ==="
+	@node scripts/generate-php-enums.mjs
+	@node scripts/generate-ts-enums.mjs
+	@git diff --exit-code $(BACK_DIR)/app/Enums/Generated/ $(FRONT_DIR)/src/__generated__/enums.ts \
+		|| (echo "❌ Generated enums are out of date. Run: make openapi-enums" && exit 1)
+	@echo "✅ Generated enums are up-to-date"
+
+openapi: openapi-enums openapi-zod openapi-client openapi-validators openapi-examples

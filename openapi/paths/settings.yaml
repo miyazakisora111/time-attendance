@@ -5,37 +5,33 @@ settings:
       - Settings
     summary: ユーザー設定取得
     responses:
-      '200':
+      "200":
         description: ユーザー設定
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/settings/SettingsResponse.yaml#/SettingsResponse'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-      '500':
-        $ref: '../components/responses.yaml#/InternalServerError'
+              $ref: "../components/schemas/settings/SettingsResponse.yaml#/SettingsResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
   put:
     operationId: updateSettingsApi
     tags:
       - Settings
     summary: ユーザー設定更新
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/settings/UpdateSettingsRequest.yaml#/UpdateSettingsRequest'
+      $ref: "../components/requestBodies.yaml#/UpdateSettingsBody"
     responses:
-      '200':
+      "200":
         description: 更新後ユーザー設定
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/settings/SettingsResponse.yaml#/SettingsResponse'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-      '422':
-        $ref: '../components/responses.yaml#/ValidationError'
-      '500':
-        $ref: '../components/responses.yaml#/InternalServerError'
+              $ref: "../components/schemas/settings/SettingsResponse.yaml#/SettingsResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

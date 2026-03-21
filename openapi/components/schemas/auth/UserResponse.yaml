@@ -36,8 +36,12 @@ UserResponse:
         settings:
           type: object
           nullable: true
-          description: ユーザー設定（任意のキーを許容、存在しない場合は null）
-          additionalProperties: true
+          description: ユーザー設定
+          properties:
+            theme:
+              $ref: "../../enums/ThemeType.yaml#/ThemeType"
+            language:
+              $ref: "../../enums/LanguageCode.yaml#/LanguageCode"
           example:
             theme: "dark"
             language: "ja"

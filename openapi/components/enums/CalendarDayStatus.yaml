@@ -1,0 +1,8 @@
+CalendarDayStatus:
+  type: string
+  description: カレンダー日付の勤務状態
+  enum:
+    - working
+    - off
+    - holiday
+    - pending

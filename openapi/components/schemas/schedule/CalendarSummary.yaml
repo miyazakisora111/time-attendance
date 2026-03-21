@@ -1,0 +1,34 @@
+CalendarSummary:
+  type: object
+  description: カレンダー月次サマリー
+  required:
+    - totalWorkHours
+    - targetHours
+    - scheduledWorkDays
+    - overtimeHours
+    - paidLeaveDays
+    - remainingPaidLeaveDays
+  properties:
+    totalWorkHours:
+      type: number
+      format: float
+      example: 154.5
+    targetHours:
+      type: number
+      format: float
+      example: 160
+    scheduledWorkDays:
+      type: integer
+      example: 20
+    overtimeHours:
+      type: number
+      format: float
+      example: 12
+    paidLeaveDays:
+      type: number
+      format: float
+      example: 2
+    remainingPaidLeaveDays:
+      type: number
+      format: float
+      example: 12.5

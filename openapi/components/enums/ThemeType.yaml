@@ -1,0 +1,6 @@
+ThemeType:
+  type: string
+  description: UIテーマ設定
+  enum:
+    - light
+    - dark

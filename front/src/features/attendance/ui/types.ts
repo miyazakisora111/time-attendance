@@ -9,16 +9,9 @@ export type AttendanceView = {
     workDate: string;
 };
 
-/** 勤怠ステータス */
-export interface AttendanceStatusView {
-    title: string;
-    description: string;
-    intent: 'primary' | 'warning' | 'muted';
-}
-
 /** 直近打刻 */
 export interface LastActionView {
-    type: string;
+    label: string;
     time: string;
 }
 

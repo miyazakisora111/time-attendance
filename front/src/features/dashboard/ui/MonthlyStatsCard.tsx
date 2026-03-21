@@ -3,11 +3,69 @@ import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
+import { formatJapaneseHours, formatJapaneseDays, formatSignedJapaneseHours } from "@/shared/utils/format";
 import { StatItemCard } from "@/features/dashboard/ui/StatItemCard";
-import {
-  buildDashboardMonthlyStatsView,
-  type DashboardMonthlyStatKey,
-} from "@/shared/presentation/dashboard";
+
+interface DashboardStatsLike {
+  totalHours: number;
+  targetHours: number;
+  workDays: number;
+  remainingDays: number;
+  avgHours: number;
+  avgHoursDiff: number;
+  overtimeHours: number;
+  overtimeDiff: number;
+}
+
+type DashboardMonthlyStatKey = 'total_hours' | 'work_days' | 'avg_hours' | 'overtime_hours';
+
+interface DashboardMonthlyStatView {
+  key: DashboardMonthlyStatKey;
+  label: string;
+  value: string;
+  subtext: string;
+  iconColorClassName: string;
+  iconBgColorClassName: string;
+}
+
+const buildDashboardMonthlyStatsView = (
+  stats: DashboardStatsLike,
+): DashboardMonthlyStatView[] => {
+  return [
+    {
+      key: 'total_hours',
+      label: '今月の勤務時間',
+      value: formatJapaneseHours(stats.totalHours),
+      subtext: `目標: ${formatJapaneseHours(stats.targetHours)}`,
+      iconColorClassName: 'text-blue-600',
+      iconBgColorClassName: 'bg-blue-100',
+    },
+    {
+      key: 'work_days',
+      label: '出勤日数',
+      value: formatJapaneseDays(stats.workDays),
+      subtext: `残り: ${formatJapaneseDays(stats.remainingDays)}`,
+      iconColorClassName: 'text-green-600',
+      iconBgColorClassName: 'bg-green-100',
+    },
+    {
+      key: 'avg_hours',
+      label: '平均勤務時間',
+      value: formatJapaneseHours(stats.avgHours),
+      subtext: `前月比: ${formatSignedJapaneseHours(stats.avgHoursDiff)}`,
+      iconColorClassName: 'text-indigo-600',
+      iconBgColorClassName: 'bg-indigo-100',
+    },
+    {
+      key: 'overtime_hours',
+      label: '残業時間',
+      value: formatJapaneseHours(stats.overtimeHours),
+      subtext: `前月比: ${formatSignedJapaneseHours(stats.overtimeDiff)}`,
+      iconColorClassName: 'text-amber-600',
+      iconBgColorClassName: 'bg-amber-100',
+    },
+  ];
+};
 
 const dashboardMonthlyStatIconMap: Record<DashboardMonthlyStatKey, LucideIcon> = {
   total_hours: Clock,
@@ -21,13 +79,13 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
 
   const statsConfig = stats
     ? buildDashboardMonthlyStatsView(stats).map((item) => ({
-        icon: dashboardMonthlyStatIconMap[item.key],
-        label: item.label,
-        value: item.value,
-        subtext: item.subtext,
-        iconColor: item.iconColorClassName,
-        iconBgColor: item.iconBgColorClassName,
-      }))
+      icon: dashboardMonthlyStatIconMap[item.key],
+      label: item.label,
+      value: item.value,
+      subtext: item.subtext,
+      iconColor: item.iconColorClassName,
+      iconBgColor: item.iconBgColorClassName,
+    }))
     : [];
 
   return (

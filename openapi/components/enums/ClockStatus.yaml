@@ -1,0 +1,7 @@
+ClockStatus:
+  type: string
+  description: 現在の打刻状態
+  enum:
+    - out
+    - in
+    - break

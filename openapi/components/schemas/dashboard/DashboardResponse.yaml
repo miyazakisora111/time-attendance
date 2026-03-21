@@ -9,101 +9,16 @@ DashboardResponse:
     - pendingOvertimeRequests
   properties:
     user:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
+      $ref: "./DashboardUser.yaml#/DashboardUser"
     clockStatus:
-      type: string
-      enum: [out, in, break]
+      $ref: "../../enums/ClockStatus.yaml#/ClockStatus"
     todayRecord:
-      type: object
-      required:
-        - clockInTime
-        - totalWorkedHours
-      properties:
-        clockInTime:
-          type: string
-          nullable: true
-          example: "09:00"
-        totalWorkedHours:
-          type: number
-          format: float
-          nullable: true
-          example: 5.5
+      $ref: "./DashboardTodayRecord.yaml#/DashboardTodayRecord"
     stats:
-      type: object
-      required:
-        - totalHours
-        - targetHours
-        - workDays
-        - remainingDays
-        - avgHours
-        - avgHoursDiff
-        - overtimeHours
-        - overtimeDiff
-      properties:
-        totalHours:
-          type: number
-          format: float
-        targetHours:
-          type: number
-          format: float
-        workDays:
-          type: integer
-        remainingDays:
-          type: integer
-        avgHours:
-          type: number
-          format: float
-        avgHoursDiff:
-          type: number
-          format: float
-        overtimeHours:
-          type: number
-          format: float
-        overtimeDiff:
-          type: number
-          format: float
+      $ref: "./DashboardStats.yaml#/DashboardStats"
     recentRecords:
       type: array
       items:
-        type: object
-        required:
-          - date
-          - day
-          - clockIn
-          - clockOut
-          - workHours
-          - status
-        properties:
-          date:
-            type: string
-            example: "2026/03/14"
-          day:
-            type: string
-            example: "土"
-          clockIn:
-            type: string
-            nullable: true
-            example: "09:00"
-          clockOut:
-            type: string
-            nullable: true
-            example: "18:00"
-          workHours:
-            type: number
-            format: float
-            nullable: true
-            example: 8.0
-          status:
-            type: string
-            enum: [通常, 残業, 休日]
+        $ref: "./DashboardRecentRecord.yaml#/DashboardRecentRecord"
     pendingOvertimeRequests:
       type: integer

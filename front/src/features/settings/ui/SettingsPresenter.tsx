@@ -151,7 +151,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                   </CardHeader>
                   <CardContent unstableClassName="space-y-6 p-8">
                     <div className="flex flex-col items-start gap-8 border-b border-gray-50 pb-6 md:flex-row md:items-center">
-                      <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl font-bold text-white shadow-xl">
+                      <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-linear-to-br from-blue-500 to-indigo-600 text-3xl font-bold text-white shadow-xl">
                         {profileInitial}
                       </div>
                       <div className="space-y-1">
@@ -235,7 +235,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
                               onChange={(event) => setNotification(item.id, event.target.checked)}
                               className="peer sr-only"
                             />
-                            <div className="h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:start-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white" />
+                            <div className="h-6 w-11 rounded-full bg-gray-200 transition-colors after:absolute after:inset-s-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white" />
                           </label>
                         </div>
                       );

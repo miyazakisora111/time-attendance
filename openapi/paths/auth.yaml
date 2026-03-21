@@ -6,24 +6,20 @@ login:
     summary: ログイン
     security: []
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '../components/schemas/auth/LoginRequest.yaml#/LoginRequest'
+      $ref: "../components/requestBodies.yaml#/LoginBody"
     responses:
-      '200':
+      "200":
         description: ログイン成功
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/auth/LoginResponse.yaml#/LoginResponse'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-      '422':
-        $ref: '../components/responses.yaml#/ValidationError'
-      '500':
-        $ref: '../components/responses.yaml#/InternalServerError'
+              $ref: "../components/schemas/auth/LoginResponse.yaml#/LoginResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
 
 logout:
   post:
@@ -32,20 +28,16 @@ logout:
       - Auth
     summary: ログアウト
     responses:
-      '200':
+      "200":
         description: ログアウト成功
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                message:
-                  type: string
-                  example: 'Logged out successfully'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-      '500':
-        $ref: '../components/responses.yaml#/InternalServerError'
+              $ref: "../components/schemas/auth/LogoutResponse.yaml#/LogoutResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
 
 authMe:
   get:
@@ -54,13 +46,13 @@ authMe:
       - Auth
     summary: ログイン中ユーザー情報取得
     responses:
-      '200':
+      "200":
         description: 認証済みユーザー情報
         content:
           application/json:
             schema:
-              $ref: '../components/schemas/auth/UserResponse.yaml#/UserResponse'
-      '401':
-        $ref: '../components/responses.yaml#/Unauthorized'
-      '500':
-        $ref: '../components/responses.yaml#/InternalServerError'
+              $ref: "../components/schemas/auth/UserResponse.yaml#/UserResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

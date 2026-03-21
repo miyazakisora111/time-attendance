@@ -4,5 +4,4 @@ DashboardClockRequest:
     - action
   properties:
     action:
-      type: string
-      enum: [in, out, break_start, break_end]
+      $ref: "../../enums/ClockAction.yaml#/ClockAction"

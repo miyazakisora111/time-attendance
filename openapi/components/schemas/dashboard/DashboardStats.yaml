@@ -1,0 +1,35 @@
+DashboardStats:
+  type: object
+  description: ダッシュボード月次統計
+  required:
+    - totalHours
+    - targetHours
+    - workDays
+    - remainingDays
+    - avgHours
+    - avgHoursDiff
+    - overtimeHours
+    - overtimeDiff
+  properties:
+    totalHours:
+      type: number
+      format: float
+    targetHours:
+      type: number
+      format: float
+    workDays:
+      type: integer
+    remainingDays:
+      type: integer
+    avgHours:
+      type: number
+      format: float
+    avgHoursDiff:
+      type: number
+      format: float
+    overtimeHours:
+      type: number
+      format: float
+    overtimeDiff:
+      type: number
+      format: float

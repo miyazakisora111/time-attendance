@@ -23,11 +23,7 @@ clockIn:
       - Attendance
     summary: 出勤打刻
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../components/schemas/attendance/AttendanceClockInRequest.yaml#/AttendanceClockInRequest"
+      $ref: "../components/requestBodies.yaml#/AttendanceClockInBody"
     responses:
       "200":
         description: 出勤成功
@@ -51,11 +47,7 @@ clockOut:
       - Attendance
     summary: 退勤打刻
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../components/schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
+      $ref: "../components/requestBodies.yaml#/AttendanceClockOutBody"
     responses:
       "200":
         description: 退勤成功
@@ -79,18 +71,8 @@ attendances:
       - Attendance
     summary: 勤怠一覧取得
     parameters:
-      - name: from
-        in: query
-        required: true
-        schema:
-          type: string
-          format: date
-      - name: to
-        in: query
-        required: true
-        schema:
-          type: string
-          format: date
+      - $ref: "../components/parameters.yaml#/QueryDateFrom"
+      - $ref: "../components/parameters.yaml#/QueryDateTo"
     responses:
       "200":
         description: 勤怠一覧
@@ -112,11 +94,7 @@ attendances:
       - Attendance
     summary: 勤怠の新規登録
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../components/schemas/attendance/AttendanceStoreRequest.yaml#/AttendanceStoreRequest"
+      $ref: "../components/requestBodies.yaml#/AttendanceStoreBody"
     responses:
       "201":
         description: 登録成功
@@ -138,18 +116,9 @@ attendanceUpdate:
       - Attendance
     summary: 勤怠の更新
     parameters:
-      - name: attendance
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+      - $ref: "../components/parameters.yaml#/PathAttendanceId"
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../components/schemas/attendance/AttendanceUpdateRequest.yaml#/AttendanceUpdateRequest"
+      $ref: "../components/requestBodies.yaml#/AttendanceUpdateBody"
     responses:
       "200":
         description: 更新成功

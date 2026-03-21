@@ -13,8 +13,8 @@ import {
     useClockOutMutation,
     useTodayAttendanceQuery,
 } from '@/features/attendance/hooks/useAttendanceQueries';
-import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/presentation/format';
-import { clockActionLabelMap } from '@/shared/presentation/attendance/clockAction';
+import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/utils/format';
+import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 
 export interface ClockActionSuccessPayload {
     action: ClockAction;
@@ -49,7 +49,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const handleAction = (clockAction: ClockAction) => {
         const now = new Date();
         const nowText = formatJapaneseHourMinute(now);
-        const label = clockActionLabelMap[clockAction];
+        const label = getClockActionLabel(clockAction);
         const workDate = todayAttendance?.workDate ?? now.toISOString().slice(0, 10);
 
         const onSuccess = () => {

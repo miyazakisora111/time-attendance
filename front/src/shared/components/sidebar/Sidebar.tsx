@@ -66,7 +66,7 @@ export default function Sidebar({
         >
             {/* Header */}
             <div className="h-20 flex items-center justify-between px-6 border-b border-gray-800">
-                {!collapsed && <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">勤怠管理</span>}
+                {!collapsed && <span className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">勤怠管理</span>}
                 <Button
                     variant="ghost"
                     size="icon"

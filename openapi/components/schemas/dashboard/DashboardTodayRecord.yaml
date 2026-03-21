@@ -1,0 +1,16 @@
+DashboardTodayRecord:
+  type: object
+  description: 今日の勤怠レコード
+  required:
+    - clockInTime
+    - totalWorkedHours
+  properties:
+    clockInTime:
+      type: string
+      nullable: true
+      example: "09:00"
+    totalWorkedHours:
+      type: number
+      format: float
+      nullable: true
+      example: 5.5

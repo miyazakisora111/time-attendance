@@ -3,7 +3,7 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-reac
 import { Card, CardContent, CardHeader, CardTitle, Typography, Button } from "@/shared/components";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { useDashboardCalendar } from "@/features/dashboard/hooks/useDashboardCalendar";
-import { formatJapaneseYearMonth } from "@/shared/presentation/format";
+import { formatJapaneseYearMonth } from "@/shared/utils/format";
 
 export const DAYS_OF_WEEK = ["日", "月", "火", "水", "木", "金", "土"] as const;
 

@@ -15,7 +15,7 @@ export default function SidebarUser({
     return (
         <div className="p-4 border-t border-gray-800">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shrink-0">
                     {user.avatar ? (
                         <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full" />
                     ) : (

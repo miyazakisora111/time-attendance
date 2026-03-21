@@ -65,12 +65,107 @@ paths:
 
 components:
   schemas:
-    CalendarIndexRequest:
-      $ref: "./components/schemas/schedule/CalendarIndexRequest.yaml#/CalendarIndexRequest"
+    # --- Enums ---
+    ClockAction:
+      $ref: "./components/enums/ClockAction.yaml#/ClockAction"
+    ClockStatus:
+      $ref: "./components/enums/ClockStatus.yaml#/ClockStatus"
+    ThemeType:
+      $ref: "./components/enums/ThemeType.yaml#/ThemeType"
+    LanguageCode:
+      $ref: "./components/enums/LanguageCode.yaml#/LanguageCode"
+    CalendarDayStatus:
+      $ref: "./components/enums/CalendarDayStatus.yaml#/CalendarDayStatus"
+    TeamMemberStatus:
+      $ref: "./components/enums/TeamMemberStatus.yaml#/TeamMemberStatus"
+    AttendanceStatus:
+      $ref: "./components/enums/AttendanceStatus.yaml#/AttendanceStatus"
+    UserStatus:
+      $ref: "./components/enums/UserStatus.yaml#/UserStatus"
+
+    # --- Auth ---
+    LoginRequest:
+      $ref: "./components/schemas/auth/LoginRequest.yaml#/LoginRequest"
+    LoginResponse:
+      $ref: "./components/schemas/auth/LoginResponse.yaml#/LoginResponse"
+    LogoutResponse:
+      $ref: "./components/schemas/auth/LogoutResponse.yaml#/LogoutResponse"
+    UserResponse:
+      $ref: "./components/schemas/auth/UserResponse.yaml#/UserResponse"
+
+    # --- Attendance ---
+    AttendanceClockInRequest:
+      $ref: "./components/schemas/attendance/AttendanceClockInRequest.yaml#/AttendanceClockInRequest"
+    AttendanceClockOutRequest:
+      $ref: "./components/schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
+    AttendanceStoreRequest:
+      $ref: "./components/schemas/attendance/AttendanceStoreRequest.yaml#/AttendanceStoreRequest"
+    AttendanceUpdateRequest:
+      $ref: "./components/schemas/attendance/AttendanceUpdateRequest.yaml#/AttendanceUpdateRequest"
+    AttendanceResponse:
+      $ref: "./components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
     AttendanceIndexRequest:
       $ref: "./components/schemas/attendance/AttendanceIndexRequest.yaml#/AttendanceIndexRequest"
+
+    # --- Dashboard ---
+    DashboardClockRequest:
+      $ref: "./components/schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
+    DashboardResponse:
+      $ref: "./components/schemas/dashboard/DashboardResponse.yaml#/DashboardResponse"
+    DashboardUser:
+      $ref: "./components/schemas/dashboard/DashboardUser.yaml#/DashboardUser"
+    DashboardTodayRecord:
+      $ref: "./components/schemas/dashboard/DashboardTodayRecord.yaml#/DashboardTodayRecord"
+    DashboardStats:
+      $ref: "./components/schemas/dashboard/DashboardStats.yaml#/DashboardStats"
+    DashboardRecentRecord:
+      $ref: "./components/schemas/dashboard/DashboardRecentRecord.yaml#/DashboardRecentRecord"
+
+    # --- Schedule ---
+    CalendarIndexRequest:
+      $ref: "./components/schemas/schedule/CalendarIndexRequest.yaml#/CalendarIndexRequest"
+    CalendarResponse:
+      $ref: "./components/schemas/schedule/CalendarResponse.yaml#/CalendarResponse"
+    CalendarSummary:
+      $ref: "./components/schemas/schedule/CalendarSummary.yaml#/CalendarSummary"
+    CalendarDay:
+      $ref: "./components/schemas/schedule/CalendarDay.yaml#/CalendarDay"
+
+    # --- Settings ---
+    SettingsResponse:
+      $ref: "./components/schemas/settings/SettingsResponse.yaml#/SettingsResponse"
+    UpdateSettingsRequest:
+      $ref: "./components/schemas/settings/UpdateSettingsRequest.yaml#/UpdateSettingsRequest"
+    SettingsProfile:
+      $ref: "./components/schemas/settings/SettingsProfile.yaml#/SettingsProfile"
+    UpdateSettingsProfile:
+      $ref: "./components/schemas/settings/UpdateSettingsProfile.yaml#/UpdateSettingsProfile"
+    SettingsNotifications:
+      $ref: "./components/schemas/settings/SettingsNotifications.yaml#/SettingsNotifications"
+    SettingsSecurity:
+      $ref: "./components/schemas/settings/SettingsSecurity.yaml#/SettingsSecurity"
+
+    # --- Team ---
+    TeamMembersResponse:
+      $ref: "./components/schemas/team/TeamMembersResponse.yaml#/TeamMembersResponse"
+    TeamMember:
+      $ref: "./components/schemas/team/TeamMember.yaml#/TeamMember"
+
+    # --- Error ---
+    ErrorResponse:
+      $ref: "./components/schemas/common/ErrorResponse.yaml#/ErrorResponse"
+    ValidationErrorResponse:
+      $ref: "./components/schemas/common/ValidationErrorResponse.yaml#/ValidationErrorResponse"
+
+  parameters:
+    $ref: "./components/parameters.yaml"
+
+  requestBodies:
+    $ref: "./components/requestBodies.yaml"
+
   responses:
     $ref: "./components/responses.yaml"
+
   securitySchemes:
     $ref: "./components/securitySchemes.yaml"
 

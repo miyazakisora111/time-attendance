@@ -15,86 +15,8 @@ CalendarResponse:
       minimum: 1
       maximum: 12
     summary:
-      $ref: '#/CalendarSummary'
+      $ref: "./CalendarSummary.yaml#/CalendarSummary"
     days:
       type: array
       items:
-        $ref: '#/CalendarDay'
-
-CalendarSummary:
-  type: object
-  required:
-    - totalWorkHours
-    - targetHours
-    - scheduledWorkDays
-    - overtimeHours
-    - paidLeaveDays
-    - remainingPaidLeaveDays
-  properties:
-    totalWorkHours:
-      type: number
-      format: float
-      example: 154.5
-    targetHours:
-      type: number
-      format: float
-      example: 160
-    scheduledWorkDays:
-      type: integer
-      example: 20
-    overtimeHours:
-      type: number
-      format: float
-      example: 12
-    paidLeaveDays:
-      type: number
-      format: float
-      example: 2
-    remainingPaidLeaveDays:
-      type: number
-      format: float
-      example: 12.5
-
-CalendarDay:
-  type: object
-  required:
-    - date
-    - label
-    - dayOfWeek
-    - status
-    - isToday
-    - isHoliday
-  properties:
-    date:
-      type: string
-      format: date
-      example: '2026-03-19'
-    label:
-      type: string
-      example: '3/19'
-    dayOfWeek:
-      type: string
-      example: '木'
-    status:
-      type: string
-      enum: [working, off, holiday, pending]
-    shift:
-      type: string
-      nullable: true
-      example: '通常勤務'
-    timeRange:
-      type: string
-      nullable: true
-      example: '09:00 - 18:00'
-    location:
-      type: string
-      nullable: true
-      example: 'Office-A'
-    note:
-      type: string
-      nullable: true
-      example: '春分の日'
-    isToday:
-      type: boolean
-    isHoliday:
-      type: boolean
+        $ref: "./CalendarDay.yaml#/CalendarDay"

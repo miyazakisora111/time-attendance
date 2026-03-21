@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { type AttendanceStatus } from '@/domain/attendance/attendance';
 import { useAttendanceClock } from '@/features/attendance/hooks/useAttendanceClock';
-import { clockActionLabelMap } from '@/shared/presentation/attendance/clockAction';
+import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 import { type LastAction } from '@/features/attendance/ui/types';
 
 /**
@@ -28,7 +28,7 @@ export const useAttendance = () => {
 
   // 最後の打刻アクション
   const lastActionView = useMemo(
-    () => (lastAction ? { type: clockActionLabelMap[lastAction.clockAction], time: lastAction.time } : null),
+    () => (lastAction ? { label: getClockActionLabel(lastAction.clockAction), time: lastAction.time } : null),
     [lastAction]
   );
 

@@ -23,11 +23,7 @@ dashboardClock:
       - Dashboard
     summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
     requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "../components/schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
+      $ref: "../components/requestBodies.yaml#/DashboardClockBody"
     responses:
       "200":
         description: 打刻成功

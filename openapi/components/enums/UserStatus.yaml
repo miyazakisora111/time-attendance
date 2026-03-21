@@ -1,0 +1,8 @@
+UserStatus:
+  type: string
+  description: ユーザーアカウントの状態
+  enum:
+    - active
+    - inactive
+    - suspended
+    - deleted

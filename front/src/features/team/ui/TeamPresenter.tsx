@@ -135,7 +135,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
                     >
                       <td className="px-8 py-5">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden">
+                          <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-500 font-bold overflow-hidden">
                             <span>{member.name.charAt(0)}</span>
                           </div>
                           <div>

@@ -1,0 +1,48 @@
+LoginBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/auth/LoginRequest.yaml#/LoginRequest"
+
+AttendanceClockInBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceClockInRequest.yaml#/AttendanceClockInRequest"
+
+AttendanceClockOutBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
+
+AttendanceStoreBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceStoreRequest.yaml#/AttendanceStoreRequest"
+
+AttendanceUpdateBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceUpdateRequest.yaml#/AttendanceUpdateRequest"
+
+DashboardClockBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
+
+UpdateSettingsBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/settings/UpdateSettingsRequest.yaml#/UpdateSettingsRequest"

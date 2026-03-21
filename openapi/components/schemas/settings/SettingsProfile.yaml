@@ -1,0 +1,26 @@
+SettingsProfile:
+  type: object
+  description: ユーザープロフィール情報（レスポンス用）
+  required:
+    - name
+    - email
+    - department
+    - role
+    - employeeCode
+  properties:
+    name:
+      type: string
+      example: 田中 太郎
+    email:
+      type: string
+      format: email
+      example: t.tanaka@example.com
+    department:
+      type: string
+      example: 営業部
+    role:
+      type: string
+      example: 正社員
+    employeeCode:
+      type: string
+      example: EMP-2024001

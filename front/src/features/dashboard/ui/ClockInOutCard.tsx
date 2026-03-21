@@ -6,7 +6,7 @@ import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueri
 import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { ClockTodayRecord } from "@/features/dashboard/ui/ClockTodayRecord";
-import { getClockStatusBadgeView } from "@/shared/presentation/attendance/attendanceStatus";
+import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockStatus";
 import { stack } from "@/shared/design-system/layout";
 
 /**

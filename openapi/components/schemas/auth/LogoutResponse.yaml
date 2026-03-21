@@ -1,0 +1,7 @@
+LogoutResponse:
+  type: object
+  description: ログアウト成功レスポンス
+  properties:
+    message:
+      type: string
+      example: "Logged out successfully"

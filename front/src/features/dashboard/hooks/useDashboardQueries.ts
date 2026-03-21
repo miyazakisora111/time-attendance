@@ -3,7 +3,7 @@ import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchDashboard } from '@/api/dashboard.api';
 import type { DashboardResponse } from '@/__generated__/model';
 import { toDashboardView } from '@/features/dashboard/mappers/toDashboardView';
-import type { DashboardViewData } from '@/features/dashboard/ui/types';
+import type { DashboardViewData, DashboardRecentRecord, DashboardStats } from '@/features/dashboard/ui/types';
 
 const SCOPE = 'dashboard' as const;
 const scoped = makeScopedKeys(SCOPE);
@@ -23,7 +23,7 @@ export const useDashboard = () =>
 
 /** 月次統計のみ取得 */
 export const useDashboardStats = () =>
-  useQuery<DashboardResponse, Error, DashboardViewData['stats']>({
+  useQuery<DashboardResponse, Error, DashboardStats>({
     queryKey: dashboardQueryKeys.all(),
     queryFn: fetchDashboard,
     select: (data) => selectDashboard(data).stats,
@@ -31,7 +31,7 @@ export const useDashboardStats = () =>
 
 /** 直近勤怠のみ取得 */
 export const useRecentRecords = () =>
-  useQuery<DashboardResponse, Error, DashboardViewData['recentRecords']>({
+  useQuery<DashboardResponse, Error, DashboardRecentRecord[]>({
     queryKey: dashboardQueryKeys.all(),
     queryFn: fetchDashboard,
     select: (data) => selectDashboard(data).recentRecords,
