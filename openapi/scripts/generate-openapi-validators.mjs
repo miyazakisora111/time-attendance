@@ -8,13 +8,13 @@ import { render } from './templates/render.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, '../..');
 
 const bundleJsonPath = path.join(rootDir, 'openapi/build/bundle.json');
 const zodGeneratedPath = path.join(rootDir, 'front/src/__generated__/zod.ts');
 const frontOutputPath = path.join(rootDir, 'front/src/__generated__/zod.validation.ts');
 const labelOutputPath = path.join(rootDir, 'front/src/__generated__/field-labels.json');
-const backOutputPath = path.join(rootDir, 'back/app/Http/Requests/Generated/OpenApiGeneratedRules.php');
+const backOutputPath = path.join(rootDir, 'back/app/__Generated__/OpenApiGeneratedRules.php');
 const fieldsPath = path.join(rootDir, 'openapi/schema/fields.yaml');
 
 const escapeSingleQuote = (value) => value.replace(/\\/g, '\\\\').replace(/'/g, "\\'");

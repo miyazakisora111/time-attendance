@@ -7,6 +7,9 @@
  */
 import type { TeamMemberStatus } from "./teamMemberStatus";
 
+/**
+ * チームメンバー情報
+ */
 export interface TeamMember {
   /** @nullable */
   clockInTime?: string | null;

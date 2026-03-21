@@ -6,9 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  AttendanceClockInRequest,
-  AttendanceClockOutRequest,
+  AttendanceClockInBodyBody,
+  AttendanceClockOutBodyBody,
   AttendanceResponse,
+  AttendanceStoreBodyBody,
+  AttendanceUpdateBodyBody,
+  ListAttendancesApiParams,
 } from ".././model";
 import { customInstance } from "../../lib/http/client";
 
@@ -25,28 +28,72 @@ export const getAttendance = () => {
   /**
    * @summary 出勤打刻
    */
-  const clockInApi = (attendanceClockInRequest: AttendanceClockInRequest) => {
+  const clockInApi = (attendanceClockInBodyBody: AttendanceClockInBodyBody) => {
     return customInstance<AttendanceResponse>({
       url: `/attendances/clock-in`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      data: attendanceClockInRequest,
+      data: attendanceClockInBodyBody,
     });
   };
   /**
    * @summary 退勤打刻
    */
   const clockOutApi = (
-    attendanceClockOutRequest: AttendanceClockOutRequest,
+    attendanceClockOutBodyBody: AttendanceClockOutBodyBody,
   ) => {
     return customInstance<AttendanceResponse>({
       url: `/attendances/clock-out`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      data: attendanceClockOutRequest,
+      data: attendanceClockOutBodyBody,
     });
   };
-  return { todayAttendanceApi, clockInApi, clockOutApi };
+  /**
+   * @summary 勤怠一覧取得
+   */
+  const listAttendancesApi = (params: ListAttendancesApiParams) => {
+    return customInstance<AttendanceResponse[]>({
+      url: `/attendances`,
+      method: "GET",
+      params,
+    });
+  };
+  /**
+   * @summary 勤怠の新規登録
+   */
+  const storeAttendanceApi = (
+    attendanceStoreBodyBody: AttendanceStoreBodyBody,
+  ) => {
+    return customInstance<AttendanceResponse>({
+      url: `/attendances`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: attendanceStoreBodyBody,
+    });
+  };
+  /**
+   * @summary 勤怠の更新
+   */
+  const updateAttendanceApi = (
+    attendance: string,
+    attendanceUpdateBodyBody: AttendanceUpdateBodyBody,
+  ) => {
+    return customInstance<AttendanceResponse>({
+      url: `/attendances/${attendance}`,
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      data: attendanceUpdateBodyBody,
+    });
+  };
+  return {
+    todayAttendanceApi,
+    clockInApi,
+    clockOutApi,
+    listAttendancesApi,
+    storeAttendanceApi,
+    updateAttendanceApi,
+  };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -61,4 +108,13 @@ export type ClockInApiResult = NonNullable<
 >;
 export type ClockOutApiResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["clockOutApi"]>>
+>;
+export type ListAttendancesApiResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["listAttendancesApi"]>>
+>;
+export type StoreAttendanceApiResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["storeAttendanceApi"]>>
+>;
+export type UpdateAttendanceApiResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["updateAttendanceApi"]>>
 >;

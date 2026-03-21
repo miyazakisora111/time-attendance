@@ -30,7 +30,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-        'AttendanceClockInRequest' => [
+                'AttendanceClockInRequest' => [
             'work_date' => ['required', 'string', 'date_format:Y-m-d'],
             'start_time' => ['sometimes', 'string', 'date_format:H:i'],
         ],
@@ -109,6 +109,14 @@ final class OpenApiGeneratedRules
         'DashboardClockRequest' => [
             'action' => ['required', 'in:in,out,break_start,break_end'],
         ],
+        'DashboardRecentRecord' => [
+            'date' => ['required', 'string', 'date_format:Y-m-d'],
+            'day' => ['required', 'string'],
+            'clockIn' => ['required', 'nullable', 'string'],
+            'clockOut' => ['required', 'nullable', 'string'],
+            'workHours' => ['required', 'nullable', 'numeric'],
+            'status' => ['required', 'in:working,out,break'],
+        ],
         'DashboardResponse' => [
             'user' => ['required', 'array'],
             'user.id' => ['required', 'string'],
@@ -136,6 +144,24 @@ final class OpenApiGeneratedRules
             'recentRecords.*.status' => ['required', 'in:working,out,break'],
             'pendingOvertimeRequests' => ['required', 'integer'],
         ],
+        'DashboardStats' => [
+            'totalHours' => ['required', 'numeric'],
+            'targetHours' => ['required', 'numeric'],
+            'workDays' => ['required', 'integer'],
+            'remainingDays' => ['required', 'integer'],
+            'avgHours' => ['required', 'numeric'],
+            'avgHoursDiff' => ['required', 'numeric'],
+            'overtimeHours' => ['required', 'numeric'],
+            'overtimeDiff' => ['required', 'numeric'],
+        ],
+        'DashboardTodayRecord' => [
+            'clockInTime' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'totalWorkedHours' => ['required', 'nullable', 'numeric'],
+        ],
+        'DashboardUser' => [
+            'id' => ['required', 'string'],
+            'name' => ['required', 'string'],
+        ],
         'ErrorResponse' => [
             'message' => ['sometimes', 'string'],
         ],
@@ -145,6 +171,21 @@ final class OpenApiGeneratedRules
         ],
         'LoginResponse' => [
             'token' => ['sometimes', 'string'],
+        ],
+        'LogoutResponse' => [
+            'message' => ['sometimes', 'string'],
+        ],
+        'SettingsNotifications' => [
+            'clockInReminder' => ['required', 'boolean'],
+            'approvalNotification' => ['required', 'boolean'],
+            'leaveReminder' => ['required', 'boolean'],
+        ],
+        'SettingsProfile' => [
+            'name' => ['required', 'string'],
+            'email' => ['required', 'string', 'email'],
+            'department' => ['required', 'string'],
+            'role' => ['required', 'string'],
+            'employeeCode' => ['sometimes', 'string'],
         ],
         'SettingsResponse' => [
             'profile' => ['required', 'array'],
@@ -165,6 +206,12 @@ final class OpenApiGeneratedRules
             'theme' => ['required', 'in:light,dark'],
             'language' => ['required', 'in:ja,en'],
         ],
+        'SettingsSecurity' => [
+            'twoFactorEnabled' => ['required', 'boolean'],
+            'emailVerified' => ['required', 'boolean'],
+            'lastLoginAt' => ['sometimes', 'nullable', 'string', 'date'],
+            'passwordLastChangedAt' => ['sometimes', 'nullable', 'string', 'date'],
+        ],
         'TeamMember' => [
             'id' => ['required', 'string'],
             'name' => ['required', 'string'],
@@ -184,6 +231,10 @@ final class OpenApiGeneratedRules
             'members.*.status' => ['required', 'in:working,break,off,leave'],
             'members.*.clockInTime' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
             'members.*.email' => ['required', 'string', 'email'],
+        ],
+        'UpdateSettingsProfile' => [
+            'name' => ['required', 'string', 'min:1', 'max:120'],
+            'email' => ['required', 'string', 'max:255', 'email'],
         ],
         'UpdateSettingsRequest' => [
             'profile' => ['required', 'array'],
@@ -219,7 +270,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-        'AttendanceClockInRequest' => [
+                'AttendanceClockInRequest' => [
             'work_date' => '勤務日',
             'start_time' => '出勤時刻',
         ],
@@ -298,6 +349,14 @@ final class OpenApiGeneratedRules
         'DashboardClockRequest' => [
             'action' => '打刻アクション',
         ],
+        'DashboardRecentRecord' => [
+            'date' => '日付',
+            'day' => 'day',
+            'clockIn' => 'clockIn',
+            'clockOut' => 'clockOut',
+            'workHours' => 'workHours',
+            'status' => 'スケジュール状態',
+        ],
         'DashboardResponse' => [
             'user' => 'user',
             'user.id' => 'ユーザーID',
@@ -325,6 +384,24 @@ final class OpenApiGeneratedRules
             'recentRecords.*.status' => 'スケジュール状態',
             'pendingOvertimeRequests' => '未処理残業申請数',
         ],
+        'DashboardStats' => [
+            'totalHours' => '総勤務時間',
+            'targetHours' => '目標勤務時間',
+            'workDays' => '勤務日数',
+            'remainingDays' => '残り日数',
+            'avgHours' => '平均勤務時間',
+            'avgHoursDiff' => '平均差分',
+            'overtimeHours' => '残業時間',
+            'overtimeDiff' => '残業差分',
+        ],
+        'DashboardTodayRecord' => [
+            'clockInTime' => '出勤時刻',
+            'totalWorkedHours' => 'totalWorkedHours',
+        ],
+        'DashboardUser' => [
+            'id' => 'ユーザーID',
+            'name' => '氏名',
+        ],
         'ErrorResponse' => [
             'message' => 'メッセージ',
         ],
@@ -334,6 +411,21 @@ final class OpenApiGeneratedRules
         ],
         'LoginResponse' => [
             'token' => '認証トークン',
+        ],
+        'LogoutResponse' => [
+            'message' => 'メッセージ',
+        ],
+        'SettingsNotifications' => [
+            'clockInReminder' => '打刻忘れ通知',
+            'approvalNotification' => '承認通知',
+            'leaveReminder' => '休暇リマインド通知',
+        ],
+        'SettingsProfile' => [
+            'name' => '氏名',
+            'email' => 'メールアドレス',
+            'department' => '部署',
+            'role' => '役職',
+            'employeeCode' => '社員番号',
         ],
         'SettingsResponse' => [
             'profile' => 'profile',
@@ -354,6 +446,12 @@ final class OpenApiGeneratedRules
             'theme' => 'テーマ設定',
             'language' => '言語設定',
         ],
+        'SettingsSecurity' => [
+            'twoFactorEnabled' => '二要素認証設定',
+            'emailVerified' => 'メール認証状態',
+            'lastLoginAt' => '最終ログイン日時',
+            'passwordLastChangedAt' => 'パスワード更新日時',
+        ],
         'TeamMember' => [
             'id' => 'ユーザーID',
             'name' => '氏名',
@@ -373,6 +471,10 @@ final class OpenApiGeneratedRules
             'members.*.status' => 'スケジュール状態',
             'members.*.clockInTime' => '出勤時刻',
             'members.*.email' => 'メールアドレス',
+        ],
+        'UpdateSettingsProfile' => [
+            'name' => '氏名',
+            'email' => 'メールアドレス',
         ],
         'UpdateSettingsRequest' => [
             'profile' => 'profile',

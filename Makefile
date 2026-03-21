@@ -117,7 +117,7 @@ openapi-clean:
 	rm -rf $(OPENAPI_DIR)/build/*
 	rm -rf $(OPENAPI_DIR)/examples/*
 	rm -rf $(FRONT_DIR)/src/__generated__/*
-	rm -rf $(BACK_DIR)/app/__Generated__/Enums/*
+	rm -rf $(BACK_DIR)/app/__Generated__/*
 
 openapi-enums:
 	node openapi/scripts/generate-php-enums.mjs

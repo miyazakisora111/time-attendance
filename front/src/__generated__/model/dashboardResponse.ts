@@ -5,17 +5,17 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { DashboardResponseClockStatus } from "./dashboardResponseClockStatus";
-import type { DashboardResponseRecentRecordsItem } from "./dashboardResponseRecentRecordsItem";
-import type { DashboardResponseStats } from "./dashboardResponseStats";
-import type { DashboardResponseTodayRecord } from "./dashboardResponseTodayRecord";
-import type { DashboardResponseUser } from "./dashboardResponseUser";
+import type { ClockStatus } from "./clockStatus";
+import type { DashboardRecentRecord } from "./dashboardRecentRecord";
+import type { DashboardStats } from "./dashboardStats";
+import type { DashboardTodayRecord } from "./dashboardTodayRecord";
+import type { DashboardUser } from "./dashboardUser";
 
 export interface DashboardResponse {
-  clockStatus: DashboardResponseClockStatus;
+  clockStatus: ClockStatus;
   pendingOvertimeRequests: number;
-  recentRecords: DashboardResponseRecentRecordsItem[];
-  stats: DashboardResponseStats;
-  todayRecord: DashboardResponseTodayRecord;
-  user: DashboardResponseUser;
+  recentRecords: DashboardRecentRecord[];
+  stats: DashboardStats;
+  todayRecord: DashboardTodayRecord;
+  user: DashboardUser;
 }

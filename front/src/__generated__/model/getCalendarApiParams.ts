@@ -5,8 +5,16 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
+import type { QueryYearParameter } from "./queryYearParameter";
+import type { QueryMonthParameter } from "./queryMonthParameter";
 
 export type GetCalendarApiParams = {
-  year: number;
-  month: number;
+  /**
+   * 対象年
+   */
+  year: QueryYearParameter;
+  /**
+   * 対象月
+   */
+  month: QueryMonthParameter;
 };

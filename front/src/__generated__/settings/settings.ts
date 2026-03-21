@@ -5,7 +5,7 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { SettingsResponse, UpdateSettingsRequest } from ".././model";
+import type { SettingsResponse, UpdateSettingsBodyBody } from ".././model";
 import { customInstance } from "../../lib/http/client";
 
 export const getSettings = () => {
@@ -21,12 +21,14 @@ export const getSettings = () => {
   /**
    * @summary ユーザー設定更新
    */
-  const updateSettingsApi = (updateSettingsRequest: UpdateSettingsRequest) => {
+  const updateSettingsApi = (
+    updateSettingsBodyBody: UpdateSettingsBodyBody,
+  ) => {
     return customInstance<SettingsResponse>({
       url: `/settings`,
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      data: updateSettingsRequest,
+      data: updateSettingsBodyBody,
     });
   };
   return { getSettingsApi, updateSettingsApi };

@@ -7,14 +7,46 @@
 import { z } from 'zod';
 
 export namespace components.schemas {
-  export const CalendarIndexRequest = z.object({
-    year: z.number().int(),
-    month: z.number().int(),
-  });
-  export const AttendanceIndexRequest = z.object({
-    from: z.string(),
-    to: z.string(),
-  });
+  /**
+   * @description 打刻アクション種別 
+   * @enum {string}
+   */
+  export const ClockAction = z.enum(["in", "out", "break_start", "break_end"]);
+  /**
+   * @description 現在の打刻状態 
+   * @enum {string}
+   */
+  export const ClockStatus = z.enum(["out", "in", "break"]);
+  /**
+   * @description UIテーマ設定 
+   * @enum {string}
+   */
+  export const ThemeType = z.enum(["light", "dark"]);
+  /**
+   * @description 表示言語コード 
+   * @enum {string}
+   */
+  export const LanguageCode = z.enum(["ja", "en"]);
+  /**
+   * @description カレンダー日付の勤務状態 
+   * @enum {string}
+   */
+  export const CalendarDayStatus = z.enum(["working", "off", "holiday", "pending"]);
+  /**
+   * @description チームメンバーの勤務状態 
+   * @enum {string}
+   */
+  export const TeamMemberStatus = z.enum(["working", "break", "off", "leave"]);
+  /**
+   * @description 勤怠レコードの勤務区分 
+   * @enum {string}
+   */
+  export const AttendanceStatus = z.enum(["working", "out", "break"]);
+  /**
+   * @description ユーザーアカウントの状態 
+   * @enum {string}
+   */
+  export const UserStatus = z.enum(["active", "inactive", "suspended", "deleted"]);
   export const LoginRequest = z.object({
     email: z.string(),
     password: z.string(),
@@ -22,12 +54,9 @@ export namespace components.schemas {
   export const LoginResponse = z.object({
     token: z.string().optional(),
   });
-  export const ErrorResponse = z.object({
+  /** @description ログアウト成功レスポンス */
+  export const LogoutResponse = z.object({
     message: z.string().optional(),
-  });
-  export const ValidationErrorResponse = z.object({
-    message: z.string().optional(),
-    errors: z.record(z.string(), z.array(z.string())).optional(),
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
@@ -36,14 +65,11 @@ export namespace components.schemas {
       name: z.string(),
       email: z.string(),
       roles: z.array(z.string()),
-      settings: z.record(z.string(), z.unknown()).nullable().optional(),
+      settings: z.object({
+        theme: components["schemas"]["ThemeType"].optional(),
+        language: components["schemas"]["LanguageCode"].optional(),
+      }).nullable().optional(),
     }),
-  });
-  export const AttendanceResponse = z.object({
-    user_id: z.string(),
-    work_date: z.string(),
-    start_time: z.string().nullable(),
-    end_time: z.string().nullable().optional(),
   });
   export const AttendanceClockInRequest = z.object({
     work_date: z.string(),
@@ -64,39 +90,68 @@ export namespace components.schemas {
     end_time: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
-  export const DashboardResponse = z.object({
-    user: z.object({
-      id: z.string(),
-      name: z.string(),
-    }),
-    clockStatus: z.enum(["out", "in", "break"]),
-    todayRecord: z.object({
-      clockInTime: z.string().nullable(),
-      totalWorkedHours: z.number().nullable(),
-    }),
-    stats: z.object({
-      totalHours: z.number(),
-      targetHours: z.number(),
-      workDays: z.number().int(),
-      remainingDays: z.number().int(),
-      avgHours: z.number(),
-      avgHoursDiff: z.number(),
-      overtimeHours: z.number(),
-      overtimeDiff: z.number(),
-    }),
-    recentRecords: z.array(z.object({
-        date: z.string(),
-        day: z.string(),
-        clockIn: z.string().nullable(),
-        clockOut: z.string().nullable(),
-        workHours: z.number().nullable(),
-        status: z.enum(["通常", "残業", "休日"]),
-      })),
-    pendingOvertimeRequests: z.number().int(),
+  export const AttendanceResponse = z.object({
+    user_id: z.string(),
+    work_date: z.string(),
+    start_time: z.string().nullable(),
+    end_time: z.string().nullable().optional(),
+  });
+  export const AttendanceIndexRequest = z.object({
+    from: z.string(),
+    to: z.string(),
   });
   export const DashboardClockRequest = z.object({
-    action: z.enum(["in", "out", "break_start", "break_end"]),
+    action: components["schemas"]["ClockAction"],
   });
+  export const DashboardResponse = z.object({
+    user: components["schemas"]["DashboardUser"],
+    clockStatus: components["schemas"]["ClockStatus"],
+    todayRecord: components["schemas"]["DashboardTodayRecord"],
+    stats: components["schemas"]["DashboardStats"],
+    recentRecords: z.array(components["schemas"]["DashboardRecentRecord"]),
+    pendingOvertimeRequests: z.number().int(),
+  });
+  /** @description ダッシュボード用ユーザー情報 */
+  export const DashboardUser = z.object({
+    id: z.string(),
+    name: z.string(),
+  });
+  /** @description 今日の勤怠レコード */
+  export const DashboardTodayRecord = z.object({
+    clockInTime: z.string().nullable(),
+    totalWorkedHours: z.number().nullable(),
+  });
+  /** @description ダッシュボード月次統計 */
+  export const DashboardStats = z.object({
+    totalHours: z.number(),
+    targetHours: z.number(),
+    workDays: z.number().int(),
+    remainingDays: z.number().int(),
+    avgHours: z.number(),
+    avgHoursDiff: z.number(),
+    overtimeHours: z.number(),
+    overtimeDiff: z.number(),
+  });
+  /** @description 直近の勤怠レコード */
+  export const DashboardRecentRecord = z.object({
+    date: z.string(),
+    day: z.string(),
+    clockIn: z.string().nullable(),
+    clockOut: z.string().nullable(),
+    workHours: z.number().nullable(),
+    status: components["schemas"]["AttendanceStatus"],
+  });
+  export const CalendarIndexRequest = z.object({
+    year: z.number().int(),
+    month: z.number().int(),
+  });
+  export const CalendarResponse = z.object({
+    year: z.number().int(),
+    month: z.number().int(),
+    summary: components["schemas"]["CalendarSummary"],
+    days: z.array(components["schemas"]["CalendarDay"]),
+  });
+  /** @description カレンダー月次サマリー */
   export const CalendarSummary = z.object({
     totalWorkHours: z.number(),
     targetHours: z.number(),
@@ -105,11 +160,12 @@ export namespace components.schemas {
     paidLeaveDays: z.number(),
     remainingPaidLeaveDays: z.number(),
   });
+  /** @description カレンダー1日分の情報 */
   export const CalendarDay = z.object({
     date: z.string(),
     label: z.string(),
     dayOfWeek: z.string(),
-    status: z.enum(["working", "off", "holiday", "pending"]),
+    status: components["schemas"]["CalendarDayStatus"],
     shift: z.string().nullable().optional(),
     timeRange: z.string().nullable().optional(),
     location: z.string().nullable().optional(),
@@ -117,58 +173,64 @@ export namespace components.schemas {
     isToday: z.boolean(),
     isHoliday: z.boolean(),
   });
-  export const CalendarResponse = z.object({
-    year: z.number().int(),
-    month: z.number().int(),
-    summary: components["schemas"]["CalendarSummary"],
-    days: z.array(components["schemas"]["CalendarDay"]),
+  export const SettingsResponse = z.object({
+    profile: components["schemas"]["SettingsProfile"],
+    notifications: components["schemas"]["SettingsNotifications"],
+    security: components["schemas"]["SettingsSecurity"],
+    theme: components["schemas"]["ThemeType"],
+    language: components["schemas"]["LanguageCode"],
   });
+  export const UpdateSettingsRequest = z.object({
+    profile: components["schemas"]["UpdateSettingsProfile"],
+    notifications: components["schemas"]["SettingsNotifications"],
+    theme: components["schemas"]["ThemeType"],
+    language: components["schemas"]["LanguageCode"],
+  });
+  /** @description ユーザープロフィール情報（レスポンス用） */
+  export const SettingsProfile = z.object({
+    name: z.string(),
+    email: z.string(),
+    department: z.string(),
+    role: z.string(),
+    employeeCode: z.string(),
+  });
+  /** @description ユーザープロフィール更新（リクエスト用） */
+  export const UpdateSettingsProfile = z.object({
+    name: z.string(),
+    email: z.string(),
+  });
+  /** @description 通知設定 */
+  export const SettingsNotifications = z.object({
+    clockInReminder: z.boolean(),
+    approvalNotification: z.boolean(),
+    leaveReminder: z.boolean(),
+  });
+  /** @description セキュリティ設定 */
+  export const SettingsSecurity = z.object({
+    twoFactorEnabled: z.boolean(),
+    emailVerified: z.boolean(),
+    lastLoginAt: z.string().nullable().optional(),
+    passwordLastChangedAt: z.string().nullable().optional(),
+  });
+  export const TeamMembersResponse = z.object({
+    members: z.array(components["schemas"]["TeamMember"]),
+  });
+  /** @description チームメンバー情報 */
   export const TeamMember = z.object({
     id: z.string(),
     name: z.string(),
     role: z.string(),
     department: z.string(),
-    status: z.enum(["working", "break", "off", "leave"]),
+    status: components["schemas"]["TeamMemberStatus"],
     clockInTime: z.string().nullable().optional(),
     email: z.string(),
   });
-  export const TeamMembersResponse = z.object({
-    members: z.array(components["schemas"]["TeamMember"]),
+  export const ErrorResponse = z.object({
+    message: z.string().optional(),
   });
-  export const SettingsResponse = z.object({
-    profile: z.object({
-      name: z.string(),
-      email: z.string(),
-      department: z.string(),
-      role: z.string(),
-      employeeCode: z.string(),
-    }),
-    notifications: z.object({
-      clockInReminder: z.boolean(),
-      approvalNotification: z.boolean(),
-      leaveReminder: z.boolean(),
-    }),
-    security: z.object({
-      twoFactorEnabled: z.boolean(),
-      emailVerified: z.boolean(),
-      lastLoginAt: z.string().nullable().optional(),
-      passwordLastChangedAt: z.string().nullable().optional(),
-    }),
-    theme: z.enum(["light", "dark"]),
-    language: z.enum(["ja", "en"]),
-  });
-  export const UpdateSettingsRequest = z.object({
-    profile: z.object({
-      name: z.string(),
-      email: z.string(),
-    }),
-    notifications: z.object({
-      clockInReminder: z.boolean(),
-      approvalNotification: z.boolean(),
-      leaveReminder: z.boolean(),
-    }),
-    theme: z.enum(["light", "dark"]),
-    language: z.enum(["ja", "en"]),
+  export const ValidationErrorResponse = z.object({
+    message: z.string().optional(),
+    errors: z.record(z.string(), z.array(z.string())).optional(),
   });
 }
 export namespace components.responses {
@@ -209,16 +271,61 @@ export namespace components.responses {
     },
   };
 }
+export namespace components.parameters {
+  /** @description 検索期間の開始日 */
+  export const QueryDateFrom = z.string();
+  /** @description 検索期間の終了日 */
+  export const QueryDateTo = z.string();
+  /** @description 勤怠レコードID */
+  export const PathAttendanceId = z.string();
+  /** @description 対象年 */
+  export const QueryYear = z.number().int();
+  /** @description 対象月 */
+  export const QueryMonth = z.number().int();
+}
+export namespace components.requestBodies {
+  export const LoginBody = {
+    content: {
+      "application/json": components["schemas"]["LoginRequest"],
+    },
+  };
+  export const AttendanceClockInBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceClockInRequest"],
+    },
+  };
+  export const AttendanceClockOutBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceClockOutRequest"],
+    },
+  };
+  export const AttendanceStoreBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceStoreRequest"],
+    },
+  };
+  export const AttendanceUpdateBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceUpdateRequest"],
+    },
+  };
+  export const DashboardClockBody = {
+    content: {
+      "application/json": components["schemas"]["DashboardClockRequest"],
+    },
+  };
+  export const UpdateSettingsBody = {
+    content: {
+      "application/json": components["schemas"]["UpdateSettingsRequest"],
+    },
+  };
+}
 
 export const operations = {
 
   loginApi: {
     /** ログイン */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["LoginRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["LoginBody"],
     responses: {
       /** @description ログイン成功 */
       200: {
@@ -237,9 +344,7 @@ export const operations = {
       /** @description ログアウト成功 */
       200: {
         content: {
-          "application/json": z.object({
-            message: z.string().optional(),
-          }),
+          "application/json": components["schemas"]["LogoutResponse"],
         },
       },
       401: components["responses"]["Unauthorized"],
@@ -274,11 +379,7 @@ export const operations = {
   },
   clockInApi: {
     /** 出勤打刻 */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AttendanceClockInRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["AttendanceClockInBody"],
     responses: {
       /** @description 出勤成功 */
       200: {
@@ -294,11 +395,7 @@ export const operations = {
   },
   clockOutApi: {
     /** 退勤打刻 */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AttendanceClockOutRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["AttendanceClockOutBody"],
     responses: {
       /** @description 退勤成功 */
       200: {
@@ -314,12 +411,6 @@ export const operations = {
   },
   listAttendancesApi: {
     /** 勤怠一覧取得 */
-    parameters: {
-      query: z.object({
-        from: z.string(),
-        to: z.string(),
-      }),
-    },
     responses: {
       /** @description 勤怠一覧 */
       200: {
@@ -334,11 +425,7 @@ export const operations = {
   },
   storeAttendanceApi: {
     /** 勤怠の新規登録 */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AttendanceStoreRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["AttendanceStoreBody"],
     responses: {
       /** @description 登録成功 */
       201: {
@@ -353,16 +440,7 @@ export const operations = {
   },
   updateAttendanceApi: {
     /** 勤怠の更新 */
-    parameters: {
-      path: z.object({
-        attendance: z.string(),
-      }),
-    },
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AttendanceUpdateRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["AttendanceUpdateBody"],
     responses: {
       /** @description 更新成功 */
       200: {
@@ -391,11 +469,7 @@ export const operations = {
   },
   dashboardClockApi: {
     /** 打刻アクション（出勤・退勤・休憩開始・休憩終了） */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["DashboardClockRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["DashboardClockBody"],
     responses: {
       /** @description 打刻成功 */
       200: {
@@ -411,12 +485,6 @@ export const operations = {
   },
   getCalendarApi: {
     /** 月次カレンダー取得 */
-    parameters: {
-      query: z.object({
-        year: z.number().int(),
-        month: z.number().int(),
-      }),
-    },
     responses: {
       /** @description 対象月の日付一覧 */
       200: {
@@ -457,11 +525,7 @@ export const operations = {
   },
   updateSettingsApi: {
     /** ユーザー設定更新 */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateSettingsRequest"],
-      },
-    },
+    requestBody: components["requestBodies"]["UpdateSettingsBody"],
     responses: {
       /** @description 更新後ユーザー設定 */
       200: {

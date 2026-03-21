@@ -20,7 +20,7 @@ import { render } from './templates/render.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, '../..');
 
 const enumsDir = path.join(rootDir, 'openapi/components/enums');
 const outputDir = path.join(rootDir, 'back/app/__Generated__/Enums');

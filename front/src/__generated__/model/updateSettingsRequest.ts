@@ -5,14 +5,14 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { UpdateSettingsRequestLanguage } from "./updateSettingsRequestLanguage";
-import type { UpdateSettingsRequestNotifications } from "./updateSettingsRequestNotifications";
-import type { UpdateSettingsRequestProfile } from "./updateSettingsRequestProfile";
-import type { UpdateSettingsRequestTheme } from "./updateSettingsRequestTheme";
+import type { LanguageCode } from "./languageCode";
+import type { SettingsNotifications } from "./settingsNotifications";
+import type { UpdateSettingsProfile } from "./updateSettingsProfile";
+import type { ThemeType } from "./themeType";
 
 export interface UpdateSettingsRequest {
-  language: UpdateSettingsRequestLanguage;
-  notifications: UpdateSettingsRequestNotifications;
-  profile: UpdateSettingsRequestProfile;
-  theme: UpdateSettingsRequestTheme;
+  language: LanguageCode;
+  notifications: SettingsNotifications;
+  profile: UpdateSettingsProfile;
+  theme: ThemeType;
 }

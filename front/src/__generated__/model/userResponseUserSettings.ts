@@ -5,9 +5,14 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
+import type { LanguageCode } from "./languageCode";
+import type { ThemeType } from "./themeType";
 
 /**
- * ユーザー設定（任意のキーを許容、存在しない場合は null）
+ * ユーザー設定
  * @nullable
  */
-export type UserResponseUserSettings = { [key: string]: unknown } | null;
+export type UserResponseUserSettings = {
+  language?: LanguageCode;
+  theme?: ThemeType;
+} | null;

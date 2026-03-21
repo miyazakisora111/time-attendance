@@ -17,7 +17,7 @@ export type UserResponseUser = {
   /** 付与ロール名一覧 */
   roles: string[];
   /**
-   * ユーザー設定（任意のキーを許容、存在しない場合は null）
+   * ユーザー設定
    * @nullable
    */
   settings?: UserResponseUserSettings;

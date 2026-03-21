@@ -7,6 +7,9 @@
  */
 import type { CalendarDayStatus } from "./calendarDayStatus";
 
+/**
+ * カレンダー1日分の情報
+ */
 export interface CalendarDay {
   date: string;
   dayOfWeek: string;

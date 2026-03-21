@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * チームメンバーの勤務状態
+ */
 export type TeamMemberStatus =
   (typeof TeamMemberStatus)[keyof typeof TeamMemberStatus];
 

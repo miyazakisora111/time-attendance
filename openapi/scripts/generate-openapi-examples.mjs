@@ -12,7 +12,7 @@ import OpenAPISampler from 'openapi-sampler';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '..');
+const rootDir = path.resolve(__dirname, '../..');
 
 const bundleJsonPath = path.join(rootDir, 'openapi/build/bundle.json');
 const examplesDir = path.join(rootDir, 'openapi/examples');

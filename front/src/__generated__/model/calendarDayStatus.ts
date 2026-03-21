@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * カレンダー日付の勤務状態
+ */
 export type CalendarDayStatus =
   (typeof CalendarDayStatus)[keyof typeof CalendarDayStatus];
 

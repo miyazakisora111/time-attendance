@@ -5,16 +5,16 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { SettingsResponseLanguage } from "./settingsResponseLanguage";
-import type { SettingsResponseNotifications } from "./settingsResponseNotifications";
-import type { SettingsResponseProfile } from "./settingsResponseProfile";
-import type { SettingsResponseSecurity } from "./settingsResponseSecurity";
-import type { SettingsResponseTheme } from "./settingsResponseTheme";
+import type { LanguageCode } from "./languageCode";
+import type { SettingsNotifications } from "./settingsNotifications";
+import type { SettingsProfile } from "./settingsProfile";
+import type { SettingsSecurity } from "./settingsSecurity";
+import type { ThemeType } from "./themeType";
 
 export interface SettingsResponse {
-  language: SettingsResponseLanguage;
-  notifications: SettingsResponseNotifications;
-  profile: SettingsResponseProfile;
-  security: SettingsResponseSecurity;
-  theme: SettingsResponseTheme;
+  language: LanguageCode;
+  notifications: SettingsNotifications;
+  profile: SettingsProfile;
+  security: SettingsSecurity;
+  theme: ThemeType;
 }

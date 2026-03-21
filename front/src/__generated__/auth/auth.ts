@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
-  LoginRequest,
+  LoginBodyBody,
   LoginResponse,
-  LogoutApi200,
+  LogoutResponse,
   UserResponse,
 } from ".././model";
 import { customInstance } from "../../lib/http/client";
@@ -17,19 +17,19 @@ export const getAuth = () => {
   /**
    * @summary ログイン
    */
-  const loginApi = (loginRequest: LoginRequest) => {
+  const loginApi = (loginBodyBody: LoginBodyBody) => {
     return customInstance<LoginResponse>({
       url: `/login`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      data: loginRequest,
+      data: loginBodyBody,
     });
   };
   /**
    * @summary ログアウト
    */
   const logoutApi = () => {
-    return customInstance<LogoutApi200>({ url: `/logout`, method: "POST" });
+    return customInstance<LogoutResponse>({ url: `/logout`, method: "POST" });
   };
   /**
    * @summary ログイン中ユーザー情報取得

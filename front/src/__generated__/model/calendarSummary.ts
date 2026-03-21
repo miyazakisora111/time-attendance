@@ -6,6 +6,9 @@
  * OpenAPI spec version: 1.0.0
  */
 
+/**
+ * カレンダー月次サマリー
+ */
 export interface CalendarSummary {
   overtimeHours: number;
   paidLeaveDays: number;

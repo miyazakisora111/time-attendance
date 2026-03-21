@@ -5,8 +5,8 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { DashboardClockRequestAction } from "./dashboardClockRequestAction";
+import type { ClockAction } from "./clockAction";
 
 export interface DashboardClockRequest {
-  action: DashboardClockRequestAction;
+  action: ClockAction;
 }
