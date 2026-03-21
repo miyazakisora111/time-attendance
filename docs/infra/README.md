@@ -1105,7 +1105,3 @@ make health              # ヘルスチェック
 docker stats             # リソース使用状況
 docker system df         # ディスク使用量
 ```
-
----
-
-> **このドキュメントに関する質問・改善提案は Issue または PR で受け付けています。**

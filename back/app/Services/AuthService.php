@@ -15,6 +15,9 @@ use Tymon\JWTAuth\JWTGuard;
  */
 final class AuthService extends BaseService
 {
+    public function __construct(
+        private readonly UserService $userService,
+    ) {}
     /**
      * Eメールとパスワードでユーザーを認証する。
      *
@@ -88,14 +91,7 @@ final class AuthService extends BaseService
      */
     public function getUser(): array
     {
-        $guard = $this->guard();
-
-        /** @var User|null $user */
-        $user = $guard->user();
-
-        if (!$user instanceof User || !$user->exists) {
-            throw new AuthenticationException('ユーザーが存在しません');
-        }
+        $user = $this->userService->getAuthUser();
 
         $user->loadMissing([
             'role:id,name',

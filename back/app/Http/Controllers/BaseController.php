@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Routing\Controller;
 
 /**
@@ -17,22 +18,12 @@ abstract class BaseController extends Controller
     /**
      * 認証済みユーザーを解決する。
      *
-     * 未認証の場合は有効ユーザーの先頭をフォールバックとして返す。
+     * 未認証の場合は AuthenticationException がスローされる。
      *
      * @return User
      */
     protected function resolveUser(): User
     {
-        /** @var User|null $authUser */
-        $authUser = auth()->user();
-
-        if ($authUser instanceof User) {
-            return $authUser;
-        }
-
-        /** @var User $fallback */
-        $fallback = User::query()->active()->ordered()->firstOrFail();
-
-        return $fallback;
+        return app(UserService::class)->getAuthUser();
     }
 }
