@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Exceptions\DomainException;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -61,6 +63,14 @@ class Attendance extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * AttendanceBreak relation
+     */
+    public function breaks(): HasMany
+    {
+        return $this->hasMany(AttendanceBreak::class);
     }
 
     /**
@@ -153,6 +163,93 @@ class Attendance extends Model
             ->exists();
 
         return $activeBreak ? 'break' : 'in';
+    }
+
+    // ─── 状態遷移ガード ───────────────────────────
+
+    /**
+     * 退勤可能な状態か検証する。
+     *
+     * 勤務中('in')のみ退勤を許可する。
+     * 休憩中('break')の場合は先に休憩を終了する必要がある。
+     *
+     * @throws DomainException 退勤不可の状態の場合
+     */
+    public function assertCanClockOut(): void
+    {
+        $status = $this->resolveClockStatus();
+
+        match ($status) {
+            'in' => null, // OK
+            'break' => throw new DomainException('休憩中は退勤できません。先に休憩を終了してください', 'CANNOT_CLOCK_OUT_ON_BREAK'),
+            'out' => throw new DomainException('出勤していません', 'NOT_CLOCKED_IN'),
+        };
+    }
+
+    /**
+     * 休憩開始可能な状態か検証する。
+     *
+     * @throws DomainException 休憩開始不可の状態の場合
+     */
+    public function assertCanBreakStart(): void
+    {
+        $status = $this->resolveClockStatus();
+
+        match ($status) {
+            'in' => null, // OK
+            'break' => throw new DomainException('すでに休憩中です', 'ALREADY_ON_BREAK'),
+            'out' => throw new DomainException('出勤していません', 'NOT_CLOCKED_IN'),
+        };
+    }
+
+    /**
+     * 休憩終了可能な状態か検証する。
+     *
+     * @throws DomainException 休憩終了不可の状態の場合
+     */
+    public function assertCanBreakEnd(): void
+    {
+        $status = $this->resolveClockStatus();
+
+        match ($status) {
+            'break' => null, // OK
+            'in' => throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK'),
+            'out' => throw new DomainException('出勤していません', 'NOT_CLOCKED_IN'),
+        };
+    }
+
+    // ─── 休憩時間の集計 ───────────────────────────
+
+    /**
+     * AttendanceBreak レコードから break_minutes を再計算して保存する。
+     *
+     * 終了済みの休憩レコードすべてを合算する。
+     */
+    public function recalculateBreakMinutes(): void
+    {
+        $totalMinutes = 0;
+
+        $completedBreaks = AttendanceBreak::query()
+            ->where('attendance_id', $this->id)
+            ->whereNotNull('break_start')
+            ->whereNotNull('break_end')
+            ->get();
+
+        foreach ($completedBreaks as $brk) {
+            $start = CarbonImmutable::createFromFormat('H:i:s', $brk->break_start);
+            $end = CarbonImmutable::createFromFormat('H:i:s', $brk->break_end);
+
+            if ($start !== false && $end !== false) {
+                $diff = $start->diffInMinutes($end, false);
+                // 日跨ぎ休憩: end < start の場合は +24h
+                if ($diff < 0) {
+                    $diff += 24 * 60;
+                }
+                $totalMinutes += $diff;
+            }
+        }
+
+        $this->update(['break_minutes' => $totalMinutes]);
     }
 
     /**

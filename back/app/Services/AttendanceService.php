@@ -58,18 +58,22 @@ final class AttendanceService extends BaseService
                 ->whereNotNull('clock_in_at')
                 ->whereNull('clock_out_at')
                 ->latest('clock_in_at')
+                ->lockForUpdate()
                 ->first();
 
             if ($attendance === null) {
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
+            // 状態ベースのガード（時刻比較ではなく状態で制御する）
+            $attendance->assertCanClockOut();
+
             $timezone = $this->resolveTimezone($attendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
 
-            if ($attendance->clock_in_at !== null && $now->lte($attendance->clock_in_at->setTimezone($timezone))) {
-                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
-            }
+            // break_minutes を AttendanceBreak から再計算
+            $attendance->recalculateBreakMinutes();
+            $attendance->refresh();
 
             $workedMinutes = $attendance->clock_in_at?->diffInMinutes($now);
             $workedMinutes = $workedMinutes !== null
@@ -118,15 +122,8 @@ final class AttendanceService extends BaseService
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
-            $activeBreak = AttendanceBreak::query()
-                ->where('attendance_id', $attendance->id)
-                ->whereNotNull('break_start')
-                ->whereNull('break_end')
-                ->first();
-
-            if ($activeBreak !== null) {
-                throw new DomainException('すでに休憩中です', 'ALREADY_ON_BREAK');
-            }
+            // 状態ベースのガード（個別の break クエリによる重複チェックを排除）
+            $attendance->assertCanBreakStart();
 
             $timezone = $this->resolveTimezone($attendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
@@ -155,6 +152,9 @@ final class AttendanceService extends BaseService
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
+            // 状態ベースのガード
+            $attendance->assertCanBreakEnd();
+
             $activeBreak = AttendanceBreak::query()
                 ->where('attendance_id', $attendance->id)
                 ->whereNotNull('break_start')
@@ -162,16 +162,15 @@ final class AttendanceService extends BaseService
                 ->latest('break_start')
                 ->first();
 
-            if ($activeBreak === null) {
-                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
-            }
-
             $timezone = $this->resolveTimezone($attendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
 
             $activeBreak->update([
                 'break_end' => $now->format('H:i:s'),
             ]);
+
+            // break_minutes を再計算
+            $attendance->recalculateBreakMinutes();
 
             return $attendance->fresh()->toLocalTimePayload();
         });

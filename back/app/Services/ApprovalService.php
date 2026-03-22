@@ -370,6 +370,3 @@ final class ApprovalService extends BaseService
         ];
     }
 }
-        ];
-    }
-}
