@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Generated;
+namespace App\__Generated__;
 
 /**
  * OpenAPI から自動生成されたバリデーションルール。
