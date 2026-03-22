@@ -4,7 +4,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isDevelopment } from '@/env';
 import { createQueryClient } from '@/lib/query/query-client';
 import { Toaster } from 'sonner';
-import { ErrorProvider } from '@/shared/contexts/ErrorContext';
 import { ErrorModal } from '@/shared/components/errors/ErrorModal';
 
 interface Props {
@@ -19,20 +18,17 @@ export function AppProviders({ children }: Props) {
 
     return (
         <QueryClientProvider client={queryClient}>
-            {/* アプリのエラーステート */}
-            <ErrorProvider>
-                {/* 子孫コンポーネント */}
-                {children}
+            {/* 子孫コンポーネント */}
+            {children}
 
-                {/* エラーモーダル */}
-                <ErrorModal />
+            {/* エラーモーダル（Zustand store で状態管理。Provider 不要） */}
+            <ErrorModal />
 
-                {/* トースト通知 */}
-                <Toaster position="top-right" richColors closeButton />
+            {/* トースト通知 */}
+            <Toaster position="top-right" richColors closeButton />
 
-                {/* 開発環境のみ React Query Devtools を有効化 */}
-                {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
-            </ErrorProvider>
+            {/* 開発環境のみ React Query Devtools を有効化 */}
+            {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
         </QueryClientProvider>
     );
 }

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { TriangleAlert, X } from 'lucide-react';
 import { Button, Typography } from '@/shared/components';
-import { useError } from '@/shared/contexts/useError';
+import { useErrorModal } from '@/shared/hooks/useErrorModal';
 import { stack } from '@/shared/design-system/layout';
 
 export function ErrorModal() {
-	const { isOpen, title, messages, closeError } = useError();
+	const { isOpen, title, messages, closeError } = useErrorModal();
 	const dialogRef = useRef<HTMLDivElement>(null);
 
 	const handleKeyDown = useCallback(

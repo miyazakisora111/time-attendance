@@ -1,9 +1,9 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import { toast as sonner } from 'sonner';
 import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
 import { ApiErrorCode, isApiError } from '@/lib/http/api-error';
+import { useErrorStore } from '@/shared/stores/errorStore';
 
 /**
  * Axios共通インスタンス。
@@ -37,37 +37,6 @@ export const setAuthToken = (token: string): void => {
  */
 export const clearAuthToken = (): void => {
   localStorage.removeItem(StorageKey.AuthToken);
-};
-
-/**
- * グローバルAPIエラーペイロード。
- */
-type GlobalApiErrorPayload = {
-  /** HTTPステータス */
-  status?: number;
-  /** エラータイトル */
-  title: string;
-  /** 表示メッセージ */
-  messages: string[];
-};
-
-/**
- * グローバルAPIエラーハンドラー。
- */
-type ApiErrorHandler = (payload: GlobalApiErrorPayload) => void;
-
-/**
- * 現在登録されているエラーハンドラー。
- */
-let apiErrorHandler: ApiErrorHandler | null = null;
-
-/**
- * グローバルAPIエラーハンドラーを登録する。
- *
- * @param handler ハンドラー関数
- */
-export const setApiErrorHandler = (handler: ApiErrorHandler | null): void => {
-  apiErrorHandler = handler;
 };
 
 /**
@@ -111,7 +80,7 @@ const extractErrorMessages = (data: unknown): string[] => {
 };
 
 /**
- * エラーコードとステータスに応じてエラー通知を振り分ける。
+ * エラーコードとステータスに応じてエラーストアへ通知する。
  *
  * @param status HTTPステータス
  * @param data エラーレスポンス
@@ -125,9 +94,11 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
     return;
   }
 
-  // バリデーションエラーは中央モーダルへ通知する。
+  const { setError } = useErrorStore.getState();
+
+  // バリデーションエラーはモーダルへ通知する。
   if (code === ApiErrorCode.Validation) {
-    apiErrorHandler?.({
+    setError({
       status,
       title: ApiErrorTitle.Validation,
       messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
@@ -135,7 +106,7 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
     return;
   }
 
-  // ドメインエラー・権限エラー・Not Found は中央モーダルへ通知する。
+  // ドメインエラー・権限エラー・Not Found はモーダルへ通知する。
   if (
     code === ApiErrorCode.Domain ||
     code === ApiErrorCode.Forbidden ||
@@ -146,7 +117,7 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
       status <= HttpStatusCode.ClientErrorMax
     )
   ) {
-    apiErrorHandler?.({
+    setError({
       status,
       title: ApiErrorTitle.Validation,
       messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
@@ -154,13 +125,17 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
     return;
   }
 
-  // 5xx とその他はトースト表示へフォールバックする。
+  // 5xx とその他もモーダルへ通知する。
   const fallbackMessage =
     status !== undefined && status >= HttpStatusCode.ServerErrorMin
       ? ApiErrorMessage.ServerError
       : ApiErrorMessage.GenericError;
 
-  sonner.error(messages[0] ?? fallbackMessage);
+  setError({
+    status,
+    title: ApiErrorTitle.Server,
+    messages: [messages[0] ?? fallbackMessage],
+  });
 };
 
 /**
@@ -191,7 +166,10 @@ axiosInstance.interceptors.response.use(
         });
       }
 
-      sonner.error(ApiErrorMessage.NetworkError);
+      useErrorStore.getState().setError({
+        title: ApiErrorTitle.Network,
+        messages: [ApiErrorMessage.NetworkError],
+      });
       return Promise.reject(error);
     }
 

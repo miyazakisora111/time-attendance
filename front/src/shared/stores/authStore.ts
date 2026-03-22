@@ -30,7 +30,7 @@ interface AuthStore {
 /**
  * 認証状態を管理する Zustand ストア
  */
-export const useAuthStore = create<AuthStore>((set) => ({
+export const authStore = create<AuthStore>((set) => ({
     /** ユーザー情報 */
     user: null,
 

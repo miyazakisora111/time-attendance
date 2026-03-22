@@ -1,6 +1,10 @@
 export enum ApiErrorTitle {
   /** 入力エラー */
   Validation = '入力内容を確認してください',
+  /** サーバーエラー */
+  Server = 'サーバーエラー',
+  /** ネットワークエラー */
+  Network = '通信エラー',
 }
 
 /**

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthme, useLogin, useLogout, authQueryKeys } from '@/features/auth/hooks/useAuthQueries';
-import { useAuthStore } from '@/features/auth/state/useAuthStore';
+import { authStore } from '@/shared/stores/authStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
 
@@ -12,8 +12,8 @@ export const useAuth = () => {
     const queryClient = useQueryClient();
 
     // グローバルStore
-    const { setUser, setIsAuthenticated, setIsInitializing } = useAuthStore.getState();
-    const isInitializing = useAuthStore((state) => state.isInitializing);
+    const { setUser, setIsAuthenticated, setIsInitializing } = authStore.getState();
+    const isInitializing = authStore((state) => state.isInitializing);
 
     // トークンの有無を見て /me を有効化
     const hasToken = !!getAuthToken();
@@ -78,19 +78,19 @@ export const useAuth = () => {
         onSuccess: () => {
             clearAuthToken();
             queryClient.removeQueries({ queryKey: authQueryKeys.authMe() });
-            useAuthStore.getState().reset();
+            authStore.getState().reset();
         },
         onError: () => {
             // ネットワーク失敗でも確実にログアウト
             clearAuthToken();
             queryClient.removeQueries({ queryKey: authQueryKeys.authMe() });
-            useAuthStore.getState().reset();
+            authStore.getState().reset();
         },
     });
 
     return {
-        user: useAuthStore((state) => state.user),
-        isAuthenticated: useAuthStore((state) => state.isAuthenticated),
+        user: authStore((state) => state.user),
+        isAuthenticated: authStore((state) => state.isAuthenticated),
         isLoading: authQuery.isLoading || isInitializing,
         loginMutation,
         logoutMutation,

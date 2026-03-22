@@ -36,7 +36,7 @@ graph TD
 ## Auth Store 実装
 
 ```typescript
-// features/auth/state/useAuthStore.ts
+// features/auth/state/authStore.ts
 import { create } from 'zustand';
 
 interface AuthState {
@@ -46,7 +46,7 @@ interface AuthState {
     clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const authStore = create<AuthState>((set) => ({
     isAuthenticated: !!getAuthToken(),
     user: null,
 
@@ -67,7 +67,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 ```typescript
 // features/auth/hooks/useAuth.ts
 export function useAuth() {
-    const { isAuthenticated, user, setAuth, clearAuth } = useAuthStore();
+    const { isAuthenticated, user, setAuth, clearAuth } = authStore();
 
     const login = async (credentials: LoginRequest) => {
         const result = await callResult(() => loginApi(credentials));
@@ -92,7 +92,7 @@ export function useAuth() {
 flowchart LR
     subgraph "ログイン"
         A[LoginPage] -->|login()| B[useAuth]
-        B -->|setAuth| C[useAuthStore]
+        B -->|setAuth| C[authStore]
         B -->|API call| D[auth.api.ts]
     end
 

@@ -5,7 +5,7 @@ import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { Home, Clock, Calendar, FileText, Users, Settings } from "lucide-react";
 import { cn } from "@/shared/utils/style";
 import { AppRoutePath } from "@/config/routes";
-import { useAuthStore } from "@/features/auth/state/useAuthStore";
+import { authStore } from "@/shared/stores/authStore";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const defaultMenuItems: SidebarMenuItem[] = [
@@ -23,7 +23,7 @@ const defaultMenuItems: SidebarMenuItem[] = [
 export const PrivateLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const navigate = useNavigate();
-    const storeUser = useAuthStore((state) => state.user);
+    const storeUser = authStore((state) => state.user);
     const { logoutMutation } = useAuth();
 
     const user = {
