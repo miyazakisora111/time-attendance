@@ -20,11 +20,11 @@ export const clockOut = (payload: AttendanceClockOutRequest) => call<AttendanceR
 
 /** 休憩開始 */
 export const breakStart = () =>
-    customInstance<AttendanceResponse>({ url: '/api/attendances/break-start', method: 'POST' });
+    call<AttendanceResponse>(() => customInstance<AttendanceResponse>({ url: '/attendances/break-start', method: 'POST' }));
 
 /** 休憩終了 */
 export const breakEnd = () =>
-    customInstance<AttendanceResponse>({ url: '/api/attendances/break-end', method: 'POST' });
+    call<AttendanceResponse>(() => customInstance<AttendanceResponse>({ url: '/attendances/break-end', method: 'POST' }));
 
 /** 勤怠一覧取得 */
 export const fetchAttendanceList = (from: string, to: string) =>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Generated;
+namespace App\__Generated__;
 
 /**
  * OpenAPI から自動生成されたバリデーションルール。
@@ -30,7 +30,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-                'ApprovalListResponse' => [
+        'ApprovalListResponse' => [
             'paidLeaveRequests' => ['required', 'array'],
             'paidLeaveRequests.*' => ['required', 'array'],
             'paidLeaveRequests.*.id' => ['required', 'string'],
@@ -379,7 +379,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-                'ApprovalListResponse' => [
+        'ApprovalListResponse' => [
             'paidLeaveRequests' => 'paidLeaveRequests',
             'paidLeaveRequests.*' => 'paidLeaveRequests',
             'paidLeaveRequests.*.id' => 'ユーザーID',
