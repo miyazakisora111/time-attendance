@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Attendance;
-use App\Models\AttendanceBreak;
 use App\Models\OvertimeRequest;
 use App\Models\User;
 use Carbon\Carbon;
@@ -122,24 +121,11 @@ final class DashboardService extends BaseService
 
     private function resolveClockStatus(?Attendance $attendance): string
     {
-        if ($attendance === null || ($attendance->clock_in_at === null && $attendance->start_time === null)) {
+        if ($attendance === null) {
             return 'out';
         }
 
-        if ($attendance->clock_out_at !== null || $attendance->end_time !== null) {
-            return 'out';
-        }
-
-        $activeBreak = AttendanceBreak::query()
-            ->where('attendance_id', $attendance->id)
-            ->whereNull('break_end')
-            ->exists();
-
-        if ($activeBreak) {
-            return 'break';
-        }
-
-        return 'in';
+        return $attendance->resolveClockStatus();
     }
 
     private function buildTodayRecord(?Attendance $attendance): array

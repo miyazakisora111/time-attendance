@@ -130,6 +130,32 @@ class Attendance extends Model
     }
 
     /**
+     * 現在の打刻状態を解決する。
+     *
+     * AttendanceBreak テーブルを参照し、休憩中かどうかも判定する。
+     *
+     * @return string 'out' | 'in' | 'break'
+     */
+    public function resolveClockStatus(): string
+    {
+        if (!$this->isClockedIn()) {
+            return 'out';
+        }
+
+        if ($this->isClockedOut()) {
+            return 'out';
+        }
+
+        $activeBreak = AttendanceBreak::query()
+            ->where('attendance_id', $this->id)
+            ->whereNotNull('break_start')
+            ->whereNull('break_end')
+            ->exists();
+
+        return $activeBreak ? 'break' : 'in';
+    }
+
+    /**
      * 勤務時間(分)を計算する。未退勤の場合は $now を終端として使う。
      */
     public function calculateWorkedMinutes(?CarbonImmutable $now = null): ?int
@@ -166,6 +192,7 @@ class Attendance extends Model
             'user_id' => $this->user_id,
             'work_date' => $this->work_date?->toDateString(),
             'work_timezone' => $timezone,
+            'clock_status' => $this->resolveClockStatus(),
             'clock_in_at' => $this->clock_in_at?->setTimezone($timezone)->toIso8601String(),
             'clock_out_at' => $this->clock_out_at?->setTimezone($timezone)->toIso8601String(),
             'clock_in_local_time' => $clockInLocal,

@@ -1,8 +1,8 @@
-import type { ClockAction } from '@/__generated__/enums';
+import type { ClockAction, ClockStatus } from '@/__generated__/enums';
 
 /** 勤怠 */
 export type AttendanceView = {
-    clockAction: ClockAction;
+    clockStatus: ClockStatus;
     totalWorkedMinutes: number | null;
     breakMinutes: number | null;
     startTime: string | null;

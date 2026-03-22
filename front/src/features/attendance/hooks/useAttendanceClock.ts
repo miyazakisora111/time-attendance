@@ -1,10 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
 import type { AttendanceStatus, ClockAction, ClockStatus } from '@/__generated__/enums';
-import {
-    actionToClockStatusMap,
-    clockStatusToAttendanceStatusMap,
-} from '@/domain/attendance/attendance';
+import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance';
 import {
     attendanceQueryKeys,
     useClockInMutation,
@@ -38,8 +35,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
 
     const isPending = isClockingIn || isClockingOut || isBreakStarting || isBreakEnding;
 
-    const action = todayAttendance?.clockAction;
-    const clockStatus: ClockStatus = action ? actionToClockStatusMap[action] : 'out';
+    const clockStatus: ClockStatus = todayAttendance?.clockStatus ?? 'out';
     const attendanceStatus: AttendanceStatus = clockStatusToAttendanceStatusMap[clockStatus];
 
     const workedHours =

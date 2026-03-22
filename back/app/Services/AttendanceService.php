@@ -98,7 +98,9 @@ final class AttendanceService extends BaseService
             ->latest('clock_in_at')
             ->first();
 
-        return $attendance?->toLocalTimePayload() ?? [];
+        return $attendance?->toLocalTimePayload() ?? [
+            'clock_status' => 'out',
+        ];
     }
 
     public function breakStart(User $user): array

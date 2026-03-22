@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import type { AttendanceStatus } from '@/__generated__/enums';
 import { useAttendanceClock } from '@/features/attendance/hooks/useAttendanceClock';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 import { type LastAction } from '@/features/attendance/ui/types';
@@ -10,6 +9,7 @@ import { type LastAction } from '@/features/attendance/ui/types';
 export const useAttendance = () => {
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
   const {
+    clockStatus,
     attendanceStatus,
     todayWorkedTime,
     breakMinutes,
@@ -23,10 +23,6 @@ export const useAttendance = () => {
     },
   });
 
-  const status = useMemo<AttendanceStatus>(() => {
-    return attendanceStatus;
-  }, [attendanceStatus]);
-
   // 最後の打刻アクション
   const lastActionView = useMemo(
     () => (lastAction ? { label: getClockActionLabel(lastAction.clockAction), time: lastAction.time } : null),
@@ -34,7 +30,8 @@ export const useAttendance = () => {
   );
 
   return {
-    status,
+    clockStatus,
+    attendanceStatus,
     lastAction: lastActionView,
     isLoading,
     isError,

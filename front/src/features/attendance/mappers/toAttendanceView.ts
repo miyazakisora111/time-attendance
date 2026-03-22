@@ -1,5 +1,4 @@
 import type { AttendanceResponse } from '@/__generated__/model';
-import { resolveClockAction } from '@/domain/attendance/attendance';
 import type { AttendanceView } from '@/features/attendance/ui/types';
 import { calculateWorkedMinutes } from '@/domain/attendance/time';
 import type { Mapper } from "@/shared/mapper";
@@ -12,7 +11,7 @@ export const toAttendanceView: Mapper<
     const endTime = src.end_time ?? null;
 
     return {
-        clockAction: resolveClockAction(startTime, endTime),
+        clockStatus: src.clock_status ?? 'out',
         totalWorkedMinutes: calculateWorkedMinutes(startTime, endTime),
         breakMinutes: src.break_minutes ?? null,
         startTime: startTime,

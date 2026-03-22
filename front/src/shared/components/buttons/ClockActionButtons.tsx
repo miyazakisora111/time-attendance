@@ -1,7 +1,6 @@
 import React from "react";
 import { Coffee, Clock, LogIn, LogOut } from "lucide-react";
-import type { ClockStatus } from "@/domain/attendance/attendance";
-import type { ClockAction } from "@/domain/attendance/attendance";
+import type { ClockStatus, ClockAction } from "@/__generated__/enums";
 import { Button } from "@/shared/components/buttons/Button";
 import { getClockActionLabel } from "@/shared/presentation/attendance/clockAction";
 

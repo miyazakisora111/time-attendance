@@ -4,6 +4,7 @@ AttendanceResponse:
     - user_id
     - work_date
     - start_time
+    - clock_status
   properties:
     user_id:
       type: string
@@ -11,6 +12,8 @@ AttendanceResponse:
     work_date:
       type: string
       format: date
+    clock_status:
+      $ref: "../../enums/ClockStatus.yaml#/ClockStatus"
     start_time:
       type: string
       format: date-time

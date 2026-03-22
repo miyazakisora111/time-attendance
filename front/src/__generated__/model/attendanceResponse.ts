@@ -5,6 +5,7 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
+import type { ClockStatus } from "./clockStatus";
 
 export interface AttendanceResponse {
   /**
@@ -12,6 +13,8 @@ export interface AttendanceResponse {
    * @nullable
    */
   break_minutes?: number | null;
+  /** 現在の打刻状態 */
+  clock_status: ClockStatus;
   /** @nullable */
   end_time?: string | null;
   /** @nullable */

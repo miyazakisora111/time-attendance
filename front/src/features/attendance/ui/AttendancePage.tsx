@@ -5,7 +5,7 @@ import {
   History,
 } from 'lucide-react';
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
-import type { ClockStatus, AttendanceStatus } from '@/__generated__/enums';
+import type { AttendanceStatus } from '@/__generated__/enums';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
@@ -42,7 +42,8 @@ const ATTENDANCE_STATUS_VIEW_MAP: Record<AttendanceStatus, AttendanceStatusView>
  */
 export function AttendancePage() {
   const {
-    status,
+    clockStatus,
+    attendanceStatus,
     lastAction,
     isLoading,
     isError,
@@ -53,9 +54,8 @@ export function AttendancePage() {
   } = useAttendance();
 
   // ステータスに応じたビュー/アイコン
-  const currentStatus = ATTENDANCE_STATUS_VIEW_MAP[status];
-  const currentStatusIcon = getAttendanceStatusIconSpec(status);
-  const clockActionStatus: ClockStatus = status === 'working' ? 'in' : status;
+  const currentStatus = ATTENDANCE_STATUS_VIEW_MAP[attendanceStatus];
+  const currentStatusIcon = getAttendanceStatusIconSpec(attendanceStatus);
 
   return (
     <Container size="full">
@@ -120,7 +120,7 @@ export function AttendancePage() {
         </Card>
         <div className="rounded-3xl border border-gray-100 bg-white p-6">
           <ClockActionButtons
-            status={clockActionStatus}
+            status={clockStatus}
             isPending={isLoading || isPending}
             onAction={handleAction}
           />
