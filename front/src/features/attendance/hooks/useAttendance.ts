@@ -12,6 +12,7 @@ export const useAttendance = () => {
   const {
     attendanceStatus,
     todayWorkedTime,
+    breakMinutes,
     isLoading,
     isError,
     isPending,
@@ -39,6 +40,7 @@ export const useAttendance = () => {
     isError,
     isPending,
     todayWorkedTime,
+    breakMinutes,
     handleAction,
   };
 };

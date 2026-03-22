@@ -4,5 +4,3 @@ UserStatus:
   enum:
     - active
     - inactive
-    - suspended
-    - deleted

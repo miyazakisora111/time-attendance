@@ -3,5 +3,7 @@
   "user_id": "a169451c-8525-4352-b8ca-070dd449a1a5",
   "work_date": "2019-08-24",
   "start_time": "2019-08-24T14:15:22Z",
-  "end_time": "2019-08-24T14:15:22Z"
+  "end_time": "2019-08-24T14:15:22Z",
+  "break_minutes": 0,
+  "worked_minutes": 0
 }

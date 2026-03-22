@@ -23,6 +23,8 @@ servers:
 security:
   - BearerAuth: []
 tags:
+  - name: Approval
+    description: 申請・承認API
   - name: Attendance
     description: 勤怠に関するAPI
   - name: Auth
@@ -340,6 +342,243 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /settings/password:
+    put:
+      operationId: changePasswordApi
+      tags:
+        - Settings
+      summary: パスワード変更
+      requestBody:
+        $ref: '#/components/requestBodies/ChangePasswordBody'
+      responses:
+        '200':
+          description: パスワード変更成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /settings/login-histories:
+    get:
+      operationId: getLoginHistoriesApi
+      tags:
+        - Settings
+      summary: ログイン履歴一覧取得
+      responses:
+        '200':
+          description: ログイン履歴一覧
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoginHistoryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval:
+    get:
+      operationId: getApprovalListApi
+      tags:
+        - Approval
+      summary: 申請・承認一覧取得
+      responses:
+        '200':
+          description: 申請一覧
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/paid-leaves:
+    post:
+      operationId: createPaidLeaveRequestApi
+      tags:
+        - Approval
+      summary: 有給休暇申請
+      requestBody:
+        $ref: '#/components/requestBodies/CreatePaidLeaveRequestBody'
+      responses:
+        '201':
+          description: 申請成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaidLeaveRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/paid-leaves/{paidLeaveRequest}/approve:
+    patch:
+      operationId: approvePaidLeaveRequestApi
+      tags:
+        - Approval
+      summary: 有給休暇申請承認
+      parameters:
+        - $ref: '#/components/parameters/PathPaidLeaveRequestId'
+      responses:
+        '200':
+          description: 承認成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaidLeaveRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/paid-leaves/{paidLeaveRequest}/reject:
+    patch:
+      operationId: rejectPaidLeaveRequestApi
+      tags:
+        - Approval
+      summary: 有給休暇申請却下
+      parameters:
+        - $ref: '#/components/parameters/PathPaidLeaveRequestId'
+      responses:
+        '200':
+          description: 却下成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaidLeaveRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/paid-leaves/{paidLeaveRequest}/cancel:
+    patch:
+      operationId: cancelPaidLeaveRequestApi
+      tags:
+        - Approval
+      summary: 有給休暇申請キャンセル
+      parameters:
+        - $ref: '#/components/parameters/PathPaidLeaveRequestId'
+      responses:
+        '200':
+          description: キャンセル成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaidLeaveRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/overtime-requests:
+    post:
+      operationId: createOvertimeRequestApi
+      tags:
+        - Approval
+      summary: 残業申請
+      requestBody:
+        $ref: '#/components/requestBodies/CreateOvertimeRequestBody'
+      responses:
+        '201':
+          description: 申請成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OvertimeRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/overtime-requests/{overtimeRequest}/approve:
+    patch:
+      operationId: approveOvertimeRequestApi
+      tags:
+        - Approval
+      summary: 残業申請承認
+      parameters:
+        - $ref: '#/components/parameters/PathOvertimeRequestId'
+      responses:
+        '200':
+          description: 承認成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OvertimeRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/overtime-requests/{overtimeRequest}/return:
+    patch:
+      operationId: returnOvertimeRequestApi
+      tags:
+        - Approval
+      summary: 残業申請差戻し
+      parameters:
+        - $ref: '#/components/parameters/PathOvertimeRequestId'
+      responses:
+        '200':
+          description: 差戻し成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OvertimeRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /approval/overtime-requests/{overtimeRequest}/cancel:
+    patch:
+      operationId: cancelOvertimeRequestApi
+      tags:
+        - Approval
+      summary: 残業申請キャンセル
+      parameters:
+        - $ref: '#/components/parameters/PathOvertimeRequestId'
+      responses:
+        '200':
+          description: キャンセル成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OvertimeRequestResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     ClockAction:
@@ -398,8 +637,22 @@ components:
       enum:
         - active
         - inactive
-        - suspended
-        - deleted
+    ApprovalStatus:
+      type: string
+      description: 申請のステータス
+      enum:
+        - pending
+        - approved
+        - rejected
+        - canceled
+    OvertimeRequestStatus:
+      type: string
+      description: 残業申請のステータス
+      enum:
+        - pending
+        - approved
+        - returned
+        - canceled
     LoginRequest:
       type: object
       required:
@@ -559,6 +812,14 @@ components:
           type: string
           format: date-time
           nullable: true
+        break_minutes:
+          type: integer
+          nullable: true
+          description: 休憩合計(分)
+        worked_minutes:
+          type: integer
+          nullable: true
+          description: 実働時間(分)
     AttendanceIndexRequest:
       type: object
       required:
@@ -886,6 +1147,56 @@ components:
           type: string
           format: email
           maxLength: 255
+    ChangePasswordRequest:
+      type: object
+      required:
+        - current_password
+        - new_password
+        - new_password_confirmation
+      properties:
+        current_password:
+          type: string
+          format: password
+          minLength: 8
+          description: 現在のパスワード
+        new_password:
+          type: string
+          format: password
+          minLength: 8
+          description: 新しいパスワード
+        new_password_confirmation:
+          type: string
+          format: password
+          minLength: 8
+          description: 新しいパスワード（確認）
+    LoginHistoryResponse:
+      type: object
+      required:
+        - id
+        - ipAddress
+        - userAgent
+        - loggedInAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        ipAddress:
+          type: string
+          nullable: true
+          description: IPアドレス
+        userAgent:
+          type: string
+          nullable: true
+          description: ユーザーエージェント
+        loggedInAt:
+          type: string
+          format: date-time
+          description: ログイン日時
+        loggedOutAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: ログアウト日時
     SettingsNotifications:
       type: object
       description: 通知設定
@@ -957,6 +1268,201 @@ components:
         email:
           type: string
           format: email
+    ApprovalListResponse:
+      type: object
+      required:
+        - paidLeaveRequests
+        - overtimeRequests
+        - pendingPaidLeaveRequests
+        - pendingOvertimeRequests
+        - paidLeaveSummary
+        - isApprover
+      properties:
+        paidLeaveRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaidLeaveRequestResponse'
+          description: 自分の有給休暇申請一覧
+        overtimeRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/OvertimeRequestResponse'
+          description: 自分の残業申請一覧
+        pendingPaidLeaveRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaidLeaveRequestResponse'
+          description: 承認待ち有給申請（承認者のみ）
+        pendingOvertimeRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/OvertimeRequestResponse'
+          description: 承認待ち残業申請（承認者のみ）
+        paidLeaveSummary:
+          $ref: '#/components/schemas/PaidLeaveSummary'
+        isApprover:
+          type: boolean
+          description: 現在ユーザーが承認権限を持つか
+    PaidLeaveRequestResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - leaveDate
+        - days
+        - status
+        - reason
+        - approvedBy
+        - approvedAt
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        leaveDate:
+          type: string
+          format: date
+        days:
+          type: number
+          minimum: 0.5
+          maximum: 1
+        status:
+          $ref: '#/components/schemas/ApprovalStatus'
+        reason:
+          type: string
+          nullable: true
+        approvedBy:
+          type: string
+          format: uuid
+          nullable: true
+          description: 承認者ID
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 承認日時
+        createdAt:
+          type: string
+          format: date-time
+    CreatePaidLeaveRequest:
+      type: object
+      required:
+        - leave_date
+        - days
+      properties:
+        leave_date:
+          type: string
+          format: date
+          description: 取得日
+        days:
+          type: number
+          minimum: 0.5
+          maximum: 1
+          description: 取得日数（0.5 or 1）
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: 申請理由
+    OvertimeRequestResponse:
+      type: object
+      required:
+        - id
+        - userId
+        - workDate
+        - startTime
+        - endTime
+        - status
+        - reason
+        - durationHours
+        - approvedBy
+        - approvedAt
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        workDate:
+          type: string
+          format: date
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/OvertimeRequestStatus'
+        reason:
+          type: string
+          nullable: true
+        durationHours:
+          type: number
+        approvedBy:
+          type: string
+          format: uuid
+          nullable: true
+          description: 承認者ID
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 承認日時
+        createdAt:
+          type: string
+          format: date-time
+    CreateOvertimeRequest:
+      type: object
+      required:
+        - work_date
+        - start_time
+        - end_time
+      properties:
+        work_date:
+          type: string
+          format: date
+          description: 対象日
+        start_time:
+          type: string
+          format: date-time
+          description: 残業開始時刻
+        end_time:
+          type: string
+          format: date-time
+          description: 残業終了時刻
+        reason:
+          type: string
+          maxLength: 500
+          nullable: true
+          description: 申請理由
+    PaidLeaveSummary:
+      type: object
+      required:
+        - totalDays
+        - usedDays
+        - remainingDays
+      properties:
+        totalDays:
+          type: number
+          format: float
+          description: 付与日数合計
+          example: 20
+        usedDays:
+          type: number
+          format: float
+          description: 使用済み日数
+          example: 5
+        remainingDays:
+          type: number
+          format: float
+          description: 残日数
+          example: 15
     ErrorResponse:
       type: object
       properties:
@@ -1018,6 +1524,22 @@ components:
         type: integer
         minimum: 1
         maximum: 12
+    PathPaidLeaveRequestId:
+      name: paidLeaveRequest
+      in: path
+      required: true
+      description: 有給休暇申請ID
+      schema:
+        type: string
+        format: uuid
+    PathOvertimeRequestId:
+      name: overtimeRequest
+      in: path
+      required: true
+      description: 残業申請ID
+      schema:
+        type: string
+        format: uuid
   requestBodies:
     LoginBody:
       required: true
@@ -1061,6 +1583,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateSettingsRequest'
+    ChangePasswordBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ChangePasswordRequest'
+    CreatePaidLeaveRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatePaidLeaveRequest'
+    CreateOvertimeRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateOvertimeRequest'
   responses:
     Unauthorized:
       description: 認証エラー

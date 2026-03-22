@@ -14,6 +14,7 @@ export const toAttendanceView: Mapper<
     return {
         clockAction: resolveClockAction(startTime, endTime),
         totalWorkedMinutes: calculateWorkedMinutes(startTime, endTime),
+        breakMinutes: src.break_minutes ?? null,
         startTime: startTime,
         endTime: endTime,
         workDate: src.work_date,

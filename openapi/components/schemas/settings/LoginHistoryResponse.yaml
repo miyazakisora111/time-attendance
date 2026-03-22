@@ -1,0 +1,28 @@
+LoginHistoryResponse:
+  type: object
+  required:
+    - id
+    - ipAddress
+    - userAgent
+    - loggedInAt
+  properties:
+    id:
+      type: string
+      format: uuid
+    ipAddress:
+      type: string
+      nullable: true
+      description: IPアドレス
+    userAgent:
+      type: string
+      nullable: true
+      description: ユーザーエージェント
+    loggedInAt:
+      type: string
+      format: date-time
+      description: ログイン日時
+    loggedOutAt:
+      type: string
+      format: date-time
+      nullable: true
+      description: ログアウト日時

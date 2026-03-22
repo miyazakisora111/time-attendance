@@ -1,0 +1,8 @@
+ApprovalStatus:
+  type: string
+  description: 申請のステータス
+  enum:
+    - pending
+    - approved
+    - rejected
+    - canceled

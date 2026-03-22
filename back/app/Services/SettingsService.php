@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\DomainException;
 use App\Models\LoginHistory;
 use App\Models\User;
 use App\Models\UserNotificationSetting;
 use App\Models\UserSetting;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * 設定機能サービス。
@@ -93,5 +95,49 @@ final class SettingsService extends BaseService
 
             return $this->getSettings($user);
         });
+    }
+
+    /**
+     * パスワードを変更する。
+     *
+     * @param User $user 対象ユーザー
+     * @param array<string, mixed> $input バリデーション済み入力
+     * @return array<string, mixed>
+     */
+    public function changePassword(User $user, array $input): array
+    {
+        if (!Hash::check((string) $input['current_password'], $user->password)) {
+            throw new DomainException('現在のパスワードが正しくありません。', 'INVALID_CURRENT_PASSWORD');
+        }
+
+        $user->password = (string) $input['new_password'];
+        $user->save();
+
+        $this->log('パスワード変更', ['user_id' => $user->id]);
+
+        return $this->getSettings($user);
+    }
+
+    /**
+     * ログイン履歴一覧を取得する。
+     *
+     * @param User $user 対象ユーザー
+     * @return array<int, array<string, mixed>>
+     */
+    public function getLoginHistories(User $user): array
+    {
+        return LoginHistory::query()
+            ->user($user->id)
+            ->orderByDesc('logged_in_at')
+            ->limit(20)
+            ->get()
+            ->map(fn(LoginHistory $h) => [
+                'id' => $h->id,
+                'ipAddress' => $h->ip_address,
+                'userAgent' => $h->user_agent,
+                'loggedInAt' => $h->logged_in_at?->toIso8601String(),
+                'loggedOutAt' => $h->logged_out_at?->toIso8601String(),
+            ])
+            ->all();
     }
 }

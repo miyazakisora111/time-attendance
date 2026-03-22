@@ -25,3 +25,7 @@ export const breakStart = () =>
 /** 休憩終了 */
 export const breakEnd = () =>
     customInstance<AttendanceResponse>({ url: '/api/attendances/break-end', method: 'POST' });
+
+/** 勤怠一覧取得 */
+export const fetchAttendanceList = (from: string, to: string) =>
+    call<AttendanceResponse[]>(() => client.listAttendancesApi({ from, to }));

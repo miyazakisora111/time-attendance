@@ -1,0 +1,20 @@
+CreatePaidLeaveRequest:
+  type: object
+  required:
+    - leave_date
+    - days
+  properties:
+    leave_date:
+      type: string
+      format: date
+      description: 取得日
+    days:
+      type: number
+      minimum: 0.5
+      maximum: 1
+      description: 取得日数（0.5 or 1）
+    reason:
+      type: string
+      maxLength: 500
+      nullable: true
+      description: 申請理由

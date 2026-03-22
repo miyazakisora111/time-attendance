@@ -30,6 +30,8 @@ class PaidLeaveRequest extends Model
         'leave_date',
         'days',
         'status',
+        'approved_by',
+        'approved_at',
         'reason',
     ];
 
@@ -39,6 +41,7 @@ class PaidLeaveRequest extends Model
     protected $casts = [
         'leave_date' => 'date',
         'days' => 'float',
+        'approved_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -50,6 +53,7 @@ class PaidLeaveRequest extends Model
     public const STATUS_PENDING = 'pending';
     public const STATUS_APPROVED = 'approved';
     public const STATUS_REJECTED = 'rejected';
+    public const STATUS_CANCELED = 'canceled';
 
     /**
      * User relation
@@ -57,6 +61,14 @@ class PaidLeaveRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * 承認者
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**
@@ -113,5 +125,13 @@ class PaidLeaveRequest extends Model
     public function isRejected(): bool
     {
         return $this->status === self::STATUS_REJECTED;
+    }
+
+    /**
+     * キャンセル済み判定
+     */
+    public function isCanceled(): bool
+    {
+        return $this->status === self::STATUS_CANCELED;
     }
 }

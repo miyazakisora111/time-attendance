@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchCalendar } from '@/features/schedule/api/scheduleApi';
+import { fetchCalendar } from '@/api/schedule.api';
 import { toScheduleMonthView } from '@/features/schedule/mappers/toScheduleMonthView';
 import type { CalendarResponse } from '@/__generated__/model';
 import type { ScheduleMonthData } from '@/domain/schedule/types';

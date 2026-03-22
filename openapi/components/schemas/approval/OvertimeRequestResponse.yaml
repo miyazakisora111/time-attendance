@@ -1,0 +1,50 @@
+OvertimeRequestResponse:
+  type: object
+  required:
+    - id
+    - userId
+    - workDate
+    - startTime
+    - endTime
+    - status
+    - reason
+    - durationHours
+    - approvedBy
+    - approvedAt
+    - createdAt
+  properties:
+    id:
+      type: string
+      format: uuid
+    userId:
+      type: string
+      format: uuid
+    workDate:
+      type: string
+      format: date
+    startTime:
+      type: string
+      format: date-time
+    endTime:
+      type: string
+      format: date-time
+    status:
+      $ref: "../../enums/OvertimeRequestStatus.yaml#/OvertimeRequestStatus"
+    reason:
+      type: string
+      nullable: true
+    durationHours:
+      type: number
+    approvedBy:
+      type: string
+      format: uuid
+      nullable: true
+      description: 承認者ID
+    approvedAt:
+      type: string
+      format: date-time
+      nullable: true
+      description: 承認日時
+    createdAt:
+      type: string
+      format: date-time

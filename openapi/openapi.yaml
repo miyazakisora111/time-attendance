@@ -22,6 +22,8 @@ servers:
           - api.example.com
 
 tags:
+  - name: Approval
+    description: 申請・承認API
   - name: Attendance
     description: 勤怠に関するAPI
   - name: Auth
@@ -62,6 +64,28 @@ paths:
     $ref: "./paths/team.yaml#/teamMembers"
   /settings:
     $ref: "./paths/settings.yaml#/settings"
+  /settings/password:
+    $ref: "./paths/settings.yaml#/changePassword"
+  /settings/login-histories:
+    $ref: "./paths/settings.yaml#/loginHistories"
+  /approval:
+    $ref: "./paths/approval.yaml#/approvalList"
+  /approval/paid-leaves:
+    $ref: "./paths/approval.yaml#/paidLeaveRequests"
+  /approval/paid-leaves/{paidLeaveRequest}/approve:
+    $ref: "./paths/approval.yaml#/paidLeaveApprove"
+  /approval/paid-leaves/{paidLeaveRequest}/reject:
+    $ref: "./paths/approval.yaml#/paidLeaveReject"
+  /approval/paid-leaves/{paidLeaveRequest}/cancel:
+    $ref: "./paths/approval.yaml#/paidLeaveCancel"
+  /approval/overtime-requests:
+    $ref: "./paths/approval.yaml#/overtimeRequests"
+  /approval/overtime-requests/{overtimeRequest}/approve:
+    $ref: "./paths/approval.yaml#/overtimeApprove"
+  /approval/overtime-requests/{overtimeRequest}/return:
+    $ref: "./paths/approval.yaml#/overtimeReturn"
+  /approval/overtime-requests/{overtimeRequest}/cancel:
+    $ref: "./paths/approval.yaml#/overtimeCancel"
 
 components:
   schemas:
@@ -82,6 +106,10 @@ components:
       $ref: "./components/enums/AttendanceStatus.yaml#/AttendanceStatus"
     UserStatus:
       $ref: "./components/enums/UserStatus.yaml#/UserStatus"
+    ApprovalStatus:
+      $ref: "./components/enums/ApprovalStatus.yaml#/ApprovalStatus"
+    OvertimeRequestStatus:
+      $ref: "./components/enums/OvertimeRequestStatus.yaml#/OvertimeRequestStatus"
 
     # --- Auth ---
     LoginRequest:
@@ -140,6 +168,10 @@ components:
       $ref: "./components/schemas/settings/SettingsProfile.yaml#/SettingsProfile"
     UpdateSettingsProfile:
       $ref: "./components/schemas/settings/UpdateSettingsProfile.yaml#/UpdateSettingsProfile"
+    ChangePasswordRequest:
+      $ref: "./components/schemas/settings/ChangePasswordRequest.yaml#/ChangePasswordRequest"
+    LoginHistoryResponse:
+      $ref: "./components/schemas/settings/LoginHistoryResponse.yaml#/LoginHistoryResponse"
     SettingsNotifications:
       $ref: "./components/schemas/settings/SettingsNotifications.yaml#/SettingsNotifications"
     SettingsSecurity:
@@ -150,6 +182,20 @@ components:
       $ref: "./components/schemas/team/TeamMembersResponse.yaml#/TeamMembersResponse"
     TeamMember:
       $ref: "./components/schemas/team/TeamMember.yaml#/TeamMember"
+
+    # --- Approval ---
+    ApprovalListResponse:
+      $ref: "./components/schemas/approval/ApprovalListResponse.yaml#/ApprovalListResponse"
+    PaidLeaveRequestResponse:
+      $ref: "./components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
+    CreatePaidLeaveRequest:
+      $ref: "./components/schemas/approval/CreatePaidLeaveRequest.yaml#/CreatePaidLeaveRequest"
+    OvertimeRequestResponse:
+      $ref: "./components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
+    CreateOvertimeRequest:
+      $ref: "./components/schemas/approval/CreateOvertimeRequest.yaml#/CreateOvertimeRequest"
+    PaidLeaveSummary:
+      $ref: "./components/schemas/approval/PaidLeaveSummary.yaml#/PaidLeaveSummary"
 
     # --- Error ---
     ErrorResponse:

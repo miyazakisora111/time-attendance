@@ -46,3 +46,24 @@ UpdateSettingsBody:
     application/json:
       schema:
         $ref: "./schemas/settings/UpdateSettingsRequest.yaml#/UpdateSettingsRequest"
+
+CreatePaidLeaveRequestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/approval/CreatePaidLeaveRequest.yaml#/CreatePaidLeaveRequest"
+
+CreateOvertimeRequestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/approval/CreateOvertimeRequest.yaml#/CreateOvertimeRequest"
+
+ChangePasswordBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/settings/ChangePasswordRequest.yaml#/ChangePasswordRequest"

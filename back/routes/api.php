@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Attendance\CalendarController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Approval\ApprovalController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Team\TeamController;
@@ -53,5 +54,20 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'show']);
         Route::put('/', [SettingsController::class, 'update']);
+        Route::put('/password', [SettingsController::class, 'changePassword']);
+        Route::get('/login-histories', [SettingsController::class, 'loginHistories']);
+    });
+
+    // Approval
+    Route::prefix('approval')->group(function () {
+        Route::get('/', [ApprovalController::class, 'index']);
+        Route::post('/paid-leaves', [ApprovalController::class, 'createPaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequest}/approve', [ApprovalController::class, 'approvePaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequest}/reject', [ApprovalController::class, 'rejectPaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequest}/cancel', [ApprovalController::class, 'cancelPaidLeave']);
+        Route::post('/overtime-requests', [ApprovalController::class, 'createOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequest}/approve', [ApprovalController::class, 'approveOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequest}/return', [ApprovalController::class, 'returnOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequest}/cancel', [ApprovalController::class, 'cancelOvertime']);
     });
 });

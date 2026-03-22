@@ -9,7 +9,7 @@ import type { ClockStatus, AttendanceStatus } from '@/__generated__/enums';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
-import { EMPTY_TIME_TEXT } from '@/shared/utils/format';
+import { EMPTY_TIME_TEXT, formatMinutes } from '@/shared/utils/format';
 import { getAttendanceStatusIconSpec } from '@/shared/presentation/attendance/attendanceStatus';
 import { stack } from '@/shared/design-system/layout';
 
@@ -48,6 +48,7 @@ export function AttendancePage() {
     isError,
     isPending,
     todayWorkedTime,
+    breakMinutes,
     handleAction,
   } = useAttendance();
 
@@ -182,7 +183,7 @@ export function AttendancePage() {
                     休憩合計
                   </Typography>
                   <Typography variant="label" intent="white">
-                    {EMPTY_TIME_TEXT}
+                    {formatMinutes(breakMinutes)}
                   </Typography>
                 </div>
                 <div className="flex items-center justify-between">

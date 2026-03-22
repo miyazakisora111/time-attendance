@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\Settings\ChangePasswordRequest;
 use App\Http\Requests\Settings\UpdateSettingsRequest;
 use App\Http\Responses\ApiResponse;
 use App\Services\SettingsService;
@@ -47,6 +48,36 @@ final class SettingsController extends BaseController
         $result = $this->service->updateSettings(
             user: $this->resolveUser(),
             input: $request->validated(),
+        );
+
+        return ApiResponse::success($result);
+    }
+
+    /**
+     * パスワードを変更する。
+     *
+     * @param ChangePasswordRequest $request パスワード変更リクエスト
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        $result = $this->service->changePassword(
+            user: $this->resolveUser(),
+            input: $request->validated(),
+        );
+
+        return ApiResponse::success($result, 'パスワードを変更しました。');
+    }
+
+    /**
+     * ログイン履歴一覧を返す。
+     *
+     * @return JsonResponse Jsonレスポンス
+     */
+    public function loginHistories(): JsonResponse
+    {
+        $result = $this->service->getLoginHistories(
+            user: $this->resolveUser(),
         );
 
         return ApiResponse::success($result);

@@ -35,3 +35,45 @@ settings:
         $ref: "../components/responses.yaml#/ValidationError"
       "500":
         $ref: "../components/responses.yaml#/InternalServerError"
+
+changePassword:
+  put:
+    operationId: changePasswordApi
+    tags:
+      - Settings
+    summary: パスワード変更
+    requestBody:
+      $ref: "../components/requestBodies.yaml#/ChangePasswordBody"
+    responses:
+      "200":
+        description: パスワード変更成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/settings/SettingsResponse.yaml#/SettingsResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+loginHistories:
+  get:
+    operationId: getLoginHistoriesApi
+    tags:
+      - Settings
+    summary: ログイン履歴一覧取得
+    responses:
+      "200":
+        description: ログイン履歴一覧
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/settings/LoginHistoryResponse.yaml#/LoginHistoryResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

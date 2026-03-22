@@ -4,6 +4,7 @@ import type { ClockAction } from '@/__generated__/enums';
 export type AttendanceView = {
     clockAction: ClockAction;
     totalWorkedMinutes: number | null;
+    breakMinutes: number | null;
     startTime: string | null;
     endTime: string | null;
     workDate: string;

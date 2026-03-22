@@ -19,3 +19,11 @@ AttendanceResponse:
       type: string
       format: date-time
       nullable: true
+    break_minutes:
+      type: integer
+      nullable: true
+      description: 休憩合計(分)
+    worked_minutes:
+      type: integer
+      nullable: true
+      description: 実働時間(分)

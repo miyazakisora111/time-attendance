@@ -1,0 +1,22 @@
+PaidLeaveSummary:
+  type: object
+  required:
+    - totalDays
+    - usedDays
+    - remainingDays
+  properties:
+    totalDays:
+      type: number
+      format: float
+      description: 付与日数合計
+      example: 20
+    usedDays:
+      type: number
+      format: float
+      description: 使用済み日数
+      example: 5
+    remainingDays:
+      type: number
+      format: float
+      description: 残日数
+      example: 15

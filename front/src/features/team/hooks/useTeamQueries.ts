@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchTeamMembers } from '@/features/team/api/teamApi';
+import { fetchTeamMembers } from '@/api/team.api';
 import { toTeamMembers } from '@/features/team/mappers/toTeamMembers';
 import type { TeamMembersResponse } from '@/__generated__/model';
 import type { TeamMember } from '@/domain/team/types';

@@ -103,6 +103,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
         attendanceStatus,
         todayAttendance,
         todayWorkedTime,
+        breakMinutes: todayAttendance?.breakMinutes ?? null,
         isLoading,
         isError,
         isPending,

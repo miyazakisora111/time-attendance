@@ -1,0 +1,44 @@
+PaidLeaveRequestResponse:
+  type: object
+  required:
+    - id
+    - userId
+    - leaveDate
+    - days
+    - status
+    - reason
+    - approvedBy
+    - approvedAt
+    - createdAt
+  properties:
+    id:
+      type: string
+      format: uuid
+    userId:
+      type: string
+      format: uuid
+    leaveDate:
+      type: string
+      format: date
+    days:
+      type: number
+      minimum: 0.5
+      maximum: 1
+    status:
+      $ref: "../../enums/ApprovalStatus.yaml#/ApprovalStatus"
+    reason:
+      type: string
+      nullable: true
+    approvedBy:
+      type: string
+      format: uuid
+      nullable: true
+      description: 承認者ID
+    approvedAt:
+      type: string
+      format: date-time
+      nullable: true
+      description: 承認日時
+    createdAt:
+      type: string
+      format: date-time

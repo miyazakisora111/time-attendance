@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "@/shared/components/sidebar/Sidebar";
 import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { Home, Clock, Calendar, FileText, Users, Settings } from "lucide-react";
@@ -22,6 +22,7 @@ const defaultMenuItems: SidebarMenuItem[] = [
  */
 export const PrivateLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const navigate = useNavigate();
     const storeUser = useAuthStore((state) => state.user);
     const { logoutMutation } = useAuth();
 
@@ -42,7 +43,7 @@ export const PrivateLayout = () => {
      * プロフィール編集イベントを受け取る。
      */
     const handleProfileClick = () => {
-        console.log("プロフィール編集");
+        navigate(AppRoutePath.Settings);
     };
 
     return (

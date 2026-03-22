@@ -1,0 +1,205 @@
+approvalList:
+  get:
+    operationId: getApprovalListApi
+    tags:
+      - Approval
+    summary: 申請・承認一覧取得
+    responses:
+      "200":
+        description: 申請一覧
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/ApprovalListResponse.yaml#/ApprovalListResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+paidLeaveRequests:
+  post:
+    operationId: createPaidLeaveRequestApi
+    tags:
+      - Approval
+    summary: 有給休暇申請
+    requestBody:
+      $ref: "../components/requestBodies.yaml#/CreatePaidLeaveRequestBody"
+    responses:
+      "201":
+        description: 申請成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+paidLeaveApprove:
+  patch:
+    operationId: approvePaidLeaveRequestApi
+    tags:
+      - Approval
+    summary: 有給休暇申請承認
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
+    responses:
+      "200":
+        description: 承認成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+paidLeaveReject:
+  patch:
+    operationId: rejectPaidLeaveRequestApi
+    tags:
+      - Approval
+    summary: 有給休暇申請却下
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
+    responses:
+      "200":
+        description: 却下成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+paidLeaveCancel:
+  patch:
+    operationId: cancelPaidLeaveRequestApi
+    tags:
+      - Approval
+    summary: 有給休暇申請キャンセル
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
+    responses:
+      "200":
+        description: キャンセル成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+overtimeRequests:
+  post:
+    operationId: createOvertimeRequestApi
+    tags:
+      - Approval
+    summary: 残業申請
+    requestBody:
+      $ref: "../components/requestBodies.yaml#/CreateOvertimeRequestBody"
+    responses:
+      "201":
+        description: 申請成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "422":
+        $ref: "../components/responses.yaml#/ValidationError"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+overtimeApprove:
+  patch:
+    operationId: approveOvertimeRequestApi
+    tags:
+      - Approval
+    summary: 残業申請承認
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
+    responses:
+      "200":
+        description: 承認成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+overtimeReturn:
+  patch:
+    operationId: returnOvertimeRequestApi
+    tags:
+      - Approval
+    summary: 残業申請差戻し
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
+    responses:
+      "200":
+        description: 差戻し成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"
+
+overtimeCancel:
+  patch:
+    operationId: cancelOvertimeRequestApi
+    tags:
+      - Approval
+    summary: 残業申請キャンセル
+    parameters:
+      - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
+    responses:
+      "200":
+        description: キャンセル成功
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
+      "401":
+        $ref: "../components/responses.yaml#/Unauthorized"
+      "403":
+        $ref: "../components/responses.yaml#/Forbidden"
+      "404":
+        $ref: "../components/responses.yaml#/NotFound"
+      "500":
+        $ref: "../components/responses.yaml#/InternalServerError"

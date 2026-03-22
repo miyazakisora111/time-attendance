@@ -7,6 +7,7 @@ import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
 import TeamPage from "@/features/team";
 import SettingsPage from "@/features/settings";
 import SchedulePage from "@/features/schedule";
+import ApprovalPage from "@/features/approval";
 import { AppRoutePath } from "@/config/routes";
 
 /**
@@ -37,6 +38,7 @@ export const AppRoutes = () => {
                 <Route path={AppRoutePath.Team} element={<TeamPage />} />
                 <Route path={AppRoutePath.Settings} element={<SettingsPage />} />
                 <Route path={AppRoutePath.Schedule} element={<SchedulePage />} />
+                <Route path={AppRoutePath.Approval} element={<ApprovalPage />} />
             </Route>
 
             {/* ワイルドカード 404 */}

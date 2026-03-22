@@ -6,9 +6,12 @@ namespace App\Services;
 
 use App\Exceptions\DomainException;
 use App\DTO\UserProfile;
+use App\Models\LoginHistory;
 use App\Models\User;
 use App\ValueObjects\Email;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\JWTGuard;
 
 /**
@@ -53,6 +56,8 @@ final class AuthService extends BaseService
             'last_login_at' => now(),
         ]);
 
+        $this->recordLoginHistory($user);
+
         return $this->respondWithToken($token);
     }
 
@@ -81,6 +86,8 @@ final class AuthService extends BaseService
      */
     public function logout(): void
     {
+        $user = $this->userService->getAuthUser();
+        $this->closeLoginHistory($user);
         $this->guard()->logout();
     }
 
@@ -107,6 +114,36 @@ final class AuthService extends BaseService
                 settings: $user->userSetting?->toArray(),
             ))->toArray(),
         ];
+    }
+
+    /**
+     * ログイン履歴を記録する。
+     */
+    private function recordLoginHistory(User $user): void
+    {
+        /** @var Request $request */
+        $request = app('request');
+
+        LoginHistory::query()->create([
+            'id' => (string) Str::uuid(),
+            'user_id' => $user->id,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'logged_in_at' => now(),
+        ]);
+    }
+
+    /**
+     * ログイン履歴のログアウト日時を記録する。
+     */
+    private function closeLoginHistory(User $user): void
+    {
+        LoginHistory::query()
+            ->user($user->id)
+            ->active()
+            ->latestLogin()
+            ->first()
+            ?->update(['logged_out_at' => now()]);
     }
 
     private function respondWithToken(string $token): array

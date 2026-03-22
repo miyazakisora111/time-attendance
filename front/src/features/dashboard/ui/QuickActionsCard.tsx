@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { FileEdit, FileText, Plane, Stethoscope } from "lucide-react";
 import { Button } from "@/shared/components/buttons/Button";
@@ -9,6 +10,7 @@ import {
   CardTitle,
   Typography,
 } from "@/shared/components";
+import { AppRoutePath } from "@/config/routes";
 
 type DashboardQuickActionKey =
   | "paid_leave"
@@ -55,7 +57,16 @@ const QUICK_ACTIONS = [
   },
 ] as const satisfies ReadonlyArray<DashboardQuickAction>;
 
+const QUICK_ACTION_ROUTES: Record<DashboardQuickActionKey, string> = {
+  paid_leave: AppRoutePath.Approval,
+  sick_leave: AppRoutePath.Approval,
+  attendance_fix: AppRoutePath.Attendance,
+  monthly_report: AppRoutePath.Dashboard,
+};
+
 export const QuickActionsCard = React.memo(function QuickActionsCard() {
+  const navigate = useNavigate();
+
   return (
     <Card>
       <CardHeader>
@@ -77,6 +88,7 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
                 size="lg"
                 unstableClassName="h-24 flex-col border-dashed bg-transparent"
                 fullWidth
+                onClick={() => navigate(QUICK_ACTION_ROUTES[action.key])}
               >
                 <span
                   className={`flex h-10 w-10 items-center justify-center rounded-full ${action.bgColorClassName}`}

@@ -1,0 +1,8 @@
+OvertimeRequestStatus:
+  type: string
+  description: 残業申請のステータス
+  enum:
+    - pending
+    - approved
+    - returned
+    - canceled

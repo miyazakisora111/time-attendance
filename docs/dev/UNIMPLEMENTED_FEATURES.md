@@ -80,84 +80,6 @@
 
 ---
 
-### 5. ログイン履歴の閲覧
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | ログイン履歴の一覧表示 |
-| **概要** | ユーザーが自身のログイン履歴（IP・UA・日時）を確認する |
-| **根拠 (DB)** | `login_histories` テーブル（user_id, ip_address, user_agent, logged_in_at, logged_out_at） |
-| **根拠 (Model)** | `LoginHistory` モデルが scopes（user, active, latestLogin）含め完全実装済み |
-| **根拠 (UI)** | Settings セキュリティに `lastLoginAt` 表示（1件のみ）。`settingsSecurityActionLabels` に「ログイン履歴の確認」ラベルあり |
-| **現状** | SettingsService が LoginHistory から直近1件のみ読取（最終ログイン日時表示用）。一覧 API / 一覧 UI は未実装 |
-| **必要な実装** | (1) LoginHistory 一覧 API エンドポイント (2) LoginHistoryService (3) 一覧表示 UI（設定画面内モーダルまたは専用セクション） |
-| **優先度** | 🟡 High |
-| **影響範囲** | Backend: Controller, Service, Route / OpenAPI: 新規エンドポイント / Frontend: 設定画面内 UI |
-
----
-
-### 6. 祝日マスタ管理 (CRUD)
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 祝日マスタ登録・編集・削除 |
-| **概要** | 管理者がシステムの祝日データを管理する |
-| **根拠 (DB)** | `holidays` テーブル（holiday_date UNIQUE, name） |
-| **根拠 (Model)** | `Holiday` モデルが scopes（year, month）・isHoliday() 静的メソッド含め実装済み |
-| **現状** | CalendarService がカレンダー表示のために読取のみ利用。管理用 Controller / Service / API / UI は一切なし |
-| **必要な実装** | (1) HolidayController (index/store/update/destroy) (2) HolidayService (3) 管理画面 UI (4) シーダーまたはインポート機能 |
-| **優先度** | 🟡 High（カレンダー正確性に直結） |
-| **影響範囲** | Backend: Controller, Service, FormRequest, Route / OpenAPI: 新規エンドポイント4つ / Frontend: 管理者用 UI |
-
----
-
-### 7. ユーザー管理 (管理者)
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | ユーザーの一覧・作成・編集・無効化 |
-| **概要** | 管理者がシステムユーザーを管理する |
-| **根拠 (DB)** | `users` テーブルに status (0/1), sort_order, department_id, role_id が存在 |
-| **根拠 (Model)** | `User` モデルに active/ordered スコープ、status カラム定義あり |
-| **根拠 (Policy)** | `UserPolicy` が定義されているが create=false, update/delete=自分のみ に制限 |
-| **根拠 (OpenAPI)** | `UserStatus` enum に active/inactive/suspended/deleted が定義（4 状態）。だが users.status は DB 上 0/1 の 2 値のみ |
-| **現状** | TeamService が全ユーザー表示（管理機能ではなく閲覧用）。管理 API / 管理 UI は一切なし |
-| **必要な実装** | (1) UserController (index/store/update/deactivate) (2) UserService (3) UserPolicy の拡張（管理者ロール判定） (4) 管理画面 UI (5) DB status 値と OpenAPI UserStatus の整合 |
-| **優先度** | 🟡 High |
-| **影響範囲** | Backend: Controller, Service, Policy, FormRequest, Route / OpenAPI: 新規エンドポイント4以上 / Frontend: 管理者用ページ |
-
----
-
-### 8. 部署管理 (管理者)
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 部署の一覧・作成・編集・削除 |
-| **概要** | 管理者がシステムの部署データを管理する |
-| **根拠 (DB)** | `departments` テーブル（name, sort_order, soft delete） |
-| **根拠 (Model)** | `Department` モデルが ordered/search スコープ、users リレーション含め実装済み |
-| **現状** | Team/Settings で部署名の読取表示のみ。管理 API / 管理 UI は一切なし |
-| **必要な実装** | (1) DepartmentController (index/store/update/destroy) (2) DepartmentService (3) 管理画面 UI |
-| **優先度** | 🟠 Medium |
-| **影響範囲** | Backend: Controller, Service, FormRequest, Route / OpenAPI: 新規エンドポイント4つ / Frontend: 管理者用 UI |
-
----
-
-### 9. 役職管理 (管理者)
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 役職の一覧・作成・編集・無効化 |
-| **概要** | 管理者がシステムの役職データを管理する |
-| **根拠 (DB)** | `roles` テーブル（name, sort_order, status=active/inactive, soft delete） |
-| **根拠 (Model)** | `Role` モデルが active/ordered スコープ含め実装済み |
-| **現状** | Team/Settings で役職名の読取表示のみ。管理 API / 管理 UI は一切なし |
-| **必要な実装** | (1) RoleController (index/store/update/deactivate) (2) RoleService (3) 管理画面 UI |
-| **優先度** | 🟠 Medium |
-| **影響範囲** | Backend: Controller, Service, FormRequest, Route / OpenAPI: 新規エンドポイント4つ / Frontend: 管理者用 UI |
-
----
-
 ### 10. メール認証フロー
 
 | 項目 | 内容 |
@@ -174,49 +96,7 @@
 
 ---
 
-### 11. 二要素認証 (2FA)
 
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 二要素認証の設定・有効化・無効化 |
-| **概要** | TOTP 等による 2FA を設定する |
-| **根拠 (UI)** | Settings セキュリティに twoFactorEnabled の有効/未設定アイコン表示 |
-| **根拠 (OpenAPI)** | `SettingsSecurity.twoFactorEnabled` boolean 定義あり |
-| **根拠 (Backend)** | SettingsService が `twoFactorEnabled: false` をハードコード返却 |
-| **現状** | DB にカラムなし、設定・解除 API なし、認証フロー未対応。UI 表示のみ |
-| **必要な実装** | (1) 2FA 用パッケージ導入 (2) DB マイグレーション (3) 設定/解除 API (4) ログインフロー改修 (5) UI セットアップウィザード |
-| **優先度** | 🔵 Low（セキュリティ要件次第） |
-| **影響範囲** | Backend: Migration, Package, Controller, AuthService 改修 / Frontend: 設定 UI + ログインフロー改修 |
-
----
-
-### 12. メンバー招待
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | チームメンバーの招待 |
-| **概要** | 管理者が新規メンバーをメールで招待する |
-| **根拠 (UI)** | TeamPresenter に「招待」ボタン（`<Button variant="solid">` onClick なし） |
-| **現状** | UI ボタンのみのスタブ。DB・Backend・OpenAPI のいずれにも招待関連の定義なし |
-| **必要な実装** | (1) 招待テーブル (invitations) 追加 (2) InvitationController / Service (3) 招待メール送信 (4) 招待受諾フロー (5) 招待フォーム UI |
-| **優先度** | 🔵 Low |
-| **影響範囲** | 全レイヤー（Migration, Backend, OpenAPI, Frontend） |
-
----
-
-### 13. 月次レポート
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 月次勤怠レポートの生成・閲覧 |
-| **概要** | 月単位の勤怠集計レポートを生成・ダウンロードする |
-| **根拠 (UI)** | QuickActionsCard の「月次レポート」ボタン（onClick なしのスタブ） |
-| **現状** | ボタン UI のみ。レポート生成 API / PDF・Excel 出力 / 閲覧画面は一切なし |
-| **必要な実装** | (1) ReportController / Service (2) PDF/Excel 生成処理 (3) レポート表示 UI またはダウンロード機能 |
-| **優先度** | 🔵 Low |
-| **影響範囲** | Backend: Controller, Service / Frontend: UI |
-
----
 
 ## ⚠️ 部分実装
 
@@ -427,24 +307,15 @@ Phase 2 (Critical - 申請ワークフロー)
 
 Phase 3 (High - ユーザー機能)
   ├─ #4 パスワード変更
-  ├─ #5 ログイン履歴閲覧
   ├─ #15 勤怠一覧・修正画面（Backend 実装済み）
   └─ #16 休憩時間の表示（Frontend のみ）
 
-Phase 4 (High - 管理者機能)
-  ├─ #6 祝日マスタ管理
-  └─ #7 ユーザー管理
-
 Phase 5 (Medium)
-  ├─ #8 部署管理
-  ├─ #9 役職管理
   ├─ #10 メール認証
   ├─ #17 残業予定表示
   └─ #18 pendingOvertimeRequests 表示
 
 Phase 6 (Low)
-  ├─ #11 二要素認証
-  ├─ #12 メンバー招待
   ├─ #13 月次レポート
   └─ 残りのスタブ修正
 ```

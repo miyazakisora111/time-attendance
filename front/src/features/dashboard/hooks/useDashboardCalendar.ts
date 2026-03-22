@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchCalendar } from '@/features/schedule/api/scheduleApi';
+import { fetchCalendar } from '@/api/schedule.api';
 
 const SCOPE = 'dashboard-calendar' as const;
 const scoped = makeScopedKeys(SCOPE);

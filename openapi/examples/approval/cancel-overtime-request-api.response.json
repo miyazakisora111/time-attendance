@@ -1,0 +1,14 @@
+{
+  "_comment": "⚠️  AUTO-GENERATED — DO NOT EDIT MANUALLY. Re-run: make openapi-examples",
+  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+  "userId": "2c4a230c-5085-4924-a3e1-25fb4fc5965b",
+  "workDate": "2019-08-24",
+  "startTime": "2019-08-24T14:15:22Z",
+  "endTime": "2019-08-24T14:15:22Z",
+  "status": "pending",
+  "reason": "string",
+  "durationHours": 0,
+  "approvedBy": "c91bd49a-5920-43a3-b792-1660455e23bf",
+  "approvedAt": "2019-08-24T14:15:22Z",
+  "createdAt": "2019-08-24T14:15:22Z"
+}

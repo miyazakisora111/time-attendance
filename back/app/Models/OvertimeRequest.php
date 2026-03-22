@@ -32,6 +32,8 @@ class OvertimeRequest extends Model
         'start_time',
         'end_time',
         'status',
+        'approved_by',
+        'approved_at',
         'reason',
     ];
 
@@ -42,6 +44,7 @@ class OvertimeRequest extends Model
         'work_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'approved_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -61,6 +64,14 @@ class OvertimeRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * 承認者
+     */
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     /**

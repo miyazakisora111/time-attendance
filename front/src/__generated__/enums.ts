@@ -8,6 +8,19 @@
 /* prettier-ignore */
 
 /**
+ * 申請のステータス
+ * @source openapi/components/enums/ApprovalStatus.yaml
+ */
+export const ApprovalStatus = [
+    'pending',
+  'approved',
+  'rejected',
+  'canceled',
+] as const;
+export type ApprovalStatus = (typeof ApprovalStatus)[number];
+
+
+/**
  * 勤怠レコードの勤務区分
  * @source openapi/components/enums/AttendanceStatus.yaml
  */
@@ -69,6 +82,19 @@ export type LanguageCode = (typeof LanguageCode)[number];
 
 
 /**
+ * 残業申請のステータス
+ * @source openapi/components/enums/OvertimeRequestStatus.yaml
+ */
+export const OvertimeRequestStatus = [
+    'pending',
+  'approved',
+  'returned',
+  'canceled',
+] as const;
+export type OvertimeRequestStatus = (typeof OvertimeRequestStatus)[number];
+
+
+/**
  * チームメンバーの勤務状態
  * @source openapi/components/enums/TeamMemberStatus.yaml
  */
@@ -99,7 +125,5 @@ export type ThemeType = (typeof ThemeType)[number];
 export const UserStatus = [
     'active',
   'inactive',
-  'suspended',
-  'deleted',
 ] as const;
 export type UserStatus = (typeof UserStatus)[number];
