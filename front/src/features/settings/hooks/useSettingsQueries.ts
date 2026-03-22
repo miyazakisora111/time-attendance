@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchSettings, updateSettings } from '@/features/settings/api/settingsApi';
+import { fetchSettings, updateSettings } from '@/api/settings.api';
 import { toAppSettings } from '@/features/settings/mappers/toAppSettings';
 import type { SettingsResponse } from '@/__generated__/model';
 import type { AppSettings } from '@/domain/settings/types';
