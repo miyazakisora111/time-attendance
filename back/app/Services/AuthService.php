@@ -8,6 +8,7 @@ use App\Exceptions\DomainException;
 use App\DTO\UserProfile;
 use App\Models\User;
 use App\ValueObjects\Email;
+use Illuminate\Auth\AuthenticationException;
 use Tymon\JWTAuth\JWTGuard;
 
 /**
