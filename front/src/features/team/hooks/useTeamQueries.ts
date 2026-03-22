@@ -11,16 +11,16 @@ import type { TeamMember } from '@/domain/team/types';
 const SCOPE = 'team' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const teamQueryKeys = {
-  all: () => scoped.all(),
-  members: () => scoped.nest('members'),
+    all: () => scoped.all(),
+    members: () => scoped.nest('members'),
 } as const;
 
 /**
  * チームメンバー一覧を取得する。
  */
 export const useTeamMembersQuery = () =>
-  useQuery<TeamMembersResponse, Error, TeamMember[]>({
-    queryKey: teamQueryKeys.members(),
-    queryFn: fetchTeamMembers,
-    select: toTeamMembers,
-  });
+    useQuery<TeamMembersResponse, Error, TeamMember[]>({
+        queryKey: teamQueryKeys.members(),
+        queryFn: fetchTeamMembers,
+        select: toTeamMembers,
+    });

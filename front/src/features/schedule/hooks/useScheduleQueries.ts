@@ -11,16 +11,16 @@ import type { ScheduleMonthData } from '@/domain/schedule/types';
 const SCOPE = 'schedule' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const scheduleQueryKeys = {
-  all: () => scoped.all(),
-  calendar: (year: number, month: number) => scoped.nest(`calendar-${year}-${month}`),
+    all: () => scoped.all(),
+    calendar: (year: number, month: number) => scoped.nest(`calendar-${year}-${month}`),
 } as const;
 
 /**
  * 月次カレンダーを取得する。
  */
 export const useScheduleCalendarQuery = (year: number, month: number) =>
-  useQuery<CalendarResponse, Error, ScheduleMonthData>({
-    queryKey: scheduleQueryKeys.calendar(year, month),
-    queryFn: () => fetchCalendar(year, month),
-    select: toScheduleMonthView,
-  });
+    useQuery<CalendarResponse, Error, ScheduleMonthData>({
+        queryKey: scheduleQueryKeys.calendar(year, month),
+        queryFn: () => fetchCalendar(year, month),
+        select: toScheduleMonthView,
+    });
