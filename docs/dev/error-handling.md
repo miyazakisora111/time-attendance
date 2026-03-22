@@ -28,23 +28,28 @@
 ```php
 use App\Exceptions\DomainException;
 
-// ✅ 正しい
+// ✅ 正しい — カスタムエラーコード付き
+throw new DomainException('既に出勤済みです', 'OPEN_ATTENDANCE_EXISTS');
+
+// ✅ 正しい — コードなし（デフォルト 'DOMAIN_ERROR'）
 throw new DomainException('既に出勤済みです');
 
 // ❌ 間違い — PHP 標準の DomainException を使ってはいけない
 throw new \DomainException('...');
 ```
 
-> **重要**: `App\Exceptions\DomainException` を使うこと。PHP 標準の `\DomainException` では Handler が正しい HTTP ステータスにマッピングできない。
+> **重要**: `App\Exceptions\DomainException` を使うこと。PHP 標準の `\DomainException` では Handler が正しい HTTP ステータスにマッピングできず 500 が返る。
 
 ### レスポンス構造
+
+DomainException のレスポンス（カスタムエラーコード例）:
 
 ```json
 {
   "success": false,
   "message": "既に出勤済みです",
   "data": null,
-  "code": "DOMAIN_ERROR",
+  "code": "OPEN_ATTENDANCE_EXISTS",
   "errors": null
 }
 ```
@@ -113,3 +118,13 @@ type ErrorCode =
 | 5xx エラー | 最大 3 回 |
 | ネットワークエラー | 最大 3 回 |
 | バックオフ | 指数的: 1s → 2s → 4s（上限 30s） |
+
+## 設計レビュー指摘事項
+
+| 区分 | 指摘 |
+|---|---|
+| 🚨 問題 | `AuthService::refresh()` で `AuthenticationException` が未 import のため、リフレッシュ失敗時に 500 が返る |
+| 🚨 問題 | ログイン失敗（401）時にフロントエンドの UI フィードバックがない（インターセプターが `return` して何も表示しない） |
+| 💡 改善 | ErrorBoundary がフロントエンドに未配置。レンダーエラーで全画面ホワイトアウトする。`<ErrorBoundary>` を App.tsx に追加すべき |
+| 💡 改善 | ErrorModal に ESC キー、フォーカストラップ、`role="dialog"` / `aria-modal` が未実装 |
+| ⚠️ アンチパターン | `console.error` で本番環境でもリクエスト/レスポンス全体を出力している。機密情報露出リスク |

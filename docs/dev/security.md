@@ -77,3 +77,17 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 - ユーザー入力の URL をサーバーサイドでフェッチしない
 - 外部 API 呼び出しは許可リスト方式で制御する
+
+## 設計レビュー指摘事項
+
+| 区分 | 指摘 |
+|---|---|
+| 🚨 問題 | JWT を localStorage に保存している（XSS でトークン奪取可能）。httpOnly + Secure + SameSite=Strict Cookie に移行すべき |
+| 🚨 問題 | Nginx のセキュリティヘッダーが実設定ファイルに適用されていない。上記記載のヘッダーは設計のみで未実装 |
+| 🚨 問題 | `console.error` が本番環境でもリクエスト/レスポンス全体を出力。パスワードなど機密情報が DevTools に露出する |
+| 🚨 問題 | 本番ビルドで `sourcemap: true` が有効。ソースコードが閲覧可能 |
+| 💡 改善 | `composer audit` / `pnpm audit` を CI に組み込んで自動チェックすべき |
+| 💡 改善 | CSP（Content-Security-Policy）ヘッダーの追加が必要 |
+| 💡 改善 | パスワード変更後に既存の JWT を無効化する仕組みがない |
+| ⚠️ アンチパターン | UserPolicy が空スケルトン。認可チェックがないため、任意のユーザーが他人のリソースを操作可能 |
+| ⚠️ アンチパターン | CORS 設定の本番環境での `allowed_origins` が `*` でないことの確認が必要 |

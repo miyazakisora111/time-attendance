@@ -2,7 +2,7 @@
 
 ## PHP 全般
 
-- PHP 8.2+ の機能を積極的に利用する
+- PHP 8.4 の機能を積極的に利用する（Dockerfile は `php:8.4-fpm-bookworm`）
 - `declare(strict_types=1);` を全ファイルの先頭に記述する
 - 型宣言は必須。戻り値型・引数型・プロパティ型すべて明示する
 - `readonly` プロパティを積極的に使う
