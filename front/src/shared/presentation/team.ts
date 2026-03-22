@@ -14,28 +14,6 @@ const teamMemberStatusViewMap: Record<TeamMemberStatus, TeamMemberStatusView> = 
   off: { label: '未出勤', intent: 'default' },
 };
 
-/**
- * チームメンバー情報。
- */
-export interface TeamMember {
-  /** メンバーID */
-  id: string;
-  /** 氏名 */
-  name: string;
-  /** 役職 */
-  role: string;
-  /** 所属部署 */
-  department: string;
-  /** 勤務ステータス */
-  status: TeamMemberStatus;
-  /** 出勤時刻 */
-  clockInTime?: string;
-  /** メールアドレス */
-  email: string;
-  /** アバターURL */
-  avatar?: string;
-}
-
 export const getTeamMemberStatusView = (status: TeamMemberStatus): TeamMemberStatusView => {
   return teamMemberStatusViewMap[status];
 };

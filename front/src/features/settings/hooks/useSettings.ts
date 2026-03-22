@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
-import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchSettings, updateSettings } from '@/features/settings/api/settingsApi';
+import { useSettingsQuery, useUpdateSettingsMutation } from '@/features/settings/hooks/useSettingsQueries';
 import type {
   UpdateSettingsRequest,
   UpdateSettingsRequestNotifications,
@@ -12,17 +10,6 @@ import type { AppSettings, SettingsSection } from '@/domain/settings/types';
 import { SETTINGS_SECTION } from '@/domain/settings/types';
 import type { ThemeType, LanguageCode } from '@/__generated__/enums';
 import { DEFAULT_SETTINGS_LANGUAGE } from '@/shared/presentation/settings';
-
-/**
- * React Query キー。
- */
-const SCOPE = 'settings' as const;
-const scoped = makeScopedKeys(SCOPE);
-export const settingsQueryKeys = {
-  all: () => scoped.all(),
-  current: () => scoped.nest('current'),
-  update: () => scoped.nest('update'),
-} as const;
 
 const buildDraftSettings = (settings?: AppSettings): UpdateSettingsRequest => ({
   profile: {
@@ -54,39 +41,14 @@ const createEmptyProfileView = () => ({
 });
 
 /**
- * ユーザー設定を取得する hook。
- */
-const useGetSettings = () => {
-  return useQuery<AppSettings>({
-    queryKey: settingsQueryKeys.current(),
-    queryFn: fetchSettings,
-  });
-};
-
-/**
- * ユーザー設定を更新する hook。
- */
-const useUpdateSettings = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationKey: settingsQueryKeys.update(),
-    mutationFn: updateSettings,
-    onSuccess: (data) => {
-      queryClient.setQueryData(settingsQueryKeys.current(), data);
-    },
-  });
-};
-
-/**
  * 設定画面の状態を管理する composite hook。
  */
 export const useSettings = () => {
   const [activeSection, setActiveSection] = useState<SettingsSection>(SETTINGS_SECTION.Profile);
   const [draftSettings, setDraftSettings] = useState<UpdateSettingsRequest | null>(null);
 
-  const settingsQuery = useGetSettings();
-  const updateMutation = useUpdateSettings();
+  const settingsQuery = useSettingsQuery();
+  const updateMutation = useUpdateSettingsMutation();
 
   const baseDraft = useMemo(
     () => buildDraftSettings(settingsQuery.data),
@@ -126,9 +88,6 @@ export const useSettings = () => {
     [settingsQuery.data?.security],
   );
 
-  /**
-   * テーマ更新ハンドラー。
-   */
   const setTheme = (nextTheme: ThemeType) => {
     setDraftSettings((prev) => ({
       ...(prev ?? baseDraft),
@@ -136,9 +95,6 @@ export const useSettings = () => {
     }));
   };
 
-  /**
-   * 言語更新ハンドラー。
-   */
   const setLanguage = (nextLanguage: LanguageCode) => {
     setDraftSettings((prev) => ({
       ...(prev ?? baseDraft),
@@ -146,9 +102,6 @@ export const useSettings = () => {
     }));
   };
 
-  /**
-   * プロフィール更新ハンドラー。
-   */
   const setProfileField = (field: keyof UpdateSettingsRequestProfile, value: string) => {
     setDraftSettings((prev) => ({
       ...(prev ?? baseDraft),
@@ -159,9 +112,6 @@ export const useSettings = () => {
     }));
   };
 
-  /**
-   * 通知設定更新ハンドラー。
-   */
   const setNotification = (
     key: keyof UpdateSettingsRequestNotifications,
     value: boolean,
@@ -175,16 +125,10 @@ export const useSettings = () => {
     }));
   };
 
-  /**
-   * 編集内容を破棄してサーバー値へ戻す。
-   */
   const handleReset = () => {
     setDraftSettings(null);
   };
 
-  /**
-   * 画面で編集中の設定を保存する。
-   */
   const handleSave = async () => {
     try {
       await updateMutation.mutateAsync(editingSettings);

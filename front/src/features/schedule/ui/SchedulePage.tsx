@@ -5,7 +5,17 @@ import { useSchedule } from '@/features/schedule/hooks/useSchedule';
 import { SchedulePresenter } from '@/features/schedule/ui/SchedulePresenter';
 
 const SchedulePage: React.FC = () => {
-  const { isLoading, isError, currentMonth, scheduleData, nextMonth, prevMonth } = useSchedule();
+  const {
+    isLoading,
+    isError,
+    currentMonth,
+    scheduleData,
+    visibleSchedule,
+    showOnlyWorkingDays,
+    toggleWorkingDaysFilter,
+    nextMonth,
+    prevMonth,
+  } = useSchedule();
 
   return (
     <Container size="full">
@@ -13,7 +23,10 @@ const SchedulePage: React.FC = () => {
         <SchedulePresenter
           currentMonth={currentMonth}
           schedule={scheduleData.days}
+          visibleSchedule={visibleSchedule}
           summary={scheduleData.summary}
+          showOnlyWorkingDays={showOnlyWorkingDays}
+          toggleWorkingDaysFilter={toggleWorkingDaysFilter}
           nextMonth={nextMonth}
           prevMonth={prevMonth}
         />

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Calendar as CalendarIcon,
@@ -15,63 +15,13 @@ import { Badge, Button, Card, CardContent, Typography } from '@/shared/component
 import { cn } from '@/shared/utils/style';
 import { stack } from '@/shared/design-system/layout';
 import type { DaySchedule, ScheduleSummary } from '@/domain/schedule/types';
-import type { CalendarDayStatus } from '@/__generated__/enums';
 import {
   formatJapaneseDays,
   formatJapaneseHours,
   formatJapaneseYearMonth,
 } from '@/shared/utils/format';
 import { EMPTY_TIME_RANGE_TEXT } from '@/shared/utils/format';
-
-type ScheduleBadgeIntent = 'default' | 'danger' | 'outline' | 'warning';
-
-interface ScheduleStatusView {
-  border: string;
-  bg: string;
-  text: string;
-  intent: ScheduleBadgeIntent;
-  badgeLabel: string;
-  shiftFallback: string;
-}
-
-const scheduleStatusViewMap: Record<CalendarDayStatus, ScheduleStatusView> = {
-  working: {
-    border: 'border-l-4 border-blue-500',
-    bg: 'bg-white',
-    text: 'text-gray-900',
-    intent: 'default',
-    badgeLabel: '出社',
-    shiftFallback: '通常勤務',
-  },
-  holiday: {
-    border: 'border-l-4 border-red-500',
-    bg: 'bg-red-50/30',
-    text: 'text-red-700',
-    intent: 'danger',
-    badgeLabel: '祝日',
-    shiftFallback: '祝日',
-  },
-  off: {
-    border: 'border-l-4 border-gray-300',
-    bg: 'bg-gray-50/50',
-    text: 'text-gray-500',
-    intent: 'outline',
-    badgeLabel: '公休',
-    shiftFallback: '公休日',
-  },
-  pending: {
-    border: 'border-l-4 border-amber-500',
-    bg: 'bg-amber-50/30',
-    text: 'text-amber-700',
-    intent: 'warning',
-    badgeLabel: '休暇',
-    shiftFallback: '有給休暇',
-  },
-};
-
-const getScheduleStatusView = (status: CalendarDayStatus): ScheduleStatusView => {
-  return scheduleStatusViewMap[status];
-};
+import { getScheduleStatusView } from '@/shared/presentation/schedule';
 
 const getScheduleShiftLabel = (day: DaySchedule): string => {
   return day.shift || getScheduleStatusView(day.status).shiftFallback;
@@ -84,25 +34,25 @@ const getScheduleTimeRangeText = (timeRange?: string): string => {
 interface SchedulePresenterProps {
   currentMonth: Date;
   schedule: DaySchedule[];
+  visibleSchedule: DaySchedule[];
   summary: ScheduleSummary;
+  showOnlyWorkingDays: boolean;
+  toggleWorkingDaysFilter: () => void;
   nextMonth: () => void;
   prevMonth: () => void;
 }
 
-export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
+export const SchedulePresenter = React.memo<SchedulePresenterProps>(function SchedulePresenter({
   currentMonth,
   schedule,
+  visibleSchedule,
   summary,
+  showOnlyWorkingDays,
+  toggleWorkingDaysFilter,
   nextMonth,
   prevMonth,
-}) => {
-  const [showOnlyWorkingDays, setShowOnlyWorkingDays] = useState(false);
+}) {
   const monthName = formatJapaneseYearMonth(currentMonth);
-
-  const visibleSchedule = useMemo(
-    () => (showOnlyWorkingDays ? schedule.filter((day) => day.status === 'working') : schedule),
-    [schedule, showOnlyWorkingDays],
-  );
 
   const workProgress = summary.targetHours > 0
     ? Math.min(Math.round((summary.totalWorkHours / summary.targetHours) * 100), 100)
@@ -165,7 +115,7 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
               variant={showOnlyWorkingDays ? 'solid' : 'outline'}
               intent={showOnlyWorkingDays ? 'primary' : 'secondary'}
               unstableClassName="gap-2"
-              onClick={() => setShowOnlyWorkingDays((previous) => !previous)}
+              onClick={toggleWorkingDaysFilter}
             >
               <Filter size={18} />
               <Typography variant="label">{showOnlyWorkingDays ? '全件表示' : '勤務日のみ'}</Typography>
@@ -290,4 +240,4 @@ export const SchedulePresenter: React.FC<SchedulePresenterProps> = ({
       </div>
     </div>
   );
-};
+});

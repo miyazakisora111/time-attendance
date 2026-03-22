@@ -33,7 +33,7 @@ const teamMemberStatusIconMap = {
   off: XCircle,
 } as const;
 
-export const TeamPresenter: React.FC<TeamPresenterProps> = ({
+export const TeamPresenter = React.memo<TeamPresenterProps>(function TeamPresenter({
   searchQuery,
   setSearchQuery,
   filterDept,
@@ -41,7 +41,7 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
   filteredMembers,
   stats,
   departments,
-}) => {
+}) {
   return (
     <div className={stack.xl}>
       {/* Stats Summary */}
@@ -192,4 +192,4 @@ export const TeamPresenter: React.FC<TeamPresenterProps> = ({
       </Card>
     </div>
   );
-};
+});

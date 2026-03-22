@@ -85,7 +85,7 @@ const formatDateTime = (value?: string | null): string => {
   return date.toLocaleString('ja-JP');
 };
 
-export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
+export const SettingsPresenter = React.memo<SettingsPresenterProps>(function SettingsPresenter({
   isSaving,
   activeSection,
   setActiveSection,
@@ -100,7 +100,7 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
   setLanguage,
   handleReset,
   handleSave,
-}) => {
+}) {
   const profileInitial = profile.name.trim().charAt(0) || 'U';
 
   return (
@@ -392,4 +392,4 @@ export const SettingsPresenter: React.FC<SettingsPresenterProps> = ({
       </div>
     </div>
   );
-};
+});
