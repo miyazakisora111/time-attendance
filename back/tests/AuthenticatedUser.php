@@ -1,15 +1,17 @@
 <?php
+
 namespace Tests;
 
-use App\Infrastructure\Database\Models\UserModel;
+use App\Models\User;
 
-trait AuthenticatedUser {
+trait AuthenticatedUser
+{
 
     public function setUpUser(array $attributes = [])
     {
         $this->logout();
-      
-        $this->user = UserModel::factory()->create($attributes);
+
+        $this->user = User::factory()->create($attributes);
 
         $this->login();
 
@@ -18,12 +20,11 @@ trait AuthenticatedUser {
 
     public function login()
     {
-        $this->actingAs($this->user);
+        $this->actingAs($this->user, 'api');
     }
-    
+
     public function logout()
     {
         $this->user = null;
     }
 }
-

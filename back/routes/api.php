@@ -36,6 +36,8 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
         Route::get('/attendance', [AttendanceController::class, 'today']);
         Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
         Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
+        Route::post('/break-start', [AttendanceController::class, 'breakStart']);
+        Route::post('/break-end', [AttendanceController::class, 'breakEnd']);
         Route::get('/', [AttendanceController::class, 'index']);
         Route::post('/', [AttendanceController::class, 'store']);
         Route::patch('/{attendance}', [AttendanceController::class, 'update']);

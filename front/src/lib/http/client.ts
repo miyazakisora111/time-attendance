@@ -184,10 +184,12 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     // ネットワークエラー
     if (!error.response) {
-      console.error('[API ERROR] Network Error', {
-        message: error.message,
-        config: error.config,
-      });
+      if (import.meta.env.DEV) {
+        console.error('[API ERROR] Network Error', {
+          message: error.message,
+          config: error.config,
+        });
+      }
 
       sonner.error(ApiErrorMessage.NetworkError);
       return Promise.reject(error);
@@ -195,14 +197,16 @@ axiosInstance.interceptors.response.use(
 
     const { status, data } = error.response;
 
-    // ログを出力
-    console.error('[API ERROR]', {
-      status,
-      url: error.config?.url,
-      method: error.config?.method,
-      request: error.config?.data,
-      response: data,
-    });
+    // 開発環境のみログを出力
+    if (import.meta.env.DEV) {
+      console.error('[API ERROR]', {
+        status,
+        url: error.config?.url,
+        method: error.config?.method,
+        request: error.config?.data,
+        response: data,
+      });
+    }
 
     // 認証エラー
     if (status === HttpStatusCode.Unauthorized) {

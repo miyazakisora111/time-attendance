@@ -3,7 +3,7 @@ import type { ClockAction } from '@/__generated__/enums';
 /** 勤怠 */
 export type AttendanceView = {
     clockAction: ClockAction;
-    totalWorkedMs: number | null;
+    totalWorkedMinutes: number | null;
     startTime: string | null;
     endTime: string | null;
     workDate: string;

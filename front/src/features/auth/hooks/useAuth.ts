@@ -89,8 +89,8 @@ export const useAuth = () => {
     });
 
     return {
-        user: authQuery.data ?? null,
-        isAuthenticated: !!authQuery.data,
+        user: useAuthStore((state) => state.user),
+        isAuthenticated: useAuthStore((state) => state.isAuthenticated),
         isLoading: authQuery.isLoading || isInitializing,
         loginMutation,
         logoutMutation,

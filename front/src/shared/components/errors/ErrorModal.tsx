@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from 'react';
 import { TriangleAlert, X } from 'lucide-react';
 import { Button, Typography } from '@/shared/components';
 import { useError } from '@/shared/contexts/useError';
@@ -5,21 +6,50 @@ import { stack } from '@/shared/design-system/layout';
 
 export function ErrorModal() {
 	const { isOpen, title, messages, closeError } = useError();
+	const dialogRef = useRef<HTMLDivElement>(null);
+
+	const handleKeyDown = useCallback(
+		(e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				closeError();
+			}
+		},
+		[closeError],
+	);
+
+	useEffect(() => {
+		if (!isOpen) return;
+		document.addEventListener('keydown', handleKeyDown);
+		dialogRef.current?.focus();
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	}, [isOpen, handleKeyDown]);
 
 	if (!isOpen) {
 		return null;
 	}
 
 	return (
-		<div className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 p-4">
-			<div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
+		<div
+			className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 p-4"
+			onClick={closeError}
+			role="presentation"
+		>
+			<div
+				ref={dialogRef}
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby="error-modal-title"
+				tabIndex={-1}
+				className="w-full max-w-lg rounded-2xl bg-white shadow-2xl"
+				onClick={(e) => e.stopPropagation()}
+			>
 				<div className="flex items-start justify-between border-b border-gray-100 px-6 py-4">
 					<div className="flex items-start gap-3">
 						<div className="mt-0.5 rounded-full bg-red-50 p-2 text-red-600">
 							<TriangleAlert size={18} />
 						</div>
 						<div>
-							<Typography variant="h3" unstableClassName="text-lg">
+							<Typography variant="h3" unstableClassName="text-lg" id="error-modal-title">
 								{title}
 							</Typography>
 							<Typography variant="small" intent="muted" unstableClassName="mt-1 text-sm">

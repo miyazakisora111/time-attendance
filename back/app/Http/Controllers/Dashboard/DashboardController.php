@@ -37,20 +37,4 @@ final class DashboardController extends BaseController
 
         return ApiResponse::success($result);
     }
-
-    /**
-     * 打刻アクション（出勤・退勤・休憩開始・休憩終了）を実行する。
-     *
-     * @param DashboardClockRequest $request 打刻リクエスト
-     * @return JsonResponse Jsonレスポンス
-     */
-    public function clock(DashboardClockRequest $request): JsonResponse
-    {
-        $result = $this->service->clock(
-            user: $this->resolveUser(),
-            action: (string) $request->input('action'),
-        );
-
-        return ApiResponse::success($result);
-    }
 }

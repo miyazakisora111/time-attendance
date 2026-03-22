@@ -5,13 +5,8 @@ import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { Home, Clock, Calendar, FileText, Users, Settings } from "lucide-react";
 import { cn } from "@/shared/utils/style";
 import { AppRoutePath } from "@/config/routes";
-
-// 仮のログイン情報
-const user = {
-    name: "TODO",
-    email: "taro@example.com",
-    avatar: undefined,
-};
+import { useAuthStore } from "@/features/auth/state/useAuthStore";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const defaultMenuItems: SidebarMenuItem[] = [
     { icon: Home, label: "ダッシュボード", href: AppRoutePath.Dashboard },
@@ -27,12 +22,20 @@ const defaultMenuItems: SidebarMenuItem[] = [
  */
 export const PrivateLayout = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const storeUser = useAuthStore((state) => state.user);
+    const { logoutMutation } = useAuth();
+
+    const user = {
+        name: storeUser?.name ?? '',
+        email: storeUser?.email ?? '',
+        avatar: undefined,
+    };
 
     /**
      * ログアウトイベントを受け取る。
      */
     const handleLogout = () => {
-        console.log("ログアウト処理");
+        logoutMutation.mutate();
     };
 
     /**
@@ -57,7 +60,7 @@ export const PrivateLayout = () => {
                     onProfileClick={handleProfileClick}
                 />
             </div>
-            
+
             <main className="flex-1 overflow-auto p-8">
                 <Outlet />
             </main>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchTodayAttendance, clockIn, clockOut } from '@/api/attendance.api';
+import { fetchTodayAttendance, clockIn, clockOut, breakStart, breakEnd } from '@/api/attendance.api';
 import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { AttendanceClockInRequest } from '@/__generated__/model/attendanceClockInRequest';
@@ -16,6 +16,8 @@ export const attendanceQueryKeys = {
   todayAttendance: () => scoped.nest('todayAttendance'),
   clockIn: () => scoped.nest('clockIn'),
   clockOut: () => scoped.nest('clockOut'),
+  breakStart: () => scoped.nest('breakStart'),
+  breakEnd: () => scoped.nest('breakEnd'),
 } as const;
 
 /** 
@@ -51,3 +53,25 @@ export const useClockOutMutation = (
     ...options,
   });
 };
+
+/**
+ * 休憩開始
+ */
+export const useBreakStartMutation = (
+  options?: UseMutationOptions<AttendanceResponse, Error, void>,
+) => useMutation({
+  mutationKey: attendanceQueryKeys.breakStart(),
+  mutationFn: () => breakStart(),
+  ...options,
+});
+
+/**
+ * 休憩終了
+ */
+export const useBreakEndMutation = (
+  options?: UseMutationOptions<AttendanceResponse, Error, void>,
+) => useMutation({
+  mutationKey: attendanceQueryKeys.breakEnd(),
+  mutationFn: () => breakEnd(),
+  ...options,
+});

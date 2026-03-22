@@ -51,6 +51,28 @@ final class AttendanceController extends BaseController
     }
 
     /**
+     * 休憩開始
+     *
+     * @return JsonResponse
+     */
+    public function breakStart(): JsonResponse
+    {
+        $result = $this->service->breakStart(user: $this->resolveUser());
+        return ApiResponse::success($result);
+    }
+
+    /**
+     * 休憩終了
+     *
+     * @return JsonResponse
+     */
+    public function breakEnd(): JsonResponse
+    {
+        $result = $this->service->breakEnd(user: $this->resolveUser());
+        return ApiResponse::success($result);
+    }
+
+    /**
      * 本日の勤怠情報を取得
      *
      * @return JsonResponse

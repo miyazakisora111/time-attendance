@@ -18,16 +18,6 @@ export const teamQueryKeys = {
 } as const;
 
 /**
- * チームメンバー一覧を取得 する。
- */
-export const useGetTeamMembers = () => {
-  return useQuery<TeamMember[]>({
-    queryKey: teamQueryKeys.members(),
-    queryFn: fetchTeamMembers,
-  });
-};
-
-/**
  * チーム画面の検索・絞り込み状態を管理する。
  */
 export const useTeam = () => {

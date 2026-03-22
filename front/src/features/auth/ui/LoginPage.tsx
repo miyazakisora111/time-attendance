@@ -40,8 +40,12 @@ export function LoginPage() {
    * 認証APIへログイン情報を送信する。
    */
   const onSubmit = async (data: LoginFormData) => {
-    await loginMutation.mutateAsync(data);
-    sonner.success('ログインしました。');
+    try {
+      await loginMutation.mutateAsync(data);
+      sonner.success('ログインしました。');
+    } catch {
+      sonner.error('メールアドレスまたはパスワードが正しくありません。');
+    }
   };
 
   return (

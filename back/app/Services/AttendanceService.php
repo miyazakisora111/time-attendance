@@ -8,6 +8,7 @@ use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use App\Models\AttendanceBreak;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -28,6 +29,7 @@ final class AttendanceService extends BaseService
                 ->whereNotNull('clock_in_at')
                 ->whereNull('clock_out_at')
                 ->latest('clock_in_at')
+                ->lockForUpdate()
                 ->first();
 
             if ($openAttendance !== null) {
@@ -97,6 +99,80 @@ final class AttendanceService extends BaseService
             ->first();
 
         return $attendance?->toLocalTimePayload() ?? [];
+    }
+
+    public function breakStart(User $user): array
+    {
+        return $this->transaction(function () use ($user): array {
+            $attendance = Attendance::query()
+                ->where('user_id', $user->id)
+                ->whereNotNull('clock_in_at')
+                ->whereNull('clock_out_at')
+                ->latest('clock_in_at')
+                ->lockForUpdate()
+                ->first();
+
+            if ($attendance === null) {
+                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
+            }
+
+            $activeBreak = AttendanceBreak::query()
+                ->where('attendance_id', $attendance->id)
+                ->whereNotNull('break_start')
+                ->whereNull('break_end')
+                ->first();
+
+            if ($activeBreak !== null) {
+                throw new DomainException('すでに休憩中です', 'ALREADY_ON_BREAK');
+            }
+
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
+            $now = CarbonImmutable::now($timezone);
+
+            AttendanceBreak::query()->create([
+                'attendance_id' => $attendance->id,
+                'break_start' => $now->format('H:i:s'),
+            ]);
+
+            return $attendance->fresh()->toLocalTimePayload();
+        });
+    }
+
+    public function breakEnd(User $user): array
+    {
+        return $this->transaction(function () use ($user): array {
+            $attendance = Attendance::query()
+                ->where('user_id', $user->id)
+                ->whereNotNull('clock_in_at')
+                ->whereNull('clock_out_at')
+                ->latest('clock_in_at')
+                ->lockForUpdate()
+                ->first();
+
+            if ($attendance === null) {
+                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
+            }
+
+            $activeBreak = AttendanceBreak::query()
+                ->where('attendance_id', $attendance->id)
+                ->whereNotNull('break_start')
+                ->whereNull('break_end')
+                ->latest('break_start')
+                ->first();
+
+            if ($activeBreak === null) {
+                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
+            }
+
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
+            $now = CarbonImmutable::now($timezone);
+
+            $activeBreak->update([
+                'break_end' => $now->format('H:i:s'),
+            ]);
+
+            return $attendance->fresh()->toLocalTimePayload();
+        });
     }
 
     public function index(User $user, string $from, string $to): array

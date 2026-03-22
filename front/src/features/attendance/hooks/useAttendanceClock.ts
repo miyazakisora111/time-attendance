@@ -9,6 +9,8 @@ import {
     attendanceQueryKeys,
     useClockInMutation,
     useClockOutMutation,
+    useBreakStartMutation,
+    useBreakEndMutation,
     useTodayAttendanceQuery,
 } from '@/features/attendance/hooks/useAttendanceQueries';
 import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/utils/format';
@@ -31,16 +33,18 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const { data: todayAttendance, isLoading, isError } = useTodayAttendanceQuery();
     const { mutate: clockInMutate, isPending: isClockingIn } = useClockInMutation();
     const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOutMutation();
+    const { mutate: breakStartMutate, isPending: isBreakStarting } = useBreakStartMutation();
+    const { mutate: breakEndMutate, isPending: isBreakEnding } = useBreakEndMutation();
 
-    const isPending = isClockingIn || isClockingOut;
+    const isPending = isClockingIn || isClockingOut || isBreakStarting || isBreakEnding;
 
     const action = todayAttendance?.clockAction;
     const clockStatus: ClockStatus = action ? actionToClockStatusMap[action] : 'out';
     const attendanceStatus: AttendanceStatus = clockStatusToAttendanceStatusMap[clockStatus];
 
     const workedHours =
-        todayAttendance?.totalWorkedMs != null
-            ? todayAttendance.totalWorkedMs / 60
+        todayAttendance?.totalWorkedMinutes != null
+            ? todayAttendance.totalWorkedMinutes / 60
             : null;
     const todayWorkedTime = formatWorkedHours(workedHours);
 
@@ -81,9 +85,12 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
                 );
                 break;
             }
-            case 'break_start':
+            case 'break_start': {
+                breakStartMutate(undefined, { onSuccess, onError });
+                break;
+            }
             case 'break_end': {
-                sonner.info('この操作はまだ実装されていません');
+                breakEndMutate(undefined, { onSuccess, onError });
                 break;
             }
             default:
