@@ -7,7 +7,8 @@
  */
 import type {
   ChangePasswordBodyBody,
-  LoginHistoryResponse,
+  ListLoginHistories200,
+  ListLoginHistoriesParams,
   SettingsResponse,
   UpdateSettingsBodyBody,
 } from ".././model";
@@ -15,20 +16,20 @@ import { customInstance } from "../../lib/http/client";
 
 export const getSettings = () => {
   /**
+   * ログインユーザーのプロフィール・通知・セキュリティ設定を返す。
    * @summary ユーザー設定取得
    */
-  const getSettingsApi = () => {
+  const getSettings = () => {
     return customInstance<SettingsResponse>({
       url: `/settings`,
       method: "GET",
     });
   };
   /**
+   * プロフィール・通知・テーマ・言語設定を更新する。
    * @summary ユーザー設定更新
    */
-  const updateSettingsApi = (
-    updateSettingsBodyBody: UpdateSettingsBodyBody,
-  ) => {
+  const updateSettings = (updateSettingsBodyBody: UpdateSettingsBodyBody) => {
     return customInstance<SettingsResponse>({
       url: `/settings`,
       method: "PUT",
@@ -37,11 +38,10 @@ export const getSettings = () => {
     });
   };
   /**
+   * 現在のパスワードを検証し、新しいパスワードに変更する。
    * @summary パスワード変更
    */
-  const changePasswordApi = (
-    changePasswordBodyBody: ChangePasswordBodyBody,
-  ) => {
+  const updatePassword = (changePasswordBodyBody: ChangePasswordBodyBody) => {
     return customInstance<SettingsResponse>({
       url: `/settings/password`,
       method: "PUT",
@@ -50,35 +50,32 @@ export const getSettings = () => {
     });
   };
   /**
+   * ログインユーザーのログイン履歴を新しい順に返す。
    * @summary ログイン履歴一覧取得
    */
-  const getLoginHistoriesApi = () => {
-    return customInstance<LoginHistoryResponse[]>({
+  const listLoginHistories = (params?: ListLoginHistoriesParams) => {
+    return customInstance<ListLoginHistories200>({
       url: `/settings/login-histories`,
       method: "GET",
+      params,
     });
   };
-  return {
-    getSettingsApi,
-    updateSettingsApi,
-    changePasswordApi,
-    getLoginHistoriesApi,
-  };
+  return { getSettings, updateSettings, updatePassword, listLoginHistories };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetSettingsApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getSettings>["getSettingsApi"]>>
+export type GetSettingsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSettings>["getSettings"]>>
 >;
-export type UpdateSettingsApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getSettings>["updateSettingsApi"]>>
+export type UpdateSettingsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSettings>["updateSettings"]>>
 >;
-export type ChangePasswordApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getSettings>["changePasswordApi"]>>
+export type UpdatePasswordResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSettings>["updatePassword"]>>
 >;
-export type GetLoginHistoriesApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getSettings>["getLoginHistoriesApi"]>>
+export type ListLoginHistoriesResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSettings>["listLoginHistories"]>>
 >;

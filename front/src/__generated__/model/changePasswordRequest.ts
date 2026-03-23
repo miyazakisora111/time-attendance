@@ -11,15 +11,15 @@ export interface ChangePasswordRequest {
    * 現在のパスワード
    * @minLength 8
    */
-  current_password: string;
+  currentPassword: string;
   /**
    * 新しいパスワード
    * @minLength 8
    */
-  new_password: string;
+  newPassword: string;
   /**
    * 新しいパスワード（確認）
    * @minLength 8
    */
-  new_password_confirmation: string;
+  newPasswordConfirmation: string;
 }

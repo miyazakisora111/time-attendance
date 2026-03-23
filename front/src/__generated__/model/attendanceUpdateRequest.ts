@@ -8,12 +8,12 @@
 
 export interface AttendanceUpdateRequest {
   /** @nullable */
-  end_time?: string | null;
+  endTime?: string | null;
   /**
    * @maxLength 500
    * @nullable
    */
   note?: string | null;
   /** @nullable */
-  start_time?: string | null;
+  startTime?: string | null;
 }

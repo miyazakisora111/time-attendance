@@ -110,9 +110,6 @@ openapi-validators: openapi-bundle openapi-zod
 	node openapi/scripts/generate-openapi-validators.mjs
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
-openapi-examples: openapi-bundle
-	node openapi/scripts/generate-openapi-examples.mjs
-
 openapi-clean:
 	rm -rf $(OPENAPI_DIR)/build/*
 	rm -rf $(OPENAPI_DIR)/examples/*
@@ -131,4 +128,4 @@ openapi-enums-check:
 		|| (echo "❌ Generated enums are out of date. Run: make openapi-enums" && exit 1)
 	@echo "✅ Generated enums are up-to-date"
 
-openapi: openapi-enums openapi-zod openapi-client openapi-validators openapi-examples
+openapi: openapi-enums openapi-zod openapi-client openapi-validators

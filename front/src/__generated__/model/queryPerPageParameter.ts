@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface AttendanceClockInRequest {
-  startTime: string;
-  workDate: string;
-}
+/**
+ * 1ページあたりの件数（デフォルト20）
+ */
+export type QueryPerPageParameter = number;

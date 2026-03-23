@@ -1,9 +1,10 @@
 calendar:
   get:
-    operationId: getCalendarApi
+    operationId: getCalendar
     tags:
       - Schedule
     summary: 月次カレンダー取得
+    description: 指定年月のカレンダー日付一覧とサマリーを返す。
     parameters:
       - $ref: "../components/parameters.yaml#/QueryYear"
       - $ref: "../components/parameters.yaml#/QueryMonth"

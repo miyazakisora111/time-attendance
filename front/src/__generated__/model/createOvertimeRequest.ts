@@ -8,7 +8,7 @@
 
 export interface CreateOvertimeRequest {
   /** 残業終了時刻 */
-  end_time: string;
+  endTime: string;
   /**
    * 申請理由
    * @maxLength 500
@@ -16,7 +16,7 @@ export interface CreateOvertimeRequest {
    */
   reason?: string | null;
   /** 残業開始時刻 */
-  start_time: string;
+  startTime: string;
   /** 対象日 */
-  work_date: string;
+  workDate: string;
 }

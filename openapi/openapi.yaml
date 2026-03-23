@@ -38,27 +38,31 @@ tags:
     description: 設定API
 
 paths:
+  # --- Reason: /authme → /auth/me (kebab-case) ---
   /login:
     $ref: "./paths/auth.yaml#/login"
   /logout:
     $ref: "./paths/auth.yaml#/logout"
-  /authme:
+  /auth/me:
     $ref: "./paths/auth.yaml#/authMe"
-  /attendances/attendance:
-    $ref: "./paths/attendance.yaml#/attendance"
+  # --- Reason: /attendances/attendance → /attendances/today (冗長解消) ---
+  /attendances/today:
+    $ref: "./paths/attendance.yaml#/todayAttendance"
   /attendances/clock-in:
     $ref: "./paths/attendance.yaml#/clockIn"
   /attendances/clock-out:
     $ref: "./paths/attendance.yaml#/clockOut"
   /attendances:
     $ref: "./paths/attendance.yaml#/attendances"
-  /attendances/{attendance}:
+  # --- Reason: {attendance} → {attendanceId} (camelCase+Id) ---
+  /attendances/{attendanceId}:
     $ref: "./paths/attendance.yaml#/attendanceUpdate"
   /dashboard:
     $ref: "./paths/dashboard.yaml#/dashboard"
   /dashboard/clock:
     $ref: "./paths/dashboard.yaml#/dashboardClock"
-  /auth/calendar:
+  # --- Reason: /auth/calendar → /schedule/calendar (ドメイン整合) ---
+  /schedule/calendar:
     $ref: "./paths/schedule.yaml#/calendar"
   /team/members:
     $ref: "./paths/team.yaml#/teamMembers"
@@ -68,23 +72,25 @@ paths:
     $ref: "./paths/settings.yaml#/changePassword"
   /settings/login-histories:
     $ref: "./paths/settings.yaml#/loginHistories"
-  /approval:
+  # --- Reason: /approval → /approvals (複数形) ---
+  /approvals:
     $ref: "./paths/approval.yaml#/approvalList"
-  /approval/paid-leaves:
+  /approvals/paid-leaves:
     $ref: "./paths/approval.yaml#/paidLeaveRequests"
-  /approval/paid-leaves/{paidLeaveRequest}/approve:
+  # --- Reason: {paidLeaveRequest} → {paidLeaveRequestId} ---
+  /approvals/paid-leaves/{paidLeaveRequestId}/approve:
     $ref: "./paths/approval.yaml#/paidLeaveApprove"
-  /approval/paid-leaves/{paidLeaveRequest}/reject:
+  /approvals/paid-leaves/{paidLeaveRequestId}/reject:
     $ref: "./paths/approval.yaml#/paidLeaveReject"
-  /approval/paid-leaves/{paidLeaveRequest}/cancel:
+  /approvals/paid-leaves/{paidLeaveRequestId}/cancel:
     $ref: "./paths/approval.yaml#/paidLeaveCancel"
-  /approval/overtime-requests:
+  /approvals/overtime-requests:
     $ref: "./paths/approval.yaml#/overtimeRequests"
-  /approval/overtime-requests/{overtimeRequest}/approve:
+  /approvals/overtime-requests/{overtimeRequestId}/approve:
     $ref: "./paths/approval.yaml#/overtimeApprove"
-  /approval/overtime-requests/{overtimeRequest}/return:
+  /approvals/overtime-requests/{overtimeRequestId}/return:
     $ref: "./paths/approval.yaml#/overtimeReturn"
-  /approval/overtime-requests/{overtimeRequest}/cancel:
+  /approvals/overtime-requests/{overtimeRequestId}/cancel:
     $ref: "./paths/approval.yaml#/overtimeCancel"
 
 components:
@@ -202,6 +208,10 @@ components:
       $ref: "./components/schemas/common/ErrorResponse.yaml#/ErrorResponse"
     ValidationErrorResponse:
       $ref: "./components/schemas/common/ValidationErrorResponse.yaml#/ValidationErrorResponse"
+
+    # --- Common ---
+    PageInfo:
+      $ref: "./components/schemas/common/PageInfo.yaml#/PageInfo"
 
   parameters:
     $ref: "./components/parameters.yaml"

@@ -8,12 +8,12 @@
 
 export interface AttendanceStoreRequest {
   /** @nullable */
-  end_time?: string | null;
+  endTime?: string | null;
   /**
    * @maxLength 500
    * @nullable
    */
   note?: string | null;
-  start_time: string;
-  work_date: string;
+  startTime: string;
+  workDate: string;
 }

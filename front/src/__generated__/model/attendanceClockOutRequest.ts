@@ -7,6 +7,6 @@
  */
 
 export interface AttendanceClockOutRequest {
-  end_time: string;
-  work_date: string;
+  endTime: string;
+  workDate: string;
 }

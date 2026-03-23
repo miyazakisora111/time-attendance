@@ -15,6 +15,6 @@ export type ClockAction = (typeof ClockAction)[keyof typeof ClockAction];
 export const ClockAction = {
   in: "in",
   out: "out",
-  break_start: "break_start",
-  break_end: "break_end",
+  breakStart: "breakStart",
+  breakEnd: "breakEnd",
 } as const;

@@ -15,6 +15,6 @@ enum ClockAction: string
 {
         case IN = 'in';
     case OUT = 'out';
-    case BREAK_START = 'break_start';
-    case BREAK_END = 'break_end';
+    case BREAK_START = 'breakStart';
+    case BREAK_END = 'breakEnd';
 }

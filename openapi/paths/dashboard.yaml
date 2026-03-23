@@ -1,9 +1,10 @@
 dashboard:
   get:
-    operationId: getDashboardApi
+    operationId: getDashboard
     tags:
       - Dashboard
     summary: ダッシュボード集計取得
+    description: 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
     responses:
       "200":
         description: ダッシュボード情報
@@ -18,10 +19,11 @@ dashboard:
 
 dashboardClock:
   post:
-    operationId: dashboardClockApi
+    operationId: createDashboardClock
     tags:
       - Dashboard
     summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
+    description: ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
     requestBody:
       $ref: "../components/requestBodies.yaml#/DashboardClockBody"
     responses:

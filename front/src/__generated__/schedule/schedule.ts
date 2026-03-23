@@ -5,27 +5,28 @@
  * 勤怠管理API
  * OpenAPI spec version: 1.0.0
  */
-import type { CalendarResponse, GetCalendarApiParams } from ".././model";
+import type { CalendarResponse, GetCalendarParams } from ".././model";
 import { customInstance } from "../../lib/http/client";
 
 export const getSchedule = () => {
   /**
+   * 指定年月のカレンダー日付一覧とサマリーを返す。
    * @summary 月次カレンダー取得
    */
-  const getCalendarApi = (params: GetCalendarApiParams) => {
+  const getCalendar = (params: GetCalendarParams) => {
     return customInstance<CalendarResponse>({
-      url: `/auth/calendar`,
+      url: `/schedule/calendar`,
       method: "GET",
       params,
     });
   };
-  return { getCalendarApi };
+  return { getCalendar };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetCalendarApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getSchedule>["getCalendarApi"]>>
+export type GetCalendarResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getSchedule>["getCalendar"]>>
 >;

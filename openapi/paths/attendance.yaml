@@ -1,9 +1,18 @@
-attendance:
+# --- Reason: operationId → 動詞+対象のcamelCase (Api サフィックス削除)
+# --- Reason: description 追加（全 operation に summary + description 必須）
+# --- Reason: listAttendances のレスポンスをページネーション対応ラッパーに変更
+# --- Reason: storeAttendanceApi → createAttendance (store は許可動詞外)
+# --- Reason: todayAttendanceApi → getTodayAttendance (動詞先頭)
+# --- Reason: clockInApi → createClockIn, clockOutApi → createClockOut
+# --- Reason: attendanceUpdate キー名は参照元と整合(変更なし)
+
+todayAttendance:
   get:
-    operationId: todayAttendanceApi
+    operationId: getTodayAttendance
     tags:
       - Attendance
     summary: 今日の勤怠取得
+    description: ログイン中ユーザーの当日の勤怠レコードを返す。
     responses:
       "200":
         description: 今日の勤怠情報
@@ -18,10 +27,11 @@ attendance:
 
 clockIn:
   post:
-    operationId: clockInApi
+    operationId: createClockIn
     tags:
       - Attendance
     summary: 出勤打刻
+    description: 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceClockInBody"
     responses:
@@ -42,10 +52,11 @@ clockIn:
 
 clockOut:
   post:
-    operationId: clockOutApi
+    operationId: createClockOut
     tags:
       - Attendance
     summary: 退勤打刻
+    description: 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceClockOutBody"
     responses:
@@ -66,22 +77,33 @@ clockOut:
 
 attendances:
   get:
-    operationId: listAttendancesApi
+    operationId: listAttendances
     tags:
       - Attendance
     summary: 勤怠一覧取得
+    description: 指定期間のログインユーザー勤怠一覧をページネーション付きで返す。
     parameters:
       - $ref: "../components/parameters.yaml#/QueryDateFrom"
       - $ref: "../components/parameters.yaml#/QueryDateTo"
+      - $ref: "../components/parameters.yaml#/QueryPage"
+      - $ref: "../components/parameters.yaml#/QueryPerPage"
     responses:
       "200":
         description: 勤怠一覧
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
+              type: object
+              required:
+                - items
+                - pageInfo
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
+                pageInfo:
+                  $ref: "../components/schemas/common/PageInfo.yaml#/PageInfo"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
       "422":
@@ -89,10 +111,11 @@ attendances:
       "500":
         $ref: "../components/responses.yaml#/InternalServerError"
   post:
-    operationId: storeAttendanceApi
+    operationId: createAttendance
     tags:
       - Attendance
     summary: 勤怠の新規登録
+    description: 手動で勤怠レコードを新規作成する。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceStoreBody"
     responses:
@@ -111,10 +134,11 @@ attendances:
 
 attendanceUpdate:
   patch:
-    operationId: updateAttendanceApi
+    operationId: updateAttendance
     tags:
       - Attendance
     summary: 勤怠の更新
+    description: 既存の勤怠レコードを部分更新する。
     parameters:
       - $ref: "../components/parameters.yaml#/PathAttendanceId"
     requestBody:

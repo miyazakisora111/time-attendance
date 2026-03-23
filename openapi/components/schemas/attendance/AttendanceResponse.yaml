@@ -1,32 +1,32 @@
 AttendanceResponse:
   type: object
   required:
-    - user_id
-    - work_date
-    - start_time
-    - clock_status
+    - userId
+    - workDate
+    - startTime
+    - clockStatus
   properties:
-    user_id:
+    userId:
       type: string
       format: uuid
-    work_date:
+    workDate:
       type: string
       format: date
-    clock_status:
+    clockStatus:
       $ref: "../../enums/ClockStatus.yaml#/ClockStatus"
-    start_time:
+    startTime:
       type: string
       format: date-time
       nullable: true
-    end_time:
+    endTime:
       type: string
       format: date-time
       nullable: true
-    break_minutes:
+    breakMinutes:
       type: integer
       nullable: true
       description: 休憩合計(分)
-    worked_minutes:
+    workedMinutes:
       type: integer
       nullable: true
       description: 実働時間(分)

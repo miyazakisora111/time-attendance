@@ -10,21 +10,22 @@ import { customInstance } from "../../lib/http/client";
 
 export const getTeam = () => {
   /**
+   * ログインユーザーが所属するチームのメンバー一覧を返す。
    * @summary チームメンバー一覧取得
    */
-  const getTeamMembersApi = () => {
+  const listTeamMembers = () => {
     return customInstance<TeamMembersResponse>({
       url: `/team/members`,
       method: "GET",
     });
   };
-  return { getTeamMembersApi };
+  return { listTeamMembers };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetTeamMembersApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getTeam>["getTeamMembersApi"]>>
+export type ListTeamMembersResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getTeam>["listTeamMembers"]>>
 >;

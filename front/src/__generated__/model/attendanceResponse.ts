@@ -12,18 +12,17 @@ export interface AttendanceResponse {
    * 休憩合計(分)
    * @nullable
    */
-  break_minutes?: number | null;
-  /** 現在の打刻状態 */
-  clock_status: ClockStatus;
+  breakMinutes?: number | null;
+  clockStatus: ClockStatus;
   /** @nullable */
-  end_time?: string | null;
+  endTime?: string | null;
   /** @nullable */
-  start_time: string | null;
-  user_id: string;
-  work_date: string;
+  startTime: string | null;
+  userId: string;
+  workDate: string;
   /**
    * 実働時間(分)
    * @nullable
    */
-  worked_minutes?: number | null;
+  workedMinutes?: number | null;
 }

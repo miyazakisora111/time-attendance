@@ -15,9 +15,10 @@ import { customInstance } from "../../lib/http/client";
 
 export const getAuth = () => {
   /**
+   * メールアドレスとパスワードで認証し、JWTトークンを返す。
    * @summary ログイン
    */
-  const loginApi = (loginBodyBody: LoginBodyBody) => {
+  const login = (loginBodyBody: LoginBodyBody) => {
     return customInstance<LoginResponse>({
       url: `/login`,
       method: "POST",
@@ -26,30 +27,32 @@ export const getAuth = () => {
     });
   };
   /**
+   * 現在のJWTトークンを無効化する。
    * @summary ログアウト
    */
-  const logoutApi = () => {
+  const logout = () => {
     return customInstance<LogoutResponse>({ url: `/logout`, method: "POST" });
   };
   /**
+   * 現在認証中のユーザー情報を返す。
    * @summary ログイン中ユーザー情報取得
    */
-  const authMeApi = () => {
-    return customInstance<UserResponse>({ url: `/authme`, method: "GET" });
+  const getMe = () => {
+    return customInstance<UserResponse>({ url: `/auth/me`, method: "GET" });
   };
-  return { loginApi, logoutApi, authMeApi };
+  return { login, logout, getMe };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type LoginApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAuth>["loginApi"]>>
+export type LoginResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAuth>["login"]>>
 >;
-export type LogoutApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAuth>["logoutApi"]>>
+export type LogoutResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAuth>["logout"]>>
 >;
-export type AuthMeApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAuth>["authMeApi"]>>
+export type GetMeResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAuth>["getMe"]>>
 >;

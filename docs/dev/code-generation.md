@@ -56,7 +56,7 @@ openapi/scripts/
 `openapi/scripts/templates/render.mjs` は `{{key}}` プレースホルダーを変数で置換する簡易テンプレートエンジン。
 
 ```javascript
-import { render } from './templates/render.mjs';
+import { render } from './render.mjs';
 
 const output = await render('ts-enum.tpl', {
   name: 'ClockAction',

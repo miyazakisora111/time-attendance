@@ -16,104 +16,113 @@ import { customInstance } from "../../lib/http/client";
 
 export const getApproval = () => {
   /**
+   * 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
    * @summary 申請・承認一覧取得
    */
-  const getApprovalListApi = () => {
+  const listApprovals = () => {
     return customInstance<ApprovalListResponse>({
-      url: `/approval`,
+      url: `/approvals`,
       method: "GET",
     });
   };
   /**
+   * 有給休暇の取得を申請する。
    * @summary 有給休暇申請
    */
-  const createPaidLeaveRequestApi = (
+  const createPaidLeaveRequest = (
     createPaidLeaveRequestBodyBody: CreatePaidLeaveRequestBodyBody,
   ) => {
     return customInstance<PaidLeaveRequestResponse>({
-      url: `/approval/paid-leaves`,
+      url: `/approvals/paid-leaves`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createPaidLeaveRequestBodyBody,
     });
   };
   /**
+   * 指定された有給休暇申請を承認する。承認権限が必要。
    * @summary 有給休暇申請承認
    */
-  const approvePaidLeaveRequestApi = (paidLeaveRequest: string) => {
+  const approvePaidLeaveRequest = (paidLeaveRequestId: string) => {
     return customInstance<PaidLeaveRequestResponse>({
-      url: `/approval/paid-leaves/${paidLeaveRequest}/approve`,
+      url: `/approvals/paid-leaves/${paidLeaveRequestId}/approve`,
       method: "PATCH",
     });
   };
   /**
+   * 指定された有給休暇申請を却下する。承認権限が必要。
    * @summary 有給休暇申請却下
    */
-  const rejectPaidLeaveRequestApi = (paidLeaveRequest: string) => {
+  const rejectPaidLeaveRequest = (paidLeaveRequestId: string) => {
     return customInstance<PaidLeaveRequestResponse>({
-      url: `/approval/paid-leaves/${paidLeaveRequest}/reject`,
+      url: `/approvals/paid-leaves/${paidLeaveRequestId}/reject`,
       method: "PATCH",
     });
   };
   /**
+   * 自分の有給休暇申請をキャンセルする。
    * @summary 有給休暇申請キャンセル
    */
-  const cancelPaidLeaveRequestApi = (paidLeaveRequest: string) => {
+  const cancelPaidLeaveRequest = (paidLeaveRequestId: string) => {
     return customInstance<PaidLeaveRequestResponse>({
-      url: `/approval/paid-leaves/${paidLeaveRequest}/cancel`,
+      url: `/approvals/paid-leaves/${paidLeaveRequestId}/cancel`,
       method: "PATCH",
     });
   };
   /**
+   * 残業の事前申請を行う。
    * @summary 残業申請
    */
-  const createOvertimeRequestApi = (
+  const createOvertimeRequest = (
     createOvertimeRequestBodyBody: CreateOvertimeRequestBodyBody,
   ) => {
     return customInstance<OvertimeRequestResponse>({
-      url: `/approval/overtime-requests`,
+      url: `/approvals/overtime-requests`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: createOvertimeRequestBodyBody,
     });
   };
   /**
+   * 指定された残業申請を承認する。承認権限が必要。
    * @summary 残業申請承認
    */
-  const approveOvertimeRequestApi = (overtimeRequest: string) => {
+  const approveOvertimeRequest = (overtimeRequestId: string) => {
     return customInstance<OvertimeRequestResponse>({
-      url: `/approval/overtime-requests/${overtimeRequest}/approve`,
+      url: `/approvals/overtime-requests/${overtimeRequestId}/approve`,
       method: "PATCH",
     });
   };
   /**
+   * 指定された残業申請を差し戻す。承認権限が必要。
    * @summary 残業申請差戻し
    */
-  const returnOvertimeRequestApi = (overtimeRequest: string) => {
+  const returnOvertimeRequest = (overtimeRequestId: string) => {
     return customInstance<OvertimeRequestResponse>({
-      url: `/approval/overtime-requests/${overtimeRequest}/return`,
+      url: `/approvals/overtime-requests/${overtimeRequestId}/return`,
       method: "PATCH",
     });
   };
   /**
+   * 自分の残業申請をキャンセルする。
    * @summary 残業申請キャンセル
    */
-  const cancelOvertimeRequestApi = (overtimeRequest: string) => {
+  const cancelOvertimeRequest = (overtimeRequestId: string) => {
     return customInstance<OvertimeRequestResponse>({
-      url: `/approval/overtime-requests/${overtimeRequest}/cancel`,
+      url: `/approvals/overtime-requests/${overtimeRequestId}/cancel`,
       method: "PATCH",
     });
   };
   return {
-    getApprovalListApi,
-    createPaidLeaveRequestApi,
-    approvePaidLeaveRequestApi,
-    rejectPaidLeaveRequestApi,
-    cancelPaidLeaveRequestApi,
-    createOvertimeRequestApi,
-    approveOvertimeRequestApi,
-    returnOvertimeRequestApi,
-    cancelOvertimeRequestApi,
+    listApprovals,
+    createPaidLeaveRequest,
+    approvePaidLeaveRequest,
+    rejectPaidLeaveRequest,
+    cancelPaidLeaveRequest,
+    createOvertimeRequest,
+    approveOvertimeRequest,
+    returnOvertimeRequest,
+    cancelOvertimeRequest,
   };
 };
 
@@ -121,46 +130,30 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetApprovalListApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getApproval>["getApprovalListApi"]>>
+export type ListApprovalsResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["listApprovals"]>>
 >;
-export type CreatePaidLeaveRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["createPaidLeaveRequestApi"]>
-  >
+export type CreatePaidLeaveRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["createPaidLeaveRequest"]>>
 >;
-export type ApprovePaidLeaveRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["approvePaidLeaveRequestApi"]>
-  >
+export type ApprovePaidLeaveRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["approvePaidLeaveRequest"]>>
 >;
-export type RejectPaidLeaveRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["rejectPaidLeaveRequestApi"]>
-  >
+export type RejectPaidLeaveRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["rejectPaidLeaveRequest"]>>
 >;
-export type CancelPaidLeaveRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["cancelPaidLeaveRequestApi"]>
-  >
+export type CancelPaidLeaveRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["cancelPaidLeaveRequest"]>>
 >;
-export type CreateOvertimeRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["createOvertimeRequestApi"]>
-  >
+export type CreateOvertimeRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["createOvertimeRequest"]>>
 >;
-export type ApproveOvertimeRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["approveOvertimeRequestApi"]>
-  >
+export type ApproveOvertimeRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["approveOvertimeRequest"]>>
 >;
-export type ReturnOvertimeRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["returnOvertimeRequestApi"]>
-  >
+export type ReturnOvertimeRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["returnOvertimeRequest"]>>
 >;
-export type CancelOvertimeRequestApiResult = NonNullable<
-  Awaited<
-    ReturnType<ReturnType<typeof getApproval>["cancelOvertimeRequestApi"]>
-  >
+export type CancelOvertimeRequestResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getApproval>["cancelOvertimeRequest"]>>
 >;

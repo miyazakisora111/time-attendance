@@ -52,8 +52,8 @@ export type CalendarDayStatus = (typeof CalendarDayStatus)[number];
 export const ClockAction = [
     'in',
   'out',
-  'break_start',
-  'break_end',
+  'breakStart',
+  'breakEnd',
 ] as const;
 export type ClockAction = (typeof ClockAction)[number];
 

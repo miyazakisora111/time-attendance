@@ -11,7 +11,7 @@ export namespace components.schemas {
    * @description 打刻アクション種別 
    * @enum {string}
    */
-  export const ClockAction = z.enum(["in", "out", "break_start", "break_end"]);
+  export const ClockAction = z.enum(["in", "out", "breakStart", "breakEnd"]);
   /**
    * @description 現在の打刻状態 
    * @enum {string}
@@ -82,31 +82,32 @@ export namespace components.schemas {
     }),
   });
   export const AttendanceClockInRequest = z.object({
-    work_date: z.string(),
-    start_time: z.string(),
+    workDate: z.string(),
+    startTime: z.string(),
   });
   export const AttendanceClockOutRequest = z.object({
-    work_date: z.string(),
-    end_time: z.string(),
+    workDate: z.string(),
+    endTime: z.string(),
   });
   export const AttendanceStoreRequest = z.object({
-    work_date: z.string(),
-    start_time: z.string(),
-    end_time: z.string().nullable().optional(),
+    workDate: z.string(),
+    startTime: z.string(),
+    endTime: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
   export const AttendanceUpdateRequest = z.object({
-    start_time: z.string().nullable().optional(),
-    end_time: z.string().nullable().optional(),
+    startTime: z.string().nullable().optional(),
+    endTime: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
   export const AttendanceResponse = z.object({
-    user_id: z.string(),
-    work_date: z.string(),
-    start_time: z.string().nullable(),
-    end_time: z.string().nullable().optional(),
-    break_minutes: z.number().int().nullable().optional(),
-    worked_minutes: z.number().int().nullable().optional(),
+    userId: z.string(),
+    workDate: z.string(),
+    clockStatus: components["schemas"]["ClockStatus"],
+    startTime: z.string().nullable(),
+    endTime: z.string().nullable().optional(),
+    breakMinutes: z.number().int().nullable().optional(),
+    workedMinutes: z.number().int().nullable().optional(),
   });
   export const AttendanceIndexRequest = z.object({
     from: z.string(),
@@ -212,9 +213,9 @@ export namespace components.schemas {
     email: z.string(),
   });
   export const ChangePasswordRequest = z.object({
-    current_password: z.string(),
-    new_password: z.string(),
-    new_password_confirmation: z.string(),
+    currentPassword: z.string(),
+    newPassword: z.string(),
+    newPasswordConfirmation: z.string(),
   });
   export const LoginHistoryResponse = z.object({
     id: z.string(),
@@ -269,7 +270,7 @@ export namespace components.schemas {
     createdAt: z.string(),
   });
   export const CreatePaidLeaveRequest = z.object({
-    leave_date: z.string(),
+    leaveDate: z.string(),
     days: z.number(),
     reason: z.string().nullable().optional(),
   });
@@ -287,9 +288,9 @@ export namespace components.schemas {
     createdAt: z.string(),
   });
   export const CreateOvertimeRequest = z.object({
-    work_date: z.string(),
-    start_time: z.string(),
-    end_time: z.string(),
+    workDate: z.string(),
+    startTime: z.string(),
+    endTime: z.string(),
     reason: z.string().nullable().optional(),
   });
   export const PaidLeaveSummary = z.object({
@@ -303,6 +304,13 @@ export namespace components.schemas {
   export const ValidationErrorResponse = z.object({
     message: z.string().optional(),
     errors: z.record(z.string(), z.array(z.string())).optional(),
+  });
+  /** @description ページネーション情報 */
+  export const PageInfo = z.object({
+    currentPage: z.number().int(),
+    perPage: z.number().int(),
+    totalItems: z.number().int(),
+    totalPages: z.number().int(),
   });
 }
 export namespace components.responses {
@@ -348,6 +356,10 @@ export namespace components.parameters {
   export const QueryDateFrom = z.string();
   /** @description 検索期間の終了日 */
   export const QueryDateTo = z.string();
+  /** @description ページ番号（デフォルト1） */
+  export const QueryPage = z.number().int();
+  /** @description 1ページあたりの件数（デフォルト20） */
+  export const QueryPerPage = z.number().int();
   /** @description 勤怠レコードID */
   export const PathAttendanceId = z.string();
   /** @description 対象年 */
@@ -414,8 +426,11 @@ export namespace components.requestBodies {
 
 export const operations = {
 
-  loginApi: {
-    /** ログイン */
+  login: {
+    /**
+     * ログイン 
+     * @description メールアドレスとパスワードで認証し、JWTトークンを返す。
+     */
     requestBody: components["requestBodies"]["LoginBody"],
     responses: {
       /** @description ログイン成功 */
@@ -429,8 +444,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  logoutApi: {
-    /** ログアウト */
+  logout: {
+    /**
+     * ログアウト 
+     * @description 現在のJWTトークンを無効化する。
+     */
     responses: {
       /** @description ログアウト成功 */
       200: {
@@ -442,8 +460,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  authMeApi: {
-    /** ログイン中ユーザー情報取得 */
+  getMe: {
+    /**
+     * ログイン中ユーザー情報取得 
+     * @description 現在認証中のユーザー情報を返す。
+     */
     responses: {
       /** @description 認証済みユーザー情報 */
       200: {
@@ -455,8 +476,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  todayAttendanceApi: {
-    /** 今日の勤怠取得 */
+  getTodayAttendance: {
+    /**
+     * 今日の勤怠取得 
+     * @description ログイン中ユーザーの当日の勤怠レコードを返す。
+     */
     responses: {
       /** @description 今日の勤怠情報 */
       200: {
@@ -468,8 +492,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  clockInApi: {
-    /** 出勤打刻 */
+  createClockIn: {
+    /**
+     * 出勤打刻 
+     * @description 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+     */
     requestBody: components["requestBodies"]["AttendanceClockInBody"],
     responses: {
       /** @description 出勤成功 */
@@ -484,8 +511,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  clockOutApi: {
-    /** 退勤打刻 */
+  createClockOut: {
+    /**
+     * 退勤打刻 
+     * @description 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+     */
     requestBody: components["requestBodies"]["AttendanceClockOutBody"],
     responses: {
       /** @description 退勤成功 */
@@ -500,13 +530,19 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  listAttendancesApi: {
-    /** 勤怠一覧取得 */
+  listAttendances: {
+    /**
+     * 勤怠一覧取得 
+     * @description 指定期間のログインユーザー勤怠一覧をページネーション付きで返す。
+     */
     responses: {
       /** @description 勤怠一覧 */
       200: {
         content: {
-          "application/json": z.array(components["schemas"]["AttendanceResponse"]),
+          "application/json": z.object({
+            items: z.array(components["schemas"]["AttendanceResponse"]),
+            pageInfo: components["schemas"]["PageInfo"],
+          }),
         },
       },
       401: components["responses"]["Unauthorized"],
@@ -514,8 +550,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  storeAttendanceApi: {
-    /** 勤怠の新規登録 */
+  createAttendance: {
+    /**
+     * 勤怠の新規登録 
+     * @description 手動で勤怠レコードを新規作成する。
+     */
     requestBody: components["requestBodies"]["AttendanceStoreBody"],
     responses: {
       /** @description 登録成功 */
@@ -529,8 +568,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  updateAttendanceApi: {
-    /** 勤怠の更新 */
+  updateAttendance: {
+    /**
+     * 勤怠の更新 
+     * @description 既存の勤怠レコードを部分更新する。
+     */
     requestBody: components["requestBodies"]["AttendanceUpdateBody"],
     responses: {
       /** @description 更新成功 */
@@ -545,8 +587,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getDashboardApi: {
-    /** ダッシュボード集計取得 */
+  getDashboard: {
+    /**
+     * ダッシュボード集計取得 
+     * @description 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
+     */
     responses: {
       /** @description ダッシュボード情報 */
       200: {
@@ -558,8 +603,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  dashboardClockApi: {
-    /** 打刻アクション（出勤・退勤・休憩開始・休憩終了） */
+  createDashboardClock: {
+    /**
+     * 打刻アクション（出勤・退勤・休憩開始・休憩終了） 
+     * @description ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
+     */
     requestBody: components["requestBodies"]["DashboardClockBody"],
     responses: {
       /** @description 打刻成功 */
@@ -574,8 +622,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getCalendarApi: {
-    /** 月次カレンダー取得 */
+  getCalendar: {
+    /**
+     * 月次カレンダー取得 
+     * @description 指定年月のカレンダー日付一覧とサマリーを返す。
+     */
     responses: {
       /** @description 対象月の日付一覧 */
       200: {
@@ -588,8 +639,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getTeamMembersApi: {
-    /** チームメンバー一覧取得 */
+  listTeamMembers: {
+    /**
+     * チームメンバー一覧取得 
+     * @description ログインユーザーが所属するチームのメンバー一覧を返す。
+     */
     responses: {
       /** @description チームメンバー一覧 */
       200: {
@@ -601,8 +655,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getSettingsApi: {
-    /** ユーザー設定取得 */
+  getSettings: {
+    /**
+     * ユーザー設定取得 
+     * @description ログインユーザーのプロフィール・通知・セキュリティ設定を返す。
+     */
     responses: {
       /** @description ユーザー設定 */
       200: {
@@ -614,8 +671,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  updateSettingsApi: {
-    /** ユーザー設定更新 */
+  updateSettings: {
+    /**
+     * ユーザー設定更新 
+     * @description プロフィール・通知・テーマ・言語設定を更新する。
+     */
     requestBody: components["requestBodies"]["UpdateSettingsBody"],
     responses: {
       /** @description 更新後ユーザー設定 */
@@ -629,8 +689,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  changePasswordApi: {
-    /** パスワード変更 */
+  updatePassword: {
+    /**
+     * パスワード変更 
+     * @description 現在のパスワードを検証し、新しいパスワードに変更する。
+     */
     requestBody: components["requestBodies"]["ChangePasswordBody"],
     responses: {
       /** @description パスワード変更成功 */
@@ -644,21 +707,30 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getLoginHistoriesApi: {
-    /** ログイン履歴一覧取得 */
+  listLoginHistories: {
+    /**
+     * ログイン履歴一覧取得 
+     * @description ログインユーザーのログイン履歴を新しい順に返す。
+     */
     responses: {
       /** @description ログイン履歴一覧 */
       200: {
         content: {
-          "application/json": z.array(components["schemas"]["LoginHistoryResponse"]),
+          "application/json": z.object({
+            items: z.array(components["schemas"]["LoginHistoryResponse"]),
+            pageInfo: components["schemas"]["PageInfo"],
+          }),
         },
       },
       401: components["responses"]["Unauthorized"],
       500: components["responses"]["InternalServerError"],
     },
   },
-  getApprovalListApi: {
-    /** 申請・承認一覧取得 */
+  listApprovals: {
+    /**
+     * 申請・承認一覧取得 
+     * @description 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
+     */
     responses: {
       /** @description 申請一覧 */
       200: {
@@ -670,8 +742,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  createPaidLeaveRequestApi: {
-    /** 有給休暇申請 */
+  createPaidLeaveRequest: {
+    /**
+     * 有給休暇申請 
+     * @description 有給休暇の取得を申請する。
+     */
     requestBody: components["requestBodies"]["CreatePaidLeaveRequestBody"],
     responses: {
       /** @description 申請成功 */
@@ -685,8 +760,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  approvePaidLeaveRequestApi: {
-    /** 有給休暇申請承認 */
+  approvePaidLeaveRequest: {
+    /**
+     * 有給休暇申請承認 
+     * @description 指定された有給休暇申請を承認する。承認権限が必要。
+     */
     responses: {
       /** @description 承認成功 */
       200: {
@@ -700,8 +778,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  rejectPaidLeaveRequestApi: {
-    /** 有給休暇申請却下 */
+  rejectPaidLeaveRequest: {
+    /**
+     * 有給休暇申請却下 
+     * @description 指定された有給休暇申請を却下する。承認権限が必要。
+     */
     responses: {
       /** @description 却下成功 */
       200: {
@@ -715,8 +796,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  cancelPaidLeaveRequestApi: {
-    /** 有給休暇申請キャンセル */
+  cancelPaidLeaveRequest: {
+    /**
+     * 有給休暇申請キャンセル 
+     * @description 自分の有給休暇申請をキャンセルする。
+     */
     responses: {
       /** @description キャンセル成功 */
       200: {
@@ -730,8 +814,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  createOvertimeRequestApi: {
-    /** 残業申請 */
+  createOvertimeRequest: {
+    /**
+     * 残業申請 
+     * @description 残業の事前申請を行う。
+     */
     requestBody: components["requestBodies"]["CreateOvertimeRequestBody"],
     responses: {
       /** @description 申請成功 */
@@ -745,8 +832,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  approveOvertimeRequestApi: {
-    /** 残業申請承認 */
+  approveOvertimeRequest: {
+    /**
+     * 残業申請承認 
+     * @description 指定された残業申請を承認する。承認権限が必要。
+     */
     responses: {
       /** @description 承認成功 */
       200: {
@@ -760,8 +850,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  returnOvertimeRequestApi: {
-    /** 残業申請差戻し */
+  returnOvertimeRequest: {
+    /**
+     * 残業申請差戻し 
+     * @description 指定された残業申請を差し戻す。承認権限が必要。
+     */
     responses: {
       /** @description 差戻し成功 */
       200: {
@@ -775,8 +868,11 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  cancelOvertimeRequestApi: {
-    /** 残業申請キャンセル */
+  cancelOvertimeRequest: {
+    /**
+     * 残業申請キャンセル 
+     * @description 自分の残業申請をキャンセルする。
+     */
     responses: {
       /** @description キャンセル成功 */
       200: {
@@ -794,103 +890,181 @@ export const operations = {
 
 export const paths = {
   "/login": {
-    /** ログイン */
-    post: operations["loginApi"],
+    /**
+     * ログイン 
+     * @description メールアドレスとパスワードで認証し、JWTトークンを返す。
+     */
+    post: operations["login"],
   },
   "/logout": {
-    /** ログアウト */
-    post: operations["logoutApi"],
+    /**
+     * ログアウト 
+     * @description 現在のJWTトークンを無効化する。
+     */
+    post: operations["logout"],
   },
-  "/authme": {
-    /** ログイン中ユーザー情報取得 */
-    get: operations["authMeApi"],
+  "/auth/me": {
+    /**
+     * ログイン中ユーザー情報取得 
+     * @description 現在認証中のユーザー情報を返す。
+     */
+    get: operations["getMe"],
   },
-  "/attendances/attendance": {
-    /** 今日の勤怠取得 */
-    get: operations["todayAttendanceApi"],
+  "/attendances/today": {
+    /**
+     * 今日の勤怠取得 
+     * @description ログイン中ユーザーの当日の勤怠レコードを返す。
+     */
+    get: operations["getTodayAttendance"],
   },
   "/attendances/clock-in": {
-    /** 出勤打刻 */
-    post: operations["clockInApi"],
+    /**
+     * 出勤打刻 
+     * @description 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+     */
+    post: operations["createClockIn"],
   },
   "/attendances/clock-out": {
-    /** 退勤打刻 */
-    post: operations["clockOutApi"],
+    /**
+     * 退勤打刻 
+     * @description 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+     */
+    post: operations["createClockOut"],
   },
   "/attendances": {
-    /** 勤怠一覧取得 */
-    get: operations["listAttendancesApi"],
-    /** 勤怠の新規登録 */
-    post: operations["storeAttendanceApi"],
+    /**
+     * 勤怠一覧取得 
+     * @description 指定期間のログインユーザー勤怠一覧をページネーション付きで返す。
+     */
+    get: operations["listAttendances"],
+    /**
+     * 勤怠の新規登録 
+     * @description 手動で勤怠レコードを新規作成する。
+     */
+    post: operations["createAttendance"],
   },
-  "/attendances/{attendance}": {
-    /** 勤怠の更新 */
-    patch: operations["updateAttendanceApi"],
+  "/attendances/{attendanceId}": {
+    /**
+     * 勤怠の更新 
+     * @description 既存の勤怠レコードを部分更新する。
+     */
+    patch: operations["updateAttendance"],
   },
   "/dashboard": {
-    /** ダッシュボード集計取得 */
-    get: operations["getDashboardApi"],
+    /**
+     * ダッシュボード集計取得 
+     * @description 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
+     */
+    get: operations["getDashboard"],
   },
   "/dashboard/clock": {
-    /** 打刻アクション（出勤・退勤・休憩開始・休憩終了） */
-    post: operations["dashboardClockApi"],
+    /**
+     * 打刻アクション（出勤・退勤・休憩開始・休憩終了） 
+     * @description ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
+     */
+    post: operations["createDashboardClock"],
   },
-  "/auth/calendar": {
-    /** 月次カレンダー取得 */
-    get: operations["getCalendarApi"],
+  "/schedule/calendar": {
+    /**
+     * 月次カレンダー取得 
+     * @description 指定年月のカレンダー日付一覧とサマリーを返す。
+     */
+    get: operations["getCalendar"],
   },
   "/team/members": {
-    /** チームメンバー一覧取得 */
-    get: operations["getTeamMembersApi"],
+    /**
+     * チームメンバー一覧取得 
+     * @description ログインユーザーが所属するチームのメンバー一覧を返す。
+     */
+    get: operations["listTeamMembers"],
   },
   "/settings": {
-    /** ユーザー設定取得 */
-    get: operations["getSettingsApi"],
-    /** ユーザー設定更新 */
-    put: operations["updateSettingsApi"],
+    /**
+     * ユーザー設定取得 
+     * @description ログインユーザーのプロフィール・通知・セキュリティ設定を返す。
+     */
+    get: operations["getSettings"],
+    /**
+     * ユーザー設定更新 
+     * @description プロフィール・通知・テーマ・言語設定を更新する。
+     */
+    put: operations["updateSettings"],
   },
   "/settings/password": {
-    /** パスワード変更 */
-    put: operations["changePasswordApi"],
+    /**
+     * パスワード変更 
+     * @description 現在のパスワードを検証し、新しいパスワードに変更する。
+     */
+    put: operations["updatePassword"],
   },
   "/settings/login-histories": {
-    /** ログイン履歴一覧取得 */
-    get: operations["getLoginHistoriesApi"],
+    /**
+     * ログイン履歴一覧取得 
+     * @description ログインユーザーのログイン履歴を新しい順に返す。
+     */
+    get: operations["listLoginHistories"],
   },
-  "/approval": {
-    /** 申請・承認一覧取得 */
-    get: operations["getApprovalListApi"],
+  "/approvals": {
+    /**
+     * 申請・承認一覧取得 
+     * @description 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
+     */
+    get: operations["listApprovals"],
   },
-  "/approval/paid-leaves": {
-    /** 有給休暇申請 */
-    post: operations["createPaidLeaveRequestApi"],
+  "/approvals/paid-leaves": {
+    /**
+     * 有給休暇申請 
+     * @description 有給休暇の取得を申請する。
+     */
+    post: operations["createPaidLeaveRequest"],
   },
-  "/approval/paid-leaves/{paidLeaveRequest}/approve": {
-    /** 有給休暇申請承認 */
-    patch: operations["approvePaidLeaveRequestApi"],
+  "/approvals/paid-leaves/{paidLeaveRequestId}/approve": {
+    /**
+     * 有給休暇申請承認 
+     * @description 指定された有給休暇申請を承認する。承認権限が必要。
+     */
+    patch: operations["approvePaidLeaveRequest"],
   },
-  "/approval/paid-leaves/{paidLeaveRequest}/reject": {
-    /** 有給休暇申請却下 */
-    patch: operations["rejectPaidLeaveRequestApi"],
+  "/approvals/paid-leaves/{paidLeaveRequestId}/reject": {
+    /**
+     * 有給休暇申請却下 
+     * @description 指定された有給休暇申請を却下する。承認権限が必要。
+     */
+    patch: operations["rejectPaidLeaveRequest"],
   },
-  "/approval/paid-leaves/{paidLeaveRequest}/cancel": {
-    /** 有給休暇申請キャンセル */
-    patch: operations["cancelPaidLeaveRequestApi"],
+  "/approvals/paid-leaves/{paidLeaveRequestId}/cancel": {
+    /**
+     * 有給休暇申請キャンセル 
+     * @description 自分の有給休暇申請をキャンセルする。
+     */
+    patch: operations["cancelPaidLeaveRequest"],
   },
-  "/approval/overtime-requests": {
-    /** 残業申請 */
-    post: operations["createOvertimeRequestApi"],
+  "/approvals/overtime-requests": {
+    /**
+     * 残業申請 
+     * @description 残業の事前申請を行う。
+     */
+    post: operations["createOvertimeRequest"],
   },
-  "/approval/overtime-requests/{overtimeRequest}/approve": {
-    /** 残業申請承認 */
-    patch: operations["approveOvertimeRequestApi"],
+  "/approvals/overtime-requests/{overtimeRequestId}/approve": {
+    /**
+     * 残業申請承認 
+     * @description 指定された残業申請を承認する。承認権限が必要。
+     */
+    patch: operations["approveOvertimeRequest"],
   },
-  "/approval/overtime-requests/{overtimeRequest}/return": {
-    /** 残業申請差戻し */
-    patch: operations["returnOvertimeRequestApi"],
+  "/approvals/overtime-requests/{overtimeRequestId}/return": {
+    /**
+     * 残業申請差戻し 
+     * @description 指定された残業申請を差し戻す。承認権限が必要。
+     */
+    patch: operations["returnOvertimeRequest"],
   },
-  "/approval/overtime-requests/{overtimeRequest}/cancel": {
-    /** 残業申請キャンセル */
-    patch: operations["cancelOvertimeRequestApi"],
+  "/approvals/overtime-requests/{overtimeRequestId}/cancel": {
+    /**
+     * 残業申請キャンセル 
+     * @description 自分の残業申請をキャンセルする。
+     */
+    patch: operations["cancelOvertimeRequest"],
   },
 }

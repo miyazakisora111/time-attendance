@@ -30,7 +30,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-        'ApprovalListResponse' => [
+                'ApprovalListResponse' => [
             'paidLeaveRequests' => ['required', 'array'],
             'paidLeaveRequests.*' => ['required', 'array'],
             'paidLeaveRequests.*.id' => ['required', 'string'],
@@ -86,34 +86,35 @@ final class OpenApiGeneratedRules
             'isApprover' => ['required', 'boolean'],
         ],
         'AttendanceClockInRequest' => [
-            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
-            'start_time' => ['sometimes', 'string', 'date_format:H:i'],
+            'workDate' => ['required', 'string'],
+            'startTime' => ['required', 'string'],
         ],
         'AttendanceClockOutRequest' => [
-            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
-            'end_time' => ['sometimes', 'string', 'date_format:H:i'],
+            'workDate' => ['required', 'string'],
+            'endTime' => ['required', 'string'],
         ],
         'AttendanceIndexRequest' => [
             'from' => ['required', 'string', 'date_format:Y-m-d'],
             'to' => ['required', 'string', 'date_format:Y-m-d'],
         ],
         'AttendanceResponse' => [
-            'user_id' => ['required', 'string'],
-            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
-            'start_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
-            'break_minutes' => ['sometimes', 'nullable', 'integer'],
-            'worked_minutes' => ['sometimes', 'nullable', 'integer'],
+            'userId' => ['required', 'string'],
+            'workDate' => ['required', 'string'],
+            'clockStatus' => ['required', 'in:out,in,break'],
+            'startTime' => ['required', 'nullable', 'string'],
+            'endTime' => ['sometimes', 'nullable', 'string'],
+            'breakMinutes' => ['sometimes', 'nullable', 'integer'],
+            'workedMinutes' => ['sometimes', 'nullable', 'integer'],
         ],
         'AttendanceStoreRequest' => [
-            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
-            'start_time' => ['sometimes', 'string', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'workDate' => ['required', 'string'],
+            'startTime' => ['required', 'string'],
+            'endTime' => ['sometimes', 'nullable', 'string'],
             'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'AttendanceUpdateRequest' => [
-            'start_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'nullable', 'string', 'date_format:H:i'],
+            'startTime' => ['sometimes', 'nullable', 'string'],
+            'endTime' => ['sometimes', 'nullable', 'string'],
             'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'CalendarDay' => [
@@ -164,23 +165,23 @@ final class OpenApiGeneratedRules
             'remainingPaidLeaveDays' => ['required', 'numeric'],
         ],
         'ChangePasswordRequest' => [
-            'current_password' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
-            'new_password' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
-            'new_password_confirmation' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
+            'currentPassword' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
+            'newPassword' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
+            'newPasswordConfirmation' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
         ],
         'CreateOvertimeRequest' => [
-            'work_date' => ['required', 'string', 'date_format:Y-m-d'],
-            'start_time' => ['sometimes', 'string', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'string', 'date_format:H:i'],
+            'workDate' => ['required', 'string'],
+            'startTime' => ['required', 'string'],
+            'endTime' => ['required', 'string'],
             'reason' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'CreatePaidLeaveRequest' => [
-            'leave_date' => ['required', 'string'],
+            'leaveDate' => ['required', 'string'],
             'days' => ['required', 'numeric', 'min:0.5', 'max:1'],
             'reason' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'DashboardClockRequest' => [
-            'action' => ['required', 'in:in,out,break_start,break_end'],
+            'action' => ['required', 'in:in,out,breakStart,breakEnd'],
         ],
         'DashboardRecentRecord' => [
             'date' => ['required', 'string', 'date_format:Y-m-d'],
@@ -267,6 +268,12 @@ final class OpenApiGeneratedRules
             'approvedBy' => ['required', 'nullable', 'string'],
             'approvedAt' => ['required', 'nullable', 'string'],
             'createdAt' => ['required', 'string'],
+        ],
+        'PageInfo' => [
+            'currentPage' => ['required', 'integer', 'min:1'],
+            'perPage' => ['required', 'integer', 'min:1'],
+            'totalItems' => ['required', 'integer', 'min:0'],
+            'totalPages' => ['required', 'integer', 'min:0'],
         ],
         'PaidLeaveRequestResponse' => [
             'id' => ['required', 'string'],
@@ -379,7 +386,7 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-        'ApprovalListResponse' => [
+                'ApprovalListResponse' => [
             'paidLeaveRequests' => 'paidLeaveRequests',
             'paidLeaveRequests.*' => 'paidLeaveRequests',
             'paidLeaveRequests.*.id' => 'ユーザーID',
@@ -435,34 +442,35 @@ final class OpenApiGeneratedRules
             'isApprover' => 'isApprover',
         ],
         'AttendanceClockInRequest' => [
-            'work_date' => '勤務日',
-            'start_time' => '出勤時刻',
+            'workDate' => 'workDate',
+            'startTime' => 'startTime',
         ],
         'AttendanceClockOutRequest' => [
-            'work_date' => '勤務日',
-            'end_time' => '退勤時刻',
+            'workDate' => 'workDate',
+            'endTime' => 'endTime',
         ],
         'AttendanceIndexRequest' => [
             'from' => '開始日',
             'to' => '終了日',
         ],
         'AttendanceResponse' => [
-            'user_id' => 'ユーザーID',
-            'work_date' => '勤務日',
-            'start_time' => '出勤時刻',
-            'end_time' => '退勤時刻',
-            'break_minutes' => '休憩分数',
-            'worked_minutes' => '実働分数',
+            'userId' => 'userId',
+            'workDate' => 'workDate',
+            'clockStatus' => '打刻状態',
+            'startTime' => 'startTime',
+            'endTime' => 'endTime',
+            'breakMinutes' => 'breakMinutes',
+            'workedMinutes' => 'workedMinutes',
         ],
         'AttendanceStoreRequest' => [
-            'work_date' => '勤務日',
-            'start_time' => '出勤時刻',
-            'end_time' => '退勤時刻',
+            'workDate' => 'workDate',
+            'startTime' => 'startTime',
+            'endTime' => 'endTime',
             'note' => '備考',
         ],
         'AttendanceUpdateRequest' => [
-            'start_time' => '出勤時刻',
-            'end_time' => '退勤時刻',
+            'startTime' => 'startTime',
+            'endTime' => 'endTime',
             'note' => '備考',
         ],
         'CalendarDay' => [
@@ -513,18 +521,18 @@ final class OpenApiGeneratedRules
             'remainingPaidLeaveDays' => '残有給日数',
         ],
         'ChangePasswordRequest' => [
-            'current_password' => 'current_password',
-            'new_password' => 'new_password',
-            'new_password_confirmation' => 'new_password_confirmation',
+            'currentPassword' => 'currentPassword',
+            'newPassword' => 'newPassword',
+            'newPasswordConfirmation' => 'newPasswordConfirmation',
         ],
         'CreateOvertimeRequest' => [
-            'work_date' => '勤務日',
-            'start_time' => '出勤時刻',
-            'end_time' => '退勤時刻',
+            'workDate' => 'workDate',
+            'startTime' => 'startTime',
+            'endTime' => 'endTime',
             'reason' => 'reason',
         ],
         'CreatePaidLeaveRequest' => [
-            'leave_date' => 'leave_date',
+            'leaveDate' => 'leaveDate',
             'days' => 'days',
             'reason' => 'reason',
         ],
@@ -616,6 +624,12 @@ final class OpenApiGeneratedRules
             'approvedBy' => 'approvedBy',
             'approvedAt' => 'approvedAt',
             'createdAt' => 'createdAt',
+        ],
+        'PageInfo' => [
+            'currentPage' => 'currentPage',
+            'perPage' => 'perPage',
+            'totalItems' => 'totalItems',
+            'totalPages' => 'totalPages',
         ],
         'PaidLeaveRequestResponse' => [
             'id' => 'ユーザーID',

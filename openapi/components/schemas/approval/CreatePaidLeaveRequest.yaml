@@ -1,10 +1,10 @@
 CreatePaidLeaveRequest:
   type: object
   required:
-    - leave_date
+    - leaveDate
     - days
   properties:
-    leave_date:
+    leaveDate:
       type: string
       format: date
       description: 取得日

@@ -1,11 +1,11 @@
 AttendanceUpdateRequest:
   type: object
   properties:
-    start_time:
+    startTime:
       type: string
       format: date-time
       nullable: true
-    end_time:
+    endTime:
       type: string
       format: date-time
       nullable: true

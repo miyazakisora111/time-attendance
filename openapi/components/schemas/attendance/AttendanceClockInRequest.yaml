@@ -1,12 +1,12 @@
 AttendanceClockInRequest:
   type: object
   required:
-    - work_date
-    - start_time
+    - workDate
+    - startTime
   properties:
-    work_date:
+    workDate:
       type: string
       format: date
-    start_time:
+    startTime:
       type: string
       format: date-time

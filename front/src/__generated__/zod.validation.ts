@@ -185,25 +185,25 @@ export const validationSchemas = {
   ),
   AttendanceClockInRequest:
     generatedComponents.schemas.AttendanceClockInRequest.extend({
-      work_date: z
+      workDate: z
         .string()
         .trim()
-        .min(1, `${labelOf("work_date")}は必須です。`),
-      start_time: z
+        .min(1, `${labelOf("workDate")}は必須です。`),
+      startTime: z
         .string()
         .trim()
-        .min(1, `${labelOf("start_time")}は必須です。`),
+        .min(1, `${labelOf("startTime")}は必須です。`),
     }),
   AttendanceClockOutRequest:
     generatedComponents.schemas.AttendanceClockOutRequest.extend({
-      work_date: z
+      workDate: z
         .string()
         .trim()
-        .min(1, `${labelOf("work_date")}は必須です。`),
-      end_time: z
+        .min(1, `${labelOf("workDate")}は必須です。`),
+      endTime: z
         .string()
         .trim()
-        .min(1, `${labelOf("end_time")}は必須です。`),
+        .min(1, `${labelOf("endTime")}は必須です。`),
     }),
   AttendanceIndexRequest:
     generatedComponents.schemas.AttendanceIndexRequest.extend({
@@ -217,34 +217,35 @@ export const validationSchemas = {
         .min(1, `${labelOf("to")}は必須です。`),
     }),
   AttendanceResponse: generatedComponents.schemas.AttendanceResponse.extend({
-    user_id: z
+    userId: z
       .string()
       .trim()
-      .min(1, `${labelOf("user_id")}は必須です。`),
-    work_date: z
+      .min(1, `${labelOf("userId")}は必須です。`),
+    workDate: z
       .string()
       .trim()
-      .min(1, `${labelOf("work_date")}は必須です。`),
-    start_time: z
+      .min(1, `${labelOf("workDate")}は必須です。`),
+    clockStatus: z.enum(["out", "in", "break"]),
+    startTime: z
       .string()
       .trim()
-      .min(1, `${labelOf("start_time")}は必須です。`)
+      .min(1, `${labelOf("startTime")}は必須です。`)
       .nullable(),
-    end_time: z.string().trim().nullable().optional(),
-    break_minutes: z.number().int().nullable().optional(),
-    worked_minutes: z.number().int().nullable().optional(),
+    endTime: z.string().trim().nullable().optional(),
+    breakMinutes: z.number().int().nullable().optional(),
+    workedMinutes: z.number().int().nullable().optional(),
   }),
   AttendanceStoreRequest:
     generatedComponents.schemas.AttendanceStoreRequest.extend({
-      work_date: z
+      workDate: z
         .string()
         .trim()
-        .min(1, `${labelOf("work_date")}は必須です。`),
-      start_time: z
+        .min(1, `${labelOf("workDate")}は必須です。`),
+      startTime: z
         .string()
         .trim()
-        .min(1, `${labelOf("start_time")}は必須です。`),
-      end_time: z.string().trim().nullable().optional(),
+        .min(1, `${labelOf("startTime")}は必須です。`),
+      endTime: z.string().trim().nullable().optional(),
       note: z
         .string()
         .trim()
@@ -254,8 +255,8 @@ export const validationSchemas = {
     }),
   AttendanceUpdateRequest:
     generatedComponents.schemas.AttendanceUpdateRequest.extend({
-      start_time: z.string().trim().nullable().optional(),
-      end_time: z.string().trim().nullable().optional(),
+      startTime: z.string().trim().nullable().optional(),
+      endTime: z.string().trim().nullable().optional(),
       note: z
         .string()
         .trim()
@@ -335,45 +336,45 @@ export const validationSchemas = {
   }),
   ChangePasswordRequest:
     generatedComponents.schemas.ChangePasswordRequest.extend({
-      current_password: z
+      currentPassword: z
         .string()
         .trim()
-        .min(1, `${labelOf("current_password")}は必須です。`)
-        .min(8, `${labelOf("current_password")}は8文字以上で入力してください。`)
+        .min(1, `${labelOf("currentPassword")}は必須です。`)
+        .min(8, `${labelOf("currentPassword")}は8文字以上で入力してください。`)
         .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
         .regex(/\d/, "パスワードに数字を1文字以上含めてください。"),
-      new_password: z
+      newPassword: z
         .string()
         .trim()
-        .min(1, `${labelOf("new_password")}は必須です。`)
-        .min(8, `${labelOf("new_password")}は8文字以上で入力してください。`)
+        .min(1, `${labelOf("newPassword")}は必須です。`)
+        .min(8, `${labelOf("newPassword")}は8文字以上で入力してください。`)
         .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
         .regex(/\d/, "パスワードに数字を1文字以上含めてください。"),
-      new_password_confirmation: z
+      newPasswordConfirmation: z
         .string()
         .trim()
-        .min(1, `${labelOf("new_password_confirmation")}は必須です。`)
+        .min(1, `${labelOf("newPasswordConfirmation")}は必須です。`)
         .min(
           8,
-          `${labelOf("new_password_confirmation")}は8文字以上で入力してください。`,
+          `${labelOf("newPasswordConfirmation")}は8文字以上で入力してください。`,
         )
         .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
         .regex(/\d/, "パスワードに数字を1文字以上含めてください。"),
     }),
   CreateOvertimeRequest:
     generatedComponents.schemas.CreateOvertimeRequest.extend({
-      work_date: z
+      workDate: z
         .string()
         .trim()
-        .min(1, `${labelOf("work_date")}は必須です。`),
-      start_time: z
+        .min(1, `${labelOf("workDate")}は必須です。`),
+      startTime: z
         .string()
         .trim()
-        .min(1, `${labelOf("start_time")}は必須です。`),
-      end_time: z
+        .min(1, `${labelOf("startTime")}は必須です。`),
+      endTime: z
         .string()
         .trim()
-        .min(1, `${labelOf("end_time")}は必須です。`),
+        .min(1, `${labelOf("endTime")}は必須です。`),
       reason: z
         .string()
         .trim()
@@ -383,10 +384,10 @@ export const validationSchemas = {
     }),
   CreatePaidLeaveRequest:
     generatedComponents.schemas.CreatePaidLeaveRequest.extend({
-      leave_date: z
+      leaveDate: z
         .string()
         .trim()
-        .min(1, `${labelOf("leave_date")}は必須です。`),
+        .min(1, `${labelOf("leaveDate")}は必須です。`),
       days: z.number().min(0.5).max(1),
       reason: z
         .string()
@@ -397,7 +398,7 @@ export const validationSchemas = {
     }),
   DashboardClockRequest:
     generatedComponents.schemas.DashboardClockRequest.extend({
-      action: z.enum(["in", "out", "break_start", "break_end"]),
+      action: z.enum(["in", "out", "breakStart", "breakEnd"]),
     }),
   DashboardRecentRecord:
     generatedComponents.schemas.DashboardRecentRecord.extend({
@@ -604,6 +605,12 @@ export const validationSchemas = {
         .trim()
         .min(1, `${labelOf("createdAt")}は必須です。`),
     }),
+  PageInfo: generatedComponents.schemas.PageInfo.extend({
+    currentPage: z.number().int().min(1),
+    perPage: z.number().int().min(1),
+    totalItems: z.number().int().min(0),
+    totalPages: z.number().int().min(0),
+  }),
   PaidLeaveRequestResponse:
     generatedComponents.schemas.PaidLeaveRequestResponse.extend({
       id: z

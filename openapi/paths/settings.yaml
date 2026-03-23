@@ -1,9 +1,10 @@
 settings:
   get:
-    operationId: getSettingsApi
+    operationId: getSettings
     tags:
       - Settings
     summary: ユーザー設定取得
+    description: ログインユーザーのプロフィール・通知・セキュリティ設定を返す。
     responses:
       "200":
         description: ユーザー設定
@@ -16,10 +17,11 @@ settings:
       "500":
         $ref: "../components/responses.yaml#/InternalServerError"
   put:
-    operationId: updateSettingsApi
+    operationId: updateSettings
     tags:
       - Settings
     summary: ユーザー設定更新
+    description: プロフィール・通知・テーマ・言語設定を更新する。
     requestBody:
       $ref: "../components/requestBodies.yaml#/UpdateSettingsBody"
     responses:
@@ -38,10 +40,11 @@ settings:
 
 changePassword:
   put:
-    operationId: changePasswordApi
+    operationId: updatePassword
     tags:
       - Settings
     summary: パスワード変更
+    description: 現在のパスワードを検証し、新しいパスワードに変更する。
     requestBody:
       $ref: "../components/requestBodies.yaml#/ChangePasswordBody"
     responses:
@@ -60,19 +63,31 @@ changePassword:
 
 loginHistories:
   get:
-    operationId: getLoginHistoriesApi
+    operationId: listLoginHistories
     tags:
       - Settings
     summary: ログイン履歴一覧取得
+    description: ログインユーザーのログイン履歴を新しい順に返す。
+    parameters:
+      - $ref: "../components/parameters.yaml#/QueryPage"
+      - $ref: "../components/parameters.yaml#/QueryPerPage"
     responses:
       "200":
         description: ログイン履歴一覧
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "../components/schemas/settings/LoginHistoryResponse.yaml#/LoginHistoryResponse"
+              type: object
+              required:
+                - items
+                - pageInfo
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: "../components/schemas/settings/LoginHistoryResponse.yaml#/LoginHistoryResponse"
+                pageInfo:
+                  $ref: "../components/schemas/common/PageInfo.yaml#/PageInfo"
       "401":
         $ref: "../components/responses.yaml#/Unauthorized"
       "500":

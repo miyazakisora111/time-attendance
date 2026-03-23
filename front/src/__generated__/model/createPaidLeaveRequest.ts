@@ -14,7 +14,7 @@ export interface CreatePaidLeaveRequest {
    */
   days: number;
   /** 取得日 */
-  leave_date: string;
+  leaveDate: string;
   /**
    * 申請理由
    * @maxLength 500

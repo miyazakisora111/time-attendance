@@ -1,9 +1,10 @@
 login:
   post:
-    operationId: loginApi
+    operationId: login
     tags:
       - Auth
     summary: ログイン
+    description: メールアドレスとパスワードで認証し、JWTトークンを返す。
     security: []
     requestBody:
       $ref: "../components/requestBodies.yaml#/LoginBody"
@@ -23,10 +24,11 @@ login:
 
 logout:
   post:
-    operationId: logoutApi
+    operationId: logout
     tags:
       - Auth
     summary: ログアウト
+    description: 現在のJWTトークンを無効化する。
     responses:
       "200":
         description: ログアウト成功
@@ -41,10 +43,11 @@ logout:
 
 authMe:
   get:
-    operationId: authMeApi
+    operationId: getMe
     tags:
       - Auth
     summary: ログイン中ユーザー情報取得
+    description: 現在認証中のユーザー情報を返す。
     responses:
       "200":
         description: 認証済みユーザー情報

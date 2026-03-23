@@ -10,18 +10,20 @@ import { customInstance } from "../../lib/http/client";
 
 export const getDashboard = () => {
   /**
+   * 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
    * @summary ダッシュボード集計取得
    */
-  const getDashboardApi = () => {
+  const getDashboard = () => {
     return customInstance<DashboardResponse>({
       url: `/dashboard`,
       method: "GET",
     });
   };
   /**
+   * ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
    * @summary 打刻アクション（出勤・退勤・休憩開始・休憩終了）
    */
-  const dashboardClockApi = (
+  const createDashboardClock = (
     dashboardClockBodyBody: DashboardClockBodyBody,
   ) => {
     return customInstance<DashboardResponse>({
@@ -31,16 +33,16 @@ export const getDashboard = () => {
       data: dashboardClockBodyBody,
     });
   };
-  return { getDashboardApi, dashboardClockApi };
+  return { getDashboard, createDashboardClock };
 };
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetDashboardApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getDashboard>["getDashboardApi"]>>
+export type GetDashboardResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getDashboard>["getDashboard"]>>
 >;
-export type DashboardClockApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getDashboard>["dashboardClockApi"]>>
+export type CreateDashboardClockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getDashboard>["createDashboardClock"]>>
 >;

@@ -11,24 +11,29 @@ import type {
   AttendanceResponse,
   AttendanceStoreBodyBody,
   AttendanceUpdateBodyBody,
-  ListAttendancesApiParams,
+  ListAttendances200,
+  ListAttendancesParams,
 } from ".././model";
 import { customInstance } from "../../lib/http/client";
 
 export const getAttendance = () => {
   /**
+   * ログイン中ユーザーの当日の勤怠レコードを返す。
    * @summary 今日の勤怠取得
    */
-  const todayAttendanceApi = () => {
+  const getTodayAttendance = () => {
     return customInstance<AttendanceResponse>({
-      url: `/attendances/attendance`,
+      url: `/attendances/today`,
       method: "GET",
     });
   };
   /**
+   * 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
    * @summary 出勤打刻
    */
-  const clockInApi = (attendanceClockInBodyBody: AttendanceClockInBodyBody) => {
+  const createClockIn = (
+    attendanceClockInBodyBody: AttendanceClockInBodyBody,
+  ) => {
     return customInstance<AttendanceResponse>({
       url: `/attendances/clock-in`,
       method: "POST",
@@ -37,9 +42,10 @@ export const getAttendance = () => {
     });
   };
   /**
+   * 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
    * @summary 退勤打刻
    */
-  const clockOutApi = (
+  const createClockOut = (
     attendanceClockOutBodyBody: AttendanceClockOutBodyBody,
   ) => {
     return customInstance<AttendanceResponse>({
@@ -50,19 +56,21 @@ export const getAttendance = () => {
     });
   };
   /**
+   * 指定期間のログインユーザー勤怠一覧をページネーション付きで返す。
    * @summary 勤怠一覧取得
    */
-  const listAttendancesApi = (params: ListAttendancesApiParams) => {
-    return customInstance<AttendanceResponse[]>({
+  const listAttendances = (params: ListAttendancesParams) => {
+    return customInstance<ListAttendances200>({
       url: `/attendances`,
       method: "GET",
       params,
     });
   };
   /**
+   * 手動で勤怠レコードを新規作成する。
    * @summary 勤怠の新規登録
    */
-  const storeAttendanceApi = (
+  const createAttendance = (
     attendanceStoreBodyBody: AttendanceStoreBodyBody,
   ) => {
     return customInstance<AttendanceResponse>({
@@ -73,26 +81,27 @@ export const getAttendance = () => {
     });
   };
   /**
+   * 既存の勤怠レコードを部分更新する。
    * @summary 勤怠の更新
    */
-  const updateAttendanceApi = (
-    attendance: string,
+  const updateAttendance = (
+    attendanceId: string,
     attendanceUpdateBodyBody: AttendanceUpdateBodyBody,
   ) => {
     return customInstance<AttendanceResponse>({
-      url: `/attendances/${attendance}`,
+      url: `/attendances/${attendanceId}`,
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       data: attendanceUpdateBodyBody,
     });
   };
   return {
-    todayAttendanceApi,
-    clockInApi,
-    clockOutApi,
-    listAttendancesApi,
-    storeAttendanceApi,
-    updateAttendanceApi,
+    getTodayAttendance,
+    createClockIn,
+    createClockOut,
+    listAttendances,
+    createAttendance,
+    updateAttendance,
   };
 };
 
@@ -100,21 +109,21 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type TodayAttendanceApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["todayAttendanceApi"]>>
+export type GetTodayAttendanceResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["getTodayAttendance"]>>
 >;
-export type ClockInApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["clockInApi"]>>
+export type CreateClockInResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockIn"]>>
 >;
-export type ClockOutApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["clockOutApi"]>>
+export type CreateClockOutResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockOut"]>>
 >;
-export type ListAttendancesApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["listAttendancesApi"]>>
+export type ListAttendancesResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["listAttendances"]>>
 >;
-export type StoreAttendanceApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["storeAttendanceApi"]>>
+export type CreateAttendanceResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createAttendance"]>>
 >;
-export type UpdateAttendanceApiResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["updateAttendanceApi"]>>
+export type UpdateAttendanceResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["updateAttendance"]>>
 >;

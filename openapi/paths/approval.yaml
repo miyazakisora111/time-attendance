@@ -1,9 +1,10 @@
 approvalList:
   get:
-    operationId: getApprovalListApi
+    operationId: listApprovals
     tags:
       - Approval
     summary: 申請・承認一覧取得
+    description: 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
     responses:
       "200":
         description: 申請一覧
@@ -18,10 +19,11 @@ approvalList:
 
 paidLeaveRequests:
   post:
-    operationId: createPaidLeaveRequestApi
+    operationId: createPaidLeaveRequest
     tags:
       - Approval
     summary: 有給休暇申請
+    description: 有給休暇の取得を申請する。
     requestBody:
       $ref: "../components/requestBodies.yaml#/CreatePaidLeaveRequestBody"
     responses:
@@ -40,10 +42,11 @@ paidLeaveRequests:
 
 paidLeaveApprove:
   patch:
-    operationId: approvePaidLeaveRequestApi
+    operationId: approvePaidLeaveRequest
     tags:
       - Approval
     summary: 有給休暇申請承認
+    description: 指定された有給休暇申請を承認する。承認権限が必要。
     parameters:
       - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
     responses:
@@ -64,10 +67,11 @@ paidLeaveApprove:
 
 paidLeaveReject:
   patch:
-    operationId: rejectPaidLeaveRequestApi
+    operationId: rejectPaidLeaveRequest
     tags:
       - Approval
     summary: 有給休暇申請却下
+    description: 指定された有給休暇申請を却下する。承認権限が必要。
     parameters:
       - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
     responses:
@@ -88,10 +92,11 @@ paidLeaveReject:
 
 paidLeaveCancel:
   patch:
-    operationId: cancelPaidLeaveRequestApi
+    operationId: cancelPaidLeaveRequest
     tags:
       - Approval
     summary: 有給休暇申請キャンセル
+    description: 自分の有給休暇申請をキャンセルする。
     parameters:
       - $ref: "../components/parameters.yaml#/PathPaidLeaveRequestId"
     responses:
@@ -112,10 +117,11 @@ paidLeaveCancel:
 
 overtimeRequests:
   post:
-    operationId: createOvertimeRequestApi
+    operationId: createOvertimeRequest
     tags:
       - Approval
     summary: 残業申請
+    description: 残業の事前申請を行う。
     requestBody:
       $ref: "../components/requestBodies.yaml#/CreateOvertimeRequestBody"
     responses:
@@ -134,10 +140,11 @@ overtimeRequests:
 
 overtimeApprove:
   patch:
-    operationId: approveOvertimeRequestApi
+    operationId: approveOvertimeRequest
     tags:
       - Approval
     summary: 残業申請承認
+    description: 指定された残業申請を承認する。承認権限が必要。
     parameters:
       - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
     responses:
@@ -158,10 +165,11 @@ overtimeApprove:
 
 overtimeReturn:
   patch:
-    operationId: returnOvertimeRequestApi
+    operationId: returnOvertimeRequest
     tags:
       - Approval
     summary: 残業申請差戻し
+    description: 指定された残業申請を差し戻す。承認権限が必要。
     parameters:
       - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
     responses:
@@ -182,10 +190,11 @@ overtimeReturn:
 
 overtimeCancel:
   patch:
-    operationId: cancelOvertimeRequestApi
+    operationId: cancelOvertimeRequest
     tags:
       - Approval
     summary: 残業申請キャンセル
+    description: 自分の残業申請をキャンセルする。
     parameters:
       - $ref: "../components/parameters.yaml#/PathOvertimeRequestId"
     responses:

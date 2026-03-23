@@ -1,12 +1,12 @@
 AttendanceClockOutRequest:
   type: object
   required:
-    - work_date
-    - end_time
+    - workDate
+    - endTime
   properties:
-    work_date:
+    workDate:
       type: string
       format: date
-    end_time:
+    endTime:
       type: string
       format: date-time

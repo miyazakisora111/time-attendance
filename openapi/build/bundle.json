@@ -69,11 +69,12 @@
   "paths": {
     "/login": {
       "post": {
-        "operationId": "loginApi",
+        "operationId": "login",
         "tags": [
           "Auth"
         ],
         "summary": "ログイン",
+        "description": "メールアドレスとパスワードで認証し、JWTトークンを返す。",
         "security": [],
         "requestBody": {
           "required": true,
@@ -183,11 +184,12 @@
     },
     "/logout": {
       "post": {
-        "operationId": "logoutApi",
+        "operationId": "logout",
         "tags": [
           "Auth"
         ],
         "summary": "ログアウト",
+        "description": "現在のJWTトークンを無効化する。",
         "responses": {
           "200": {
             "description": "ログアウト成功",
@@ -241,13 +243,14 @@
         }
       }
     },
-    "/authme": {
+    "/auth/me": {
       "get": {
-        "operationId": "authMeApi",
+        "operationId": "getMe",
         "tags": [
           "Auth"
         ],
         "summary": "ログイン中ユーザー情報取得",
+        "description": "現在認証中のユーザー情報を返す。",
         "responses": {
           "200": {
             "description": "認証済みユーザー情報",
@@ -367,13 +370,14 @@
         }
       }
     },
-    "/attendances/attendance": {
+    "/attendances/today": {
       "get": {
-        "operationId": "todayAttendanceApi",
+        "operationId": "getTodayAttendance",
         "tags": [
           "Attendance"
         ],
         "summary": "今日の勤怠取得",
+        "description": "ログイン中ユーザーの当日の勤怠レコードを返す。",
         "responses": {
           "200": {
             "description": "今日の勤怠情報",
@@ -382,35 +386,45 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "user_id",
-                    "work_date",
-                    "start_time"
+                    "userId",
+                    "workDate",
+                    "startTime",
+                    "clockStatus"
                   ],
                   "properties": {
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "work_date": {
+                    "workDate": {
                       "type": "string",
                       "format": "date"
                     },
-                    "start_time": {
+                    "clockStatus": {
+                      "type": "string",
+                      "description": "現在の打刻状態",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "startTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "end_time": {
+                    "endTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "break_minutes": {
+                    "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "休憩合計(分)"
                     },
-                    "worked_minutes": {
+                    "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "実働時間(分)"
@@ -457,11 +471,12 @@
     },
     "/attendances/clock-in": {
       "post": {
-        "operationId": "clockInApi",
+        "operationId": "createClockIn",
         "tags": [
           "Attendance"
         ],
         "summary": "出勤打刻",
+        "description": "当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。",
         "requestBody": {
           "required": true,
           "content": {
@@ -469,15 +484,15 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "work_date",
-                  "start_time"
+                  "workDate",
+                  "startTime"
                 ],
                 "properties": {
-                  "work_date": {
+                  "workDate": {
                     "type": "string",
                     "format": "date"
                   },
-                  "start_time": {
+                  "startTime": {
                     "type": "string",
                     "format": "date-time"
                   }
@@ -494,35 +509,45 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "user_id",
-                    "work_date",
-                    "start_time"
+                    "userId",
+                    "workDate",
+                    "startTime",
+                    "clockStatus"
                   ],
                   "properties": {
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "work_date": {
+                    "workDate": {
                       "type": "string",
                       "format": "date"
                     },
-                    "start_time": {
+                    "clockStatus": {
+                      "type": "string",
+                      "description": "現在の打刻状態",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "startTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "end_time": {
+                    "endTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "break_minutes": {
+                    "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "休憩合計(分)"
                     },
-                    "worked_minutes": {
+                    "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "実働時間(分)"
@@ -610,11 +635,12 @@
     },
     "/attendances/clock-out": {
       "post": {
-        "operationId": "clockOutApi",
+        "operationId": "createClockOut",
         "tags": [
           "Attendance"
         ],
         "summary": "退勤打刻",
+        "description": "当日の退勤打刻を行う。未出勤の場合は 409 を返す。",
         "requestBody": {
           "required": true,
           "content": {
@@ -622,15 +648,15 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "work_date",
-                  "end_time"
+                  "workDate",
+                  "endTime"
                 ],
                 "properties": {
-                  "work_date": {
+                  "workDate": {
                     "type": "string",
                     "format": "date"
                   },
-                  "end_time": {
+                  "endTime": {
                     "type": "string",
                     "format": "date-time"
                   }
@@ -647,35 +673,45 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "user_id",
-                    "work_date",
-                    "start_time"
+                    "userId",
+                    "workDate",
+                    "startTime",
+                    "clockStatus"
                   ],
                   "properties": {
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "work_date": {
+                    "workDate": {
                       "type": "string",
                       "format": "date"
                     },
-                    "start_time": {
+                    "clockStatus": {
+                      "type": "string",
+                      "description": "現在の打刻状態",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "startTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "end_time": {
+                    "endTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "break_minutes": {
+                    "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "休憩合計(分)"
                     },
-                    "worked_minutes": {
+                    "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "実働時間(分)"
@@ -763,11 +799,12 @@
     },
     "/attendances": {
       "get": {
-        "operationId": "listAttendancesApi",
+        "operationId": "listAttendances",
         "tags": [
           "Attendance"
         ],
         "summary": "勤怠一覧取得",
+        "description": "指定期間のログインユーザー勤怠一覧をページネーション付きで返す。",
         "parameters": [
           {
             "name": "from",
@@ -788,6 +825,29 @@
               "type": "string",
               "format": "date"
             }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "ページ番号（デフォルト1）",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "1ページあたりの件数（デフォルト20）",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
           }
         ],
         "responses": {
@@ -796,42 +856,97 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "user_id",
-                      "work_date",
-                      "start_time"
-                    ],
-                    "properties": {
-                      "user_id": {
-                        "type": "string",
-                        "format": "uuid"
-                      },
-                      "work_date": {
-                        "type": "string",
-                        "format": "date"
-                      },
-                      "start_time": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                      },
-                      "end_time": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true
-                      },
-                      "break_minutes": {
-                        "type": "integer",
-                        "nullable": true,
-                        "description": "休憩合計(分)"
-                      },
-                      "worked_minutes": {
-                        "type": "integer",
-                        "nullable": true,
-                        "description": "実働時間(分)"
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "pageInfo"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "userId",
+                          "workDate",
+                          "startTime",
+                          "clockStatus"
+                        ],
+                        "properties": {
+                          "userId": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "workDate": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "clockStatus": {
+                            "type": "string",
+                            "description": "現在の打刻状態",
+                            "enum": [
+                              "out",
+                              "in",
+                              "break"
+                            ]
+                          },
+                          "startTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "endTime": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "breakMinutes": {
+                            "type": "integer",
+                            "nullable": true,
+                            "description": "休憩合計(分)"
+                          },
+                          "workedMinutes": {
+                            "type": "integer",
+                            "nullable": true,
+                            "description": "実働時間(分)"
+                          }
+                        }
+                      }
+                    },
+                    "pageInfo": {
+                      "type": "object",
+                      "description": "ページネーション情報",
+                      "required": [
+                        "currentPage",
+                        "perPage",
+                        "totalItems",
+                        "totalPages"
+                      ],
+                      "properties": {
+                        "currentPage": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "現在のページ番号",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "1ページあたりの件数",
+                          "example": 20
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "全件数",
+                          "example": 100
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "全ページ数",
+                          "example": 5
+                        }
                       }
                     }
                   }
@@ -899,11 +1014,12 @@
         }
       },
       "post": {
-        "operationId": "storeAttendanceApi",
+        "operationId": "createAttendance",
         "tags": [
           "Attendance"
         ],
         "summary": "勤怠の新規登録",
+        "description": "手動で勤怠レコードを新規作成する。",
         "requestBody": {
           "required": true,
           "content": {
@@ -911,19 +1027,19 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "work_date",
-                  "start_time"
+                  "workDate",
+                  "startTime"
                 ],
                 "properties": {
-                  "work_date": {
+                  "workDate": {
                     "type": "string",
                     "format": "date"
                   },
-                  "start_time": {
+                  "startTime": {
                     "type": "string",
                     "format": "date-time"
                   },
-                  "end_time": {
+                  "endTime": {
                     "type": "string",
                     "format": "date-time",
                     "nullable": true
@@ -946,35 +1062,45 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "user_id",
-                    "work_date",
-                    "start_time"
+                    "userId",
+                    "workDate",
+                    "startTime",
+                    "clockStatus"
                   ],
                   "properties": {
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "work_date": {
+                    "workDate": {
                       "type": "string",
                       "format": "date"
                     },
-                    "start_time": {
+                    "clockStatus": {
+                      "type": "string",
+                      "description": "現在の打刻状態",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "startTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "end_time": {
+                    "endTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "break_minutes": {
+                    "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "休憩合計(分)"
                     },
-                    "worked_minutes": {
+                    "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "実働時間(分)"
@@ -1044,16 +1170,17 @@
         }
       }
     },
-    "/attendances/{attendance}": {
+    "/attendances/{attendanceId}": {
       "patch": {
-        "operationId": "updateAttendanceApi",
+        "operationId": "updateAttendance",
         "tags": [
           "Attendance"
         ],
         "summary": "勤怠の更新",
+        "description": "既存の勤怠レコードを部分更新する。",
         "parameters": [
           {
-            "name": "attendance",
+            "name": "attendanceId",
             "in": "path",
             "required": true,
             "description": "勤怠レコードID",
@@ -1070,12 +1197,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "start_time": {
+                  "startTime": {
                     "type": "string",
                     "format": "date-time",
                     "nullable": true
                   },
-                  "end_time": {
+                  "endTime": {
                     "type": "string",
                     "format": "date-time",
                     "nullable": true
@@ -1098,35 +1225,45 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "user_id",
-                    "work_date",
-                    "start_time"
+                    "userId",
+                    "workDate",
+                    "startTime",
+                    "clockStatus"
                   ],
                   "properties": {
-                    "user_id": {
+                    "userId": {
                       "type": "string",
                       "format": "uuid"
                     },
-                    "work_date": {
+                    "workDate": {
                       "type": "string",
                       "format": "date"
                     },
-                    "start_time": {
+                    "clockStatus": {
+                      "type": "string",
+                      "description": "現在の打刻状態",
+                      "enum": [
+                        "out",
+                        "in",
+                        "break"
+                      ]
+                    },
+                    "startTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "end_time": {
+                    "endTime": {
                       "type": "string",
                       "format": "date-time",
                       "nullable": true
                     },
-                    "break_minutes": {
+                    "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "休憩合計(分)"
                     },
-                    "worked_minutes": {
+                    "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
                       "description": "実働時間(分)"
@@ -1214,11 +1351,12 @@
     },
     "/dashboard": {
       "get": {
-        "operationId": "getDashboardApi",
+        "operationId": "getDashboard",
         "tags": [
           "Dashboard"
         ],
         "summary": "ダッシュボード集計取得",
+        "description": "当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。",
         "responses": {
           "200": {
             "description": "ダッシュボード情報",
@@ -1423,11 +1561,12 @@
     },
     "/dashboard/clock": {
       "post": {
-        "operationId": "dashboardClockApi",
+        "operationId": "createDashboardClock",
         "tags": [
           "Dashboard"
         ],
         "summary": "打刻アクション（出勤・退勤・休憩開始・休憩終了）",
+        "description": "ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。",
         "requestBody": {
           "required": true,
           "content": {
@@ -1444,8 +1583,8 @@
                     "enum": [
                       "in",
                       "out",
-                      "break_start",
-                      "break_end"
+                      "breakStart",
+                      "breakEnd"
                     ]
                   }
                 }
@@ -1696,13 +1835,14 @@
         }
       }
     },
-    "/auth/calendar": {
+    "/schedule/calendar": {
       "get": {
-        "operationId": "getCalendarApi",
+        "operationId": "getCalendar",
         "tags": [
           "Schedule"
         ],
         "summary": "月次カレンダー取得",
+        "description": "指定年月のカレンダー日付一覧とサマリーを返す。",
         "parameters": [
           {
             "name": "year",
@@ -1927,11 +2067,12 @@
     },
     "/team/members": {
       "get": {
-        "operationId": "getTeamMembersApi",
+        "operationId": "listTeamMembers",
         "tags": [
           "Team"
         ],
         "summary": "チームメンバー一覧取得",
+        "description": "ログインユーザーが所属するチームのメンバー一覧を返す。",
         "responses": {
           "200": {
             "description": "チームメンバー一覧",
@@ -2034,11 +2175,12 @@
     },
     "/settings": {
       "get": {
-        "operationId": "getSettingsApi",
+        "operationId": "getSettings",
         "tags": [
           "Settings"
         ],
         "summary": "ユーザー設定取得",
+        "description": "ログインユーザーのプロフィール・通知・セキュリティ設定を返す。",
         "responses": {
           "200": {
             "description": "ユーザー設定",
@@ -2190,11 +2332,12 @@
         }
       },
       "put": {
-        "operationId": "updateSettingsApi",
+        "operationId": "updateSettings",
         "tags": [
           "Settings"
         ],
         "summary": "ユーザー設定更新",
+        "description": "プロフィール・通知・テーマ・言語設定を更新する。",
         "requestBody": {
           "required": true,
           "content": {
@@ -2447,11 +2590,12 @@
     },
     "/settings/password": {
       "put": {
-        "operationId": "changePasswordApi",
+        "operationId": "updatePassword",
         "tags": [
           "Settings"
         ],
         "summary": "パスワード変更",
+        "description": "現在のパスワードを検証し、新しいパスワードに変更する。",
         "requestBody": {
           "required": true,
           "content": {
@@ -2459,24 +2603,24 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "current_password",
-                  "new_password",
-                  "new_password_confirmation"
+                  "currentPassword",
+                  "newPassword",
+                  "newPasswordConfirmation"
                 ],
                 "properties": {
-                  "current_password": {
+                  "currentPassword": {
                     "type": "string",
                     "format": "password",
                     "minLength": 8,
                     "description": "現在のパスワード"
                   },
-                  "new_password": {
+                  "newPassword": {
                     "type": "string",
                     "format": "password",
                     "minLength": 8,
                     "description": "新しいパスワード"
                   },
-                  "new_password_confirmation": {
+                  "newPasswordConfirmation": {
                     "type": "string",
                     "format": "password",
                     "minLength": 8,
@@ -2665,51 +2809,122 @@
     },
     "/settings/login-histories": {
       "get": {
-        "operationId": "getLoginHistoriesApi",
+        "operationId": "listLoginHistories",
         "tags": [
           "Settings"
         ],
         "summary": "ログイン履歴一覧取得",
+        "description": "ログインユーザーのログイン履歴を新しい順に返す。",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "ページ番号（デフォルト1）",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "required": false,
+            "description": "1ページあたりの件数（デフォルト20）",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "ログイン履歴一覧",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "id",
-                      "ipAddress",
-                      "userAgent",
-                      "loggedInAt"
-                    ],
-                    "properties": {
-                      "id": {
-                        "type": "string",
-                        "format": "uuid"
-                      },
-                      "ipAddress": {
-                        "type": "string",
-                        "nullable": true,
-                        "description": "IPアドレス"
-                      },
-                      "userAgent": {
-                        "type": "string",
-                        "nullable": true,
-                        "description": "ユーザーエージェント"
-                      },
-                      "loggedInAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "description": "ログイン日時"
-                      },
-                      "loggedOutAt": {
-                        "type": "string",
-                        "format": "date-time",
-                        "nullable": true,
-                        "description": "ログアウト日時"
+                  "type": "object",
+                  "required": [
+                    "items",
+                    "pageInfo"
+                  ],
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "ipAddress",
+                          "userAgent",
+                          "loggedInAt"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid"
+                          },
+                          "ipAddress": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "IPアドレス"
+                          },
+                          "userAgent": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "ユーザーエージェント"
+                          },
+                          "loggedInAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ログイン日時"
+                          },
+                          "loggedOutAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "description": "ログアウト日時"
+                          }
+                        }
+                      }
+                    },
+                    "pageInfo": {
+                      "type": "object",
+                      "description": "ページネーション情報",
+                      "required": [
+                        "currentPage",
+                        "perPage",
+                        "totalItems",
+                        "totalPages"
+                      ],
+                      "properties": {
+                        "currentPage": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "現在のページ番号",
+                          "example": 1
+                        },
+                        "perPage": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "1ページあたりの件数",
+                          "example": 20
+                        },
+                        "totalItems": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "全件数",
+                          "example": 100
+                        },
+                        "totalPages": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "description": "全ページ数",
+                          "example": 5
+                        }
                       }
                     }
                   }
@@ -2752,13 +2967,14 @@
         }
       }
     },
-    "/approval": {
+    "/approvals": {
       "get": {
-        "operationId": "getApprovalListApi",
+        "operationId": "listApprovals",
         "tags": [
           "Approval"
         ],
         "summary": "申請・承認一覧取得",
+        "description": "自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。",
         "responses": {
           "200": {
             "description": "申請一覧",
@@ -3131,13 +3347,14 @@
         }
       }
     },
-    "/approval/paid-leaves": {
+    "/approvals/paid-leaves": {
       "post": {
-        "operationId": "createPaidLeaveRequestApi",
+        "operationId": "createPaidLeaveRequest",
         "tags": [
           "Approval"
         ],
         "summary": "有給休暇申請",
+        "description": "有給休暇の取得を申請する。",
         "requestBody": {
           "required": true,
           "content": {
@@ -3145,11 +3362,11 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "leave_date",
+                  "leaveDate",
                   "days"
                 ],
                 "properties": {
-                  "leave_date": {
+                  "leaveDate": {
                     "type": "string",
                     "format": "date",
                     "description": "取得日"
@@ -3302,16 +3519,17 @@
         }
       }
     },
-    "/approval/paid-leaves/{paidLeaveRequest}/approve": {
+    "/approvals/paid-leaves/{paidLeaveRequestId}/approve": {
       "patch": {
-        "operationId": "approvePaidLeaveRequestApi",
+        "operationId": "approvePaidLeaveRequest",
         "tags": [
           "Approval"
         ],
         "summary": "有給休暇申請承認",
+        "description": "指定された有給休暇申請を承認する。承認権限が必要。",
         "parameters": [
           {
-            "name": "paidLeaveRequest",
+            "name": "paidLeaveRequestId",
             "in": "path",
             "required": true,
             "description": "有給休暇申請ID",
@@ -3459,16 +3677,17 @@
         }
       }
     },
-    "/approval/paid-leaves/{paidLeaveRequest}/reject": {
+    "/approvals/paid-leaves/{paidLeaveRequestId}/reject": {
       "patch": {
-        "operationId": "rejectPaidLeaveRequestApi",
+        "operationId": "rejectPaidLeaveRequest",
         "tags": [
           "Approval"
         ],
         "summary": "有給休暇申請却下",
+        "description": "指定された有給休暇申請を却下する。承認権限が必要。",
         "parameters": [
           {
-            "name": "paidLeaveRequest",
+            "name": "paidLeaveRequestId",
             "in": "path",
             "required": true,
             "description": "有給休暇申請ID",
@@ -3616,16 +3835,17 @@
         }
       }
     },
-    "/approval/paid-leaves/{paidLeaveRequest}/cancel": {
+    "/approvals/paid-leaves/{paidLeaveRequestId}/cancel": {
       "patch": {
-        "operationId": "cancelPaidLeaveRequestApi",
+        "operationId": "cancelPaidLeaveRequest",
         "tags": [
           "Approval"
         ],
         "summary": "有給休暇申請キャンセル",
+        "description": "自分の有給休暇申請をキャンセルする。",
         "parameters": [
           {
-            "name": "paidLeaveRequest",
+            "name": "paidLeaveRequestId",
             "in": "path",
             "required": true,
             "description": "有給休暇申請ID",
@@ -3773,13 +3993,14 @@
         }
       }
     },
-    "/approval/overtime-requests": {
+    "/approvals/overtime-requests": {
       "post": {
-        "operationId": "createOvertimeRequestApi",
+        "operationId": "createOvertimeRequest",
         "tags": [
           "Approval"
         ],
         "summary": "残業申請",
+        "description": "残業の事前申請を行う。",
         "requestBody": {
           "required": true,
           "content": {
@@ -3787,22 +4008,22 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "work_date",
-                  "start_time",
-                  "end_time"
+                  "workDate",
+                  "startTime",
+                  "endTime"
                 ],
                 "properties": {
-                  "work_date": {
+                  "workDate": {
                     "type": "string",
                     "format": "date",
                     "description": "対象日"
                   },
-                  "start_time": {
+                  "startTime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "残業開始時刻"
                   },
-                  "end_time": {
+                  "endTime": {
                     "type": "string",
                     "format": "date-time",
                     "description": "残業終了時刻"
@@ -3957,16 +4178,17 @@
         }
       }
     },
-    "/approval/overtime-requests/{overtimeRequest}/approve": {
+    "/approvals/overtime-requests/{overtimeRequestId}/approve": {
       "patch": {
-        "operationId": "approveOvertimeRequestApi",
+        "operationId": "approveOvertimeRequest",
         "tags": [
           "Approval"
         ],
         "summary": "残業申請承認",
+        "description": "指定された残業申請を承認する。承認権限が必要。",
         "parameters": [
           {
-            "name": "overtimeRequest",
+            "name": "overtimeRequestId",
             "in": "path",
             "required": true,
             "description": "残業申請ID",
@@ -4122,16 +4344,17 @@
         }
       }
     },
-    "/approval/overtime-requests/{overtimeRequest}/return": {
+    "/approvals/overtime-requests/{overtimeRequestId}/return": {
       "patch": {
-        "operationId": "returnOvertimeRequestApi",
+        "operationId": "returnOvertimeRequest",
         "tags": [
           "Approval"
         ],
         "summary": "残業申請差戻し",
+        "description": "指定された残業申請を差し戻す。承認権限が必要。",
         "parameters": [
           {
-            "name": "overtimeRequest",
+            "name": "overtimeRequestId",
             "in": "path",
             "required": true,
             "description": "残業申請ID",
@@ -4287,16 +4510,17 @@
         }
       }
     },
-    "/approval/overtime-requests/{overtimeRequest}/cancel": {
+    "/approvals/overtime-requests/{overtimeRequestId}/cancel": {
       "patch": {
-        "operationId": "cancelOvertimeRequestApi",
+        "operationId": "cancelOvertimeRequest",
         "tags": [
           "Approval"
         ],
         "summary": "残業申請キャンセル",
+        "description": "自分の残業申請をキャンセルする。",
         "parameters": [
           {
-            "name": "overtimeRequest",
+            "name": "overtimeRequestId",
             "in": "path",
             "required": true,
             "description": "残業申請ID",
@@ -4461,8 +4685,8 @@
         "enum": [
           "in",
           "out",
-          "break_start",
-          "break_end"
+          "breakStart",
+          "breakEnd"
         ]
       },
       "ClockStatus": {
@@ -4667,15 +4891,15 @@
       "AttendanceClockInRequest": {
         "type": "object",
         "required": [
-          "work_date",
-          "start_time"
+          "workDate",
+          "startTime"
         ],
         "properties": {
-          "work_date": {
+          "workDate": {
             "type": "string",
             "format": "date"
           },
-          "start_time": {
+          "startTime": {
             "type": "string",
             "format": "date-time"
           }
@@ -4684,15 +4908,15 @@
       "AttendanceClockOutRequest": {
         "type": "object",
         "required": [
-          "work_date",
-          "end_time"
+          "workDate",
+          "endTime"
         ],
         "properties": {
-          "work_date": {
+          "workDate": {
             "type": "string",
             "format": "date"
           },
-          "end_time": {
+          "endTime": {
             "type": "string",
             "format": "date-time"
           }
@@ -4701,19 +4925,19 @@
       "AttendanceStoreRequest": {
         "type": "object",
         "required": [
-          "work_date",
-          "start_time"
+          "workDate",
+          "startTime"
         ],
         "properties": {
-          "work_date": {
+          "workDate": {
             "type": "string",
             "format": "date"
           },
-          "start_time": {
+          "startTime": {
             "type": "string",
             "format": "date-time"
           },
-          "end_time": {
+          "endTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
@@ -4728,12 +4952,12 @@
       "AttendanceUpdateRequest": {
         "type": "object",
         "properties": {
-          "start_time": {
+          "startTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "end_time": {
+          "endTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
@@ -4748,35 +4972,45 @@
       "AttendanceResponse": {
         "type": "object",
         "required": [
-          "user_id",
-          "work_date",
-          "start_time"
+          "userId",
+          "workDate",
+          "startTime",
+          "clockStatus"
         ],
         "properties": {
-          "user_id": {
+          "userId": {
             "type": "string",
             "format": "uuid"
           },
-          "work_date": {
+          "workDate": {
             "type": "string",
             "format": "date"
           },
-          "start_time": {
+          "clockStatus": {
+            "type": "string",
+            "description": "現在の打刻状態",
+            "enum": [
+              "out",
+              "in",
+              "break"
+            ]
+          },
+          "startTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "end_time": {
+          "endTime": {
             "type": "string",
             "format": "date-time",
             "nullable": true
           },
-          "break_minutes": {
+          "breakMinutes": {
             "type": "integer",
             "nullable": true,
             "description": "休憩合計(分)"
           },
-          "worked_minutes": {
+          "workedMinutes": {
             "type": "integer",
             "nullable": true,
             "description": "実働時間(分)"
@@ -4812,8 +5046,8 @@
             "enum": [
               "in",
               "out",
-              "break_start",
-              "break_end"
+              "breakStart",
+              "breakEnd"
             ]
           }
         }
@@ -5595,24 +5829,24 @@
       "ChangePasswordRequest": {
         "type": "object",
         "required": [
-          "current_password",
-          "new_password",
-          "new_password_confirmation"
+          "currentPassword",
+          "newPassword",
+          "newPasswordConfirmation"
         ],
         "properties": {
-          "current_password": {
+          "currentPassword": {
             "type": "string",
             "format": "password",
             "minLength": 8,
             "description": "現在のパスワード"
           },
-          "new_password": {
+          "newPassword": {
             "type": "string",
             "format": "password",
             "minLength": 8,
             "description": "新しいパスワード"
           },
-          "new_password_confirmation": {
+          "newPasswordConfirmation": {
             "type": "string",
             "format": "password",
             "minLength": 8,
@@ -6200,11 +6434,11 @@
       "CreatePaidLeaveRequest": {
         "type": "object",
         "required": [
-          "leave_date",
+          "leaveDate",
           "days"
         ],
         "properties": {
-          "leave_date": {
+          "leaveDate": {
             "type": "string",
             "format": "date",
             "description": "取得日"
@@ -6297,22 +6531,22 @@
       "CreateOvertimeRequest": {
         "type": "object",
         "required": [
-          "work_date",
-          "start_time",
-          "end_time"
+          "workDate",
+          "startTime",
+          "endTime"
         ],
         "properties": {
-          "work_date": {
+          "workDate": {
             "type": "string",
             "format": "date",
             "description": "対象日"
           },
-          "start_time": {
+          "startTime": {
             "type": "string",
             "format": "date-time",
             "description": "残業開始時刻"
           },
-          "end_time": {
+          "endTime": {
             "type": "string",
             "format": "date-time",
             "description": "残業終了時刻"
@@ -6379,6 +6613,42 @@
             }
           }
         }
+      },
+      "PageInfo": {
+        "type": "object",
+        "description": "ページネーション情報",
+        "required": [
+          "currentPage",
+          "perPage",
+          "totalItems",
+          "totalPages"
+        ],
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "現在のページ番号",
+            "example": 1
+          },
+          "perPage": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "1ページあたりの件数",
+            "example": 20
+          },
+          "totalItems": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "全件数",
+            "example": 100
+          },
+          "totalPages": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "全ページ数",
+            "example": 5
+          }
+        }
       }
     },
     "parameters": {
@@ -6402,8 +6672,31 @@
           "format": "date"
         }
       },
+      "QueryPage": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "description": "ページ番号（デフォルト1）",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "QueryPerPage": {
+        "name": "perPage",
+        "in": "query",
+        "required": false,
+        "description": "1ページあたりの件数（デフォルト20）",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
       "PathAttendanceId": {
-        "name": "attendance",
+        "name": "attendanceId",
         "in": "path",
         "required": true,
         "description": "勤怠レコードID",
@@ -6435,7 +6728,7 @@
         }
       },
       "PathPaidLeaveRequestId": {
-        "name": "paidLeaveRequest",
+        "name": "paidLeaveRequestId",
         "in": "path",
         "required": true,
         "description": "有給休暇申請ID",
@@ -6445,7 +6738,7 @@
         }
       },
       "PathOvertimeRequestId": {
-        "name": "overtimeRequest",
+        "name": "overtimeRequestId",
         "in": "path",
         "required": true,
         "description": "残業申請ID",
@@ -6492,15 +6785,15 @@
             "schema": {
               "type": "object",
               "required": [
-                "work_date",
-                "start_time"
+                "workDate",
+                "startTime"
               ],
               "properties": {
-                "work_date": {
+                "workDate": {
                   "type": "string",
                   "format": "date"
                 },
-                "start_time": {
+                "startTime": {
                   "type": "string",
                   "format": "date-time"
                 }
@@ -6516,15 +6809,15 @@
             "schema": {
               "type": "object",
               "required": [
-                "work_date",
-                "end_time"
+                "workDate",
+                "endTime"
               ],
               "properties": {
-                "work_date": {
+                "workDate": {
                   "type": "string",
                   "format": "date"
                 },
-                "end_time": {
+                "endTime": {
                   "type": "string",
                   "format": "date-time"
                 }
@@ -6540,19 +6833,19 @@
             "schema": {
               "type": "object",
               "required": [
-                "work_date",
-                "start_time"
+                "workDate",
+                "startTime"
               ],
               "properties": {
-                "work_date": {
+                "workDate": {
                   "type": "string",
                   "format": "date"
                 },
-                "start_time": {
+                "startTime": {
                   "type": "string",
                   "format": "date-time"
                 },
-                "end_time": {
+                "endTime": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true
@@ -6574,12 +6867,12 @@
             "schema": {
               "type": "object",
               "properties": {
-                "start_time": {
+                "startTime": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true
                 },
-                "end_time": {
+                "endTime": {
                   "type": "string",
                   "format": "date-time",
                   "nullable": true
@@ -6610,8 +6903,8 @@
                   "enum": [
                     "in",
                     "out",
-                    "break_start",
-                    "break_end"
+                    "breakStart",
+                    "breakEnd"
                   ]
                 }
               }
@@ -6700,24 +6993,24 @@
             "schema": {
               "type": "object",
               "required": [
-                "current_password",
-                "new_password",
-                "new_password_confirmation"
+                "currentPassword",
+                "newPassword",
+                "newPasswordConfirmation"
               ],
               "properties": {
-                "current_password": {
+                "currentPassword": {
                   "type": "string",
                   "format": "password",
                   "minLength": 8,
                   "description": "現在のパスワード"
                 },
-                "new_password": {
+                "newPassword": {
                   "type": "string",
                   "format": "password",
                   "minLength": 8,
                   "description": "新しいパスワード"
                 },
-                "new_password_confirmation": {
+                "newPasswordConfirmation": {
                   "type": "string",
                   "format": "password",
                   "minLength": 8,
@@ -6735,11 +7028,11 @@
             "schema": {
               "type": "object",
               "required": [
-                "leave_date",
+                "leaveDate",
                 "days"
               ],
               "properties": {
-                "leave_date": {
+                "leaveDate": {
                   "type": "string",
                   "format": "date",
                   "description": "取得日"
@@ -6768,22 +7061,22 @@
             "schema": {
               "type": "object",
               "required": [
-                "work_date",
-                "start_time",
-                "end_time"
+                "workDate",
+                "startTime",
+                "endTime"
               ],
               "properties": {
-                "work_date": {
+                "workDate": {
                   "type": "string",
                   "format": "date",
                   "description": "対象日"
                 },
-                "start_time": {
+                "startTime": {
                   "type": "string",
                   "format": "date-time",
                   "description": "残業開始時刻"
                 },
-                "end_time": {
+                "endTime": {
                   "type": "string",
                   "format": "date-time",
                   "description": "残業終了時刻"

@@ -6,7 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface AttendanceClockInRequest {
-  startTime: string;
-  workDate: string;
-}
+/**
+ * ページ番号（デフォルト1）
+ */
+export type QueryPageParameter = number;

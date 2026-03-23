@@ -4,5 +4,5 @@ ClockAction:
   enum:
     - in
     - out
-    - break_start
-    - break_end
+    - breakStart
+    - breakEnd

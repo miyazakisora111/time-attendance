@@ -1,9 +1,10 @@
 teamMembers:
   get:
-    operationId: getTeamMembersApi
+    operationId: listTeamMembers
     tags:
       - Team
     summary: チームメンバー一覧取得
+    description: ログインユーザーが所属するチームのメンバー一覧を返す。
     responses:
       '200':
         description: チームメンバー一覧
