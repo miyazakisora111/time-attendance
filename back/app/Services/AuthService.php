@@ -19,63 +19,71 @@ use Tymon\JWTAuth\JWTGuard;
  */
 final class AuthService extends BaseService
 {
+    /**
+     * コンストラクタ
+     * 
+     * @param UserService $userService ユーザーサービス
+     */
     public function __construct(
         private readonly UserService $userService,
     ) {}
+
     /**
-     * Eメールとパスワードでユーザーを認証する。
+     * ユーザーを認証する。
      *
      * @param Email $email Eメール
      * @param string $password パスワード
+     * @param Request $request リクエスト
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> JWTトークンのレスポンス
      */
-    public function login(Email $email, string $password): array
+    public function login(Email $email, string $password, Request $request): array
     {
+        // 認証を行う。
         $guard = $this->guard();
-
-        $credentials = [
+        $token = $guard->attempt(credentials: [
             'email' => $email->value(),
             'password' => $password,
             'status' => 1,
-        ];
-
-        $token = $guard->attempt($credentials);
-
+        ]);
         if (!is_string($token) || $token === '') {
             throw new DomainException('認証に失敗しました');
         }
 
-        /** @var User|null $user */
+        // ユーザーを取得する。
         $user = $guard->user();
         if (!$user instanceof User) {
             throw new DomainException('ユーザーの取得に失敗しました');
         }
 
+        // ログイン日時を更新する。
         $user->update([
             'last_login_at' => now(),
         ]);
 
-        $this->recordLoginHistory($user);
+        // ログイン履歴を記録する。
+        $this->recordLoginHistory($user, $request);
 
+        // JWTトークンのレスポンスを生成する。
         return $this->respondWithToken($token);
     }
 
     /**
      * JWT トークンをリフレッシュする。
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> JWTトークンのレスポンス
      */
     public function refresh(): array
     {
-        $guard = $this->guard();
-
         try {
+            // トークンをリフレッシュする。
+            $guard = $this->guard();
             $token = $guard->refresh();
         } catch (\Throwable $e) {
             throw new AuthenticationException('トークン更新に失敗しました');
         }
 
+        // JWTトークンのレスポンスを生成する。
         return $this->respondWithToken($token);
     }
 
@@ -86,25 +94,29 @@ final class AuthService extends BaseService
      */
     public function logout(): void
     {
+        // ログアウト履歴を記録する。
         $user = $this->userService->getAuthUser();
         $this->closeLoginHistory($user);
+
+        // ログアウトする。
         $this->guard()->logout();
     }
 
     /**
      * 認証済みユーザーの情報を取得する。
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> 認証済みユーザーの情報
      */
     public function getUser(): array
     {
+        // リレーションをロードする。
         $user = $this->userService->getAuthUser();
-
         $user->loadMissing([
             'role:id,name',
             'userSetting',
         ]);
 
+        // ユーザーを返却する。
         return [
             'user' => (new UserProfile(
                 id: $user->id,
@@ -118,13 +130,14 @@ final class AuthService extends BaseService
 
     /**
      * ログイン履歴を記録する。
+     *
+     * @param User $user ユーザー
+     * @param Request|null $request リクエスト
+     * @return LoginHistory ログイン履歴
      */
-    private function recordLoginHistory(User $user): void
+    private function recordLoginHistory(User $user, Request $request): LoginHistory
     {
-        /** @var Request $request */
-        $request = app('request');
-
-        LoginHistory::query()->create([
+        return LoginHistory::query()->create([
             'id' => (string) Str::uuid(),
             'user_id' => $user->id,
             'ip_address' => $request->ip(),
@@ -134,11 +147,14 @@ final class AuthService extends BaseService
     }
 
     /**
-     * ログイン履歴のログアウト日時を記録する。
+     * ログアウト履歴を記録する。
+     *
+     * @param User $user ユーザー
+     * @return LoginHistory ログイン履歴
      */
-    private function closeLoginHistory(User $user): void
+    private function closeLoginHistory(User $user): LoginHistory
     {
-        LoginHistory::query()
+        return LoginHistory::query()
             ->user($user->id)
             ->active()
             ->latestLogin()
@@ -146,6 +162,12 @@ final class AuthService extends BaseService
             ?->update(['logged_out_at' => now()]);
     }
 
+    /**
+     * JWTトークンのレスポンスを生成する。
+     *
+     * @param string $token JWT トークン
+     * @return array JWTトークンのレスポンス
+     */
     private function respondWithToken(string $token): array
     {
         return [

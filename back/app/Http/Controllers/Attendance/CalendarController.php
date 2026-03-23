@@ -32,10 +32,13 @@ final class CalendarController extends BaseController
      */
     public function index(CalendarIndexRequest $request): JsonResponse
     {
+        $validated = $request->validated();
+        
+        // カレンダーを取得する。
         $result = $this->service->getCalendar(
             user: $this->resolveUser(),
-            year: (int) $request->input('year'),
-            month: (int) $request->input('month'),
+            year: $validated['year'],
+            month: $validated['month'],
         );
 
         return ApiResponse::success($result);

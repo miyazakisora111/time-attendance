@@ -10,7 +10,6 @@ use App\Http\Requests\Attendance\AttendanceStoreRequest;
 use App\Http\Requests\Attendance\AttendanceUpdateRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\Attendance;
-use App\Models\User;
 use App\Services\AttendanceService;
 use Illuminate\Http\JsonResponse;
 
@@ -29,9 +28,9 @@ final class AttendanceController extends BaseController
     ) {}
 
     /**
-     * 出勤打刻
+     * 出勤打刻する。
      *
-     * @return JsonResponse
+     * @return JsonResponse Jsonレスポンス
      */
     public function clockIn(): JsonResponse
     {
@@ -40,9 +39,9 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 退勤打刻
+     * 退勤打刻する。
      *
-     * @return JsonResponse
+     * @return JsonResponse Jsonレスポンス
      */
     public function clockOut(): JsonResponse
     {
@@ -51,9 +50,9 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 休憩開始
+     * 休憩開始する。
      *
-     * @return JsonResponse
+     * @return JsonResponse Jsonレスポンス
      */
     public function breakStart(): JsonResponse
     {
@@ -62,9 +61,9 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 休憩終了
+     * 休憩終了する。
      *
-     * @return JsonResponse
+     * @return JsonResponse Jsonレスポンス
      */
     public function breakEnd(): JsonResponse
     {
@@ -73,9 +72,9 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 本日の勤怠情報を取得
+     * 本日の勤怠情報を取得する。
      *
-     * @return JsonResponse
+     * @return JsonResponse Jsonレスポンス
      */
     public function today(): JsonResponse
     {
@@ -84,10 +83,10 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 勤怠一覧取得
+     * 勤怠一覧を取得する。
      *
-     * @param AttendanceIndexRequest $request
-     * @return JsonResponse
+     * @param AttendanceIndexRequest $request リクエスト
+     * @return JsonResponse Jsonレスポンス
      */
     public function index(AttendanceIndexRequest $request): JsonResponse
     {
@@ -101,13 +100,14 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 勤怠の新規登録
+     * 勤怠を新規登録する。
      *
-     * @param AttendanceStoreRequest $request
-     * @return JsonResponse
+     * @param AttendanceStoreRequest $request リクエスト
+     * @return JsonResponse Jsonレスポンス
      */
     public function store(AttendanceStoreRequest $request): JsonResponse
     {
+        // TODO:勤怠修正機能の作成。
         $result = $this->service->store(
             user: $this->resolveUser(),
             input: $request->validated(),
@@ -117,17 +117,18 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 勤怠の更新
+     * 勤怠を更新する。
      *
-     * @param AttendanceUpdateRequest $request
-     * @param Attendance $attendance
-     * @return JsonResponse
+     * @param AttendanceUpdateRequest $request リクエスト
+     * @param Attendance $attendance 更新対象の勤怠
+     * @return JsonResponse Jsonレスポンス
      */
-    public function update(AttendanceUpdateRequest $request, Attendance $attendanceId): JsonResponse
+    public function update(AttendanceUpdateRequest $request, Attendance $attendance): JsonResponse
     {
+        // TODO:勤怠修正機能の作成。
         $result = $this->service->update(
             user: $this->resolveUser(),
-            attendance: $attendanceId,
+            attendance: $attendance,
             input: $request->validated(),
         );
 

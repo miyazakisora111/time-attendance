@@ -39,6 +39,7 @@ final class AuthController extends BaseController
         $result = $this->service->login(
             email: new Email($validated['email']),
             password: $validated['password'],
+            request: $request,
         );
 
         return ApiResponse::success($result);

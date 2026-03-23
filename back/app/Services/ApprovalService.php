@@ -10,7 +10,6 @@ use App\Models\PaidLeaveGrant;
 use App\Models\PaidLeaveRequest;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
