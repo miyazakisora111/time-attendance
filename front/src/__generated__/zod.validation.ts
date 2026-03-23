@@ -217,6 +217,7 @@ export const validationSchemas = {
         .min(1, `${labelOf("to")}は必須です。`),
     }),
   AttendanceResponse: generatedComponents.schemas.AttendanceResponse.extend({
+    id: z.string().trim().optional(),
     userId: z
       .string()
       .trim()
@@ -510,7 +511,10 @@ export const validationSchemas = {
       .min(1, `${labelOf("name")}は必須です。`),
   }),
   ErrorResponse: generatedComponents.schemas.ErrorResponse.extend({
-    message: z.string().trim().optional(),
+    message: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("message")}は必須です。`),
   }),
   LoginHistoryResponse: generatedComponents.schemas.LoginHistoryResponse.extend(
     {
@@ -556,7 +560,10 @@ export const validationSchemas = {
       ),
   }),
   LoginResponse: generatedComponents.schemas.LoginResponse.extend({
-    token: z.string().trim().optional(),
+    token: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("token")}は必須です。`),
   }),
   LogoutResponse: generatedComponents.schemas.LogoutResponse.extend({
     message: z.string().trim().optional(),
@@ -848,18 +855,19 @@ export const validationSchemas = {
   }),
   ValidationErrorResponse:
     generatedComponents.schemas.ValidationErrorResponse.extend({
-      message: z.string().trim().optional(),
-      errors: z
-        .record(
-          z.string(),
-          z.array(
-            z
-              .string()
-              .trim()
-              .min(1, `${labelOf("item")}は必須です。`),
-          ),
-        )
-        .optional(),
+      message: z
+        .string()
+        .trim()
+        .min(1, `${labelOf("message")}は必須です。`),
+      errors: z.record(
+        z.string(),
+        z.array(
+          z
+            .string()
+            .trim()
+            .min(1, `${labelOf("item")}は必須です。`),
+        ),
+      ),
     }),
 } as const;
 

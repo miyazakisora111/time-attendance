@@ -1,3 +1,4 @@
+# 退勤打刻リクエスト。
 AttendanceClockOutRequest:
   type: object
   required:
@@ -7,6 +8,8 @@ AttendanceClockOutRequest:
     workDate:
       type: string
       format: date
+      description: 勤務日（YYYY-MM-DD）
     endTime:
       type: string
       format: date-time
+      description: 退勤日時（ISO 8601）

@@ -1,3 +1,6 @@
+# ダッシュボードからの打刻リクエスト。
+# action は ClockAction enum（in / out / breakStart / breakEnd）を指定する。
+# レスポンスは更新後の DashboardResponse 全体を返す。
 DashboardClockRequest:
   type: object
   required:
@@ -5,3 +8,4 @@ DashboardClockRequest:
   properties:
     action:
       $ref: "../../enums/ClockAction.yaml#/ClockAction"
+      description: 打刻アクション種別

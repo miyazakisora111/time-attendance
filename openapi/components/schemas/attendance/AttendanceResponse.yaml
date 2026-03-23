@@ -1,32 +1,45 @@
+# 勤怠レコードの表示用レスポンス。
+# バックエンドの Attendance::toLocalTimePayload() が生成する。
+# タイムゾーン変換済みのローカル時刻で返す設計。
+# clockStatus は AttendanceBreak テーブルの状態も加味して解決される。
 AttendanceResponse:
   type: object
+  description: 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。
   required:
     - userId
     - workDate
     - startTime
     - clockStatus
   properties:
+    id:
+      type: string
+      format: uuid
+      description: 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。
     userId:
       type: string
       format: uuid
+      description: 対象ユーザー ID。
     workDate:
       type: string
       format: date
+      description: 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。
     clockStatus:
       $ref: "../../enums/ClockStatus.yaml#/ClockStatus"
     startTime:
       type: string
       format: date-time
       nullable: true
+      description: 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
     endTime:
       type: string
       format: date-time
       nullable: true
+      description: 退勤日時（ISO 8601）。未退勤の場合は null。
     breakMinutes:
       type: integer
       nullable: true
-      description: 休憩合計(分)
+      description: 休憩合計（分）。AttendanceBreak から再計算される。
     workedMinutes:
       type: integer
       nullable: true
-      description: 実働時間(分)
+      description: 実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。

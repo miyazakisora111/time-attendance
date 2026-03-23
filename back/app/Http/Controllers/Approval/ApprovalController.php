@@ -48,11 +48,11 @@ final class ApprovalController extends BaseController
     /**
      * 有給休暇申請を承認する。
      */
-    public function approvePaidLeave(string $paidLeaveRequest): JsonResponse
+    public function approvePaidLeave(string $paidLeaveRequestId): JsonResponse
     {
         $result = $this->service->approvePaidLeaveRequest(
             approver: $this->resolveUser(),
-            requestId: $paidLeaveRequest,
+            requestId: $paidLeaveRequestId,
         );
 
         return ApiResponse::success($result, '申請を承認しました。');
@@ -61,11 +61,11 @@ final class ApprovalController extends BaseController
     /**
      * 有給休暇申請を却下する。
      */
-    public function rejectPaidLeave(string $paidLeaveRequest): JsonResponse
+    public function rejectPaidLeave(string $paidLeaveRequestId): JsonResponse
     {
         $result = $this->service->rejectPaidLeaveRequest(
             approver: $this->resolveUser(),
-            requestId: $paidLeaveRequest,
+            requestId: $paidLeaveRequestId,
         );
 
         return ApiResponse::success($result, '申請を却下しました。');
@@ -74,11 +74,11 @@ final class ApprovalController extends BaseController
     /**
      * 有給休暇申請をキャンセルする。
      */
-    public function cancelPaidLeave(string $paidLeaveRequest): JsonResponse
+    public function cancelPaidLeave(string $paidLeaveRequestId): JsonResponse
     {
         $result = $this->service->cancelPaidLeaveRequest(
             user: $this->resolveUser(),
-            requestId: $paidLeaveRequest,
+            requestId: $paidLeaveRequestId,
         );
 
         return ApiResponse::success($result, '申請をキャンセルしました。');
@@ -100,11 +100,11 @@ final class ApprovalController extends BaseController
     /**
      * 残業申請を承認する。
      */
-    public function approveOvertime(string $overtimeRequest): JsonResponse
+    public function approveOvertime(string $overtimeRequestId): JsonResponse
     {
         $result = $this->service->approveOvertimeRequest(
             approver: $this->resolveUser(),
-            requestId: $overtimeRequest,
+            requestId: $overtimeRequestId,
         );
 
         return ApiResponse::success($result, '申請を承認しました。');
@@ -113,11 +113,11 @@ final class ApprovalController extends BaseController
     /**
      * 残業申請を差戻す。
      */
-    public function returnOvertime(string $overtimeRequest): JsonResponse
+    public function returnOvertime(string $overtimeRequestId): JsonResponse
     {
         $result = $this->service->returnOvertimeRequest(
             approver: $this->resolveUser(),
-            requestId: $overtimeRequest,
+            requestId: $overtimeRequestId,
         );
 
         return ApiResponse::success($result, '申請を差戻しました。');
@@ -126,11 +126,11 @@ final class ApprovalController extends BaseController
     /**
      * 残業申請をキャンセルする。
      */
-    public function cancelOvertime(string $overtimeRequest): JsonResponse
+    public function cancelOvertime(string $overtimeRequestId): JsonResponse
     {
         $result = $this->service->cancelOvertimeRequest(
             user: $this->resolveUser(),
-            requestId: $overtimeRequest,
+            requestId: $overtimeRequestId,
         );
 
         return ApiResponse::success($result, '申請をキャンセルしました。');

@@ -3,7 +3,7 @@ import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchAuthMe, login, logout } from '@/api/auth.api';
 import { toAuthUser } from '@/features/auth/mappers/toAuthUser';
 import type { LoginResult } from '@/domain/auth/types';
-import type { LogoutApi200 } from '@/__generated__/model/logoutApi200';
+import type { LogoutResponse } from '@/__generated__/model/logoutResponse';
 import type { LoginRequest } from '@/__generated__/model';
 
 /**
@@ -45,7 +45,7 @@ export const useLogin = (
  * ログアウト
  */
 export const useLogout = (
-    options?: UseMutationOptions<LogoutApi200, Error, void>,
+    options?: UseMutationOptions<LogoutResponse, Error, void>,
 ) => useMutation({
     mutationKey: authQueryKeys.logout(),
     mutationFn: () => logout(),

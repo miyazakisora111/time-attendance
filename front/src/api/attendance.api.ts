@@ -1,8 +1,9 @@
 import { getAttendance } from '@/__generated__/attendance/attendance';
 import type {
     AttendanceResponse,
-    AttendanceClockInRequest,
-    AttendanceClockOutRequest,
+    AttendanceClockInBodyBody,
+    AttendanceClockOutBodyBody,
+    ListAttendances200,
 } from '@/__generated__/model';
 import { call } from '@/lib/http/result';
 import { customInstance } from '@/lib/http/client';
@@ -10,13 +11,13 @@ import { customInstance } from '@/lib/http/client';
 const client = getAttendance();
 
 /** 勤怠を取得 */
-export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.todayAttendanceApi());
+export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.getTodayAttendance());
 
 /** 出勤打刻 */
-export const clockIn = (payload: AttendanceClockInRequest) => call<AttendanceResponse>(() => client.clockInApi(payload));
+export const clockIn = (payload: AttendanceClockInBodyBody) => call<AttendanceResponse>(() => client.createClockIn(payload));
 
 /** 退勤打刻 */
-export const clockOut = (payload: AttendanceClockOutRequest) => call<AttendanceResponse>(() => client.clockOutApi(payload));
+export const clockOut = (payload: AttendanceClockOutBodyBody) => call<AttendanceResponse>(() => client.createClockOut(payload));
 
 /** 休憩開始 */
 export const breakStart = () =>
@@ -28,4 +29,4 @@ export const breakEnd = () =>
 
 /** 勤怠一覧取得 */
 export const fetchAttendanceList = (from: string, to: string) =>
-    call<AttendanceResponse[]>(() => client.listAttendancesApi({ from, to }));
+    call<ListAttendances200>(() => client.listAttendances({ from, to }));

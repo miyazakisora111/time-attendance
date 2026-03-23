@@ -88,7 +88,7 @@ const PaidLeaveFormCard: React.FC<{
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
         onSubmit({
-            leave_date: fd.get('leave_date') as string,
+            leaveDate: fd.get('leave_date') as string,
             days: Number(fd.get('days')),
             reason: (fd.get('reason') as string) || undefined,
         });
@@ -135,9 +135,9 @@ const OvertimeFormCard: React.FC<{
         e.preventDefault();
         const fd = new FormData(e.currentTarget);
         onSubmit({
-            work_date: fd.get('work_date') as string,
-            start_time: fd.get('start_time') as string,
-            end_time: fd.get('end_time') as string,
+            workDate: fd.get('work_date') as string,
+            startTime: fd.get('start_time') as string,
+            endTime: fd.get('end_time') as string,
             reason: (fd.get('reason') as string) || undefined,
         });
     };

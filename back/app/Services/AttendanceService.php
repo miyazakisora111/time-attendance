@@ -10,7 +10,6 @@ use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use App\Models\AttendanceBreak;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
@@ -103,7 +102,10 @@ final class AttendanceService extends BaseService
             ->first();
 
         return $attendance?->toLocalTimePayload() ?? [
-            'clock_status' => 'out',
+            'userId' => $user->id,
+            'workDate' => $today,
+            'clockStatus' => 'out',
+            'startTime' => null,
         ];
     }
 
@@ -193,12 +195,36 @@ final class AttendanceService extends BaseService
     public function store(User $user, array $input): array
     {
         return $this->transaction(function () use ($user, $input): array {
-            $payload = $this->buildAttendancePayload($input);
+            $timezone = $this->resolveTimezone($user->timezone ?? null);
+            $workDate = (string) $input['workDate'];
+
+            $clockInAt = CarbonImmutable::parse($input['startTime']);
+            $clockOutAt = isset($input['endTime']) && $input['endTime'] !== null
+                ? CarbonImmutable::parse($input['endTime'])
+                : null;
+
+            if ($clockOutAt !== null && $clockOutAt->lte($clockInAt)) {
+                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
+            }
+
+            $workedMinutes = null;
+            if ($clockOutAt !== null) {
+                $workedMinutes = max(0, $clockInAt->diffInMinutes($clockOutAt));
+            }
 
             $attendance = Attendance::query()->create([
                 'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
-                ...$payload,
+                'work_date' => $workDate,
+                'work_timezone' => $timezone,
+                'clock_in_at' => $clockInAt,
+                'clock_out_at' => $clockOutAt,
+                'break_minutes' => 0,
+                'worked_minutes' => $workedMinutes,
+                'note' => $input['note'] ?? null,
+                // 旧カラム互換
+                'start_time' => $clockInAt->setTimezone($timezone)->format('H:i:s'),
+                'end_time' => $clockOutAt?->setTimezone($timezone)->format('H:i:s'),
             ]);
 
             return $attendance->fresh()->toLocalTimePayload();
@@ -212,73 +238,39 @@ final class AttendanceService extends BaseService
         }
 
         return $this->transaction(function () use ($attendance, $input): array {
-            $base = [
-                'work_date' => $attendance->work_date?->toDateString(),
-                'clock_in_local_time' => $attendance->clock_in_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i'),
-                'clock_out_local_time' => $attendance->clock_out_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i'),
-                'clock_out_next_day' => $attendance->isCrossDayShift(),
-                'work_timezone' => $this->resolveTimezone($attendance->work_timezone),
-                'break_minutes' => $attendance->break_minutes,
-                'note' => $attendance->note,
-            ];
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
 
-            $payload = $this->buildAttendancePayload(array_merge($base, $input));
-            $attendance->update($payload);
+            $clockInAt = isset($input['startTime']) && $input['startTime'] !== null
+                ? CarbonImmutable::parse($input['startTime'])
+                : $attendance->clock_in_at;
+
+            $clockOutAt = array_key_exists('endTime', $input)
+                ? ($input['endTime'] !== null ? CarbonImmutable::parse($input['endTime']) : null)
+                : $attendance->clock_out_at;
+
+            if ($clockOutAt !== null && $clockInAt !== null && $clockOutAt->lte($clockInAt)) {
+                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
+            }
+
+            $breakMinutes = $attendance->break_minutes ?? 0;
+            $workedMinutes = null;
+            if ($clockInAt !== null && $clockOutAt !== null) {
+                $workedMinutes = max(0, $clockInAt->diffInMinutes($clockOutAt) - $breakMinutes);
+            }
+
+            $attendance->update([
+                'clock_in_at' => $clockInAt,
+                'clock_out_at' => $clockOutAt,
+                'worked_minutes' => $workedMinutes,
+                'note' => $input['note'] ?? $attendance->note,
+                // 旧カラム互換
+                'start_time' => $clockInAt?->setTimezone($timezone)->format('H:i:s'),
+                'end_time' => $clockOutAt?->setTimezone($timezone)->format('H:i:s'),
+            ]);
 
             return $attendance->fresh()->toLocalTimePayload();
         });
     }
 
-    private function buildAttendancePayload(array $input): array
-    {
-        $timezone = $this->resolveTimezone(Arr::get($input, 'work_timezone'));
-        $workDate = (string) Arr::get($input, 'work_date');
-        $clockInLocal = (string) Arr::get($input, 'clock_in_local_time');
-        $clockOutLocal = Arr::get($input, 'clock_out_local_time');
-        $clockOutNextDay = (bool) Arr::get($input, 'clock_out_next_day', false);
-        $breakMinutes = (int) Arr::get($input, 'break_minutes', 0);
-
-        $clockInAt = $this->parseLocalDateTime($workDate, $clockInLocal, $timezone);
-
-        $clockOutAt = null;
-        if (is_string($clockOutLocal) && $clockOutLocal !== '') {
-            $clockOutDate = $clockOutNextDay
-                ? $clockInAt->addDay()->toDateString()
-                : $workDate;
-            $clockOutAt = $this->parseLocalDateTime($clockOutDate, $clockOutLocal, $timezone);
-
-            if ($clockOutAt->lte($clockInAt)) {
-                throw new DomainException('退勤時刻は出勤時刻より後である必要があります', 'INVALID_CLOCK_OUT_TIME');
-            }
-        }
-
-        $workedMinutes = null;
-        if ($clockOutAt !== null) {
-            $workedMinutes = max(0, $clockInAt->diffInMinutes($clockOutAt) - $breakMinutes);
-        }
-
-        return [
-            'work_date' => $workDate,
-            'work_timezone' => $timezone,
-            'clock_in_at' => $clockInAt,
-            'clock_out_at' => $clockOutAt,
-            'break_minutes' => $breakMinutes,
-            'worked_minutes' => $workedMinutes,
-            'note' => Arr::get($input, 'note'),
-            // 旧カラム互換。将来的には削除する。
-            'start_time' => $clockInAt->format('H:i:s'),
-            'end_time' => $clockOutAt?->format('H:i:s'),
-        ];
-    }
-
-    private function parseLocalDateTime(string $date, string $time, string $timezone): CarbonImmutable
-    {
-        $dateTime = CarbonImmutable::createFromFormat('Y-m-d H:i', sprintf('%s %s', $date, $time), $timezone);
-
-        if ($dateTime === false) {
-            throw new DomainException('日時の解釈に失敗しました', 'DATETIME_PARSE_ERROR');
-        }
-
-        return $dateTime;
-    }
+    private function resolveTimezone(?string $tz): string
 }

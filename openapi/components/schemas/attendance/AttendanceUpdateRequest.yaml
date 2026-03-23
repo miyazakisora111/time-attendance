@@ -1,3 +1,5 @@
+# 既存の勤怠レコード部分更新リクエスト。
+# PATCH なので送信したフィールドのみ更新される。
 AttendanceUpdateRequest:
   type: object
   properties:
@@ -5,11 +7,14 @@ AttendanceUpdateRequest:
       type: string
       format: date-time
       nullable: true
+      description: 出勤日時（ISO 8601）
     endTime:
       type: string
       format: date-time
       nullable: true
+      description: 退勤日時（ISO 8601）
     note:
       type: string
       nullable: true
       maxLength: 500
+      description: 備考

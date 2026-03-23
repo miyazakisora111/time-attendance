@@ -6,4 +6,4 @@ const client = getTeam();
 
 /** チームメンバー一覧を取得 */
 export const fetchTeamMembers = () =>
-  call<TeamMembersResponse>(() => client.getTeamMembersApi());
+  call<TeamMembersResponse>(() => client.listTeamMembers());

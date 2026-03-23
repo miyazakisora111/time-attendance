@@ -1,3 +1,5 @@
+# 出勤打刻リクエスト。ダッシュボード打刻（ClockAction=in）とは別ルートで、
+# 明示的に workDate と startTime を指定して出勤記録を作成する。
 AttendanceClockInRequest:
   type: object
   required:
@@ -7,6 +9,8 @@ AttendanceClockInRequest:
     workDate:
       type: string
       format: date
+      description: 勤務日（YYYY-MM-DD）
     startTime:
       type: string
       format: date-time
+      description: 出勤日時（ISO 8601）

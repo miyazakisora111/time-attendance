@@ -1,6 +1,10 @@
+# ログイン成功レスポンス。JWT トークンを返す。
+# ApiResponse エンベロープの data フィールドに含まれる。
 LoginResponse:
   type: object
+  required:
+    - token
   properties:
     token:
       type: string
-      description: JWT access token
+      description: JWT access token。Authorization ヘッダーに Bearer <token> として送信する。

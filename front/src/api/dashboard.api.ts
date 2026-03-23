@@ -7,4 +7,4 @@ const client = getDashboard();
 /**
  * ダッシュボード情報を取得
  */
-export const fetchDashboard = () => call<DashboardResponse>(() => client.getDashboardApi());
+export const fetchDashboard = () => call<DashboardResponse>(() => client.getDashboard());

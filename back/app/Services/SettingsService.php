@@ -106,11 +106,11 @@ final class SettingsService extends BaseService
      */
     public function changePassword(User $user, array $input): array
     {
-        if (!Hash::check((string) $input['current_password'], $user->password)) {
+        if (!Hash::check((string) $input['currentPassword'], $user->password)) {
             throw new DomainException('現在のパスワードが正しくありません。', 'INVALID_CURRENT_PASSWORD');
         }
 
-        $user->password = (string) $input['new_password'];
+        $user->password = (string) $input['newPassword'];
         $user->save();
 
         $this->log('パスワード変更', ['user_id' => $user->id]);

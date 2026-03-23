@@ -64,8 +64,8 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             case 'in': {
                 clockInMutate(
                     {
-                        start_time: now.toISOString(),
-                        work_date: workDate,
+                        startTime: now.toISOString(),
+                        workDate: workDate,
                     },
                     { onSuccess, onError }
                 );
@@ -74,18 +74,18 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             case 'out': {
                 clockOutMutate(
                     {
-                        end_time: now.toISOString(),
-                        work_date: workDate,
+                        endTime: now.toISOString(),
+                        workDate: workDate,
                     },
                     { onSuccess, onError }
                 );
                 break;
             }
-            case 'break_start': {
+            case 'breakStart': {
                 breakStartMutate(undefined, { onSuccess, onError });
                 break;
             }
-            case 'break_end': {
+            case 'breakEnd': {
                 breakEndMutate(undefined, { onSuccess, onError });
                 break;
             }

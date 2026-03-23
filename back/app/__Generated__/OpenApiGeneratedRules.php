@@ -98,6 +98,7 @@ final class OpenApiGeneratedRules
             'to' => ['required', 'string', 'date_format:Y-m-d'],
         ],
         'AttendanceResponse' => [
+            'id' => ['required', 'string'],
             'userId' => ['required', 'string'],
             'workDate' => ['required', 'string'],
             'clockStatus' => ['required', 'in:out,in,break'],
@@ -454,6 +455,7 @@ final class OpenApiGeneratedRules
             'to' => '終了日',
         ],
         'AttendanceResponse' => [
+            'id' => 'ユーザーID',
             'userId' => 'userId',
             'workDate' => 'workDate',
             'clockStatus' => '打刻状態',

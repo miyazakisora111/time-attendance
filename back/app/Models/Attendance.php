@@ -272,35 +272,23 @@ class Attendance extends Model
     /**
      * 指定されたローカルタイムゾーンで打刻情報を返す。
      *
+     * OpenAPI AttendanceResponse スキーマに準拠したキー名（camelCase）で返す。
+     *
      * @return array<string, mixed>
      */
     public function toLocalTimePayload(): array
     {
         $timezone = $this->work_timezone ?? config('app.timezone', 'Asia/Tokyo');
 
-        $clockInLocal = $this->clock_in_at?->setTimezone($timezone)->format('H:i')
-            ?? (is_string($this->start_time) ? substr($this->start_time, 0, 5) : null);
-
-        $clockOutLocal = $this->clock_out_at?->setTimezone($timezone)->format('H:i')
-            ?? (is_string($this->end_time) ? substr($this->end_time, 0, 5) : null);
-
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'work_date' => $this->work_date?->toDateString(),
-            'work_timezone' => $timezone,
-            'clock_status' => $this->resolveClockStatus(),
-            'clock_in_at' => $this->clock_in_at?->setTimezone($timezone)->toIso8601String(),
-            'clock_out_at' => $this->clock_out_at?->setTimezone($timezone)->toIso8601String(),
-            'clock_in_local_time' => $clockInLocal,
-            'clock_out_local_time' => $clockOutLocal,
-            // OpenAPI spec 互換（フロントエンドが参照するフィールド）
-            'start_time' => $clockInLocal,
-            'end_time' => $clockOutLocal,
-            'clock_out_next_day' => $this->isCrossDayShift(),
-            'break_minutes' => $this->break_minutes,
-            'worked_minutes' => $this->worked_minutes,
-            'note' => $this->note,
+            'userId' => $this->user_id,
+            'workDate' => $this->work_date?->toDateString(),
+            'clockStatus' => $this->resolveClockStatus(),
+            'startTime' => $this->clock_in_at?->setTimezone($timezone)->toIso8601String(),
+            'endTime' => $this->clock_out_at?->setTimezone($timezone)->toIso8601String(),
+            'breakMinutes' => $this->break_minutes,
+            'workedMinutes' => $this->worked_minutes,
         ];
     }
 }

@@ -6,8 +6,8 @@ import type { ClockAction, AttendanceStatus, ClockStatus } from '@/__generated__
 export const actionToAttendanceStatusMap = {
   in: 'working',
   out: 'out',
-  break_start: 'break',
-  break_end: 'working',
+  breakStart: 'break',
+  breakEnd: 'working',
 } as const satisfies Record<ClockAction, AttendanceStatus>;
 
 /**

@@ -52,8 +52,8 @@ final class DashboardController extends BaseController
         $result = match ($action) {
             'in' => $this->attendanceService->clockIn($user),
             'out' => $this->attendanceService->clockOut($user),
-            'break_start' => $this->attendanceService->breakStart($user),
-            'break_end' => $this->attendanceService->breakEnd($user),
+            'breakStart' => $this->attendanceService->breakStart($user),
+            'breakEnd' => $this->attendanceService->breakEnd($user),
             default => throw new \App\Exceptions\DomainException('不正な打刻アクションです', 'INVALID_CLOCK_ACTION'),
         };
 

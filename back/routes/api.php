@@ -25,7 +25,7 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,
 Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/authme', [AuthController::class, 'me']);
+    Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
 
     // Dashboard
@@ -34,18 +34,18 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
     // Attendance
     Route::prefix('attendances')->group(function () {
-        Route::get('/attendance', [AttendanceController::class, 'today']);
+        Route::get('/today', [AttendanceController::class, 'today']);
         Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
         Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
         Route::post('/break-start', [AttendanceController::class, 'breakStart']);
         Route::post('/break-end', [AttendanceController::class, 'breakEnd']);
         Route::get('/', [AttendanceController::class, 'index']);
         Route::post('/', [AttendanceController::class, 'store']);
-        Route::patch('/{attendance}', [AttendanceController::class, 'update']);
+        Route::patch('/{attendanceId}', [AttendanceController::class, 'update']);
     });
 
-    // Calendar
-    Route::get('/auth/calendar', [CalendarController::class, 'index']);
+    // Schedule
+    Route::get('/schedule/calendar', [CalendarController::class, 'index']);
 
     // Team
     Route::get('/team/members', [TeamController::class, 'index']);
@@ -59,15 +59,15 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     });
 
     // Approval
-    Route::prefix('approval')->group(function () {
+    Route::prefix('approvals')->group(function () {
         Route::get('/', [ApprovalController::class, 'index']);
         Route::post('/paid-leaves', [ApprovalController::class, 'createPaidLeave']);
-        Route::patch('/paid-leaves/{paidLeaveRequest}/approve', [ApprovalController::class, 'approvePaidLeave']);
-        Route::patch('/paid-leaves/{paidLeaveRequest}/reject', [ApprovalController::class, 'rejectPaidLeave']);
-        Route::patch('/paid-leaves/{paidLeaveRequest}/cancel', [ApprovalController::class, 'cancelPaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequestId}/approve', [ApprovalController::class, 'approvePaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequestId}/reject', [ApprovalController::class, 'rejectPaidLeave']);
+        Route::patch('/paid-leaves/{paidLeaveRequestId}/cancel', [ApprovalController::class, 'cancelPaidLeave']);
         Route::post('/overtime-requests', [ApprovalController::class, 'createOvertime']);
-        Route::patch('/overtime-requests/{overtimeRequest}/approve', [ApprovalController::class, 'approveOvertime']);
-        Route::patch('/overtime-requests/{overtimeRequest}/return', [ApprovalController::class, 'returnOvertime']);
-        Route::patch('/overtime-requests/{overtimeRequest}/cancel', [ApprovalController::class, 'cancelOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequestId}/approve', [ApprovalController::class, 'approveOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequestId}/return', [ApprovalController::class, 'returnOvertime']);
+        Route::patch('/overtime-requests/{overtimeRequestId}/cancel', [ApprovalController::class, 'cancelOvertime']);
     });
 });

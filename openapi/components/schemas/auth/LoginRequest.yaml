@@ -1,3 +1,5 @@
+# ログインリクエスト。認証不要（security: []）。
+# パスワードは英字+数字の混合を必須とする。
 LoginRequest:
   type: object
   required:
@@ -9,9 +11,11 @@ LoginRequest:
       format: email
       minLength: 1
       maxLength: 255
+      description: メールアドレス
     password:
       type: string
       format: password
       minLength: 8
       maxLength: 255
       pattern: '^(?=.*[A-Za-z])(?=.*\d).+$'
+      description: パスワード（英字+数字の混合必須）

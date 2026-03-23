@@ -1,6 +1,9 @@
+# 一覧系レスポンスに共通のページネーション情報。
+# フロントエンドはこの構造でページ送り UI を制御する。
+# 一覧系レスポンスは必ず { items: T[], pageInfo: PageInfo } の形式で返す。
 PageInfo:
   type: object
-  description: ページネーション情報
+  description: ページネーション情報。一覧系レスポンスに必ず付与される。
   required:
     - currentPage
     - perPage
@@ -10,20 +13,20 @@ PageInfo:
     currentPage:
       type: integer
       minimum: 1
-      description: 現在のページ番号
+      description: 現在のページ番号（1始まり）。
       example: 1
     perPage:
       type: integer
       minimum: 1
-      description: 1ページあたりの件数
+      description: 1ページあたりの件数。クエリパラメータ perPage で指定可能。
       example: 20
     totalItems:
       type: integer
       minimum: 0
-      description: 全件数
+      description: フィルター条件に合致する全件数。
       example: 100
     totalPages:
       type: integer
       minimum: 0
-      description: 全ページ数
+      description: 全ページ数（ceil(totalItems / perPage)）。
       example: 5

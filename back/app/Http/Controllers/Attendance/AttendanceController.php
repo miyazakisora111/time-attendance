@@ -123,11 +123,11 @@ final class AttendanceController extends BaseController
      * @param Attendance $attendance
      * @return JsonResponse
      */
-    public function update(AttendanceUpdateRequest $request, Attendance $attendance): JsonResponse
+    public function update(AttendanceUpdateRequest $request, Attendance $attendanceId): JsonResponse
     {
         $result = $this->service->update(
             user: $this->resolveUser(),
-            attendance: $attendance,
+            attendance: $attendanceId,
             input: $request->validated(),
         );
 

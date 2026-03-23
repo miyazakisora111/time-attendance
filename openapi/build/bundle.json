@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "TimeAttendance API",
-    "version": "1.0.0",
-    "description": "勤怠管理API",
+    "version": "1.1.0",
+    "description": "勤怠管理システムの REST API 定義。\n従業員の出退勤・休憩管理、有給休暇・残業の申請承認、\nダッシュボード集計、カレンダー、ユーザー設定を提供する。\n\n## 認証\nJWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信する。\n`/login` のみ認証不要。それ以外は全て認証必須。\n\n## エラーハンドリング\n- 401: トークン無効または期限切れ\n- 403: 権限不足（承認権限が必要な操作）\n- 404: 指定リソースが存在しない\n- 409: 状態の競合（二重打刻など）\n- 422: バリデーションエラー（フィールド別メッセージ付き）\n- 500: 予期しないサーバーエラー\n",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
@@ -38,32 +38,32 @@
   ],
   "tags": [
     {
-      "name": "Approval",
-      "description": "申請・承認API"
-    },
-    {
-      "name": "Attendance",
-      "description": "勤怠に関するAPI"
-    },
-    {
       "name": "Auth",
-      "description": "認証管理API"
+      "description": "認証・セッション管理。\nログイン時に JWT を発行し、ログアウト時に無効化する。\n`/login` のみ認証不要。\n"
     },
     {
       "name": "Dashboard",
-      "description": "ダッシュボードAPI"
+      "description": "ダッシュボード集計。\n当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。\n打刻アクション（出勤・退勤・休憩開始・休憩終了）もここから実行可能。\n"
+    },
+    {
+      "name": "Attendance",
+      "description": "勤怠の CRUD と打刻操作。\n出退勤・休憩の打刻、勤怠レコードの一覧取得・新規作成・更新を行う。\n"
     },
     {
       "name": "Schedule",
-      "description": "スケジュールAPI"
+      "description": "勤務スケジュール・カレンダー。\n指定年月のカレンダー（日毎の勤務状態・シフト情報・サマリー）を返す。\n"
+    },
+    {
+      "name": "Approval",
+      "description": "有給休暇・残業の申請と承認ワークフロー。\n申請者は作成・キャンセル、承認者は承認・却下・差戻しを行う。\n承認権限は Role ベースで制御。\n"
     },
     {
       "name": "Team",
-      "description": "チームAPI"
+      "description": "チームメンバー管理。\nログインユーザーが所属するチームのメンバー一覧と現在の勤務状態を返す。\n"
     },
     {
       "name": "Settings",
-      "description": "設定API"
+      "description": "ユーザー設定。\nプロフィール・通知・テーマ・言語設定の取得と更新、パスワード変更、ログイン履歴を提供する。\n"
     }
   ],
   "paths": {
@@ -91,14 +91,16 @@
                     "type": "string",
                     "format": "email",
                     "minLength": 1,
-                    "maxLength": 255
+                    "maxLength": 255,
+                    "description": "メールアドレス"
                   },
                   "password": {
                     "type": "string",
                     "format": "password",
                     "minLength": 8,
                     "maxLength": 255,
-                    "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$"
+                    "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$",
+                    "description": "パスワード（英字+数字の混合必須）"
                   }
                 }
               }
@@ -112,10 +114,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "token"
+                  ],
                   "properties": {
                     "token": {
                       "type": "string",
-                      "description": "JWT access token"
+                      "description": "JWT access token。Authorization ヘッダーに Bearer <token> として送信する。"
                     }
                   }
                 }
@@ -128,9 +133,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -144,18 +153,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -169,9 +192,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -214,9 +241,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -230,9 +261,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -341,9 +376,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -357,9 +396,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -385,6 +428,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                   "required": [
                     "userId",
                     "workDate",
@@ -392,13 +436,20 @@
                     "clockStatus"
                   ],
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                    },
                     "userId": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "description": "対象ユーザー ID。"
                     },
                     "workDate": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                     },
                     "clockStatus": {
                       "type": "string",
@@ -412,22 +463,24 @@
                     "startTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                     },
                     "endTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                     },
                     "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "休憩合計(分)"
+                      "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                     },
                     "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "実働時間(分)"
+                      "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                     }
                   }
                 }
@@ -440,9 +493,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -456,9 +513,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -490,11 +551,13 @@
                 "properties": {
                   "workDate": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "勤務日（YYYY-MM-DD）"
                   },
                   "startTime": {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "description": "出勤日時（ISO 8601）"
                   }
                 }
               }
@@ -508,6 +571,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                   "required": [
                     "userId",
                     "workDate",
@@ -515,13 +579,20 @@
                     "clockStatus"
                   ],
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                    },
                     "userId": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "description": "対象ユーザー ID。"
                     },
                     "workDate": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                     },
                     "clockStatus": {
                       "type": "string",
@@ -535,22 +606,24 @@
                     "startTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                     },
                     "endTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                     },
                     "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "休憩合計(分)"
+                      "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                     },
                     "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "実働時間(分)"
+                      "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                     }
                   }
                 }
@@ -563,9 +636,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -579,9 +656,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -595,18 +676,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -620,9 +715,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -654,11 +753,13 @@
                 "properties": {
                   "workDate": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "勤務日（YYYY-MM-DD）"
                   },
                   "endTime": {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "description": "退勤日時（ISO 8601）"
                   }
                 }
               }
@@ -672,6 +773,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                   "required": [
                     "userId",
                     "workDate",
@@ -679,13 +781,20 @@
                     "clockStatus"
                   ],
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                    },
                     "userId": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "description": "対象ユーザー ID。"
                     },
                     "workDate": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                     },
                     "clockStatus": {
                       "type": "string",
@@ -699,22 +808,24 @@
                     "startTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                     },
                     "endTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                     },
                     "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "休憩合計(分)"
+                      "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                     },
                     "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "実働時間(分)"
+                      "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                     }
                   }
                 }
@@ -727,9 +838,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -743,9 +858,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -759,18 +878,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -784,9 +917,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -866,6 +1003,7 @@
                       "type": "array",
                       "items": {
                         "type": "object",
+                        "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                         "required": [
                           "userId",
                           "workDate",
@@ -873,13 +1011,20 @@
                           "clockStatus"
                         ],
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                          },
                           "userId": {
                             "type": "string",
-                            "format": "uuid"
+                            "format": "uuid",
+                            "description": "対象ユーザー ID。"
                           },
                           "workDate": {
                             "type": "string",
-                            "format": "date"
+                            "format": "date",
+                            "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                           },
                           "clockStatus": {
                             "type": "string",
@@ -893,29 +1038,31 @@
                           "startTime": {
                             "type": "string",
                             "format": "date-time",
-                            "nullable": true
+                            "nullable": true,
+                            "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                           },
                           "endTime": {
                             "type": "string",
                             "format": "date-time",
-                            "nullable": true
+                            "nullable": true,
+                            "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                           },
                           "breakMinutes": {
                             "type": "integer",
                             "nullable": true,
-                            "description": "休憩合計(分)"
+                            "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                           },
                           "workedMinutes": {
                             "type": "integer",
                             "nullable": true,
-                            "description": "実働時間(分)"
+                            "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                           }
                         }
                       }
                     },
                     "pageInfo": {
                       "type": "object",
-                      "description": "ページネーション情報",
+                      "description": "ページネーション情報。一覧系レスポンスに必ず付与される。",
                       "required": [
                         "currentPage",
                         "perPage",
@@ -926,25 +1073,25 @@
                         "currentPage": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "現在のページ番号",
+                          "description": "現在のページ番号（1始まり）。",
                           "example": 1
                         },
                         "perPage": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "1ページあたりの件数",
+                          "description": "1ページあたりの件数。クエリパラメータ perPage で指定可能。",
                           "example": 20
                         },
                         "totalItems": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "全件数",
+                          "description": "フィルター条件に合致する全件数。",
                           "example": 100
                         },
                         "totalPages": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "全ページ数",
+                          "description": "全ページ数（ceil(totalItems / perPage)）。",
                           "example": 5
                         }
                       }
@@ -960,9 +1107,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -976,18 +1127,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -1001,9 +1166,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1033,21 +1202,25 @@
                 "properties": {
                   "workDate": {
                     "type": "string",
-                    "format": "date"
+                    "format": "date",
+                    "description": "勤務日（YYYY-MM-DD）"
                   },
                   "startTime": {
                     "type": "string",
-                    "format": "date-time"
+                    "format": "date-time",
+                    "description": "出勤日時（ISO 8601）"
                   },
                   "endTime": {
                     "type": "string",
                     "format": "date-time",
-                    "nullable": true
+                    "nullable": true,
+                    "description": "退勤日時（ISO 8601）。省略時は勤務中として扱う。"
                   },
                   "note": {
                     "type": "string",
                     "nullable": true,
-                    "maxLength": 500
+                    "maxLength": 500,
+                    "description": "備考（申請理由・特記事項など）"
                   }
                 }
               }
@@ -1061,6 +1234,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                   "required": [
                     "userId",
                     "workDate",
@@ -1068,13 +1242,20 @@
                     "clockStatus"
                   ],
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                    },
                     "userId": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "description": "対象ユーザー ID。"
                     },
                     "workDate": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                     },
                     "clockStatus": {
                       "type": "string",
@@ -1088,22 +1269,24 @@
                     "startTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                     },
                     "endTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                     },
                     "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "休憩合計(分)"
+                      "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                     },
                     "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "実働時間(分)"
+                      "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                     }
                   }
                 }
@@ -1116,9 +1299,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1132,18 +1319,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -1157,9 +1358,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1200,17 +1405,20 @@
                   "startTime": {
                     "type": "string",
                     "format": "date-time",
-                    "nullable": true
+                    "nullable": true,
+                    "description": "出勤日時（ISO 8601）"
                   },
                   "endTime": {
                     "type": "string",
                     "format": "date-time",
-                    "nullable": true
+                    "nullable": true,
+                    "description": "退勤日時（ISO 8601）"
                   },
                   "note": {
                     "type": "string",
                     "nullable": true,
-                    "maxLength": 500
+                    "maxLength": 500,
+                    "description": "備考"
                   }
                 }
               }
@@ -1224,6 +1432,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
                   "required": [
                     "userId",
                     "workDate",
@@ -1231,13 +1440,20 @@
                     "clockStatus"
                   ],
                   "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+                    },
                     "userId": {
                       "type": "string",
-                      "format": "uuid"
+                      "format": "uuid",
+                      "description": "対象ユーザー ID。"
                     },
                     "workDate": {
                       "type": "string",
-                      "format": "date"
+                      "format": "date",
+                      "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
                     },
                     "clockStatus": {
                       "type": "string",
@@ -1251,22 +1467,24 @@
                     "startTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
                     },
                     "endTime": {
                       "type": "string",
                       "format": "date-time",
-                      "nullable": true
+                      "nullable": true,
+                      "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
                     },
                     "breakMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "休憩合計(分)"
+                      "description": "休憩合計（分）。AttendanceBreak から再計算される。"
                     },
                     "workedMinutes": {
                       "type": "integer",
                       "nullable": true,
-                      "description": "実働時間(分)"
+                      "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
                     }
                   }
                 }
@@ -1279,9 +1497,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1295,9 +1517,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1311,18 +1537,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -1336,9 +1576,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1530,9 +1774,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1546,9 +1794,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1578,8 +1830,8 @@
                 ],
                 "properties": {
                   "action": {
-                    "type": "string",
                     "description": "打刻アクション種別",
+                    "type": "string",
                     "enum": [
                       "in",
                       "out",
@@ -1765,9 +2017,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1781,9 +2037,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -1797,18 +2057,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -1822,9 +2096,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2011,9 +2289,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2027,18 +2309,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -2052,9 +2348,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2144,9 +2444,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2160,9 +2464,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2303,9 +2611,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2319,9 +2631,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2534,9 +2850,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2550,18 +2870,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -2575,9 +2909,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2753,9 +3091,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2769,18 +3111,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -2794,9 +3150,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2893,7 +3253,7 @@
                     },
                     "pageInfo": {
                       "type": "object",
-                      "description": "ページネーション情報",
+                      "description": "ページネーション情報。一覧系レスポンスに必ず付与される。",
                       "required": [
                         "currentPage",
                         "perPage",
@@ -2904,25 +3264,25 @@
                         "currentPage": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "現在のページ番号",
+                          "description": "現在のページ番号（1始まり）。",
                           "example": 1
                         },
                         "perPage": {
                           "type": "integer",
                           "minimum": 1,
-                          "description": "1ページあたりの件数",
+                          "description": "1ページあたりの件数。クエリパラメータ perPage で指定可能。",
                           "example": 20
                         },
                         "totalItems": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "全件数",
+                          "description": "フィルター条件に合致する全件数。",
                           "example": 100
                         },
                         "totalPages": {
                           "type": "integer",
                           "minimum": 0,
-                          "description": "全ページ数",
+                          "description": "全ページ数（ceil(totalItems / perPage)）。",
                           "example": 5
                         }
                       }
@@ -2938,9 +3298,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -2954,9 +3318,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3318,9 +3686,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3334,9 +3706,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3465,9 +3841,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3481,18 +3861,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -3506,9 +3900,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3616,9 +4014,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3632,9 +4034,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3648,9 +4054,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3664,9 +4074,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3774,9 +4188,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3790,9 +4208,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3806,9 +4228,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3822,9 +4248,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3932,9 +4362,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3948,9 +4382,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3964,9 +4402,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -3980,9 +4422,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4124,9 +4570,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4140,18 +4590,32 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "バリデーションエラーの総括メッセージ。",
                       "example": "バリデーションエラー"
                     },
                     "errors": {
                       "type": "object",
+                      "description": "フィールド名 → エラーメッセージ配列のマップ。",
                       "additionalProperties": {
                         "type": "array",
                         "items": {
                           "type": "string"
                         }
+                      },
+                      "example": {
+                        "email": [
+                          "メールアドレスは必須です。"
+                        ],
+                        "password": [
+                          "パスワードは8文字以上で入力してください。"
+                        ]
                       }
                     }
                   }
@@ -4165,9 +4629,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4283,9 +4751,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4299,9 +4771,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4315,9 +4791,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4331,9 +4811,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4449,9 +4933,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4465,9 +4953,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4481,9 +4973,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4497,9 +4993,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4615,9 +5115,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4631,9 +5135,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4647,9 +5155,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4663,9 +5175,13 @@
               "application/json": {
                 "schema": {
                   "type": "object",
+                  "required": [
+                    "message"
+                  ],
                   "properties": {
                     "message": {
                       "type": "string",
+                      "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                       "example": "エラーが発生しました"
                     }
                   }
@@ -4782,23 +5298,28 @@
             "type": "string",
             "format": "email",
             "minLength": 1,
-            "maxLength": 255
+            "maxLength": 255,
+            "description": "メールアドレス"
           },
           "password": {
             "type": "string",
             "format": "password",
             "minLength": 8,
             "maxLength": 255,
-            "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$"
+            "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$",
+            "description": "パスワード（英字+数字の混合必須）"
           }
         }
       },
       "LoginResponse": {
         "type": "object",
+        "required": [
+          "token"
+        ],
         "properties": {
           "token": {
             "type": "string",
-            "description": "JWT access token"
+            "description": "JWT access token。Authorization ヘッダーに Bearer <token> として送信する。"
           }
         }
       },
@@ -4897,11 +5418,13 @@
         "properties": {
           "workDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "勤務日（YYYY-MM-DD）"
           },
           "startTime": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "出勤日時（ISO 8601）"
           }
         }
       },
@@ -4914,11 +5437,13 @@
         "properties": {
           "workDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "勤務日（YYYY-MM-DD）"
           },
           "endTime": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "退勤日時（ISO 8601）"
           }
         }
       },
@@ -4931,21 +5456,25 @@
         "properties": {
           "workDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "勤務日（YYYY-MM-DD）"
           },
           "startTime": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "description": "出勤日時（ISO 8601）"
           },
           "endTime": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "description": "退勤日時（ISO 8601）。省略時は勤務中として扱う。"
           },
           "note": {
             "type": "string",
             "nullable": true,
-            "maxLength": 500
+            "maxLength": 500,
+            "description": "備考（申請理由・特記事項など）"
           }
         }
       },
@@ -4955,22 +5484,26 @@
           "startTime": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "description": "出勤日時（ISO 8601）"
           },
           "endTime": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "description": "退勤日時（ISO 8601）"
           },
           "note": {
             "type": "string",
             "nullable": true,
-            "maxLength": 500
+            "maxLength": 500,
+            "description": "備考"
           }
         }
       },
       "AttendanceResponse": {
         "type": "object",
+        "description": "勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。",
         "required": [
           "userId",
           "workDate",
@@ -4978,13 +5511,20 @@
           "clockStatus"
         ],
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。"
+          },
           "userId": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "description": "対象ユーザー ID。"
           },
           "workDate": {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "description": "勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。"
           },
           "clockStatus": {
             "type": "string",
@@ -4998,22 +5538,24 @@
           "startTime": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "description": "出勤日時（ISO 8601）。ローカルタイムゾーンで返す。"
           },
           "endTime": {
             "type": "string",
             "format": "date-time",
-            "nullable": true
+            "nullable": true,
+            "description": "退勤日時（ISO 8601）。未退勤の場合は null。"
           },
           "breakMinutes": {
             "type": "integer",
             "nullable": true,
-            "description": "休憩合計(分)"
+            "description": "休憩合計（分）。AttendanceBreak から再計算される。"
           },
           "workedMinutes": {
             "type": "integer",
             "nullable": true,
-            "description": "実働時間(分)"
+            "description": "実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。"
           }
         }
       },
@@ -5041,8 +5583,8 @@
         ],
         "properties": {
           "action": {
-            "type": "string",
             "description": "打刻アクション種別",
+            "type": "string",
             "enum": [
               "in",
               "out",
@@ -6589,34 +7131,52 @@
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "message"
+        ],
         "properties": {
           "message": {
             "type": "string",
+            "description": "ユーザー向けエラーメッセージ。日本語で返される。",
             "example": "エラーが発生しました"
           }
         }
       },
       "ValidationErrorResponse": {
         "type": "object",
+        "required": [
+          "message",
+          "errors"
+        ],
         "properties": {
           "message": {
             "type": "string",
+            "description": "バリデーションエラーの総括メッセージ。",
             "example": "バリデーションエラー"
           },
           "errors": {
             "type": "object",
+            "description": "フィールド名 → エラーメッセージ配列のマップ。",
             "additionalProperties": {
               "type": "array",
               "items": {
                 "type": "string"
               }
+            },
+            "example": {
+              "email": [
+                "メールアドレスは必須です。"
+              ],
+              "password": [
+                "パスワードは8文字以上で入力してください。"
+              ]
             }
           }
         }
       },
       "PageInfo": {
         "type": "object",
-        "description": "ページネーション情報",
+        "description": "ページネーション情報。一覧系レスポンスに必ず付与される。",
         "required": [
           "currentPage",
           "perPage",
@@ -6627,25 +7187,25 @@
           "currentPage": {
             "type": "integer",
             "minimum": 1,
-            "description": "現在のページ番号",
+            "description": "現在のページ番号（1始まり）。",
             "example": 1
           },
           "perPage": {
             "type": "integer",
             "minimum": 1,
-            "description": "1ページあたりの件数",
+            "description": "1ページあたりの件数。クエリパラメータ perPage で指定可能。",
             "example": 20
           },
           "totalItems": {
             "type": "integer",
             "minimum": 0,
-            "description": "全件数",
+            "description": "フィルター条件に合致する全件数。",
             "example": 100
           },
           "totalPages": {
             "type": "integer",
             "minimum": 0,
-            "description": "全ページ数",
+            "description": "全ページ数（ceil(totalItems / perPage)）。",
             "example": 5
           }
         }
@@ -6764,14 +7324,16 @@
                   "type": "string",
                   "format": "email",
                   "minLength": 1,
-                  "maxLength": 255
+                  "maxLength": 255,
+                  "description": "メールアドレス"
                 },
                 "password": {
                   "type": "string",
                   "format": "password",
                   "minLength": 8,
                   "maxLength": 255,
-                  "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$"
+                  "pattern": "^(?=.*[A-Za-z])(?=.*\\d).+$",
+                  "description": "パスワード（英字+数字の混合必須）"
                 }
               }
             }
@@ -6791,11 +7353,13 @@
               "properties": {
                 "workDate": {
                   "type": "string",
-                  "format": "date"
+                  "format": "date",
+                  "description": "勤務日（YYYY-MM-DD）"
                 },
                 "startTime": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "出勤日時（ISO 8601）"
                 }
               }
             }
@@ -6815,11 +7379,13 @@
               "properties": {
                 "workDate": {
                   "type": "string",
-                  "format": "date"
+                  "format": "date",
+                  "description": "勤務日（YYYY-MM-DD）"
                 },
                 "endTime": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "退勤日時（ISO 8601）"
                 }
               }
             }
@@ -6839,21 +7405,25 @@
               "properties": {
                 "workDate": {
                   "type": "string",
-                  "format": "date"
+                  "format": "date",
+                  "description": "勤務日（YYYY-MM-DD）"
                 },
                 "startTime": {
                   "type": "string",
-                  "format": "date-time"
+                  "format": "date-time",
+                  "description": "出勤日時（ISO 8601）"
                 },
                 "endTime": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "description": "退勤日時（ISO 8601）。省略時は勤務中として扱う。"
                 },
                 "note": {
                   "type": "string",
                   "nullable": true,
-                  "maxLength": 500
+                  "maxLength": 500,
+                  "description": "備考（申請理由・特記事項など）"
                 }
               }
             }
@@ -6870,17 +7440,20 @@
                 "startTime": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "description": "出勤日時（ISO 8601）"
                 },
                 "endTime": {
                   "type": "string",
                   "format": "date-time",
-                  "nullable": true
+                  "nullable": true,
+                  "description": "退勤日時（ISO 8601）"
                 },
                 "note": {
                   "type": "string",
                   "nullable": true,
-                  "maxLength": 500
+                  "maxLength": 500,
+                  "description": "備考"
                 }
               }
             }
@@ -6898,8 +7471,8 @@
               ],
               "properties": {
                 "action": {
-                  "type": "string",
                   "description": "打刻アクション種別",
+                  "type": "string",
                   "enum": [
                     "in",
                     "out",
@@ -7100,9 +7673,13 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                   "example": "エラーが発生しました"
                 }
               }
@@ -7116,18 +7693,32 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message",
+                "errors"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "バリデーションエラーの総括メッセージ。",
                   "example": "バリデーションエラー"
                 },
                 "errors": {
                   "type": "object",
+                  "description": "フィールド名 → エラーメッセージ配列のマップ。",
                   "additionalProperties": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "example": {
+                    "email": [
+                      "メールアドレスは必須です。"
+                    ],
+                    "password": [
+                      "パスワードは8文字以上で入力してください。"
+                    ]
                   }
                 }
               }
@@ -7141,9 +7732,13 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                   "example": "エラーが発生しました"
                 }
               }
@@ -7157,9 +7752,13 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                   "example": "エラーが発生しました"
                 }
               }
@@ -7173,9 +7772,13 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                   "example": "エラーが発生しました"
                 }
               }
@@ -7189,9 +7792,13 @@
           "application/json": {
             "schema": {
               "type": "object",
+              "required": [
+                "message"
+              ],
               "properties": {
                 "message": {
                   "type": "string",
+                  "description": "ユーザー向けエラーメッセージ。日本語で返される。",
                   "example": "エラーが発生しました"
                 }
               }

@@ -86,7 +86,7 @@ final class ApprovalService extends BaseService
         return $this->transaction(function () use ($user, $input): array {
             $existing = PaidLeaveRequest::query()
                 ->user($user->id)
-                ->date($input['leave_date'])
+                ->date($input['leaveDate'])
                 ->whereIn('status', [PaidLeaveRequest::STATUS_PENDING, PaidLeaveRequest::STATUS_APPROVED])
                 ->exists();
 
@@ -104,7 +104,7 @@ final class ApprovalService extends BaseService
             $request = new PaidLeaveRequest();
             $request->id = Str::uuid()->toString();
             $request->user_id = $user->id;
-            $request->leave_date = $input['leave_date'];
+            $request->leave_date = $input['leaveDate'];
             $request->days = $days;
             $request->status = PaidLeaveRequest::STATUS_PENDING;
             $request->reason = $input['reason'] ?? null;
@@ -211,9 +211,9 @@ final class ApprovalService extends BaseService
             $request = new OvertimeRequest();
             $request->id = Str::uuid()->toString();
             $request->user_id = $user->id;
-            $request->work_date = $input['work_date'];
-            $request->start_time = $input['start_time'];
-            $request->end_time = $input['end_time'];
+            $request->work_date = $input['workDate'];
+            $request->start_time = $input['startTime'];
+            $request->end_time = $input['endTime'];
             $request->status = OvertimeRequest::STATUS_PENDING;
             $request->reason = $input['reason'] ?? null;
             $request->save();

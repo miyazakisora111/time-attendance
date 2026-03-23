@@ -7,8 +7,8 @@ type BadgeIntent = NonNullable<VariantProps<typeof badgeVariants>['intent']>;
 const clockActionLabelMap: Record<ClockAction, string> = {
     in: '出勤',
     out: '退勤',
-    break_start: '休憩開始',
-    break_end: '休憩終了',
+    breakStart: '休憩開始',
+    breakEnd: '休憩終了',
 };
 
 /**

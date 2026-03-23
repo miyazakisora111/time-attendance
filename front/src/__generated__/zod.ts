@@ -62,7 +62,7 @@ export namespace components.schemas {
     password: z.string(),
   });
   export const LoginResponse = z.object({
-    token: z.string().optional(),
+    token: z.string(),
   });
   /** @description ログアウト成功レスポンス */
   export const LogoutResponse = z.object({
@@ -100,7 +100,9 @@ export namespace components.schemas {
     endTime: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
+  /** @description 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。 */
   export const AttendanceResponse = z.object({
+    id: z.string().optional(),
     userId: z.string(),
     workDate: z.string(),
     clockStatus: components["schemas"]["ClockStatus"],
@@ -299,13 +301,13 @@ export namespace components.schemas {
     remainingDays: z.number(),
   });
   export const ErrorResponse = z.object({
-    message: z.string().optional(),
+    message: z.string(),
   });
   export const ValidationErrorResponse = z.object({
-    message: z.string().optional(),
-    errors: z.record(z.string(), z.array(z.string())).optional(),
+    message: z.string(),
+    errors: z.record(z.string(), z.array(z.string())),
   });
-  /** @description ページネーション情報 */
+  /** @description ページネーション情報。一覧系レスポンスに必ず付与される。 */
   export const PageInfo = z.object({
     currentPage: z.number().int(),
     perPage: z.number().int(),

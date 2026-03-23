@@ -6,8 +6,8 @@ const client = getSettings();
 
 /** ユーザー設定を取得 */
 export const fetchSettings = () =>
-  call<SettingsResponse>(() => client.getSettingsApi());
+  call<SettingsResponse>(() => client.getSettings());
 
 /** ユーザー設定を更新 */
 export const updateSettings = (payload: UpdateSettingsRequest) =>
-  call<SettingsResponse>(() => client.updateSettingsApi(payload));
+  call<SettingsResponse>(() => client.updateSettings(payload));

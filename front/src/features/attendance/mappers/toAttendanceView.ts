@@ -7,15 +7,15 @@ export const toAttendanceView: Mapper<
     AttendanceResponse,
     AttendanceView
 > = (src) => {
-    const startTime = src.start_time ?? null;
-    const endTime = src.end_time ?? null;
+    const startTime = src.startTime ?? null;
+    const endTime = src.endTime ?? null;
 
     return {
-        clockStatus: src.clock_status ?? 'out',
+        clockStatus: src.clockStatus ?? 'out',
         totalWorkedMinutes: calculateWorkedMinutes(startTime, endTime),
-        breakMinutes: src.break_minutes ?? null,
+        breakMinutes: src.breakMinutes ?? null,
         startTime: startTime,
         endTime: endTime,
-        workDate: src.work_date,
+        workDate: src.workDate,
     };
 };

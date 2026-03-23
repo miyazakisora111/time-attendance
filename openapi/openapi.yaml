@@ -1,9 +1,38 @@
 openapi: 3.0.3
 
+# ──────────────────────────────────────────────────────────────
+# TimeAttendance API — 唯一の正とする設計書
+#
+# 設計方針:
+#   - パスは kebab-case 複数名詞。パスパラメータは camelCase + Id。
+#   - operationId は「動詞 + 対象」の camelCase。
+#   - スキーマは PascalCase、プロパティは camelCase。
+#   - 全 operation に summary / description / tags / operationId を付与。
+#   - エラーは ErrorResponse / ValidationErrorResponse に統一。
+#   - 認証は JWT Bearer（security: BearerAuth）。未認証 API は security: [] を明示。
+#   - 一覧系は items[] + pageInfo のラッパーで統一（ページネーション非対応の場合も構造を揃える）。
+#   - Enum は string 型。値は camelCase に統一。
+# ──────────────────────────────────────────────────────────────
+
 info:
   title: TimeAttendance API
-  version: 1.0.0
-  description: 勤怠管理API
+  version: 1.1.0
+  description: |
+    勤怠管理システムの REST API 定義。
+    従業員の出退勤・休憩管理、有給休暇・残業の申請承認、
+    ダッシュボード集計、カレンダー、ユーザー設定を提供する。
+
+    ## 認証
+    JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信する。
+    `/login` のみ認証不要。それ以外は全て認証必須。
+
+    ## エラーハンドリング
+    - 401: トークン無効または期限切れ
+    - 403: 権限不足（承認権限が必要な操作）
+    - 404: 指定リソースが存在しない
+    - 409: 状態の競合（二重打刻など）
+    - 422: バリデーションエラー（フィールド別メッセージ付き）
+    - 500: 予期しないサーバーエラー
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
@@ -22,20 +51,37 @@ servers:
           - api.example.com
 
 tags:
-  - name: Approval
-    description: 申請・承認API
-  - name: Attendance
-    description: 勤怠に関するAPI
   - name: Auth
-    description: 認証管理API
+    description: |
+      認証・セッション管理。
+      ログイン時に JWT を発行し、ログアウト時に無効化する。
+      `/login` のみ認証不要。
   - name: Dashboard
-    description: ダッシュボードAPI
+    description: |
+      ダッシュボード集計。
+      当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
+      打刻アクション（出勤・退勤・休憩開始・休憩終了）もここから実行可能。
+  - name: Attendance
+    description: |
+      勤怠の CRUD と打刻操作。
+      出退勤・休憩の打刻、勤怠レコードの一覧取得・新規作成・更新を行う。
   - name: Schedule
-    description: スケジュールAPI
+    description: |
+      勤務スケジュール・カレンダー。
+      指定年月のカレンダー（日毎の勤務状態・シフト情報・サマリー）を返す。
+  - name: Approval
+    description: |
+      有給休暇・残業の申請と承認ワークフロー。
+      申請者は作成・キャンセル、承認者は承認・却下・差戻しを行う。
+      承認権限は Role ベースで制御。
   - name: Team
-    description: チームAPI
+    description: |
+      チームメンバー管理。
+      ログインユーザーが所属するチームのメンバー一覧と現在の勤務状態を返す。
   - name: Settings
-    description: 設定API
+    description: |
+      ユーザー設定。
+      プロフィール・通知・テーマ・言語設定の取得と更新、パスワード変更、ログイン履歴を提供する。
 
 paths:
   # --- Reason: /authme → /auth/me (kebab-case) ---
