@@ -10,9 +10,7 @@ use Database\Factories\AttendanceFactory;
 use Database\Factories\DepartmentFactory;
 use Database\Factories\HolidayFactory;
 use Database\Factories\LoginHistoryFactory;
-use Database\Factories\OvertimeRequestFactory;
 use Database\Factories\PaidLeaveGrantFactory;
-use Database\Factories\PaidLeaveRequestFactory;
 use Database\Factories\UserNotificationSettingFactory;
 use Database\Factories\UserFactory;
 use Database\Factories\UserSettingFactory;
@@ -43,8 +41,6 @@ class SampleDataSeeder extends Seeder
             });
 
             PaidLeaveGrantFactory::new()->count(2)->forUser($user)->create();
-            PaidLeaveRequestFactory::new()->count(3)->forUser($user)->create();
-            OvertimeRequestFactory::new()->count(4)->forUser($user)->create();
         });
 
         HolidayFactory::new()->count(20)->create();

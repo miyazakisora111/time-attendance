@@ -33,7 +33,7 @@ erDiagram
         date date
         time scheduled_start "予定出勤時刻"
         time scheduled_end "予定退勤時刻"
-        varchar schedule_type "normal/holiday/paid_leave"
+        varchar schedule_type "normal/holiday"
         text note
     }
 

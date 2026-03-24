@@ -13,5 +13,4 @@ export const toDashboardView: Mapper<
   todayRecord: r.todayRecord,
   recentRecords: r.recentRecords,
   stats: r.stats,
-  pendingOvertimeRequests: r.pendingOvertimeRequests,
 });

@@ -18,8 +18,6 @@ class DatabaseSeeder extends Seeder
         // 冪等性を確保するため、依存関係の逆順でテーブルをトランケートする。
         DB::statement('SET CONSTRAINTS ALL DEFERRED');
 
-        DB::table('overtime_requests')->truncate();
-        DB::table('paid_leave_requests')->truncate();
         DB::table('paid_leave_grants')->truncate();
         DB::table('holidays')->truncate();
         DB::table('attendance_breaks')->truncate();
@@ -43,8 +41,6 @@ class DatabaseSeeder extends Seeder
             AttendanceSeeder::class,
             AttendanceBreakSeeder::class,
             PaidLeaveGrantSeeder::class,
-            PaidLeaveRequestSeeder::class,
-            OvertimeRequestSeeder::class,
             HolidaySeeder::class,
         ]);
     }

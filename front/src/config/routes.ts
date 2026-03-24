@@ -9,8 +9,6 @@ export enum AppRoutePath {
   Attendance = '/attendance',
   /** スケジュール */
   Schedule = '/schedule',
-  /** 承認（将来機能） */
-  Approval = '/approval',
   /** チーム */
   Team = '/team',
   /** 設定 */

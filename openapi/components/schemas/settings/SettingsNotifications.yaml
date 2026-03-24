@@ -3,12 +3,9 @@ SettingsNotifications:
   description: 通知設定
   required:
     - clockInReminder
-    - approvalNotification
     - leaveReminder
   properties:
     clockInReminder:
-      type: boolean
-    approvalNotification:
       type: boolean
     leaveReminder:
       type: boolean

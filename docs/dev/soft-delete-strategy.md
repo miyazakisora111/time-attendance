@@ -11,15 +11,12 @@
 | `users` | ✅ | 退職者の勤怠データ参照が必要 |
 | `attendances` | ✅ | 修正ログ・監査証跡として保持 |
 | `attendance_breaks` | ✅ | 勤怠に紐づく休憩データの整合性 |
-| `paid_leave_requests` | ✅ | 申請履歴の保持 |
-| `overtime_requests` | ✅ | 申請履歴の保持 |
 | `departments` | ❌ | マスタデータ。無効化は `status` で管理 |
 | `roles` | ❌ | マスタデータ。無効化は `status` で管理 |
 | `holidays` | ❌ | 年度ごとに作成。不要分は物理削除 |
 | `login_histories` | ❌ | 監査ログ。削除しない |
 | `user_settings` | ❌ | User に 1:1。User 削除で参照不要になる |
 | `user_notification_settings` | ❌ | User に 1:1。同上 |
-| `paid_leave_grants` | ❌ | 付与記録。削除しない |
 
 ## Eloquent の SoftDeletes 動作
 
@@ -73,8 +70,6 @@ CREATE UNIQUE INDEX users_email_unique_active
 ```mermaid
 graph TD
     User -->|"ソフトデリート"| Attendance
-    User -->|"ソフトデリート"| PaidLeaveRequest
-    User -->|"ソフトデリート"| OvertimeRequest
     Attendance -->|"ソフトデリート"| AttendanceBreak
 
     style User fill:#fbb

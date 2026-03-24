@@ -67,7 +67,6 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('ユーザー通知設定ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->boolean('clock_in_reminder')->default(true)->comment('打刻忘れ通知');
-            $table->boolean('approval_notification')->default(true)->comment('承認通知');
             $table->boolean('leave_reminder')->default(true)->comment('休暇リマインド通知');
             $table->timestampsTz();
             $table->unique('user_id', 'uq_user_notification_settings_user_id');
@@ -115,32 +114,6 @@ return new class extends Migration
             $table->index('granted_at', 'idx_paid_leave_grants_granted_at');
         });
 
-        Schema::create('paid_leave_requests', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('有給申請ID');
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
-            $table->date('leave_date')->comment('休暇日');
-            $table->decimal('days', 4, 2)->default(1.00)->comment('取得日数');
-            $table->string('status', 20)->default('pending')->comment('申請ステータス');
-            $table->text('reason')->nullable()->comment('申請理由');
-            $table->timestampsTz();
-            $table->softDeletesTz();
-            $table->index('user_id', 'idx_paid_leave_requests_user_id');
-            $table->index('leave_date', 'idx_paid_leave_requests_leave_date');
-        });
-
-        Schema::create('overtime_requests', function (Blueprint $table): void {
-            $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('残業申請ID');
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
-            $table->date('work_date')->comment('対象勤務日');
-            $table->timestampTz('start_time')->comment('残業開始日時');
-            $table->timestampTz('end_time')->comment('残業終了日時');
-            $table->string('status', 20)->default('pending')->comment('申請ステータス');
-            $table->text('reason')->nullable()->comment('申請理由');
-            $table->timestampsTz();
-            $table->softDeletesTz();
-            $table->index(['user_id', 'work_date'], 'idx_overtime_requests_user_work_date');
-        });
-
         Schema::create('holidays', function (Blueprint $table): void {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('祝日ID');
             $table->date('holiday_date')->comment('祝日の日付');
@@ -158,8 +131,7 @@ return new class extends Migration
         DB::statement("COMMENT ON TABLE attendances IS '勤怠'");
         DB::statement("COMMENT ON TABLE attendance_breaks IS '勤怠休憩'");
         DB::statement("COMMENT ON TABLE paid_leave_grants IS '有給付与履歴'");
-        DB::statement("COMMENT ON TABLE paid_leave_requests IS '有給休暇申請'");
-        DB::statement("COMMENT ON TABLE overtime_requests IS '残業申請'");
+
         DB::statement("COMMENT ON TABLE holidays IS '祝日マスタ'");
 
         DB::statement("ALTER TABLE roles ADD CONSTRAINT chk_roles_status CHECK (status IN ('active', 'inactive'))");
@@ -169,21 +141,14 @@ return new class extends Migration
         DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (end_time IS NULL OR start_time IS NULL OR end_time >= start_time)");
         DB::statement("ALTER TABLE attendance_breaks ADD CONSTRAINT chk_attendance_breaks_time_order CHECK (break_end IS NULL OR break_end >= break_start)");
         DB::statement("ALTER TABLE paid_leave_grants ADD CONSTRAINT chk_paid_leave_grants_days_positive CHECK (days > 0)");
-        DB::statement("ALTER TABLE paid_leave_requests ADD CONSTRAINT chk_paid_leave_requests_status CHECK (status IN ('pending', 'approved', 'rejected'))");
-        DB::statement("ALTER TABLE paid_leave_requests ADD CONSTRAINT chk_paid_leave_requests_days_positive CHECK (days > 0)");
-        DB::statement("ALTER TABLE overtime_requests ADD CONSTRAINT chk_overtime_requests_time_order CHECK (end_time > start_time)");
-        DB::statement("ALTER TABLE overtime_requests ADD CONSTRAINT chk_overtime_requests_status CHECK (status IN ('pending', 'approved', 'returned', 'canceled'))");
 
         DB::statement("CREATE UNIQUE INDEX uq_users_email_active ON users (email) WHERE deleted_at IS NULL");
         DB::statement("CREATE UNIQUE INDEX uq_attendances_user_work_date_active ON attendances (user_id, work_date) WHERE deleted_at IS NULL");
-        DB::statement("CREATE UNIQUE INDEX uq_paid_leave_requests_user_leave_date_active ON paid_leave_requests (user_id, leave_date) WHERE deleted_at IS NULL");
     }
 
     public function down(): void
     {
         Schema::dropIfExists('holidays');
-        Schema::dropIfExists('overtime_requests');
-        Schema::dropIfExists('paid_leave_requests');
         Schema::dropIfExists('paid_leave_grants');
         Schema::dropIfExists('attendance_breaks');
         Schema::dropIfExists('attendances');

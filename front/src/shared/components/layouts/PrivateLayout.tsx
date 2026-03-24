@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "@/shared/components/sidebar/Sidebar";
 import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
-import { Home, Clock, Calendar, FileText, Users, Settings } from "lucide-react";
+import { Home, Clock, Calendar, Users, Settings } from "lucide-react";
 import { cn } from "@/shared/utils/style";
 import { AppRoutePath } from "@/config/routes";
 import { authStore } from "@/shared/stores/authStore";
@@ -12,7 +12,6 @@ const defaultMenuItems: SidebarMenuItem[] = [
     { icon: Home, label: "ダッシュボード", href: AppRoutePath.Dashboard },
     { icon: Clock, label: "打刻", href: AppRoutePath.Attendance },
     { icon: Calendar, label: "スケジュール", href: AppRoutePath.Schedule },
-    { icon: FileText, label: "申請・承認", href: AppRoutePath.Approval },
     { icon: Users, label: "チーム管理", href: AppRoutePath.Team },
     { icon: Settings, label: "設定", href: AppRoutePath.Settings },
 ];

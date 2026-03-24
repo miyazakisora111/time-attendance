@@ -50,9 +50,8 @@ $attendances = Attendance::with(['user' => function ($query) {
 
 ```mermaid
 flowchart TD
-    A[ダッシュボード表示] --> B["Attendance::query()-><br/>user()->workDate()"]
+    A[Dashboard display] --> B["Attendance::query()-><br/>user()->workDate()"]
     A --> C["Attendance::query()-><br/>user()->month()"]
-    A --> D["OvertimeRequest::query()-><br/>user()->pending()"]
     A --> E["Attendance::query()-><br/>user()->orderByDesc()"]
 
     style A fill:#f9f,stroke:#333
@@ -63,7 +62,6 @@ flowchart TD
 | `Attendance::where('user_id', ?)->where('work_date', ?)` | `getToday()` | なし | `idx_attendances_user_clock_in_at` |
 | `Attendance::where('user_id', ?)->whereYear/Month()` | `buildStats()` | なし | カバリングインデックス要検討 |
 | `Attendance::orderByDesc('work_date')->limit(6)` | `buildRecentRecords()` | なし | `work_date` インデックス要検討 |
-| `OvertimeRequest::where('user_id', ?)->pending()` | `getDashboard()` | なし | 複合インデックス推奨 |
 
 ## パフォーマンス計測
 
@@ -91,10 +89,6 @@ WHERE user_id = '...'
 -- ダッシュボード集計の高速化
 CREATE INDEX idx_attendances_user_work_date
     ON attendances(user_id, work_date);
-
--- 残業申請の集計
-CREATE INDEX idx_overtime_requests_user_status
-    ON overtime_requests(user_id, status);
 
 -- ログイン履歴の検索
 CREATE INDEX idx_login_histories_user_logged_in

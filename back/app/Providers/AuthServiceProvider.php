@@ -6,11 +6,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\User;
-use App\Models\PaidLeaveRequest;
-use App\Models\OvertimeRequest;
 use App\Policies\UserPolicy;
-use App\Policies\PaidLeaveRequestPolicy;
-use App\Policies\OvertimeRequestPolicy;
 
 /**
  * 認可ポリシーを登録します。
@@ -24,8 +20,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         User::class => UserPolicy::class,
-        PaidLeaveRequest::class => PaidLeaveRequestPolicy::class,
-        OvertimeRequest::class => OvertimeRequestPolicy::class,
     ];
 
     /**

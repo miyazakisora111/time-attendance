@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
-import { FileEdit, FileText, Plane, Stethoscope } from "lucide-react";
+import { FileEdit, FileText } from "lucide-react";
 import { Button } from "@/shared/components/buttons/Button";
 import {
   Card,
@@ -13,8 +13,6 @@ import {
 import { AppRoutePath } from "@/config/routes";
 
 type DashboardQuickActionKey =
-  | "paid_leave"
-  | "sick_leave"
   | "attendance_fix"
   | "monthly_report";
 
@@ -27,20 +25,6 @@ type DashboardQuickAction = {
 };
 
 const QUICK_ACTIONS = [
-  {
-    key: "paid_leave",
-    label: "有給申請",
-    icon: Plane,
-    colorClassName: "text-blue-600",
-    bgColorClassName: "bg-blue-100/50",
-  },
-  {
-    key: "sick_leave",
-    label: "病欠申請",
-    icon: Stethoscope,
-    colorClassName: "text-red-600",
-    bgColorClassName: "bg-red-100/50",
-  },
   {
     key: "attendance_fix",
     label: "勤怠修正",
@@ -58,8 +42,6 @@ const QUICK_ACTIONS = [
 ] as const satisfies ReadonlyArray<DashboardQuickAction>;
 
 const QUICK_ACTION_ROUTES: Record<DashboardQuickActionKey, string> = {
-  paid_leave: AppRoutePath.Approval,
-  sick_leave: AppRoutePath.Approval,
   attendance_fix: AppRoutePath.Attendance,
   monthly_report: AppRoutePath.Dashboard,
 };

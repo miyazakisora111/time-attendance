@@ -6,7 +6,6 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  FileText,
   Lock,
   Monitor,
   Moon,
@@ -68,7 +67,6 @@ const settingsThemeIconMap: Record<SettingsThemeMode, LucideIcon> = {
 
 const settingsNotificationIconMap: Record<SettingsNotificationKey, LucideIcon> = {
   clockInReminder: Clock,
-  approvalNotification: FileText,
   leaveReminder: Calendar,
 };
 

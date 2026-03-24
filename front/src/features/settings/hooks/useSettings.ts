@@ -18,7 +18,6 @@ const buildDraftSettings = (settings?: AppSettings): UpdateSettingsRequest => ({
   },
   notifications: {
     clockInReminder: settings?.notifications.clockInReminder ?? true,
-    approvalNotification: settings?.notifications.approvalNotification ?? true,
     leaveReminder: settings?.notifications.leaveReminder ?? true,
   },
   theme: settings?.theme ?? 'light',

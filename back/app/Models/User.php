@@ -148,13 +148,4 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    /**
-     * 承認権限を持つか判定する。
-     *
-     * ロールの level が APPROVER_LEVEL 以上の場合に true。
-     */
-    public function isApprover(): bool
-    {
-        return $this->role !== null && $this->role->isApproverLevel();
-    }
 }

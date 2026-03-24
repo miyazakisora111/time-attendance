@@ -16,7 +16,6 @@ export interface AppSettingsProfile {
  */
 export interface AppSettingsNotifications {
   clockInReminder: boolean;
-  approvalNotification: boolean;
   leaveReminder: boolean;
 }
 

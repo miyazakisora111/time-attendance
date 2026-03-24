@@ -41,11 +41,6 @@ export const settingsNotificationItems: ReadonlyArray<{
       description: '定時を過ぎても打刻がない場合に通知します',
     },
     {
-      id: 'approvalNotification',
-      title: '申請承認通知',
-      description: '申請が承認または却下された場合に通知します',
-    },
-    {
       id: 'leaveReminder',
       title: '休暇リマインド',
       description: '取得予定の休暇の1日前に通知します',

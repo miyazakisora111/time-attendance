@@ -6,7 +6,6 @@ DashboardResponse:
     - todayRecord
     - stats
     - recentRecords
-    - pendingOvertimeRequests
   properties:
     user:
       $ref: "./DashboardUser.yaml#/DashboardUser"
@@ -20,5 +19,3 @@ DashboardResponse:
       type: array
       items:
         $ref: "./DashboardRecentRecord.yaml#/DashboardRecentRecord"
-    pendingOvertimeRequests:
-      type: integer

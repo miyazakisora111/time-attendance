@@ -14,8 +14,6 @@ graph TD
         AF["AttendanceFactory"]
         ABF["AttendanceBreakFactory"]
         ASF["AttendanceScheduleFactory"]
-        PLF["PaidLeaveFactory"]
-        OTF["OvertimeRequestFactory"]
         TMF["TeamMemberFactory"]
     end
 
@@ -157,8 +155,6 @@ flowchart TD
     DB --> US["UserSeeder"]
     DB --> AS["AttendanceSeeder"]
     DB --> BS["AttendanceBreakSeeder"]
-    DB --> PS["PaidLeaveSeeder"]
-    DB --> OTS["OvertimeRequestSeeder"]
 
     CS -->|"先に実行"| US
     US -->|"先に実行"| AS
@@ -173,8 +169,6 @@ flowchart TD
 | 2 | `UserSeeder` | Company | 管理者 1 + 社員数名 |
 | 3 | `AttendanceSeeder` | User | 各ユーザー 30 日分 |
 | 4 | `AttendanceBreakSeeder` | Attendance | 各日 1-2 休憩 |
-| 5 | `PaidLeaveSeeder` | User | 年 20 日付与 |
-| 6 | `OvertimeRequestSeeder` | User | ランダム数件 |
 
 ## 注意: 設計レビュー指摘事項
 

@@ -25,7 +25,6 @@ class UserNotificationSetting extends Model
     protected $fillable = [
         'user_id',
         'clock_in_reminder',
-        'approval_notification',
         'leave_reminder',
     ];
 
@@ -34,7 +33,6 @@ class UserNotificationSetting extends Model
      */
     protected $casts = [
         'clock_in_reminder' => 'boolean',
-        'approval_notification' => 'boolean',
         'leave_reminder' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

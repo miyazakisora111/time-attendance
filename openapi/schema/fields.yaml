@@ -177,11 +177,6 @@ user_notification_settings:
     label: 打刻忘れ通知
     required: true
     description: 打刻忘れ通知の有効フラグ
-  approvalNotification:
-    type: boolean
-    label: 承認通知
-    required: true
-    description: 承認通知の有効フラグ
   leaveReminder:
     type: boolean
     label: 休暇リマインド通知
@@ -192,11 +187,6 @@ user_notification_settings:
     label: 打刻忘れ通知
     required: true
     description: 打刻忘れ通知の有効フラグ
-  approval_notification:
-    type: boolean
-    label: 承認通知
-    required: true
-    description: 承認通知の有効フラグ
   leave_reminder:
     type: boolean
     label: 休暇リマインド通知
@@ -271,11 +261,6 @@ dashboard:
     label: 直近勤怠
     required: true
     description: 直近の勤怠一覧
-  pendingOvertimeRequests:
-    type: integer
-    label: 未処理残業申請数
-    required: true
-    description: 承認待ち件数
   action:
     type: enum
     label: 打刻アクション

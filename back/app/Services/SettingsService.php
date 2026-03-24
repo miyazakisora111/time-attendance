@@ -41,7 +41,6 @@ final class SettingsService extends BaseService
             ],
             'notifications' => [
                 'clockInReminder' => $user->userNotificationSetting?->clock_in_reminder ?? true,
-                'approvalNotification' => $user->userNotificationSetting?->approval_notification ?? true,
                 'leaveReminder' => $user->userNotificationSetting?->leave_reminder ?? true,
             ],
             'security' => [
@@ -89,7 +88,6 @@ final class SettingsService extends BaseService
                 'user_id' => $user->id,
             ]);
             $notificationSetting->clock_in_reminder = (bool) data_get($input, 'notifications.clockInReminder', true);
-            $notificationSetting->approval_notification = (bool) data_get($input, 'notifications.approvalNotification', true);
             $notificationSetting->leave_reminder = (bool) data_get($input, 'notifications.leaveReminder', true);
             $notificationSetting->save();
 

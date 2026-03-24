@@ -19,7 +19,7 @@ info:
   version: 1.1.0
   description: |
     勤怠管理システムの REST API 定義。
-    従業員の出退勤・休憩管理、有給休暇・残業の申請承認、
+    従業員の出退勤・休憩管理、
     ダッシュボード集計、カレンダー、ユーザー設定を提供する。
 
     ## 認証
@@ -28,7 +28,7 @@ info:
 
     ## エラーハンドリング
     - 401: トークン無効または期限切れ
-    - 403: 権限不足（承認権限が必要な操作）
+    - 403: 権限不足
     - 404: 指定リソースが存在しない
     - 409: 状態の競合（二重打刻など）
     - 422: バリデーションエラー（フィールド別メッセージ付き）
@@ -69,11 +69,6 @@ tags:
     description: |
       勤務スケジュール・カレンダー。
       指定年月のカレンダー（日毎の勤務状態・シフト情報・サマリー）を返す。
-  - name: Approval
-    description: |
-      有給休暇・残業の申請と承認ワークフロー。
-      申請者は作成・キャンセル、承認者は承認・却下・差戻しを行う。
-      承認権限は Role ベースで制御。
   - name: Team
     description: |
       チームメンバー管理。
@@ -118,26 +113,6 @@ paths:
     $ref: "./paths/settings.yaml#/changePassword"
   /settings/login-histories:
     $ref: "./paths/settings.yaml#/loginHistories"
-  # --- Reason: /approval → /approvals (複数形) ---
-  /approvals:
-    $ref: "./paths/approval.yaml#/approvalList"
-  /approvals/paid-leaves:
-    $ref: "./paths/approval.yaml#/paidLeaveRequests"
-  # --- Reason: {paidLeaveRequest} → {paidLeaveRequestId} ---
-  /approvals/paid-leaves/{paidLeaveRequestId}/approve:
-    $ref: "./paths/approval.yaml#/paidLeaveApprove"
-  /approvals/paid-leaves/{paidLeaveRequestId}/reject:
-    $ref: "./paths/approval.yaml#/paidLeaveReject"
-  /approvals/paid-leaves/{paidLeaveRequestId}/cancel:
-    $ref: "./paths/approval.yaml#/paidLeaveCancel"
-  /approvals/overtime-requests:
-    $ref: "./paths/approval.yaml#/overtimeRequests"
-  /approvals/overtime-requests/{overtimeRequestId}/approve:
-    $ref: "./paths/approval.yaml#/overtimeApprove"
-  /approvals/overtime-requests/{overtimeRequestId}/return:
-    $ref: "./paths/approval.yaml#/overtimeReturn"
-  /approvals/overtime-requests/{overtimeRequestId}/cancel:
-    $ref: "./paths/approval.yaml#/overtimeCancel"
 
 components:
   schemas:
@@ -158,10 +133,6 @@ components:
       $ref: "./components/enums/AttendanceStatus.yaml#/AttendanceStatus"
     UserStatus:
       $ref: "./components/enums/UserStatus.yaml#/UserStatus"
-    ApprovalStatus:
-      $ref: "./components/enums/ApprovalStatus.yaml#/ApprovalStatus"
-    OvertimeRequestStatus:
-      $ref: "./components/enums/OvertimeRequestStatus.yaml#/OvertimeRequestStatus"
 
     # --- Auth ---
     LoginRequest:
@@ -234,20 +205,6 @@ components:
       $ref: "./components/schemas/team/TeamMembersResponse.yaml#/TeamMembersResponse"
     TeamMember:
       $ref: "./components/schemas/team/TeamMember.yaml#/TeamMember"
-
-    # --- Approval ---
-    ApprovalListResponse:
-      $ref: "./components/schemas/approval/ApprovalListResponse.yaml#/ApprovalListResponse"
-    PaidLeaveRequestResponse:
-      $ref: "./components/schemas/approval/PaidLeaveRequestResponse.yaml#/PaidLeaveRequestResponse"
-    CreatePaidLeaveRequest:
-      $ref: "./components/schemas/approval/CreatePaidLeaveRequest.yaml#/CreatePaidLeaveRequest"
-    OvertimeRequestResponse:
-      $ref: "./components/schemas/approval/OvertimeRequestResponse.yaml#/OvertimeRequestResponse"
-    CreateOvertimeRequest:
-      $ref: "./components/schemas/approval/CreateOvertimeRequest.yaml#/CreateOvertimeRequest"
-    PaidLeaveSummary:
-      $ref: "./components/schemas/approval/PaidLeaveSummary.yaml#/PaidLeaveSummary"
 
     # --- Error ---
     ErrorResponse:

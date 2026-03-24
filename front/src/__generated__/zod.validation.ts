@@ -9,180 +9,6 @@ const labels = labelsJson as Record<string, string>;
 const labelOf = (field: string): string => labels[field] ?? field;
 
 export const validationSchemas = {
-  ApprovalListResponse: generatedComponents.schemas.ApprovalListResponse.extend(
-    {
-      paidLeaveRequests: z.array(
-        z.object({
-          id: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("id")}は必須です。`),
-          userId: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("userId")}は必須です。`),
-          leaveDate: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("leaveDate")}は必須です。`),
-          days: z.number().min(0.5).max(1),
-          status: z.enum(["pending", "approved", "rejected", "canceled"]),
-          reason: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("reason")}は必須です。`)
-            .nullable(),
-          approvedBy: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedBy")}は必須です。`)
-            .nullable(),
-          approvedAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedAt")}は必須です。`)
-            .nullable(),
-          createdAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("createdAt")}は必須です。`),
-        }),
-      ),
-      overtimeRequests: z.array(
-        z.object({
-          id: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("id")}は必須です。`),
-          userId: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("userId")}は必須です。`),
-          workDate: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("workDate")}は必須です。`),
-          startTime: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("startTime")}は必須です。`),
-          endTime: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("endTime")}は必須です。`),
-          status: z.enum(["pending", "approved", "returned", "canceled"]),
-          reason: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("reason")}は必須です。`)
-            .nullable(),
-          durationHours: z.number(),
-          approvedBy: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedBy")}は必須です。`)
-            .nullable(),
-          approvedAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedAt")}は必須です。`)
-            .nullable(),
-          createdAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("createdAt")}は必須です。`),
-        }),
-      ),
-      pendingPaidLeaveRequests: z.array(
-        z.object({
-          id: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("id")}は必須です。`),
-          userId: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("userId")}は必須です。`),
-          leaveDate: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("leaveDate")}は必須です。`),
-          days: z.number().min(0.5).max(1),
-          status: z.enum(["pending", "approved", "rejected", "canceled"]),
-          reason: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("reason")}は必須です。`)
-            .nullable(),
-          approvedBy: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedBy")}は必須です。`)
-            .nullable(),
-          approvedAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedAt")}は必須です。`)
-            .nullable(),
-          createdAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("createdAt")}は必須です。`),
-        }),
-      ),
-      pendingOvertimeRequests: z.array(
-        z.object({
-          id: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("id")}は必須です。`),
-          userId: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("userId")}は必須です。`),
-          workDate: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("workDate")}は必須です。`),
-          startTime: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("startTime")}は必須です。`),
-          endTime: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("endTime")}は必須です。`),
-          status: z.enum(["pending", "approved", "returned", "canceled"]),
-          reason: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("reason")}は必須です。`)
-            .nullable(),
-          durationHours: z.number(),
-          approvedBy: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedBy")}は必須です。`)
-            .nullable(),
-          approvedAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("approvedAt")}は必須です。`)
-            .nullable(),
-          createdAt: z
-            .string()
-            .trim()
-            .min(1, `${labelOf("createdAt")}は必須です。`),
-        }),
-      ),
-      paidLeaveSummary: z.object({
-        totalDays: z.number(),
-        usedDays: z.number(),
-        remainingDays: z.number(),
-      }),
-      isApprover: z.boolean(),
-    },
-  ),
   AttendanceClockInRequest:
     generatedComponents.schemas.AttendanceClockInRequest.extend({
       workDate: z
@@ -362,41 +188,6 @@ export const validationSchemas = {
         .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
         .regex(/\d/, "パスワードに数字を1文字以上含めてください。"),
     }),
-  CreateOvertimeRequest:
-    generatedComponents.schemas.CreateOvertimeRequest.extend({
-      workDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("workDate")}は必須です。`),
-      startTime: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("startTime")}は必須です。`),
-      endTime: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("endTime")}は必須です。`),
-      reason: z
-        .string()
-        .trim()
-        .max(500, `${labelOf("reason")}は500文字以内で入力してください。`)
-        .nullable()
-        .optional(),
-    }),
-  CreatePaidLeaveRequest:
-    generatedComponents.schemas.CreatePaidLeaveRequest.extend({
-      leaveDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("leaveDate")}は必須です。`),
-      days: z.number().min(0.5).max(1),
-      reason: z
-        .string()
-        .trim()
-        .max(500, `${labelOf("reason")}は500文字以内で入力してください。`)
-        .nullable()
-        .optional(),
-    }),
   DashboardClockRequest:
     generatedComponents.schemas.DashboardClockRequest.extend({
       action: z.enum(["in", "out", "breakStart", "breakEnd"]),
@@ -478,7 +269,6 @@ export const validationSchemas = {
         status: z.enum(["working", "out", "break"]),
       }),
     ),
-    pendingOvertimeRequests: z.number().int(),
   }),
   DashboardStats: generatedComponents.schemas.DashboardStats.extend({
     totalHours: z.number(),
@@ -568,101 +358,15 @@ export const validationSchemas = {
   LogoutResponse: generatedComponents.schemas.LogoutResponse.extend({
     message: z.string().trim().optional(),
   }),
-  OvertimeRequestResponse:
-    generatedComponents.schemas.OvertimeRequestResponse.extend({
-      id: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("id")}は必須です。`),
-      userId: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("userId")}は必須です。`),
-      workDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("workDate")}は必須です。`),
-      startTime: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("startTime")}は必須です。`),
-      endTime: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("endTime")}は必須です。`),
-      status: z.enum(["pending", "approved", "returned", "canceled"]),
-      reason: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("reason")}は必須です。`)
-        .nullable(),
-      durationHours: z.number(),
-      approvedBy: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("approvedBy")}は必須です。`)
-        .nullable(),
-      approvedAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("approvedAt")}は必須です。`)
-        .nullable(),
-      createdAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("createdAt")}は必須です。`),
-    }),
   PageInfo: generatedComponents.schemas.PageInfo.extend({
     currentPage: z.number().int().min(1),
     perPage: z.number().int().min(1),
     totalItems: z.number().int().min(0),
     totalPages: z.number().int().min(0),
   }),
-  PaidLeaveRequestResponse:
-    generatedComponents.schemas.PaidLeaveRequestResponse.extend({
-      id: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("id")}は必須です。`),
-      userId: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("userId")}は必須です。`),
-      leaveDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("leaveDate")}は必須です。`),
-      days: z.number().min(0.5).max(1),
-      status: z.enum(["pending", "approved", "rejected", "canceled"]),
-      reason: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("reason")}は必須です。`)
-        .nullable(),
-      approvedBy: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("approvedBy")}は必須です。`)
-        .nullable(),
-      approvedAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("approvedAt")}は必須です。`)
-        .nullable(),
-      createdAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("createdAt")}は必須です。`),
-    }),
-  PaidLeaveSummary: generatedComponents.schemas.PaidLeaveSummary.extend({
-    totalDays: z.number(),
-    usedDays: z.number(),
-    remainingDays: z.number(),
-  }),
   SettingsNotifications:
     generatedComponents.schemas.SettingsNotifications.extend({
       clockInReminder: z.boolean(),
-      approvalNotification: z.boolean(),
       leaveReminder: z.boolean(),
     }),
   SettingsProfile: generatedComponents.schemas.SettingsProfile.extend({
@@ -714,7 +418,6 @@ export const validationSchemas = {
     }),
     notifications: z.object({
       clockInReminder: z.boolean(),
-      approvalNotification: z.boolean(),
       leaveReminder: z.boolean(),
     }),
     security: z.object({
@@ -817,7 +520,6 @@ export const validationSchemas = {
       }),
       notifications: z.object({
         clockInReminder: z.boolean(),
-        approvalNotification: z.boolean(),
         leaveReminder: z.boolean(),
       }),
       theme: z.enum(["light", "dark"]),

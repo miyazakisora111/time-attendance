@@ -45,5 +45,4 @@ export interface DashboardViewData {
   todayRecord: DashboardTodayRecord;
   recentRecords: DashboardRecentRecord[];
   stats: DashboardStats;
-  pendingOvertimeRequests: number;
 }

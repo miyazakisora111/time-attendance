@@ -12,9 +12,6 @@ erDiagram
     users ||--o{ login_histories : "has many"
     users ||--o| user_settings : "has one"
     users ||--o| user_notification_settings : "has one"
-    users ||--o{ paid_leave_grants : "has many"
-    users ||--o{ paid_leave_requests : "has many"
-    users ||--o{ overtime_requests : "has many"
     users }o--|| departments : "belongs to"
     users }o--|| roles : "belongs to"
     attendances ||--o{ attendance_breaks : "has many"
@@ -33,9 +30,6 @@ erDiagram
 | `LoginHistory` | `login_histories` | ❌ | ログイン監査 |
 | `UserSetting` | `user_settings` | ❌ | テーマ/言語設定 |
 | `UserNotificationSetting` | `user_notification_settings` | ❌ | 通知設定 |
-| `PaidLeaveGrant` | `paid_leave_grants` | ❌ | 有給付与 |
-| `PaidLeaveRequest` | `paid_leave_requests` | ✅ | 有給申請 |
-| `OvertimeRequest` | `overtime_requests` | ✅ | 残業申請 |
 
 ## UUID 主キーパターン
 

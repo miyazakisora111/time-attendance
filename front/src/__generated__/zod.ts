@@ -47,16 +47,6 @@ export namespace components.schemas {
    * @enum {string}
    */
   export const UserStatus = z.enum(["active", "inactive"]);
-  /**
-   * @description 申請のステータス 
-   * @enum {string}
-   */
-  export const ApprovalStatus = z.enum(["pending", "approved", "rejected", "canceled"]);
-  /**
-   * @description 残業申請のステータス 
-   * @enum {string}
-   */
-  export const OvertimeRequestStatus = z.enum(["pending", "approved", "returned", "canceled"]);
   export const LoginRequest = z.object({
     email: z.string(),
     password: z.string(),
@@ -124,7 +114,6 @@ export namespace components.schemas {
     todayRecord: components["schemas"]["DashboardTodayRecord"],
     stats: components["schemas"]["DashboardStats"],
     recentRecords: z.array(components["schemas"]["DashboardRecentRecord"]),
-    pendingOvertimeRequests: z.number().int(),
   });
   /** @description ダッシュボード用ユーザー情報 */
   export const DashboardUser = z.object({
@@ -229,7 +218,6 @@ export namespace components.schemas {
   /** @description 通知設定 */
   export const SettingsNotifications = z.object({
     clockInReminder: z.boolean(),
-    approvalNotification: z.boolean(),
     leaveReminder: z.boolean(),
   });
   /** @description セキュリティ設定 */
@@ -251,54 +239,6 @@ export namespace components.schemas {
     status: components["schemas"]["TeamMemberStatus"],
     clockInTime: z.string().nullable().optional(),
     email: z.string(),
-  });
-  export const ApprovalListResponse = z.object({
-    paidLeaveRequests: z.array(components["schemas"]["PaidLeaveRequestResponse"]),
-    overtimeRequests: z.array(components["schemas"]["OvertimeRequestResponse"]),
-    pendingPaidLeaveRequests: z.array(components["schemas"]["PaidLeaveRequestResponse"]),
-    pendingOvertimeRequests: z.array(components["schemas"]["OvertimeRequestResponse"]),
-    paidLeaveSummary: components["schemas"]["PaidLeaveSummary"],
-    isApprover: z.boolean(),
-  });
-  export const PaidLeaveRequestResponse = z.object({
-    id: z.string(),
-    userId: z.string(),
-    leaveDate: z.string(),
-    days: z.number(),
-    status: components["schemas"]["ApprovalStatus"],
-    reason: z.string().nullable(),
-    approvedBy: z.string().nullable(),
-    approvedAt: z.string().nullable(),
-    createdAt: z.string(),
-  });
-  export const CreatePaidLeaveRequest = z.object({
-    leaveDate: z.string(),
-    days: z.number(),
-    reason: z.string().nullable().optional(),
-  });
-  export const OvertimeRequestResponse = z.object({
-    id: z.string(),
-    userId: z.string(),
-    workDate: z.string(),
-    startTime: z.string(),
-    endTime: z.string(),
-    status: components["schemas"]["OvertimeRequestStatus"],
-    reason: z.string().nullable(),
-    durationHours: z.number(),
-    approvedBy: z.string().nullable(),
-    approvedAt: z.string().nullable(),
-    createdAt: z.string(),
-  });
-  export const CreateOvertimeRequest = z.object({
-    workDate: z.string(),
-    startTime: z.string(),
-    endTime: z.string(),
-    reason: z.string().nullable().optional(),
-  });
-  export const PaidLeaveSummary = z.object({
-    totalDays: z.number(),
-    usedDays: z.number(),
-    remainingDays: z.number(),
   });
   export const ErrorResponse = z.object({
     message: z.string(),
@@ -368,10 +308,6 @@ export namespace components.parameters {
   export const QueryYear = z.number().int();
   /** @description 対象月 */
   export const QueryMonth = z.number().int();
-  /** @description 有給休暇申請ID */
-  export const PathPaidLeaveRequestId = z.string();
-  /** @description 残業申請ID */
-  export const PathOvertimeRequestId = z.string();
 }
 export namespace components.requestBodies {
   export const LoginBody = {
@@ -412,16 +348,6 @@ export namespace components.requestBodies {
   export const ChangePasswordBody = {
     content: {
       "application/json": components["schemas"]["ChangePasswordRequest"],
-    },
-  };
-  export const CreatePaidLeaveRequestBody = {
-    content: {
-      "application/json": components["schemas"]["CreatePaidLeaveRequest"],
-    },
-  };
-  export const CreateOvertimeRequestBody = {
-    content: {
-      "application/json": components["schemas"]["CreateOvertimeRequest"],
     },
   };
 }
@@ -728,166 +654,6 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  listApprovals: {
-    /**
-     * 申請・承認一覧取得 
-     * @description 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
-     */
-    responses: {
-      /** @description 申請一覧 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ApprovalListResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createPaidLeaveRequest: {
-    /**
-     * 有給休暇申請 
-     * @description 有給休暇の取得を申請する。
-     */
-    requestBody: components["requestBodies"]["CreatePaidLeaveRequestBody"],
-    responses: {
-      /** @description 申請成功 */
-      201: {
-        content: {
-          "application/json": components["schemas"]["PaidLeaveRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  approvePaidLeaveRequest: {
-    /**
-     * 有給休暇申請承認 
-     * @description 指定された有給休暇申請を承認する。承認権限が必要。
-     */
-    responses: {
-      /** @description 承認成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaidLeaveRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  rejectPaidLeaveRequest: {
-    /**
-     * 有給休暇申請却下 
-     * @description 指定された有給休暇申請を却下する。承認権限が必要。
-     */
-    responses: {
-      /** @description 却下成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaidLeaveRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  cancelPaidLeaveRequest: {
-    /**
-     * 有給休暇申請キャンセル 
-     * @description 自分の有給休暇申請をキャンセルする。
-     */
-    responses: {
-      /** @description キャンセル成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PaidLeaveRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createOvertimeRequest: {
-    /**
-     * 残業申請 
-     * @description 残業の事前申請を行う。
-     */
-    requestBody: components["requestBodies"]["CreateOvertimeRequestBody"],
-    responses: {
-      /** @description 申請成功 */
-      201: {
-        content: {
-          "application/json": components["schemas"]["OvertimeRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  approveOvertimeRequest: {
-    /**
-     * 残業申請承認 
-     * @description 指定された残業申請を承認する。承認権限が必要。
-     */
-    responses: {
-      /** @description 承認成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["OvertimeRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  returnOvertimeRequest: {
-    /**
-     * 残業申請差戻し 
-     * @description 指定された残業申請を差し戻す。承認権限が必要。
-     */
-    responses: {
-      /** @description 差戻し成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["OvertimeRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  cancelOvertimeRequest: {
-    /**
-     * 残業申請キャンセル 
-     * @description 自分の残業申請をキャンセルする。
-     */
-    responses: {
-      /** @description キャンセル成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["OvertimeRequestResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      403: components["responses"]["Forbidden"],
-      404: components["responses"]["NotFound"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
 }
 
 export const paths = {
@@ -1005,68 +771,5 @@ export const paths = {
      * @description ログインユーザーのログイン履歴を新しい順に返す。
      */
     get: operations["listLoginHistories"],
-  },
-  "/approvals": {
-    /**
-     * 申請・承認一覧取得 
-     * @description 自分の申請一覧と、承認権限がある場合は承認待ちの申請一覧を返す。
-     */
-    get: operations["listApprovals"],
-  },
-  "/approvals/paid-leaves": {
-    /**
-     * 有給休暇申請 
-     * @description 有給休暇の取得を申請する。
-     */
-    post: operations["createPaidLeaveRequest"],
-  },
-  "/approvals/paid-leaves/{paidLeaveRequestId}/approve": {
-    /**
-     * 有給休暇申請承認 
-     * @description 指定された有給休暇申請を承認する。承認権限が必要。
-     */
-    patch: operations["approvePaidLeaveRequest"],
-  },
-  "/approvals/paid-leaves/{paidLeaveRequestId}/reject": {
-    /**
-     * 有給休暇申請却下 
-     * @description 指定された有給休暇申請を却下する。承認権限が必要。
-     */
-    patch: operations["rejectPaidLeaveRequest"],
-  },
-  "/approvals/paid-leaves/{paidLeaveRequestId}/cancel": {
-    /**
-     * 有給休暇申請キャンセル 
-     * @description 自分の有給休暇申請をキャンセルする。
-     */
-    patch: operations["cancelPaidLeaveRequest"],
-  },
-  "/approvals/overtime-requests": {
-    /**
-     * 残業申請 
-     * @description 残業の事前申請を行う。
-     */
-    post: operations["createOvertimeRequest"],
-  },
-  "/approvals/overtime-requests/{overtimeRequestId}/approve": {
-    /**
-     * 残業申請承認 
-     * @description 指定された残業申請を承認する。承認権限が必要。
-     */
-    patch: operations["approveOvertimeRequest"],
-  },
-  "/approvals/overtime-requests/{overtimeRequestId}/return": {
-    /**
-     * 残業申請差戻し 
-     * @description 指定された残業申請を差し戻す。承認権限が必要。
-     */
-    patch: operations["returnOvertimeRequest"],
-  },
-  "/approvals/overtime-requests/{overtimeRequestId}/cancel": {
-    /**
-     * 残業申請キャンセル 
-     * @description 自分の残業申請をキャンセルする。
-     */
-    patch: operations["cancelOvertimeRequest"],
   },
 }

@@ -37,7 +37,6 @@ export enum AppRoutePath {
     Dashboard  = '/dashboard',
     Attendance = '/attendance',
     Schedule   = '/schedule',
-    Approval   = '/approval',    // 将来機能
     Team       = '/team',
     Settings   = '/settings',
     Wildcard   = '*',
@@ -139,7 +138,6 @@ const navigationItems = [
 |---|---|---|
 | **認証済みユーザーが `/login` にアクセスできる** | ログイン画面が無意味に表示される | `PublicLayout` 内で `isAuthenticated` をチェックし、Dashboard へリダイレクト |
 | **認証ガードが `AppRoutes` に直書き** | ルート追加のたびにガード設定を忘れるリスク | `ProtectedRoute` コンポーネントに分離 |
-| **`Approval` パスが定義済みだが未使用** | 存在しないページへのリンクがある可能性 | 未実装ページは enum から削除するか、Coming Soon ページを用意 |
 | **遅延ローディング (lazy) 未実装** | 全ページを初期バンドルに含む。バンドルサイズ増大 | `React.lazy()` + `Suspense` でコード分割 |
 | **ルート遷移時のローディング表示がない** | ページ切り替え時に白画面が見える | `Suspense` の `fallback` にスケルトン UI を設定 |
 | **パンくずリスト未実装** | ユーザーが現在位置を把握しにくい | ルート定義にメタデータ（タイトル等）を追加 |

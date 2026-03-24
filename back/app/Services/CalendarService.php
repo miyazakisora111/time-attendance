@@ -6,9 +6,7 @@ namespace App\Services;
 
 use App\Models\Attendance;
 use App\Models\Holiday;
-use App\Models\OvertimeRequest;
 use App\Models\PaidLeaveGrant;
-use App\Models\PaidLeaveRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -47,26 +45,16 @@ final class CalendarService extends BaseService
             ->get()
             ->keyBy(fn(Holiday $holiday): string => $holiday->holiday_date?->toDateString() ?? '');
 
-        $paidLeaves = PaidLeaveRequest::query()
-            ->user($user->id)
-            ->approved()
-            ->whereYear('leave_date', $year)
-            ->whereMonth('leave_date', $month)
-            ->get()
-            ->keyBy(fn(PaidLeaveRequest $request): string => $request->leave_date?->toDateString() ?? '');
-
         $days = [];
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
             $isoDate = $date->toDateString();
             $attendance = $attendances->get($isoDate);
             $holiday = $holidays->get($isoDate);
-            $paidLeave = $paidLeaves->get($isoDate);
             $isWeekend = $date->isWeekend();
 
             $status = $this->resolveDayStatus(
                 isWeekend: $isWeekend,
                 holiday: $holiday,
-                paidLeave: $paidLeave,
             );
 
             $days[] = [
@@ -77,7 +65,7 @@ final class CalendarService extends BaseService
                 'shift' => $this->resolveShift($status),
                 'timeRange' => $this->resolveTimeRange($attendance, $status),
                 'location' => $status === 'working' ? self::DEFAULT_LOCATION : null,
-                'note' => $holiday?->name ?? $paidLeave?->reason,
+                'note' => $holiday?->name,
                 'isToday' => $isoDate === $today,
                 'isHoliday' => $status !== 'working',
             ];
@@ -86,7 +74,7 @@ final class CalendarService extends BaseService
         return [
             'year' => $year,
             'month' => $month,
-            'summary' => $this->buildSummary($user, $year, $month, collect($days), $attendances, $paidLeaves),
+            'summary' => $this->buildSummary($user, $year, $month, collect($days), $attendances),
             'days' => $days,
         ];
     }
@@ -94,12 +82,8 @@ final class CalendarService extends BaseService
     /**
      * 日次ステータスを解決する。
      */
-    private function resolveDayStatus(bool $isWeekend, ?Holiday $holiday, ?PaidLeaveRequest $paidLeave): string
+    private function resolveDayStatus(bool $isWeekend, ?Holiday $holiday): string
     {
-        if ($paidLeave !== null) {
-            return 'pending';
-        }
-
         if ($holiday !== null) {
             return 'holiday';
         }
@@ -118,7 +102,7 @@ final class CalendarService extends BaseService
     {
         return match ($status) {
             'working' => self::DEFAULT_SHIFT,
-            'pending' => '有給休暇',
+
             'holiday' => '祝日',
             default => null,
         };
@@ -153,30 +137,20 @@ final class CalendarService extends BaseService
         int $month,
         Collection $days,
         Collection $attendances,
-        Collection $paidLeaves,
     ): array {
         $scheduledWorkDays = $days->filter(fn(array $day): bool => $day['status'] === 'working')->count();
         $totalWorkHours = round((float) $attendances
             ->map(fn(Attendance $attendance): float => ($attendance->calculateWorkedMinutes() ?? ($attendance->worked_minutes ?? 0)) / 60)
             ->sum(), 1);
 
-        $overtimeHours = round((float) OvertimeRequest::query()
-            ->user($user->id)
-            ->approved()
-            ->whereYear('work_date', $year)
-            ->whereMonth('work_date', $month)
-            ->get()
-            ->sum(fn(OvertimeRequest $request): float => $request->getDurationHours()), 1);
+        $overtimeHours = 0.0;
 
-        $paidLeaveDays = round((float) $paidLeaves->sum('days'), 1);
+        $paidLeaveDays = 0.0;
         $grantedDays = round((float) PaidLeaveGrant::query()
             ->user($user->id)
             ->active()
             ->sum('days'), 1);
-        $usedDays = round((float) PaidLeaveRequest::query()
-            ->user($user->id)
-            ->approved()
-            ->sum('days'), 1);
+        $usedDays = 0.0;
 
         return [
             'totalWorkHours' => $totalWorkHours,

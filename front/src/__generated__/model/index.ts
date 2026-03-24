@@ -3,7 +3,7 @@
  * Do not edit manually.
  * TimeAttendance API
  * 勤怠管理システムの REST API 定義。
-従業員の出退勤・休憩管理、有給休暇・残業の申請承認、
+従業員の出退勤・休憩管理、
 ダッシュボード集計、カレンダー、ユーザー設定を提供する。
 
 ## 認証
@@ -12,7 +12,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
 ## エラーハンドリング
 - 401: トークン無効または期限切れ
-- 403: 権限不足（承認権限が必要な操作）
+- 403: 権限不足
 - 404: 指定リソースが存在しない
 - 409: 状態の競合（二重打刻など）
 - 422: バリデーションエラー（フィールド別メッセージ付き）
@@ -21,8 +21,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
-export * from "./approvalListResponse";
-export * from "./approvalStatus";
 export * from "./attendanceClockInBodyBody";
 export * from "./attendanceClockInRequest";
 export * from "./attendanceClockOutBodyBody";
@@ -44,10 +42,6 @@ export * from "./changePasswordRequest";
 export * from "./clockAction";
 export * from "./clockStatus";
 export * from "./conflictResponse";
-export * from "./createOvertimeRequest";
-export * from "./createOvertimeRequestBodyBody";
-export * from "./createPaidLeaveRequest";
-export * from "./createPaidLeaveRequestBodyBody";
 export * from "./dashboardClockBodyBody";
 export * from "./dashboardClockRequest";
 export * from "./dashboardRecentRecord";
@@ -72,11 +66,7 @@ export * from "./loginRequest";
 export * from "./loginResponse";
 export * from "./logoutResponse";
 export * from "./notFoundResponse";
-export * from "./overtimeRequestResponse";
-export * from "./overtimeRequestStatus";
 export * from "./pageInfo";
-export * from "./paidLeaveRequestResponse";
-export * from "./paidLeaveSummary";
 export * from "./queryDateFromParameter";
 export * from "./queryDateToParameter";
 export * from "./queryMonthParameter";

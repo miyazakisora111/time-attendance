@@ -20,7 +20,6 @@ class UserNotificationSettingFactory extends Factory
         return [
             'user_id' => null,
             'clock_in_reminder' => fake()->boolean(),
-            'approval_notification' => fake()->boolean(),
             'leave_reminder' => fake()->boolean(),
         ];
     }

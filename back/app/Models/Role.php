@@ -26,14 +26,10 @@ class Role extends Model
     /**
      * Mass assignment
      */
-    /** 承認可能な最低レベル */
-    public const APPROVER_LEVEL = 3;
-
     protected $fillable = [
         'id',
         'name',
         'sort_order',
-        'level',
         'status',
     ];
 
@@ -42,7 +38,6 @@ class Role extends Model
      */
     protected $casts = [
         'sort_order' => 'integer',
-        'level' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -76,11 +71,4 @@ class Role extends Model
         return $query->orderBy('sort_order');
     }
 
-    /**
-     * 承認権限を持つレベルか判定する。
-     */
-    public function isApproverLevel(): bool
-    {
-        return $this->level >= self::APPROVER_LEVEL;
-    }
 }

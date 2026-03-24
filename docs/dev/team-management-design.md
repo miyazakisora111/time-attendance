@@ -44,7 +44,6 @@ flowchart TD
     subgraph "Manager"
         M_VIEW["自チームメンバー参照"]
         M_ATT["メンバー勤怠参照"]
-        M_APPROVE["承認権限"]
     end
 
     subgraph "Employee"

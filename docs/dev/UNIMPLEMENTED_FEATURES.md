@@ -18,52 +18,6 @@
 
 ## ❌ 完全未実装
 
-### 1. 有給休暇 申請・承認・管理
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 有給休暇申請・承認ワークフロー |
-| **概要** | ユーザーが有給休暇を申請し、管理者が承認/却下する一連のワークフロー。及び有給付与日数の管理。 |
-| **根拠 (DB)** | `paid_leave_requests` テーブル（leave_date, days, status=pending/approved/rejected, reason）、`paid_leave_grants` テーブル（days, granted_at, expires_at） |
-| **根拠 (Model)** | `PaidLeaveRequest` / `PaidLeaveGrant` モデルが scopes（user, approved, pending, active）含め完全実装済み |
-| **根拠 (UI)** | QuickActionsCard の「有給申請」ボタン（onClick なしのスタブ）、スケジュールサマリーに `paidLeaveDays` / `remainingPaidLeaveDays` 表示 |
-| **現状** | CalendarService が読取専用でサマリー集計のみ利用。Controller / Service / API エンドポイント / 申請フォーム UI は一切なし |
-| **必要な実装** | (1) PaidLeaveController (create/approve/reject/index) (2) PaidLeaveService (3) OpenAPI 定義 (4) 申請フォーム UI (5) 承認一覧 UI (6) PaidLeaveGrantController（管理者用付与管理） |
-| **優先度** | 🔴 Critical |
-| **影響範囲** | Backend: Controller, Service, FormRequest, Route / OpenAPI: 新規エンドポイント5以上 / Frontend: 新規ページ・フォーム・承認画面 |
-
----
-
-### 2. 残業申請・承認・管理
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 残業申請・承認ワークフロー |
-| **概要** | ユーザーが残業を事前申請し、管理者が承認/差戻し/キャンセルする一連のワークフロー |
-| **根拠 (DB)** | `overtime_requests` テーブル（work_date, start_time, end_time, status=pending/approved/returned/canceled, reason） |
-| **根拠 (Model)** | `OvertimeRequest` モデルが scopes（user, approved, pending, date）・status 定数・getDurationHours() 含め完全実装済み |
-| **根拠 (UI)** | Dashboard に `pendingOvertimeRequests` 件数データ取得済み（ただし画面に表示なし）、stats に `overtimeHours` / `overtimeDiff` 表示 |
-| **現状** | DashboardService / CalendarService が集計値としてのみ読取利用。Controller / Service / API エンドポイント / 申請 UI は一切なし |
-| **必要な実装** | (1) OvertimeRequestController (create/approve/return/cancel/index) (2) OvertimeRequestService (3) OpenAPI 定義 (4) 申請フォーム UI (5) 承認一覧 UI |
-| **優先度** | 🔴 Critical |
-| **影響範囲** | Backend: Controller, Service, FormRequest, Route / OpenAPI: 新規エンドポイント5以上 / Frontend: 新規ページ・フォーム・承認画面 |
-
----
-
-### 3. 申請・承認ページ
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 申請・承認統合ページ (`/approval`) |
-| **概要** | 有給・残業・勤怠修正等の各種申請を一元管理する画面 |
-| **根拠 (Frontend)** | `AppRoutePath.Approval = '/approval'` 定義済み、サイドバーに「申請・承認」メニューアイコン (FileText) 表示済み |
-| **現状** | ルート定義のみで Route 未登録、ページコンポーネント未作成。クリックするとワイルドカードでダッシュボードにリダイレクト |
-| **必要な実装** | (1) ApprovalPage コンポーネント (2) AppRoutes に Route 登録 (3) 各種申請リスト・承認操作 UI (4) 対応する Backend API |
-| **優先度** | 🔴 Critical（有給・残業申請と同時実装） |
-| **影響範囲** | Frontend: 新規ページ・hooks・API 呼出 |
-
----
-
 ### 4. パスワード変更
 
 | 項目 | 内容 |
@@ -158,21 +112,6 @@
 
 ---
 
-### 18. pendingOvertimeRequests の UI 表示
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 未承認残業申請件数の表示 |
-| **概要** | ダッシュボードに未承認の残業申請件数を表示する |
-| **根拠 (Backend)** | DashboardService が `pendingOvertimeRequests` を返却 |
-| **根拠 (OpenAPI)** | `DashboardResponse.pendingOvertimeRequests` (integer) 定義済み |
-| **現状** | Backend からデータ取得済みだが、Frontend のダッシュボード UI に表示箇所なし |
-| **必要な実装** | (1) ダッシュボード UI にバッジ/カードで件数表示 (2) クリックで申請一覧へ遷移 |
-| **優先度** | 🟠 Medium（申請機能実装後） |
-| **影響範囲** | Frontend: ダッシュボード UI |
-
----
-
 ### 19. 勤怠ページのハードコードデータ
 
 | 項目 | 内容 |
@@ -247,20 +186,6 @@
 
 ---
 
-### 24. 病欠申請ボタンのスタブ
-
-| 項目 | 内容 |
-|------|------|
-| **機能名** | 病欠申請 |
-| **概要** | ダッシュボード QuickActions の「病欠申請」ボタン |
-| **根拠 (UI)** | QuickActionsCard に「病欠申請」ボタン配置（onClick なし） |
-| **現状** | DB にも Backend にも「病欠」に特化したスキーマ/ロジックがない。有給申請の一種として扱うか、別テーブルが必要か未定義 |
-| **必要な実装** | (1) 病欠を有給申請のカテゴリとして統合する設計決定、または (2) 病欠専用テーブル・API・UI の追加 |
-| **優先度** | 🟠 Medium |
-| **影響範囲** | 設計判断後に全レイヤー |
-
----
-
 ## 📊 サマリー
 
 ### 実装済み機能 ✅
@@ -278,18 +203,18 @@
 
 | カテゴリ | 件数 |
 |---------|------|
-| ❌ 完全未実装 | 13 件 |
+| ❤ 完全未実装 | 10 件 |
 | ⚠️ 部分実装 | 7 件 |
 | ❗ 設計不整合 | 4 件 |
-| **合計** | **24 件** |
+| **合計** | **21 件** |
 
 ### 優先度別
 
 | 優先度 | 件数 | 代表例 |
 |--------|------|--------|
-| 🔴 Critical | 5 | 有給申請, 残業申請, 申請承認ページ, ログイン履歴記録, dashboard/clock |
-| 🟡 High | 5 | パスワード変更, ログイン履歴閲覧, 祝日管理, ユーザー管理, 勤怠一覧UI, UserStatus不一致 |
-| 🟠 Medium | 5 | 部署管理, 役職管理, メール認証, 残業予定表示, pendingOvertimeRequests表示, 病欠申請 |
+| 🔴 Critical | 2 | ログイン履歴記録, dashboard/clock |
+| 🟡 High | 5 | パスワード変更, ログイン履歴閲覧, 祝日管理, ユーザー管理, 勤怠一覧UI, UserStatus不整合 |
+| 🟠 Medium | 3 | 部署管理, 役職管理, メール認証, 残業予定表示 |
 | 🔵 Low | 5 | 2FA, メンバー招待, 月次レポート, チームアクション, ハードコードデータ, プロフィール編集 |
 
 ### 推奨実装順序
@@ -300,22 +225,16 @@ Phase 1 (Critical - 基盤)
   ├─ #21 DashboardController.clock メソッド追加
   └─ #22 UserStatus enum 整合
 
-Phase 2 (Critical - 申請ワークフロー)
-  ├─ #1 有給休暇申請・承認
-  ├─ #2 残業申請・承認
-  └─ #3 申請・承認ページ
-
-Phase 3 (High - ユーザー機能)
+Phase 2 (High - ユーザー機能)
   ├─ #4 パスワード変更
   ├─ #15 勤怠一覧・修正画面（Backend 実装済み）
   └─ #16 休憩時間の表示（Frontend のみ）
 
-Phase 5 (Medium)
+Phase 3 (Medium)
   ├─ #10 メール認証
-  ├─ #17 残業予定表示
-  └─ #18 pendingOvertimeRequests 表示
+  └─ #17 残業予定表示
 
-Phase 6 (Low)
+Phase 4 (Low)
   ├─ #13 月次レポート
   └─ 残りのスタブ修正
 ```

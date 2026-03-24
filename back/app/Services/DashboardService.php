@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Attendance;
-use App\Models\OvertimeRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -37,10 +36,6 @@ final class DashboardService extends BaseService
             'todayRecord' => $this->buildTodayRecord($todayAttendance),
             'stats' => $this->buildStats($user),
             'recentRecords' => $this->buildRecentRecords($user),
-            'pendingOvertimeRequests' => OvertimeRequest::query()
-                ->user($user->id)
-                ->pending()
-                ->count(),
         ];
     }
 
@@ -71,8 +66,8 @@ final class DashboardService extends BaseService
         $prevWorkDays = $prevAttendances->whereNotNull('start_time')->count();
         $prevAvgHours = $prevWorkDays > 0 ? round($prevTotalHours / $prevWorkDays, 1) : 0.0;
 
-        $overtimeHours = $this->sumOvertimeHours($user, $currentMonth->year, $currentMonth->month);
-        $prevOvertimeHours = $this->sumOvertimeHours($user, $prevMonth->year, $prevMonth->month);
+        $overtimeHours = 0.0;
+        $prevOvertimeHours = 0.0;
 
         return [
             'totalHours' => $totalHours,
@@ -162,21 +157,7 @@ final class DashboardService extends BaseService
             )
             ->sum(), 1);
     }
-
-    private function sumOvertimeHours(User $user, int $year, int $month): float
-    {
-        $overtimes = OvertimeRequest::query()
-            ->user($user->id)
-            ->approved()
-            ->whereYear('work_date', $year)
-            ->whereMonth('work_date', $month)
-            ->get();
-
-        return round((float) $overtimes->sum(fn(OvertimeRequest $overtime): float => $overtime->getDurationHours()), 1);
-    }
-
-    private function remainingBusinessDaysInMonth(Carbon $date): int
-    {
+}
         $cursor = $date->copy()->addDay()->startOfDay();
         $end = $date->copy()->endOfMonth();
         $count = 0;

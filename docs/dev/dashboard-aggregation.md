@@ -38,8 +38,6 @@ interface DashboardSummary {
     totalWorkingHours: number;
     totalOvertimeHours: number;
     averageWorkingHours: number;
-    paidLeaveDaysUsed: number;
-    paidLeaveDaysRemaining: number;
   };
   recent: Attendance[];
 }
