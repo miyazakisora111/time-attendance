@@ -122,12 +122,12 @@
 | **なぜ問題か** | セッションハイジャック、他ユーザーの勤怠操作 |
 | **修正方針** | httpOnly + Secure + SameSite=Strict Cookie に移行（medium-term） |
 
-### H-9: console.error に本番レスポンス全体を出力
+### H-9: console.error に本番HTTPレスポンス全体を出力
 
 | 項目 | 内容 |
 |---|---|
 | **対象** | `front/src/lib/http/client.ts` L199-205 |
-| **問題点** | 環境判定なしでリクエスト/レスポンスデータを console.error に出力 |
+| **問題点** | 環境判定なしでHTTPリクエスト/HTTPレスポンスデータを console.error に出力 |
 | **なぜ問題か** | パスワードなどの機密情報が開発者ツールに露出 |
 | **修正方針** | `import.meta.env.DEV` でガード |
 
@@ -151,7 +151,7 @@
 
 ### M-2: 楽観的ロック未実装
 - **対象**: `back/app/Services/AttendanceService.php` `clockIn()`
-- 同時リクエストで二重出勤レコード作成の可能性
+- 同時HTTPリクエストで二重出勤レコード作成の可能性
 - SELECT → INSERT の間にレースコンディション
 
 ### M-3: PrivateLayout のハードコードユーザー
@@ -234,7 +234,7 @@
 | BaseService の transaction() | コミット後ログという正しい設計 |
 | DomainException の分離 | ビジネスルールとHTTPの責務分離 |
 | Feature-based フロントエンド構成 | 機能単位の凝集度が高い |
-| Mapper パターン（toAttendanceView） | API レスポンスと UI 表示の分離 |
+| Mapper パターン（toAttendanceView） | API HTTPレスポンスと UI 表示の分離 |
 | CVA ベースのデザインシステム | 型安全なスタイル管理 |
 | 日跨ぎシフトの設計 | work_date + clock_in_at + clock_out_at + work_timezone で完全対応 |
 | immutable_datetime キャスト | 副作用のない日時操作 |

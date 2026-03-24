@@ -271,6 +271,4 @@ final class AttendanceService extends BaseService
             return $attendance->fresh()->toLocalTimePayload();
         });
     }
-
-    private function resolveTimezone(?string $tz): string
 }

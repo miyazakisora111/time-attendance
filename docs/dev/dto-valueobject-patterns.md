@@ -188,7 +188,7 @@ $email->equals(new Email('user@example.com')); // true
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **DTO が 2 クラスしかない** | Service が配列を直接返している箇所が多く、型安全性が低い | 主要レスポンスごとに DTO を追加：`AttendancePayload`, `DashboardPayload` 等 |
+| **DTO が 2 クラスしかない** | Service が配列を直接返している箇所が多く、型安全性が低い | 主要HTTPレスポンスごとに DTO を追加：`AttendancePayload`, `DashboardPayload` 等 |
 | **ValueObject が Email のみ** | `work_timezone` や `work_date` がプリミティブのまま | `Timezone`, `WorkDate` ValueObject を検討 |
 | **BaseDTO の fromArray() のリフレクション** | パフォーマンスへの影響（大量変換時） | キャッシュ機構を入れるか、頻度が低ければ許容 |
 | **DomainException の import 漏れリスク** | `assert()` で PHP 標準 DomainException を使うと 500 になる | PHPStan ルールで `\DomainException` の使用を禁止する |

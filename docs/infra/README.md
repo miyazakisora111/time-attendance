@@ -233,7 +233,7 @@ Error: Cannot find module 'vite'
 
 ### nginx 502 Bad Gateway
 
-**原因**: app コンテナ（PHP-FPM）がヘルスチェック前にリクエストを受けた。  
+**原因**: app コンテナ（PHP-FPM）がヘルスチェック前にHTTPリクエストを受けた。  
 **対処**: nginx は `depends_on: app: condition: service_healthy` で待機する。ヘルスチェック通過まで待つ。
 
 ### Xdebug が動かない
@@ -265,7 +265,7 @@ PHP / Node のバージョン差異で環境依存バグが発生する。
 
 ### 3. `localhost:5173` を直接ブラウザで開く
 
-CORS エラーが発生する。nginx を経由しないと API リクエストが別オリジンになる。  
+CORS エラーが発生する。nginx を経由しないと API HTTPリクエストが別オリジンになる。  
 → `http://localhost`（nginx 経由）にアクセスする。
 
 ### 4. DB ポートをホストに公開したまま本番にデプロイする
@@ -288,7 +288,7 @@ OS 依存のネイティブモジュール（esbuild 等）が壊れる。
 スタックトレースやデバッグ情報がブラウザに表示される。  
 → 本番では `APP_DEBUG=false` を厳守。
 
-### 8. nginx を飛ばして PHP-FPM に直接リクエストする
+### 8. nginx を飛ばして PHP-FPM に直接HTTPリクエストする
 
 FastCGI プロトコルは HTTP ではない。`curl app:9000` は動かない。  
 → 必ず nginx → FastCGI 経由でアクセスする。
@@ -678,7 +678,7 @@ flowchart TD
 
 | 対策 | コマンド / 設定 | 効果 |
 |------|---------------|------|
-| 設定キャッシュ | `php artisan config:cache` | 毎リクエストの .env パースを省略 |
+| 設定キャッシュ | `php artisan config:cache` | 毎HTTPリクエストの .env パースを省略 |
 | ルートキャッシュ | `php artisan route:cache` | ルート解決を高速化 |
 | ビューキャッシュ | `php artisan view:cache` | Blade テンプレートを事前コンパイル |
 | 一括最適化 | `php artisan optimize` | 上記 3 つ + イベントキャッシュ |
@@ -841,7 +841,7 @@ sequenceDiagram
     P-->>N: JSON
     N-->>B: 200 OK
 
-    Note over B,N: 全リクエストが同一オリジン<br/>(localhost:80) 経由のため<br/>CORS は発生しない
+    Note over B,N: 全HTTPリクエストが同一オリジン<br/>(localhost:80) 経由のため<br/>CORS は発生しない
 ```
 
 > **万が一 CORS が必要になった場合**:  

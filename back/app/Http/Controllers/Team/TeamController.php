@@ -10,12 +10,14 @@ use App\Services\TeamService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * チームメンバー情報のコントローラー。
+ * チームのコントローラー
  */
 final class TeamController extends BaseController
 {
     /**
-     * コンストラクタ。
+     * コンストラクタ
+     * 
+     * @param TeamService $service チームのサービス
      */
     public function __construct(
         private readonly TeamService $service,

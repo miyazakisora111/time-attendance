@@ -5,7 +5,7 @@
 ```mermaid
 graph TD
     HTTP["HTTP Request"]
-    MW["Middleware<br/>LogApiRequest / SetJsonContentType"]
+    MW["Middleware<br/>LogApiRequest"]
     CTRL["Controller<br/>(BaseController — 薄いハンドラー)"]
     FR["FormRequest<br/>(BaseRequest — OpenAPI 自動生成バリデーション)"]
     SVC["Service<br/>(BaseService — ビジネスロジック + トランザクション管理)"]
@@ -25,9 +25,9 @@ graph TD
 
 | レイヤー | 責務 | やっていいこと | やってはいけないこと |
 |---|---|---|---|
-| **Controller** | リクエスト受付・Service 呼び出し・レスポンス返却 | `resolveUser()` で認証ユーザー取得、`ApiResponse` 返却 | ビジネスロジック、DB クエリ、条件分岐 |
+| **Controller** | HTTPリクエスト受付・Service 呼び出し・HTTPレスポンス返却 | `resolveAuthUser()` で認証ユーザー取得、`ApiResponse` 返却 | ビジネスロジック、DB クエリ、条件分岐 |
 | **FormRequest** | 入力バリデーション・型正規化 | OpenAPI ルール参照、`filterNumber()` / `filterBoolean()` | DB アクセス、ビジネスルール判定 |
-| **Service** | ビジネスルール・ドメインロジック・トランザクション管理 | `transaction()` / `log()` / `logError()` / `resolveTimezone()`、Eloquent 直接使用 | 直接レスポンスを返す、Request / Response に依存する |
+| **Service** | ビジネスルール・ドメインロジック・トランザクション管理 | `transaction()` / `log()` / `logError()` / `resolveTimezone()`、Eloquent 直接使用 | 直接HTTPレスポンスを返す、Request / Response に依存する |
 | **DTO** | レイヤー間の型安全なデータ受け渡し | `fromArray()` / `toArray()` 変換、ValueObject 保持 | DB アクセス、ビジネスロジック |
 | **ValueObject** | 値の妥当性保証・不変性 | コンストラクタで `assert()`、`equals()` 比較 | 状態変更、外部副作用 |
 | **Model** | テーブル定義・リレーション・スコープ・ドメイン判定 | キャスト、スコープ、`isClockedIn()` 等の判定メソッド | HTTP 関連の処理、トランザクション管理 |
@@ -39,7 +39,7 @@ graph TD
 ```php
 abstract class BaseController extends Controller
 {
-    protected function resolveUser(): User
+    protected function resolveAuthUser(): User
     {
         return app(UserService::class)->getAuthUser();
     }
@@ -57,14 +57,14 @@ final class AttendanceController extends BaseController
 
     public function clockIn(): JsonResponse
     {
-        $result = $this->service->clockIn(user: $this->resolveUser());
+        $result = $this->service->clockIn(user: $this->resolveAuthUser());
         return ApiResponse::success($result);
     }
 
     public function store(AttendanceStoreRequest $request): JsonResponse
     {
         $result = $this->service->store(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
             input: $request->validated(),
         );
         return ApiResponse::success($result, status: 201);
@@ -231,7 +231,6 @@ $email->value();   // 'user@example.com'
 | `ValidationException` | 422 | `VALIDATION_ERROR` |
 | `AuthenticationException` | 401 | `AUTH_ERROR` |
 | `AuthorizationException` | 403 | `FORBIDDEN_ERROR` |
-| `ModelNotFoundException` | 404 | `NOT_FOUND` |
 | その他 `Throwable` | 500 | `INTERNAL_ERROR` |
 
 > **⚠️ DomainException は 400 であり 422 ではない。** Handler.php の実装を確認すること。
@@ -269,7 +268,7 @@ final class AttendanceStoreRequest extends BaseRequest
 }
 ```
 
-## 9. 統一レスポンス形式
+## 9. 統一HTTPレスポンス形式
 
 ### 成功
 
@@ -325,7 +324,7 @@ User::create(['password' => 'password']);
 $user = auth()->user();
 
 // OK — Controller
-$user = $this->resolveUser();
+$user = $this->resolveAuthUser();
 
 // OK — Service
 $user = $this->userService->getAuthUser();

@@ -6,10 +6,7 @@ namespace App\Http\Requests\Attendance;
 
 use App\Http\Requests\BaseRequest;
 
-class AttendanceIndexRequest extends BaseRequest
-{
-    /**
-     * {@inheritdoc}
-     */
-    protected string $schemaName = 'AttendanceIndexRequest';
-}
+/**
+ * 勤怠一覧取得のリクエスト
+ */
+class AttendanceIndexRequest extends BaseRequest {}

@@ -9,20 +9,16 @@ use App\Services\UserService;
 use Illuminate\Routing\Controller;
 
 /**
- * 基底のコントローラークラス
- *
- * 全コントローラーが共通で利用するヘルパーを提供する。
+ * 基底のコントローラー
  */
 abstract class BaseController extends Controller
 {
     /**
-     * 認証済みユーザーを解決する。
+     * 認証済みユーザーを取得する。
      *
-     * 未認証の場合は AuthenticationException がスローされる。
-     *
-     * @return User
+     * @return User 認証済みユーザー
      */
-    protected function resolveUser(): User
+    protected function resolveAuthUser(): User
     {
         return app(UserService::class)->getAuthUser();
     }

@@ -2,7 +2,7 @@
 
 ## 概要
 
-Laravel Feature テストの設計パターン。HTTP リクエストのエンドツーエンドテスト、認証テスト、バリデーションテスト、レスポンス検証の実装方法を解説する。
+Laravel Feature テストの設計パターン。HTTP HTTPリクエストのエンドツーエンドテスト、認証テスト、バリデーションテスト、HTTPレスポンス検証の実装方法を解説する。
 
 ## テスト構成
 
@@ -215,4 +215,4 @@ docker compose exec app php artisan test --coverage --min=80
 | **テストデータの暗黙的依存** | Seeder データに依存するテストがある可能性 | 全テストで Factory を使い、自己完結させる |
 | **トランザクションロールバック** | `RefreshDatabase` は遅い場合がある | `DatabaseTransactions` トレイトの検討 |
 | **API バージョンのテスト** | バージョニング導入時にテスト対象が倍増 | ベーステストクラスでバージョン別にテストを生成 |
-| **レスポンス構造の検証が甘い** | `assertOk()` のみで中身を検証していないテスト | `assertJsonStructure()` と `assertJson()` を必ず含める |
+| **HTTPレスポンス構造の検証が甘い** | `assertOk()` のみで中身を検証していないテスト | `assertJsonStructure()` と `assertJson()` を必ず含める |

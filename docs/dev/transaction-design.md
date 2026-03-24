@@ -28,7 +28,7 @@ sequenceDiagram
         BS->>BS: logError("Transaction failed")
         BS-->>S: 例外再送出
     end
-    S-->>C: レスポンス or 例外
+    S-->>C: HTTPレスポンス or 例外
 ```
 
 ## BaseService::transaction() の実装

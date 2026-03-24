@@ -157,7 +157,7 @@ flowchart TD
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **キャッシュスタンピード** | TTL 切れ時に大量リクエストが DB に集中 | `Cache::flexible()` (Laravel 11) またはロック付きキャッシュ |
+| **キャッシュスタンピード** | TTL 切れ時に大量HTTPリクエストが DB に集中 | `Cache::flexible()` (Laravel 11) またはロック付きキャッシュ |
 | **キャッシュ破棄の漏れ** | データ更新後にキャッシュが古いまま残る | Model Observer でキャッシュ破棄を自動化 |
 | **Redis 障害時のフォールバック** | Redis ダウン時にアプリ全体が停止するリスク | `try-catch` で graceful degradation。キャッシュなしで DB 直接参照 |
 | **メモリ制限の設定** | 無制限だとメモリ枯渇のリスク | `maxmemory 256mb` + `allkeys-lru` ポリシーを設定 |

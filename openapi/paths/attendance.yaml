@@ -1,6 +1,6 @@
 # --- Reason: operationId → 動詞+対象のcamelCase (Api サフィックス削除)
 # --- Reason: description 追加（全 operation に summary + description 必須）
-# --- Reason: listAttendances のレスポンスをページネーション対応ラッパーに変更
+# --- Reason: listAttendances のHTTPレスポンスをページネーション対応ラッパーに変更
 # --- Reason: storeAttendanceApi → createAttendance (store は許可動詞外)
 # --- Reason: todayAttendanceApi → getTodayAttendance (動詞先頭)
 # --- Reason: clockInApi → createClockIn, clockOutApi → createClockOut

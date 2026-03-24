@@ -21,11 +21,11 @@ sequenceDiagram
     JWT-->>API: access_token
     API-->>Client: {token, user}
 
-    Note over Client,DB: 認証付きリクエスト
+    Note over Client,DB: 認証付きHTTPリクエスト
     Client->>API: GET /api/dashboard (Bearer token)
     API->>JWT: auth('api')->user()
     JWT-->>API: User (or AuthenticationException)
-    API-->>Client: レスポンス
+    API-->>Client: HTTPレスポンス
 
     Note over Client,DB: トークンリフレッシュ
     Client->>API: POST /api/auth/refresh (Bearer old_token)
@@ -65,7 +65,7 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
-// 401 レスポンスでトークン削除
+// 401 HTTPレスポンスでトークン削除
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -110,7 +110,7 @@ axiosInstance.interceptors.response.use(
 ```mermaid
 stateDiagram-v2
     [*] --> Valid: ログイン成功
-    Valid --> Valid: 認証リクエスト
+    Valid --> Valid: 認証HTTPリクエスト
     Valid --> Refreshed: refresh()
     Refreshed --> Valid: 新トークン発行
     Valid --> Invalidated: logout()

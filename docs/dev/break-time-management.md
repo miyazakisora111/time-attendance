@@ -137,4 +137,4 @@ public function endBreak(Attendance $attendance): AttendanceBreak
 | **`break_minutes` と実際の差分の乖離** | 保存値と `break_end - break_start` の再計算値が異なる可能性 | 読み取り時にアクセサで再計算するか、保存値を信頼するか統一する |
 | **休憩回数の制限がない** | 無制限に休憩を取れてしまう | ビジネスルールに応じて最大回数を設定（例: 1 日 5 回まで） |
 | **日跨ぎ休憩** | 深夜勤務で日を跨ぐ休憩の扱い | 休憩は Attendance に紐づくため、date ではなく attendance_id で管理する（対応済み） |
-| **同時リクエストの排他制御** | 休憩開始ボタンの連打で複数レコード生成 | `SELECT FOR UPDATE` + ステータスチェックで排他制御 |
+| **同時HTTPリクエストの排他制御** | 休憩開始ボタンの連打で複数レコード生成 | `SELECT FOR UPDATE` + ステータスチェックで排他制御 |

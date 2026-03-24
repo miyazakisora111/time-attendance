@@ -1,4 +1,4 @@
-# 全てのエラーレスポンスの基底構造。
+# 全てのエラーHTTPレスポンスの基底構造。
 # DomainException, AuthorizationException 等は全てこの形式で返される。
 # フロントエンドは message をユーザー向けトーストに使用する。
 ErrorResponse:

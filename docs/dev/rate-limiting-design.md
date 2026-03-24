@@ -2,7 +2,7 @@
 
 ## 概要
 
-API エンドポイントへの過剰リクエストを防ぐレートリミティング設計。DDoS 対策、ブルートフォース攻撃防止、公平なリソース分配を目的とする。
+API エンドポイントへの過剰HTTPリクエストを防ぐレートリミティング設計。DDoS 対策、ブルートフォース攻撃防止、公平なリソース分配を目的とする。
 
 ## レートリミッター定義
 
@@ -20,7 +20,7 @@ RateLimiter::for('api', function (Request $request) {
 
 ```mermaid
 flowchart TD
-    A[リクエスト] --> B{エンドポイント}
+    A[HTTPリクエスト] --> B{エンドポイント}
     B -->|POST /login| C["throttle:5,1<br/>5回/分"]
     B -->|その他 API| D["throttle:api<br/>60回/分"]
     B -->|GET /health| E[制限なし]
@@ -54,7 +54,7 @@ Route::middleware(['auth:api'])->group(function () {
 });
 ```
 
-## レスポンスヘッダー
+## HTTPレスポンスヘッダー
 
 ```
 X-RateLimit-Limit: 60
@@ -62,7 +62,7 @@ X-RateLimit-Remaining: 57
 Retry-After: 30  (429 の場合)
 ```
 
-## 429 エラーレスポンス
+## 429 エラーHTTPレスポンス
 
 ```json
 {
@@ -87,6 +87,6 @@ Retry-After: 30  (429 の場合)
 | **429 のエラーコードが `INTERNAL_ERROR`** | フロントエンドが 429 をサーバーエラーとして扱う可能性 | `Handler.php` で `ThrottleRequestsException` を捕捉し、`RATE_LIMIT_EXCEEDED` コードを返す |
 | **IP ベースのみの制限** | NAT 環境で同一 IP の正当ユーザーが影響を受ける | 認証済みユーザーは `$request->user()?->id` ベースに変更 |
 | **ログインの制限が IP 単位** | 分散攻撃には無力 | アカウントベースのロックアウト（5回失敗で15分ロック）を追加 |
-| **打刻 API に個別制限がない** | 打刻ボタン連打で大量リクエスト | `throttle:2,1` などで打刻系は個別に厳格化 |
+| **打刻 API に個別制限がない** | 打刻ボタン連打で大量HTTPリクエスト | `throttle:2,1` などで打刻系は個別に厳格化 |
 | **開発環境で `api` レートが無制限** | 本番で初めて制限に引っかかるバグが発見される | 開発環境でも `Limit::perMinute(300)` 程度にする |
 | **Redis ベースのレートリミッター未設定** | デフォルトは `cache` ドライバ。複数ワーカー間で正確に機能しない場合がある | `CACHE_DRIVER=redis` を確認し、Redis ベースで共有する |

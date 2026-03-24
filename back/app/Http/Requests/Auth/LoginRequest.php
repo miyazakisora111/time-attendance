@@ -7,14 +7,6 @@ namespace App\Http\Requests\Auth;
 use App\Http\Requests\BaseRequest;
 
 /**
- * ログインのリクエストクラス
+ * ログインのリクエスト
  */
-class LoginRequest extends BaseRequest
-{
-    /**
-     * OpenAPI スキーマ名
-     *
-     * @var string
-     */
-    protected string $schemaName = 'LoginRequest';
-}
+class LoginRequest extends BaseRequest {}

@@ -7,7 +7,7 @@ namespace App\Http\Requests\Attendance;
 use App\Http\Requests\BaseRequest;
 
 /**
- * カレンダーのリクエストクラス
+ * カレンダー取得のリクエスト
  */
 class CalendarIndexRequest extends BaseRequest
 {
@@ -20,9 +20,4 @@ class CalendarIndexRequest extends BaseRequest
             "month",
         ],
     ];
-
-    /**
-     * {@inheritdoc}
-     */
-    protected string $schemaName = 'CalendarIndexRequest';
 }

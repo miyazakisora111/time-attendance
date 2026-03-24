@@ -1,4 +1,4 @@
-# ログインリクエスト。認証不要（security: []）。
+# ログインHTTPリクエスト。認証不要（security: []）。
 # パスワードは英字+数字の混合を必須とする。
 LoginRequest:
   type: object

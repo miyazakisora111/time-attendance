@@ -4,7 +4,7 @@
 
 Nginx 1.27 によるリバースプロキシ構成。フロントエンド（Vite / 静的ファイル）と バックエンド（PHP-FPM）のルーティング、HMR 対応、本番 SPA 配信を解説する。
 
-## リクエストルーティング
+## HTTPリクエストルーティング
 
 ```mermaid
 flowchart TD
@@ -34,7 +34,7 @@ server {
     listen 80;
     server_name localhost;
 
-    # API リクエスト → PHP-FPM
+    # API HTTPリクエスト → PHP-FPM
     location /api {
         try_files $uri $uri/ /index.php?$query_string;
     }
@@ -124,8 +124,8 @@ log_format json_combined escape=json
 | 問題 | 影響 | 改善案 |
 |---|---|---|
 | **セキュリティヘッダーが未設定** | XSS、クリックジャッキング等の攻撃リスク | 上記のセキュリティヘッダーを Nginx 設定に追加 |
-| **リクエストサイズ制限が未設定** | 大容量ファイルアップロードで DoS 攻撃の可能性 | `client_max_body_size 10m;` を設定 |
+| **HTTPリクエストサイズ制限が未設定** | 大容量ファイルアップロードで DoS 攻撃の可能性 | `client_max_body_size 10m;` を設定 |
 | **SSL/TLS 設定がない** | 開発環境は HTTP で問題ないが、本番用の TLS 設定テンプレートがない | 本番用に Let's Encrypt + certbot の設定テンプレートを用意 |
-| **gzip 圧縮が未設定** | レスポンスサイズが最適化されない | `gzip on; gzip_types text/css application/json application/javascript;` を追加 |
+| **gzip 圧縮が未設定** | HTTPレスポンスサイズが最適化されない | `gzip on; gzip_types text/css application/json application/javascript;` を追加 |
 | **アップストリーム接続タイムアウト** | デフォルト 60 秒。長時間処理で 504 エラー | `fastcgi_read_timeout 300;` を設定（長時間処理がある場合） |
 | **レートリミティングの二重化** | Laravel と Nginx の両方でレート制限が可能 | Nginx では L7 DDoS 対策、Laravel ではアプリレベル制限と役割分担 |

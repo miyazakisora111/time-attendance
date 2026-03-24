@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use App\Http\Responses\ApiResponse;
+use App\Http\Requests\BaseRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
             );
         });
 
-        // 認証エラー（Laravel 標準）
+        // 認証エラー
         $this->renderable(function (AuthenticationException $e, $request) {
             Log::channel('api')->warning('Authentication exception', $this->buildContext($request, $e, 401));
 
@@ -62,7 +62,7 @@ class Handler extends ExceptionHandler
             );
         });
 
-        // 認可エラー（Laravel 標準）
+        // 認可エラー
         $this->renderable(function (AuthorizationException $e, $request) {
             Log::channel('api')->warning('Authorization exception', $this->buildContext($request, $e, 403));
 
@@ -70,17 +70,6 @@ class Handler extends ExceptionHandler
                 message: $e->getMessage(),
                 status: 403,
                 code: 'FORBIDDEN_ERROR'
-            );
-        });
-
-        // モデル未検出
-        $this->renderable(function (ModelNotFoundException $e, $request) {
-            Log::channel('api')->warning('Model not found', $this->buildContext($request, $e, 404));
-
-            return ApiResponse::error(
-                message: 'Not Found',
-                status: 404,
-                code: 'NOT_FOUND'
             );
         });
 
@@ -103,15 +92,26 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * 例外コードを HTTP ステータスに正規化する。
+     * HTTPステータスコードを正規化する。
+     *
+     * @param int $code HTTPステータスコード
+     * @param int $defaultStatus 不正な場合に使用するHTTPステータスコード
+     * @return int HTTPステータスコード
      */
-    private function normalizeStatusCode(int $code, int $default = 500): int
+    private function normalizeStatusCode(int $code, int $defaultStatus = 500): int
     {
-        return $code >= 400 && $code < 600 ? $code : $default;
+        return $code >= 400 && $code < 600 ? $code : $defaultStatus;
     }
 
+    /**
+     * 例外オブジェクトからHTTPステータスコードを解決する。
+     * 
+     * @param Throwable $e 例外オブジェクト
+     * @return int HTTPステータスコード
+     */
     private function resolveThrowableStatus(Throwable $e): int
     {
+        // HttpExceptionInterface を実装している場合は、そのHTTPステータスコードを使用する
         if ($e instanceof HttpExceptionInterface) {
             return $this->normalizeStatusCode($e->getStatusCode());
         }
@@ -119,7 +119,15 @@ class Handler extends ExceptionHandler
         return $this->normalizeStatusCode((int) $e->getCode());
     }
 
-    private function buildContext($request, Throwable $e, int $status): array
+    /**
+     * 例外発生時のコンテキスト情報を構築する。
+     * 
+     * @param BaseRequest $request 基底のHTTPリクエスト
+     * @param Throwable $e 例外オブジェクト
+     * @param int $status HTTPステータスコード
+     * @return array<string, mixed> コンテキスト情報
+     */
+    private function buildContext(BaseRequest $request, Throwable $e, int $status): array
     {
         return [
             'method' => $request->method(),

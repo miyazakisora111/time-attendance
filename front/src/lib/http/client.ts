@@ -49,7 +49,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
 /**
  * APIエラーオブジェクトからメッセージ配列を抽出する。
  *
- * @param data エラーレスポンス
+ * @param data エラーHTTPレスポンス
  */
 const extractErrorMessages = (data: unknown): string[] => {
   if (!isRecord(data)) {
@@ -83,7 +83,7 @@ const extractErrorMessages = (data: unknown): string[] => {
  * エラーコードとステータスに応じてエラーストアへ通知する。
  *
  * @param status HTTPステータス
- * @param data エラーレスポンス
+ * @param data エラーHTTPレスポンス
  */
 const notifyByStatus = (status: number | undefined, data: unknown): void => {
   const messages = extractErrorMessages(data);
@@ -153,7 +153,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// レスポンス共通処理
+// HTTPレスポンス共通処理
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {

@@ -2,7 +2,7 @@
 
 ## 設計思想
 
-- エラーは **発生源で分類** し、適切な HTTP ステータスコードにマッピングする
+- エラーは **発生源で分類** し、適切な HTTP HTTPステータスコードにマッピングする
 - フロントエンドでは **一元的なエラーモーダル** でユーザーに通知する
 - バリデーションエラーのみフィールド単位でインライン表示する
 
@@ -17,7 +17,6 @@
 | `App\Exceptions\DomainException` | 400 | `DOMAIN_ERROR` |
 | `AuthenticationException` | 401 | `AUTH_ERROR` |
 | `AuthorizationException` | 403 | `FORBIDDEN_ERROR` |
-| `ModelNotFoundException` | 404 | `NOT_FOUND` |
 | `ValidationException` | 422 | `VALIDATION_ERROR` |
 | その他 | 500 | `INTERNAL_ERROR` |
 
@@ -40,9 +39,9 @@ throw new \DomainException('...');
 
 > **重要**: `App\Exceptions\DomainException` を使うこと。PHP 標準の `\DomainException` では Handler が正しい HTTP ステータスにマッピングできず 500 が返る。
 
-### レスポンス構造
+### HTTPレスポンス構造
 
-DomainException のレスポンス（カスタムエラーコード例）:
+DomainException のHTTPレスポンス（カスタムエラーコード例）:
 
 ```json
 {
@@ -127,4 +126,4 @@ type ErrorCode =
 | 🚨 問題 | ログイン失敗（401）時にフロントエンドの UI フィードバックがない（インターセプターが `return` して何も表示しない） |
 | 💡 改善 | ErrorBoundary がフロントエンドに未配置。レンダーエラーで全画面ホワイトアウトする。`<ErrorBoundary>` を App.tsx に追加すべき |
 | 💡 改善 | ErrorModal に ESC キー、フォーカストラップ、`role="dialog"` / `aria-modal` が未実装 |
-| ⚠️ アンチパターン | `console.error` で本番環境でもリクエスト/レスポンス全体を出力している。機密情報露出リスク |
+| ⚠️ アンチパターン | `console.error` で本番環境でもHTTPリクエスト/HTTPレスポンス全体を出力している。機密情報露出リスク |

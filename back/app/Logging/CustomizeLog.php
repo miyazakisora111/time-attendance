@@ -12,27 +12,29 @@ use Monolog\Handler\FormattableHandlerInterface;
 use Monolog\Logger as MonologLogger;
 use Monolog\LogRecord;
 
-class CustomizeApiLog
+/**
+ * ログをカスタマイズするクラス 
+ */
+final class CustomizeLog
 {
     /**
-     * APIログを JSON 形式に統一し、全レコードに共通 context を自動付与する。
+     * ログをJSON形式に統一し、全レコードに共通contextを自動付与する。
      *
-     * @param IlluminateLogger $logger Laravel が渡す Logger
+     * @param IlluminateLogger $logger ロガー
      */
     public function __invoke(IlluminateLogger $logger): void
     {
-        // Monolog インスタンスにアクセス
         /** @var MonologLogger $monolog */
         $monolog = $logger->getLogger();
 
-        // JSON フォーマッタをすべての FormattableHandler に設定
+        // JSONフォーマッタをすべてのFormattableHandlerに設定
         foreach ($monolog->getHandlers() as $handler) {
             if ($handler instanceof FormattableHandlerInterface) {
                 $handler->setFormatter(new JsonFormatter(JsonFormatter::BATCH_MODE_JSON, true));
             }
         }
 
-        // 共通 Processor を追加
+        // 共通Processorを追加
         $monolog->pushProcessor(function (LogRecord $record): LogRecord {
             $request = app()->bound('request') ? request() : null;
 

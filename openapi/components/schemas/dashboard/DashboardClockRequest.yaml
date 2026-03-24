@@ -1,6 +1,6 @@
-# ダッシュボードからの打刻リクエスト。
+# ダッシュボードからの打刻HTTPリクエスト。
 # action は ClockAction enum（in / out / breakStart / breakEnd）を指定する。
-# レスポンスは更新後の DashboardResponse 全体を返す。
+# HTTPレスポンスは更新後の DashboardResponse 全体を返す。
 DashboardClockRequest:
   type: object
   required:

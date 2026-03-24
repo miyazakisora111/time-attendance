@@ -31,7 +31,7 @@
 
 - React は JSX でデフォルトエスケープされる
 - `dangerouslySetInnerHTML` は使用禁止
-- API レスポンスは JSON のみ（HTML を返さない）
+- API HTTPレスポンスは JSON のみ（HTML を返さない）
 
 ## HTTP ヘッダー
 
@@ -84,7 +84,7 @@ Referrer-Policy: strict-origin-when-cross-origin
 |---|---|
 | 🚨 問題 | JWT を localStorage に保存している（XSS でトークン奪取可能）。httpOnly + Secure + SameSite=Strict Cookie に移行すべき |
 | 🚨 問題 | Nginx のセキュリティヘッダーが実設定ファイルに適用されていない。上記記載のヘッダーは設計のみで未実装 |
-| 🚨 問題 | `console.error` が本番環境でもリクエスト/レスポンス全体を出力。パスワードなど機密情報が DevTools に露出する |
+| 🚨 問題 | `console.error` が本番環境でもHTTPリクエスト/HTTPレスポンス全体を出力。パスワードなど機密情報が DevTools に露出する |
 | 🚨 問題 | 本番ビルドで `sourcemap: true` が有効。ソースコードが閲覧可能 |
 | 💡 改善 | `composer audit` / `pnpm audit` を CI に組み込んで自動チェックすべき |
 | 💡 改善 | CSP（Content-Security-Policy）ヘッダーの追加が必要 |

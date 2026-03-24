@@ -1,5 +1,5 @@
 /**
- * Laravel APIが返す統一エラーレスポンス型。
+ * Laravel APIが返す統一エラーHTTPレスポンス型。
  */
 export type ApiError = {
     /** ヒューマンリーダブルなエラーメッセージ */

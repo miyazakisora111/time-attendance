@@ -1,9 +1,9 @@
-# 一覧系レスポンスに共通のページネーション情報。
+# 一覧系HTTPレスポンスに共通のページネーション情報。
 # フロントエンドはこの構造でページ送り UI を制御する。
-# 一覧系レスポンスは必ず { items: T[], pageInfo: PageInfo } の形式で返す。
+# 一覧系HTTPレスポンスは必ず { items: T[], pageInfo: PageInfo } の形式で返す。
 PageInfo:
   type: object
-  description: ページネーション情報。一覧系レスポンスに必ず付与される。
+  description: ページネーション情報。一覧系HTTPレスポンスに必ず付与される。
   required:
     - currentPage
     - perPage

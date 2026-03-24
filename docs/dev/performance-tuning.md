@@ -141,7 +141,7 @@ const handleSubmit = useCallback((data: FormValues) => {
 
 | ツール | 計測対象 | 目標値 |
 |---|---|---|
-| Laravel Debugbar | クエリ数・実行時間 | 1 リクエスト 10 クエリ以下 |
+| Laravel Debugbar | クエリ数・実行時間 | 1 HTTPリクエスト 10 クエリ以下 |
 | Chrome DevTools | LCP / FID / CLS | LCP < 2.5s |
 | `EXPLAIN ANALYZE` | SQLクエリプラン | Seq Scan の排除 |
 | `vite-plugin-inspect` | バンドルサイズ | JS < 200KB (gzip) |
@@ -151,7 +151,7 @@ const handleSubmit = useCallback((data: FormValues) => {
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **Debugbar が開発環境で常時有効** | レスポンスに Debugbar HTML が付加されパフォーマンス低下 | `APP_DEBUG=true` の時のみ有効化（対応済み） |
+| **Debugbar が開発環境で常時有効** | HTTPレスポンスに Debugbar HTML が付加されパフォーマンス低下 | `APP_DEBUG=true` の時のみ有効化（対応済み） |
 | **React Query の `staleTime` 設定** | データの鮮度とキャッシュ効率のトレードオフ | ダッシュボードは短め（30秒）、マスタデータは長め（10分） |
 | **バンドルサイズの監視がない** | 知らないうちにバンドルが肥大化 | `rollup-plugin-visualizer` で定期的に分析 |
 | **DB コネクションプール** | デフォルトのコネクション数で足りない可能性 | `DB_POOL_SIZE` を設定し、pgbouncer の導入を検討 |

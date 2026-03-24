@@ -12,41 +12,45 @@ use App\Services\SettingsService;
 use Illuminate\Http\JsonResponse;
 
 /**
- * 設定画面のコントローラー。
+ * 設定のコントローラー
  */
 final class SettingsController extends BaseController
 {
     /**
-     * コンストラクタ。
+     * コンストラクタ
+     * 
+     * @param SettingsService $service 設定のサービス
      */
     public function __construct(
         private readonly SettingsService $service,
     ) {}
 
     /**
-     * ログインユーザー設定を返す。
+     * ユーザー設定を返す。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function show(): JsonResponse
     {
+        // ユーザー設定を取得する。
         $result = $this->service->getSettings(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
         );
 
         return ApiResponse::success($result);
     }
 
     /**
-     * ログインユーザー設定を更新する。
+     * ユーザー設定を更新する。
      *
-     * @param UpdateSettingsRequest $request 設定更新リクエスト
-     * @return JsonResponse Jsonレスポンス
+     * @param UpdateSettingsRequest $request 設定更新HTTPリクエスト
+     * @return JsonResponse JSONレスポンス
      */
     public function update(UpdateSettingsRequest $request): JsonResponse
     {
+        // ユーザ設定を更新する。
         $result = $this->service->updateSettings(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
             input: $request->validated(),
         );
 
@@ -56,28 +60,30 @@ final class SettingsController extends BaseController
     /**
      * パスワードを変更する。
      *
-     * @param ChangePasswordRequest $request パスワード変更リクエスト
-     * @return JsonResponse Jsonレスポンス
+     * @param ChangePasswordRequest $request パスワード変更HTTPリクエスト
+     * @return JsonResponse JSONレスポンス
      */
     public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
+        // パスワードを変更する。
         $result = $this->service->changePassword(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
             input: $request->validated(),
         );
 
-        return ApiResponse::success($result, 'パスワードを変更しました。');
+        return ApiResponse::success($result);
     }
 
     /**
      * ログイン履歴一覧を返す。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function loginHistories(): JsonResponse
     {
+        // ログイン履歴一覧を返す。
         $result = $this->service->getLoginHistories(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
         );
 
         return ApiResponse::success($result);

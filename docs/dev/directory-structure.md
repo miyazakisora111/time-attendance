@@ -29,7 +29,7 @@ back/app/
 │   ├── Middleware/         # ミドルウェア（ログ、JSON 設定）
 │   ├── Requests/          # FormRequest（バリデーション）
 │   │   └── Generated/     #   OpenAPI 自動生成ルール
-│   └── Resources/         # API レスポンス整形
+│   └── Resources/         # API HTTPレスポンス整形
 ├── Logging/               # カスタムログフォーマッタ
 ├── Models/                # Eloquent モデル
 ├── Policies/              # 認可ポリシー

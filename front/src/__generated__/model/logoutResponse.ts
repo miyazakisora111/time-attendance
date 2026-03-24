@@ -22,7 +22,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 /**
- * ログアウト成功レスポンス
+ * ログアウト成功HTTPレスポンス
  */
 export interface LogoutResponse {
   message?: string;

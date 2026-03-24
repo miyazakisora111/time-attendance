@@ -46,7 +46,7 @@ return [
             'days' => 14,
             'replace_placeholders' => true,
             'tap' => [
-                App\Logging\CustomizeApiLog::class,
+                App\Logging\CustomizeLog::class,
             ],
             'formatter' => JsonFormatter::class,
             'formatter_with' => [

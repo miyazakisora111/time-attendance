@@ -28,8 +28,8 @@ final class AuthController extends BaseController
     /**
      * ログイン処理を行う。
      *
-     * @param LoginRequest $request リクエスト
-     * @return JsonResponse Jsonレスポンス
+     * @param LoginRequest $request HTTPリクエスト
+     * @return JsonResponse JSONレスポンス
      */
     public function login(LoginRequest $request): JsonResponse
     {
@@ -48,7 +48,7 @@ final class AuthController extends BaseController
     /**
      * ログアウトする。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function logout(): JsonResponse
     {
@@ -60,7 +60,7 @@ final class AuthController extends BaseController
     /**
      * トークンをリフレッシュする。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function refresh(): JsonResponse
     {
@@ -71,7 +71,7 @@ final class AuthController extends BaseController
     /**
      * ログインユーザーを取得する。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function me(): JsonResponse
     {

@@ -1,6 +1,6 @@
 LogoutResponse:
   type: object
-  description: ログアウト成功レスポンス
+  description: ログアウト成功HTTPレスポンス
   properties:
     message:
       type: string

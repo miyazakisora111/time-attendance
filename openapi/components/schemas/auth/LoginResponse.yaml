@@ -1,4 +1,4 @@
-# ログイン成功レスポンス。JWT トークンを返す。
+# ログイン成功HTTPレスポンス。JWT トークンを返す。
 # ApiResponse エンベロープの data フィールドに含まれる。
 LoginResponse:
   type: object

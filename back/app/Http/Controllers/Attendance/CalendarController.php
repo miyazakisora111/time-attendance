@@ -27,8 +27,8 @@ final class CalendarController extends BaseController
     /**
      * 指定された年月のカレンダーを取得する。
      *
-     * @param CalendarIndexRequest $request リクエスト
-     * @return JsonResponse Jsonレスポンス
+     * @param CalendarIndexRequest $request HTTPリクエスト
+     * @return JsonResponse JSONレスポンス
      */
     public function index(CalendarIndexRequest $request): JsonResponse
     {
@@ -36,7 +36,7 @@ final class CalendarController extends BaseController
         
         // カレンダーを取得する。
         $result = $this->service->getCalendar(
-            user: $this->resolveUser(),
+            user: $this->resolveAuthUser(),
             year: $validated['year'],
             month: $validated['month'],
         );

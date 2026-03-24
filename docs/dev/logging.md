@@ -4,7 +4,7 @@
 
 ### ログチャンネル
 
-`config/logging.php` で定義。API リクエスト用のカスタムチャンネルを使用する。
+`config/logging.php` で定義。API HTTPリクエスト用のカスタムチャンネルを使用する。
 
 ### 構造化 JSON ログ
 
@@ -12,7 +12,7 @@
 
 | フィールド | 説明 |
 |---|---|
-| `request_id` | リクエスト固有のトレーシングID |
+| `request_id` | HTTPリクエスト固有のトレーシングID |
 | `user_id` | 認証済みユーザーの ID（未認証時は null） |
 | `ip` | クライアント IP アドレス |
 | `user_agent` | ブラウザ / クライアント情報 |
@@ -57,12 +57,12 @@ $this->log('info', '打刻処理開始', ['user_id' => $userId]);
 $this->logError('打刻処理失敗', $exception, ['user_id' => $userId]);
 ```
 
-### API リクエストログ
+### API HTTPリクエストログ
 
-`LogApiRequest` ミドルウェアがすべての API リクエストを自動ログする:
+`LogApiRequest` ミドルウェアがすべての API HTTPリクエストを自動ログする:
 
-- リクエスト: メソッド、URL、パラメータ
-- レスポンス: ステータスコード、処理時間
+- HTTPリクエスト: メソッド、URL、パラメータ
+- HTTPレスポンス: HTTPステータスコード、処理時間
 
 ### ログに含めてはいけない情報
 

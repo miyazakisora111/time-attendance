@@ -93,7 +93,7 @@ interface AuthState {
 
 | データの性質 | 管理先 |
 |---|---|
-| API レスポンス | React Query |
+| API HTTPレスポンス | React Query |
 | 認証トークン | localStorage + Zustand |
 | フォーム状態 | React Hook Form |
 | UI 一時状態 | useState / useReducer |
@@ -126,7 +126,7 @@ if (result.ok) {
 
 ### Mapper パターン
 
-API レスポンスから UI 表示用の型に変換する。
+API HTTPレスポンスから UI 表示用の型に変換する。
 
 ```typescript
 // features/attendance/mappers/toAttendanceView.ts
@@ -186,7 +186,7 @@ export function toAttendanceView(attendance: AttendanceResponse): AttendanceView
 | 💡 改善 | Auth の二重状態管理（React Query + Zustand）を一方に統一すべき |
 | 💡 改善 | 休憩ボタンが UI に表示されるが「未実装」トーストを返すのみ。非表示にするか実装すべき |
 | 💡 改善 | `react-error-boundary` は依存に含まれているので `<ErrorBoundary>` を App.tsx に追加するだけ |
-| ⚠️ アンチパターン | `console.error` が本番環境でもリクエスト/レスポンス全体を出力。`import.meta.env.DEV` でガードすべき |
+| ⚠️ アンチパターン | `console.error` が本番環境でもHTTPリクエスト/HTTPレスポンス全体を出力。`import.meta.env.DEV` でガードすべき |
 | ⚠️ アンチパターン | `record.status as never` で TypeScript の型チェックをバイパスしている箇所がある |
 | ⚠️ アンチパターン | `index.html` の `lang="en"` — 日本語アプリなので `lang="ja"` にすべき |
 | ⚠️ アンチパターン | 本番ビルドで `sourcemap: true`。ソースコードが露出する |

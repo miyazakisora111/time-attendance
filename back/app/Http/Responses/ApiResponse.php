@@ -7,25 +7,24 @@ namespace App\Http\Responses;
 use Illuminate\Http\JsonResponse;
 
 /**
- * APIレスポンスの統一フォーマットを生成する専用クラス。
+ * APIレスポンスの統一フォーマットを生成する
  */
 final class ApiResponse
 {
     /**
-     * 成功レスポンスを生成する
+     * 成功HTTPレスポンスを生成する
      *
-     * @param mixed  $data    レスポンスデータ本体
+     * @param mixed $data HTTPレスポンスデータ本体
      * @param string $message 成功メッセージ
-     * @param int    $status  HTTPステータスコード
-     * @param array<string, mixed> $meta  付加情報（ページネーションなど）
-     *
-     * @return JsonResponse
+     * @param int $status  HTTPステータスコード
+     * @param array<string, mixed> $meta 付加情報
+     * @return JsonResponse JSONレスポンス
      */
     public static function success(
         mixed $data = null,
         string $message = 'Success',
         int $status = 200,
-        array $meta = []
+        array $meta = [],
     ): JsonResponse {
         return response()->json([
             'success' => true,
@@ -36,26 +35,25 @@ final class ApiResponse
     }
 
     /**
-     * エラーレスポンスを生成する
+     * エラーHTTPレスポンスを生成する
      *
      * @param string $message エラーメッセージ
-     * @param int    $status  HTTPステータスコード
+     * @param int $status HTTPステータスコード
      * @param array<string, mixed> $errors バリデーションエラーや詳細情報
-     * @param string $code    エラーコード
-     *
-     * @return JsonResponse
+     * @param string $code エラーコード
+     * @return JsonResponse JSONレスポンス
      */
     public static function error(
         string $message,
         int $status,
         array $errors = [],
-        string $code = 'INTERNAL_ERROR'
+        string $code = 'INTERNAL_ERROR',
     ): JsonResponse {
         return response()->json([
             'success' => false,
             'message' => $message,
-            'code'    => $code,
-            'errors'  => $errors !== [] ? $errors : null,
+            'code' => $code,
+            'errors' => $errors !== [] ? $errors : null,
         ], $status);
     }
 }

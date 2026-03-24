@@ -72,7 +72,7 @@ final class AttendanceController extends BaseController
     public function store(ClockRequest $request): JsonResponse
     {
         $result = $this->attendanceService->clockIn(
-            $this->resolveUser()
+            $this->resolveAuthUser()
         );
         return ApiResponse::success($result, '出勤を記録しました');
     }
@@ -110,8 +110,8 @@ public function clockIn(User $user): array
 ```mermaid
 graph LR
     AuthService -->|getAuthUser| UserService
-    AttendanceController -->|resolveUser| UserService
-    DashboardController -->|resolveUser| UserService
+    AttendanceController -->|resolveAuthUser| UserService
+    DashboardController -->|resolveAuthUser| UserService
 ```
 
 ## 注意: 設計レビュー指摘事項

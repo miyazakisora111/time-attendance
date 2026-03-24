@@ -1,6 +1,6 @@
 SettingsProfile:
   type: object
-  description: ユーザープロフィール情報（レスポンス用）
+  description: ユーザープロフィール情報（HTTPレスポンス用）
   required:
     - name
     - email

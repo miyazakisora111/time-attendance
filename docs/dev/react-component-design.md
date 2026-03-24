@@ -32,7 +32,7 @@ graph TD
 ```
 features/{feature}/
 ├── hooks/          # カスタムフック（データ取得、ビジネスロジック）
-├── mappers/        # API レスポンス → View Model 変換
+├── mappers/        # API HTTPレスポンス → View Model 変換
 ├── state/          # Zustand Store（必要な場合のみ）
 ├── ui/             # UI コンポーネント
 │   ├── {Feature}Page.tsx      # ページコンポーネント

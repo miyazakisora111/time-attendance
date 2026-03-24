@@ -56,8 +56,8 @@
 |---|---|---|
 | URL パス | kebab-case, 複数形 | `/attendance-records` |
 | クエリパラメータ | snake_case | `?page=1&per_page=15` |
-| リクエストボディ | snake_case | `{ "first_name": "太郎" }` |
-| レスポンスフィールド | snake_case | `{ "user_id": "..." }` |
+| HTTPリクエストボディ | snake_case | `{ "first_name": "太郎" }` |
+| HTTPレスポンスフィールド | snake_case | `{ "user_id": "..." }` |
 | エラーコード | UPPER_SNAKE_CASE | `VALIDATION_ERROR` |
 | operationId | camelCase | `loginApi`, `getAttendanceRecords` |
 

@@ -30,7 +30,7 @@ graph TD
 | ステート種別 | 管理手段 | 例 |
 |---|---|---|
 | **クライアントステート** | Zustand | 認証状態、テーマ |
-| **サーバーステート** | React Query | API レスポンスデータ |
+| **サーバーステート** | React Query | API HTTPレスポンスデータ |
 | **ローカルステート** | `useState` | フォーム値、モーダル開閉 |
 
 ## Auth Store 実装
@@ -114,7 +114,7 @@ flowchart LR
 └── Store は feature/ 配下に配置
 
 ❌ DON'T
-├── API レスポンスを Zustand に格納する
+├── API HTTPレスポンスを Zustand に格納する
 ├── 巨大な Store を作る（分割する）
 ├── Store 内でフェッチロジックを書く
 └── コンポーネントから直接 Store の内部状態を変更する

@@ -17,7 +17,7 @@ graph TD
     subgraph "アプリ監視"
         Health["ヘルスチェック"]
         Error["エラーレート"]
-        Response["レスポンスタイム"]
+        Response["HTTPレスポンスタイム"]
         Queue["キュー長"]
     end
 
@@ -135,7 +135,7 @@ Log::info('attendance.clock_in', [
 | メトリクス | 閾値 | 重要度 | 通知先 |
 |---|---|---|---|
 | エラーレート | > 5% / 5分 | Critical | PagerDuty |
-| レスポンスタイム p95 | > 3秒 | Warning | Slack |
+| HTTPレスポンスタイム p95 | > 3秒 | Warning | Slack |
 | ヘルスチェック失敗 | 3 回連続 | Critical | PagerDuty + Slack |
 | ディスク使用率 | > 80% | Warning | Slack |
 | DB コネクション数 | > 80% of max | Warning | Slack |
@@ -146,8 +146,8 @@ Log::info('attendance.clock_in', [
 ```mermaid
 graph TD
     subgraph "運用ダッシュボード"
-        Panel1["リクエスト数 / 分"]
-        Panel2["レスポンスタイム分布"]
+        Panel1["HTTPリクエスト数 / 分"]
+        Panel2["HTTPレスポンスタイム分布"]
         Panel3["エラー発生数"]
         Panel4["アクティブユーザー数"]
         Panel5["DB クエリパフォーマンス"]

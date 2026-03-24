@@ -1,6 +1,6 @@
 UpdateSettingsProfile:
   type: object
-  description: ユーザープロフィール更新（リクエスト用）
+  description: ユーザープロフィール更新（HTTPリクエスト用）
   required:
     - name
     - email

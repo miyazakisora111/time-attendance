@@ -2,7 +2,7 @@
 
 ## 概要
 
-Cross-Origin Resource Sharing (CORS) の設定。フロントエンド (Vite dev server) からバックエンド API への安全なクロスオリジンリクエストを実現する。
+Cross-Origin Resource Sharing (CORS) の設定。フロントエンド (Vite dev server) からバックエンド API への安全なクロスオリジンHTTPリクエストを実現する。
 
 ## CORS フロー
 
@@ -98,16 +98,16 @@ export const axiosInstance = axios.create({
 });
 ```
 
-## プリフライトリクエスト
+## プリフライトHTTPリクエスト
 
 ```
-# ブラウザが自動送信する OPTIONS リクエスト
+# ブラウザが自動送信する OPTIONS HTTPリクエスト
 OPTIONS /api/dashboard HTTP/1.1
 Origin: http://localhost:5173
 Access-Control-Request-Method: GET
 Access-Control-Request-Headers: Authorization, Content-Type
 
-# サーバーレスポンス
+# サーバーHTTPレスポンス
 HTTP/1.1 204 No Content
 Access-Control-Allow-Origin: http://localhost:5173
 Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
@@ -121,6 +121,6 @@ Access-Control-Allow-Credentials: true
 |---|---|---|
 | **`allowed_methods: ['*']` が広すぎる** | 不要な HTTP メソッド（DELETE 等）も許可される | 使用メソッドのみに制限：`['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']` |
 | **`allowed_headers: ['*']` が広すぎる** | 任意のカスタムヘッダーを受け入れる | 必要なヘッダーのみ：`['Authorization', 'Content-Type', 'Accept', 'X-Requested-With']` |
-| **`max_age: 0`** | プリフライトリクエストがキャッシュされず、毎回 OPTIONS が飛ぶ | `max_age: 3600` (1時間) に設定してパフォーマンス改善 |
+| **`max_age: 0`** | プリフライトHTTPリクエストがキャッシュされず、毎回 OPTIONS が飛ぶ | `max_age: 3600` (1時間) に設定してパフォーマンス改善 |
 | **`FRONTEND_URL` が単一値** | ステージング環境など複数オリジンに対応できない | `allowed_origins` を env で複数指定可能にする、または `allowed_origins_patterns` を活用 |
 | **Vite プロキシ使用時は CORS 不要** | 開発環境では Vite プロキシが Same-Origin にするため CORS 設定が使われない | 開発環境で CORS が正しく動作するかのテストが不足する可能性。CI で確認する |

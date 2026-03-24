@@ -1,4 +1,4 @@
-# 勤怠レコードの表示用レスポンス。
+# 勤怠レコードの表示用HTTPレスポンス。
 # バックエンドの Attendance::toLocalTimePayload() が生成する。
 # タイムゾーン変換済みのローカル時刻で返す設計。
 # clockStatus は AttendanceBreak テーブルの状態も加味して解決される。

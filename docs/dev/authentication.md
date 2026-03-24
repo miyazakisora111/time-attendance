@@ -13,7 +13,7 @@ JWT（JSON Web Token）ベースの認証を採用する。ライブラリは `t
 2. サーバー: 認証情報を検証
 3. サーバー: JWT トークンを生成して返却
 4. クライアント: localStorage にトークンを保存
-5. クライアント: 以降のリクエストに Authorization ヘッダーを付与
+5. クライアント: 以降のHTTPリクエストに Authorization ヘッダーを付与
 ```
 
 ### トークン管理
@@ -23,7 +23,7 @@ Authorization: Bearer eyJhbGciOi...
 ```
 
 - トークンは `localStorage` に保存する（`time-attendance.auth-token` キー）
-- Axios インターセプターで全リクエストに自動付与
+- Axios インターセプターで全HTTPリクエストに自動付与
 - トークン操作は `lib/http/client.ts` の関数を経由する:
   - `getAuthToken()` — 取得
   - `setAuthToken(token)` — 保存

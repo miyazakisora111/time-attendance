@@ -22,7 +22,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 /**
- * ページネーション情報。一覧系レスポンスに必ず付与される。
+ * ページネーション情報。一覧系HTTPレスポンスに必ず付与される。
  */
 export interface PageInfo {
   /**

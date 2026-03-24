@@ -18,22 +18,25 @@ final class DashboardController extends BaseController
 {
     /**
      * コンストラクタ
+     * 
+     * @param DashboardService $dashboardService ダッシュボードのサービス
+     * @param AttendanceService $attendanceService 勤怠のサービス
      */
     public function __construct(
-        private readonly DashboardService $service,
+        private readonly DashboardService $dashboardService,
         private readonly AttendanceService $attendanceService,
     ) {}
 
     /**
      * ダッシュボード情報を取得する。
      *
-     * @return JsonResponse Jsonレスポンス
+     * @return JsonResponse JSONレスポンス
      */
     public function show(): JsonResponse
     {
-        $result = $this->service->getDashboard(
-            user: $this->resolveUser(),
-        );
+        // ダッシュボード情報を取得する。
+        $user = $this->resolveAuthUser();
+        $result = $this->dashboardService->getDashboard(user: $user);
 
         return ApiResponse::success($result);
     }
@@ -41,12 +44,13 @@ final class DashboardController extends BaseController
     /**
      * 打刻アクションを実行する。
      *
-     * @param DashboardClockRequest $request 打刻リクエスト
-     * @return JsonResponse Jsonレスポンス
+     * @param DashboardClockRequest $request 打刻HTTPリクエスト
+     * @return JsonResponse JSONレスポンス
      */
     public function clock(DashboardClockRequest $request): JsonResponse
     {
-        $user = $this->resolveUser();
+        // TODO:APIをin,out,breakStart,breakEndの4つに分ける
+        $user = $this->resolveAuthUser();
         $action = (string) $request->validated('action');
 
         $result = match ($action) {
@@ -57,7 +61,7 @@ final class DashboardController extends BaseController
             default => throw new \App\Exceptions\DomainException('不正な打刻アクションです', 'INVALID_CLOCK_ACTION'),
         };
 
-        $dashboard = $this->service->getDashboard($user);
+        $dashboard = $this->dashboardService->getDashboard($user);
 
         return ApiResponse::success($dashboard);
     }

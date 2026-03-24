@@ -38,7 +38,7 @@ graph LR
     PHP --> Redis
 ```
 
-### リクエストフロー
+### HTTPリクエストフロー
 
 ```
 Browser → Nginx :80
@@ -68,7 +68,7 @@ openapi/openapi.yaml
 ```
 HTTP Request
   ↓
-Middleware (LogApiRequest, SetJsonContentType)
+Middleware (LogApiRequest)
   ↓
 Controller (BaseController — 薄いハンドラー)
   ↓
@@ -83,7 +83,7 @@ ApiResponse::success() / ApiResponse::error()
 
 | レイヤー | 責務 |
 |---|---|
-| **Controller** | リクエスト受付と Service への委譲のみ。ビジネスロジック禁止 |
+| **Controller** | HTTPリクエスト受付と Service への委譲のみ。ビジネスロジック禁止 |
 | **Service** | ビジネスロジック。Eloquent を直接使用する（Repository 層は不使用） |
 | **Model** | テーブル定義、リレーション、スコープ、ドメイン判定メソッド |
 
@@ -110,7 +110,7 @@ front/src/
 
 依存方向: `features → shared → lib → config` （逆方向の依存禁止）
 
-### 4. API レスポンス形式
+### 4. API HTTPレスポンス形式
 
 すべての API は `ApiResponse` で統一されたエンベロープを返す。
 

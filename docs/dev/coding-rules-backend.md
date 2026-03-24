@@ -25,13 +25,13 @@
 - 1 アクション = 1 メソッドを目安にする
 - ビジネスロジックは **絶対に書かない**。Service に委譲する
 - コンストラクタインジェクションで Service を注入する
-- 認証ユーザーは `$this->resolveUser()` で取得する（`auth()->user()` 禁止）
-- レスポンスは `ApiResponse::success()` / `ApiResponse::error()` を使う
+- 認証ユーザーは `$this->resolveAuthUser()` で取得する（`auth()->user()` 禁止）
+- HTTPレスポンスは `ApiResponse::success()` / `ApiResponse::error()` を使う
 
 ```php
 public function store(ClockRequest $request): JsonResponse
 {
-    $result = $this->attendanceService->clockIn($this->resolveUser());
+    $result = $this->attendanceService->clockIn($this->resolveAuthUser());
     return ApiResponse::success($result, '出勤を記録しました');
 }
 ```
@@ -80,7 +80,6 @@ public function store(ClockRequest $request): JsonResponse
 - バリデーションエラー → FormRequest が自動処理（422）
 - 認証エラー → `AuthenticationException`（401）
 - 認可エラー → `AuthorizationException`（403）
-- 存在しない → `ModelNotFoundException`（404）
 
 ## バリデーション
 

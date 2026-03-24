@@ -22,7 +22,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 /**
- * ユーザープロフィール情報（レスポンス用）
+ * ユーザープロフィール情報（HTTPレスポンス用）
  */
 export interface SettingsProfile {
   department: string;

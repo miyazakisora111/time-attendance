@@ -1,4 +1,4 @@
-# 既存の勤怠レコード部分更新リクエスト。
+# 既存の勤怠レコード部分更新HTTPリクエスト。
 # PATCH なので送信したフィールドのみ更新される。
 AttendanceUpdateRequest:
   type: object

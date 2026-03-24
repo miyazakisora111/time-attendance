@@ -7,15 +7,21 @@ namespace App\Exceptions;
 use RuntimeException;
 
 /**
- * ドメイン層の業務例外クラス。
- *
- * ビジネスルール違反など、業務的に想定されるエラーを表す。
- * 認証・認可には使用しないこと（Laravel 標準例外を使う）。
+ * ドメインの例外クラス
  */
 class DomainException extends RuntimeException
 {
+    /**
+     * エラーコード
+     */
     protected string $errorCode;
 
+    /**
+     * コンストラクタ
+     * 
+     * @param string $message エラーメッセージ
+     * @param string $errorCode エラーコード
+     */
     public function __construct(
         string $message,
         string $errorCode = 'DOMAIN_ERROR'
@@ -24,6 +30,11 @@ class DomainException extends RuntimeException
         $this->errorCode = $errorCode;
     }
 
+    /**
+     * エラーコードを取得する。
+     * 
+     * @return string エラーコード
+     */
     public function getErrorCode(): string
     {
         return $this->errorCode;

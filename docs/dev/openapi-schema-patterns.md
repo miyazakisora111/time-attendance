@@ -2,7 +2,7 @@
 
 ## 概要
 
-OpenAPI 3.0.3 のスキーマ設計における命名規約、`$ref` 分離、リクエスト/レスポンス型の構造パターン。本プロジェクトの Single Source of Truth（SSOT）としての設計原則を解説する。
+OpenAPI 3.0.3 のスキーマ設計における命名規約、`$ref` 分離、HTTPリクエスト/HTTPレスポンス型の構造パターン。本プロジェクトの Single Source of Truth（SSOT）としての設計原則を解説する。
 
 ## ディレクトリ構造
 
@@ -16,14 +16,14 @@ openapi/
 ├── schema/
 │   ├── auth.yaml             # 認証関連スキーマ
 │   ├── attendance.yaml       # 勤怠関連スキーマ
-│   ├── common.yaml           # 共通レスポンス
+│   ├── common.yaml           # 共通HTTPレスポンス
 │   └── enums.yaml            # Enum 定義
 ├── components/
 │   ├── parameters.yaml       # 共通パラメータ
-│   ├── responses.yaml        # 共通レスポンス
+│   ├── responses.yaml        # 共通HTTPレスポンス
 │   └── securitySchemes.yaml  # JWT Bearer
 ├── examples/
-│   └── *.yaml                # リクエスト/レスポンス例
+│   └── *.yaml                # HTTPリクエスト/HTTPレスポンス例
 ├── scripts/
 │   └── generate-*.ts         # コード生成スクリプト
 └── build/
@@ -59,14 +59,14 @@ components:
       bearerFormat: JWT
 ```
 
-## リクエスト/レスポンス命名規約
+## HTTPリクエスト/HTTPレスポンス命名規約
 
 | 種別 | パターン | 例 |
 |---|---|---|
-| リクエスト Body | `{Resource}{Action}Request` | `AttendanceCreateRequest` |
-| レスポンス | `{Resource}{Action}Response` | `AttendanceListResponse` |
+| HTTPリクエスト Body | `{Resource}{Action}Request` | `AttendanceCreateRequest` |
+| HTTPレスポンス | `{Resource}{Action}Response` | `AttendanceListResponse` |
 | 単体リソース | `{Resource}` | `Attendance` |
-| 一覧レスポンス | `{Resource}ListResponse` | `AttendanceListResponse` |
+| 一覧HTTPレスポンス | `{Resource}ListResponse` | `AttendanceListResponse` |
 | Enum | `{Resource}{Field}` | `AttendanceStatus` |
 
 ## スキーマ設計パターン
@@ -104,7 +104,7 @@ Attendance:
       nullable: true
 ```
 
-### 一覧レスポンスパターン
+### 一覧HTTPレスポンスパターン
 
 ```yaml
 AttendanceListResponse:
@@ -152,7 +152,7 @@ graph TD
 - 2 箇所以上で参照されるスキーマは `schema/` に分離
 - Enum は `schema/enums.yaml` に集約
 - パスは `paths/{resource}.yaml` に 1 ファイル 1 リソース
-- 共通パラメータ・レスポンスは `components/` に配置
+- 共通パラメータ・HTTPレスポンスは `components/` に配置
 
 ## バンドルと検証
 
@@ -174,5 +174,5 @@ npx @redocly/cli preview-docs openapi/openapi.yaml
 | **`nullable` の使い方** | OpenAPI 3.0 では `nullable: true` だが 3.1 では `type: ['string', 'null']` に変わる | 現在 3.0.3 なので `nullable: true` で正しい。アップグレード時に注意 |
 | **`format: date-time` の TZ 指定** | ISO 8601 形式だが TZ 付きかどうかが曖昧 | `description` で `UTC (ISO 8601)` を明記する |
 | **列挙値の追加が Breaking Change** | Enum に値を追加するとクライアント側のコードが壊れる可能性 | API バージョニングまたは `x-extensible-enum` 拡張を使用 |
-| **`examples/` の網羅性** | 全エンドポイントのリクエスト/レスポンス例があるか不明 | エンドポイントごとに `example` を必ず定義するルール化 |
+| **`examples/` の網羅性** | 全エンドポイントのHTTPリクエスト/HTTPレスポンス例があるか不明 | エンドポイントごとに `example` を必ず定義するルール化 |
 | **`$ref` の循環参照リスク** | 相互参照するとバンドルで無限ループになる | Redocly lint の `no-unresolved-refs` ルールで検出 |

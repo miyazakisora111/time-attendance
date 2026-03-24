@@ -33,9 +33,9 @@ final class AuthService extends BaseService
      *
      * @param Email $email Eメール
      * @param string $password パスワード
-     * @param Request $request リクエスト
+     * @param Request $request HTTPリクエスト
      *
-     * @return array<string, mixed> JWTトークンのレスポンス
+     * @return array<string, mixed> JWTトークンのHTTPレスポンス
      */
     public function login(Email $email, string $password, Request $request): array
     {
@@ -64,14 +64,14 @@ final class AuthService extends BaseService
         // ログイン履歴を記録する。
         $this->recordLoginHistory($user, $request);
 
-        // JWTトークンのレスポンスを生成する。
+        // JWTトークンのHTTPレスポンスを生成する。
         return $this->respondWithToken($token);
     }
 
     /**
      * JWT トークンをリフレッシュする。
      *
-     * @return array<string, mixed> JWTトークンのレスポンス
+     * @return array<string, mixed> JWTトークンのHTTPレスポンス
      */
     public function refresh(): array
     {
@@ -83,7 +83,7 @@ final class AuthService extends BaseService
             throw new AuthenticationException('トークン更新に失敗しました');
         }
 
-        // JWTトークンのレスポンスを生成する。
+        // JWTトークンのHTTPレスポンスを生成する。
         return $this->respondWithToken($token);
     }
 
@@ -132,7 +132,7 @@ final class AuthService extends BaseService
      * ログイン履歴を記録する。
      *
      * @param User $user ユーザー
-     * @param Request|null $request リクエスト
+     * @param Request|null $request HTTPリクエスト
      * @return LoginHistory ログイン履歴
      */
     private function recordLoginHistory(User $user, Request $request): LoginHistory
@@ -163,10 +163,10 @@ final class AuthService extends BaseService
     }
 
     /**
-     * JWTトークンのレスポンスを生成する。
+     * JWTトークンのHTTPレスポンスを生成する。
      *
      * @param string $token JWT トークン
-     * @return array JWTトークンのレスポンス
+     * @return array JWTトークンのHTTPレスポンス
      */
     private function respondWithToken(string $token): array
     {

@@ -76,7 +76,7 @@ export function LoginPage() {
 flowchart LR
     subgraph Frontend
         A[ユーザー入力] -->|Zod| B{バリデーション}
-        B -- OK --> C[API リクエスト]
+        B -- OK --> C[API HTTPリクエスト]
         B -- NG --> D[エラー表示]
     end
 

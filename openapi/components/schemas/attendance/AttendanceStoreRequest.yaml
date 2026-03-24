@@ -1,4 +1,4 @@
-# 勤怠の手動新規作成リクエスト。
+# 勤怠の手動新規作成HTTPリクエスト。
 # 管理者またはユーザー自身が過去の勤怠を後から登録するケースを想定。
 AttendanceStoreRequest:
   type: object

@@ -1,4 +1,4 @@
-# 退勤打刻リクエスト。
+# 退勤打刻HTTPリクエスト。
 AttendanceClockOutRequest:
   type: object
   required:

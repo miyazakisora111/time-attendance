@@ -54,7 +54,7 @@ export namespace components.schemas {
   export const LoginResponse = z.object({
     token: z.string(),
   });
-  /** @description ログアウト成功レスポンス */
+  /** @description ログアウト成功HTTPレスポンス */
   export const LogoutResponse = z.object({
     message: z.string().optional(),
   });
@@ -190,7 +190,7 @@ export namespace components.schemas {
     theme: components["schemas"]["ThemeType"],
     language: components["schemas"]["LanguageCode"],
   });
-  /** @description ユーザープロフィール情報（レスポンス用） */
+  /** @description ユーザープロフィール情報（HTTPレスポンス用） */
   export const SettingsProfile = z.object({
     name: z.string(),
     email: z.string(),
@@ -198,7 +198,7 @@ export namespace components.schemas {
     role: z.string(),
     employeeCode: z.string(),
   });
-  /** @description ユーザープロフィール更新（リクエスト用） */
+  /** @description ユーザープロフィール更新（HTTPリクエスト用） */
   export const UpdateSettingsProfile = z.object({
     name: z.string(),
     email: z.string(),
@@ -247,7 +247,7 @@ export namespace components.schemas {
     message: z.string(),
     errors: z.record(z.string(), z.array(z.string())),
   });
-  /** @description ページネーション情報。一覧系レスポンスに必ず付与される。 */
+  /** @description ページネーション情報。一覧系HTTPレスポンスに必ず付与される。 */
   export const PageInfo = z.object({
     currentPage: z.number().int(),
     perPage: z.number().int(),

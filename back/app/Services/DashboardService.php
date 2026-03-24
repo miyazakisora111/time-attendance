@@ -157,7 +157,9 @@ final class DashboardService extends BaseService
             )
             ->sum(), 1);
     }
-}
+
+    private function remainingBusinessDaysInMonth(Carbon $date): int
+    {
         $cursor = $date->copy()->addDay()->startOfDay();
         $end = $date->copy()->endOfMonth();
         $count = 0;

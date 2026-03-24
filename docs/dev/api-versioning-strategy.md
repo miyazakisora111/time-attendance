@@ -70,7 +70,7 @@ class AttendanceController extends BaseController
     {
         $data = $this->attendanceService->list($request->user());
 
-        // v2: レスポンス形式を変更
+        // v2: HTTPレスポンス形式を変更
         return ApiResponse::success([
             'items' => AttendanceV2Resource::collection($data),
             'pagination' => new PaginationResource($data),

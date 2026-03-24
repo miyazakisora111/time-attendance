@@ -180,7 +180,7 @@ cd front && pnpm install
 
 ## パフォーマンス
 
-### API レスポンスが遅い
+### API HTTPレスポンスが遅い
 
 1. `make logs` で slow query を確認
 2. N+1 問題を疑う → `with()` / `load()` でイーガーロード

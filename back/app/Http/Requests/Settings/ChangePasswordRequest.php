@@ -7,12 +7,6 @@ namespace App\Http\Requests\Settings;
 use App\Http\Requests\BaseRequest;
 
 /**
- * パスワード変更リクエスト。
+ * パスワード変更のリクエスト
  */
-final class ChangePasswordRequest extends BaseRequest
-{
-    /**
-     * {@inheritdoc}
-     */
-    protected string $schemaName = 'ChangePasswordRequest';
-}
+final class ChangePasswordRequest extends BaseRequest {}
