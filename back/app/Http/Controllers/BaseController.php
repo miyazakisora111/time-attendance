@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Services\UserService;
+use App\Application\AuthUserProvider;
 use Illuminate\Routing\Controller;
 
 /**
@@ -20,6 +20,6 @@ abstract class BaseController extends Controller
      */
     protected function resolveAuthUser(): User
     {
-        return app(UserService::class)->getAuthUser();
+        return app(AuthUserProvider::class)->getAuthUser();
     }
 }

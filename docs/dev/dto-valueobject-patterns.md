@@ -1,18 +1,18 @@
-# DTO / ValueObject パターン
+# Data / ValueObject パターン
 
 ## 概要
 
-レイヤー間のデータ受け渡しに DTO (Data Transfer Object)、ドメイン値の妥当性保証に ValueObject を使用する。いずれも不変 (`readonly`) で設計する。
+レイヤー間のデータ受け渡しに Data (Data Transfer Object)、ドメイン値の妥当性保証に ValueObject を使用する。いずれも不変 (`readonly`) で設計する。
 
 ## クラス階層
 
 ```mermaid
 classDiagram
-    class BaseDTO {
+    class BaseData {
         +fromArray(array data) static
         +toArray() array
     }
-    class UserProfile {
+    class UserProfileData {
         +readonly string id
         +readonly string name
         +readonly string email
@@ -20,7 +20,7 @@ classDiagram
         +readonly ?array settings
         +readonly bool isAuthenticated
     }
-    BaseDTO <|-- UserProfile
+    BaseData <|-- UserProfileData
 
     class BaseValueObject {
         <<abstract>>
@@ -37,13 +37,13 @@ classDiagram
     BaseValueObject <|-- Email
 ```
 
-## BaseDTO
+## BaseData
 
 ```php
-abstract class BaseDTO
+abstract class BaseData
 {
     /**
-     * 配列からDTOを生成する。
+     * 配列からDataを生成する。
      * Enum / DateTimeImmutable / ValueObject のコンストラクタ引数を自動変換する。
      */
     public static function fromArray(array $data): static
@@ -77,7 +77,7 @@ abstract class BaseDTO
     }
 
     /**
-     * DTOを配列へ変換する。ValueObject / Enum は展開する。
+     * Dataを配列へ変換する。ValueObject / Enum は展開する。
      */
     public function toArray(): array
     {
@@ -103,10 +103,10 @@ abstract class BaseDTO
 }
 ```
 
-## DTO 実装例
+## Data 実装例
 
 ```php
-final class UserProfile extends BaseDTO
+final class UserProfileData extends BaseData
 {
     public function __construct(
         public readonly string  $id,
@@ -119,7 +119,7 @@ final class UserProfile extends BaseDTO
 }
 
 // 使い方
-$dto = new UserProfile(
+$dto = new UserProfileData(
     id: $user->id,
     name: $user->name,
     email: $user->email,
@@ -173,23 +173,23 @@ echo $email->value();  // 'user@example.com'
 $email->equals(new Email('user@example.com')); // true
 ```
 
-## DTO vs ValueObject 使い分け
+## Data vs ValueObject 使い分け
 
-| 観点 | DTO | ValueObject |
+| 観点 | Data | ValueObject |
 |---|---|---|
 | **目的** | レイヤー間データ受け渡し | 値の妥当性保証 |
 | **不変性** | `readonly` プロパティ | `readonly class` |
 | **バリデーション** | なし（FormRequest が担当） | コンストラクタで `assert()` |
 | **等価性** | 参照比較 | `equals()` による値比較 |
 | **シリアライズ** | `toArray()` | `jsonSerialize()` / `__toString()` |
-| **典型例** | `UserProfile`, `DashboardPayload` | `Email`, `PhoneNumber`, `Money` |
+| **典型例** | `UserProfileData`, `DashboardPayload` | `Email`, `PhoneNumber`, `Money` |
 
 ## 注意: 設計レビュー指摘事項
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **DTO が 2 クラスしかない** | Service が配列を直接返している箇所が多く、型安全性が低い | 主要HTTPレスポンスごとに DTO を追加：`AttendancePayload`, `DashboardPayload` 等 |
+| **Data が 2 クラスしかない** | Service が配列を直接返している箇所が多く、型安全性が低い | 主要HTTPレスポンスごとに Data を追加：`AttendancePayload`, `DashboardPayload` 等 |
 | **ValueObject が Email のみ** | `work_timezone` や `work_date` がプリミティブのまま | `Timezone`, `WorkDate` ValueObject を検討 |
-| **BaseDTO の fromArray() のリフレクション** | パフォーマンスへの影響（大量変換時） | キャッシュ機構を入れるか、頻度が低ければ許容 |
+| **BaseData の fromArray() のリフレクション** | パフォーマンスへの影響（大量変換時） | キャッシュ機構を入れるか、頻度が低ければ許容 |
 | **DomainException の import 漏れリスク** | `assert()` で PHP 標準 DomainException を使うと 500 になる | PHPStan ルールで `\DomainException` の使用を禁止する |
-| **Eloquent Model → DTO の変換が手動** | Model に `toDTO()` メソッドがなく、Service 内で個別に構築 | Model に `toUserProfile(): UserProfile` メソッドを追加する |
+| **Eloquent Model → Data の変換が手動** | Model に `toData()` メソッドがなく、Service 内で個別に構築 | Model に `toUserProfileData(): UserProfileData` メソッドを追加する |

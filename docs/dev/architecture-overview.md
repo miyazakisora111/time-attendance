@@ -75,7 +75,7 @@ Controller (BaseController — 薄いハンドラー)
 FormRequest (BaseRequest — OpenAPI 自動生成バリデーション)
   ↓
 Service (BaseService — ビジネスロジック + トランザクション管理)
-  ├── DTO / ValueObject (型安全なデータ受け渡し)
+  ├── Data / ValueObject (型安全なデータ受け渡し)
   └── Model (Eloquent ORM — スコープ・ドメイン判定)
   ↓
 ApiResponse::success() / ApiResponse::error()

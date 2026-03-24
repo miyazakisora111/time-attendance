@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Application\Services;
 
 use App\Exceptions\DomainException;
-use App\DTO\UserProfile;
+use App\Data\UserProfileData;
+use App\Data\LoginHistoryData;
 use App\Models\LoginHistory;
 use App\Models\User;
 use App\ValueObjects\Email;
@@ -15,29 +16,25 @@ use Illuminate\Support\Str;
 use Tymon\JWTAuth\JWTGuard;
 
 /**
- * 認証サービス
+ * 認証のサービス
  */
 final class AuthService extends BaseService
 {
     /**
      * コンストラクタ
-     * 
-     * @param UserService $userService ユーザーサービス
      */
-    public function __construct(
-        private readonly UserService $userService,
-    ) {}
+    public function __construct() {}
 
     /**
-     * ユーザーを認証する。
+     * ユーザーを認証する
      *
      * @param Email $email Eメール
      * @param string $password パスワード
-     * @param Request $request HTTPリクエスト
+     * @param LoginHistoryData $loginHistoryData ログイン履歴データ
      *
      * @return array<string, mixed> JWTトークンのHTTPレスポンス
      */
-    public function login(Email $email, string $password, Request $request): array
+    public function login(Email $email, string $password, LoginHistoryData $loginHistoryData): array
     {
         // 認証を行う。
         $guard = $this->guard();
@@ -62,7 +59,7 @@ final class AuthService extends BaseService
         ]);
 
         // ログイン履歴を記録する。
-        $this->recordLoginHistory($user, $request);
+        $this->recordLoginHistory($user, $loginHistoryData);
 
         // JWTトークンのHTTPレスポンスを生成する。
         return $this->respondWithToken($token);
@@ -89,43 +86,16 @@ final class AuthService extends BaseService
 
     /**
      * ログアウトする。
-     *
-     * @return void
+     * 
+     * @param User $user ユーザー
      */
-    public function logout(): void
+    public function logout(User $user): void
     {
         // ログアウト履歴を記録する。
-        $user = $this->userService->getAuthUser();
         $this->closeLoginHistory($user);
 
         // ログアウトする。
         $this->guard()->logout();
-    }
-
-    /**
-     * 認証済みユーザーの情報を取得する。
-     *
-     * @return array<string, mixed> 認証済みユーザーの情報
-     */
-    public function getUser(): array
-    {
-        // リレーションをロードする。
-        $user = $this->userService->getAuthUser();
-        $user->loadMissing([
-            'role:id,name',
-            'userSetting',
-        ]);
-
-        // ユーザーを返却する。
-        return [
-            'user' => (new UserProfile(
-                id: $user->id,
-                name: $user->name,
-                email: $user->email,
-                roles: $user->role !== null ? [$user->role->name] : [],
-                settings: $user->userSetting?->toArray(),
-            ))->toArray(),
-        ];
     }
 
     /**
@@ -135,14 +105,14 @@ final class AuthService extends BaseService
      * @param Request|null $request HTTPリクエスト
      * @return LoginHistory ログイン履歴
      */
-    private function recordLoginHistory(User $user, Request $request): LoginHistory
+    private function recordLoginHistory(User $user, LoginHistoryData $loginHistoryData): LoginHistory
     {
         return LoginHistory::query()->create([
             'id' => (string) Str::uuid(),
             'user_id' => $user->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'logged_in_at' => now(),
+            'ip_address' => $loginHistoryData->ipAddress,
+            'user_agent' => $loginHistoryData->userAgent,
+            'logged_in_at' => $loginHistoryData->loggedInAt,
         ]);
     }
 

@@ -7,7 +7,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\ApiResponse;
-use App\Services\AuthService;
+use App\Application\Services\AuthService;
+use App\Data\LoginHistoryData;
 use App\ValueObjects\Email;
 use Illuminate\Http\JsonResponse;
 
@@ -39,7 +40,7 @@ final class AuthController extends BaseController
         $result = $this->service->login(
             email: new Email($validated['email']),
             password: $validated['password'],
-            request: $request,
+            loginHistoryData: LoginHistoryData::fromRequest(request: $request),
         );
 
         return ApiResponse::success($result);
@@ -53,7 +54,7 @@ final class AuthController extends BaseController
     public function logout(): JsonResponse
     {
         // ログアウトする。
-        $this->service->logout();
+        $this->service->logout(user: $this->resolveAuthUser());
         return ApiResponse::success();
     }
 
@@ -65,17 +66,6 @@ final class AuthController extends BaseController
     public function refresh(): JsonResponse
     {
         $result = $this->service->refresh();
-        return ApiResponse::success($result);
-    }
-
-    /**
-     * ログインユーザーを取得する。
-     *
-     * @return JsonResponse JSONレスポンス
-     */
-    public function me(): JsonResponse
-    {
-        $result = $this->service->getUser();
         return ApiResponse::success($result);
     }
 }

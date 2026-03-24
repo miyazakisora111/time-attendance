@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Attendance\CalendarController;
 use App\Http\Controllers\Attendance\AttendanceController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\MeController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Team\TeamController;
@@ -22,16 +23,16 @@ Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,
 
 // --- 認証必須 ---
 Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
-    // Auth
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/auth/me', [AuthController::class, 'me']);
+    // 認証
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
+    Route::get('/auth/me', MeController::class);
 
-    // Dashboard
+    // ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'show']);
     Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
-    // Attendance
+    // 勤怠
     Route::prefix('attendances')->group(function () {
         Route::get('/today', [AttendanceController::class, 'today']);
         Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
@@ -43,18 +44,17 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
         Route::patch('/{attendanceId}', [AttendanceController::class, 'update']);
     });
 
-    // Schedule
+    // スケジュール
     Route::get('/schedule/calendar', [CalendarController::class, 'index']);
 
-    // Team
+    // チーム
     Route::get('/team/members', [TeamController::class, 'index']);
 
-    // Settings
+    // 設定
     Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'show']);
         Route::put('/', [SettingsController::class, 'update']);
         Route::put('/password', [SettingsController::class, 'changePassword']);
         Route::get('/login-histories', [SettingsController::class, 'loginHistories']);
     });
-
 });

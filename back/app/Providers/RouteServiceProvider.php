@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 
 /**
- * ルート情報を定義します。
+ * ルート情報を定義するサービスプロバイダー
  */
 class RouteServiceProvider extends ServiceProvider
 {

@@ -6,7 +6,7 @@ namespace Tests\Unit\Services;
 
 use Illuminate\Auth\AuthenticationException;
 use App\Models\User;
-use App\Services\UserService;
+use App\Application\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

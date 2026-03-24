@@ -22,7 +22,7 @@ back/app/
 ├── __Generated__/         # 自動生成コード（手動編集禁止）
 │   └── Enums/             #   OpenAPI 由来の PHP Enum
 ├── Console/               # Artisan コマンド
-├── DTO/                   # Data Transfer Objects
+├── Data/                   # Data Transfer Objects
 ├── Exceptions/            # カスタム例外（DomainException 等）
 ├── Http/
 │   ├── Controllers/       # コントローラー（薄く保つ）
@@ -76,7 +76,7 @@ openapi/
 ├── openapi.yaml           # エントリポイント
 ├── components/
 │   ├── enums/             # Enum 定義 YAML
-│   ├── schemas/           # DTO スキーマ（ドメイン別）
+│   ├── schemas/           # Data スキーマ（ドメイン別）
 │   ├── parameters.yaml
 │   ├── requestBodies.yaml
 │   ├── responses.yaml

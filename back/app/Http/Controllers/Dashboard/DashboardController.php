@@ -7,8 +7,8 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Dashboard\DashboardClockRequest;
 use App\Http\Responses\ApiResponse;
-use App\Services\AttendanceService;
-use App\Services\DashboardService;
+use App\Application\Services\AttendanceService;
+use App\Application\Services\DashboardService;
 use Illuminate\Http\JsonResponse;
 
 /**

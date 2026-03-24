@@ -118,7 +118,7 @@ graph LR
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **Service が配列を返している** | 型安全性が低い。`toLocalTimePayload()` が `array<string, mixed>` を返す | DTO クラス `AttendancePayload` を作成し、戻り値を型付けする |
+| **Service が配列を返している** | 型安全性が低い。`toLocalTimePayload()` が `array<string, mixed>` を返す | Data クラス `AttendancePayload` を作成し、戻り値を型付けする |
 | **Repository 層が使われていない** | `BaseRepository` が存在するが、Service 内で直接 `Attendance::query()` を実行 | Repository パターンに移行するか、Repository を削除して Service + Eloquent Model で統一する |
 | **Service 間のクロス呼び出しがない** | 現状は問題ないが、将来的に Service 間依存が増えると循環参照のリスク | Service間連携は イベント/リスナー パターンで疎結合化する |
 | **`UserService` が認証専用ゲートウェイ** | ユーザー CRUD がない | 将来的にユーザー管理画面が追加されたら `UserService` に CRUD メソッドを追加 |

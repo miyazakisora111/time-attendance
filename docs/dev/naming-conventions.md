@@ -22,7 +22,7 @@
 | プロパティ | camelCase | `$userId`, `$isActive` |
 | 定数 | UPPER_SNAKE_CASE | `MAX_RETRY_COUNT` |
 | Enum case | UPPER_SNAKE_CASE | `BREAK_START`, `IN` |
-| 名前空間 | PascalCase | `App\Services\AttendanceService` |
+| 名前空間 | PascalCase | `App\Application\Services\AttendanceService` |
 | トレイト | PascalCase, 形容詞的 | `HasUuid`, `AuthenticatedUser` |
 | インターフェース | PascalCase | `RepositoryInterface` |
 

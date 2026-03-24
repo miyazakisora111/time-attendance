@@ -131,6 +131,6 @@ public function clockIn(User $user): array
 | 問題 | 影響 | 改善案 |
 |---|---|---|
 | **BaseRepository が存在するが未使用** | 新規メンバーが「使うべきか」混乱する | 削除するか、README に「現在未使用」と明記する |
-| **BaseRepository の `create()` が `array` を受ける** | 型安全性が低い。DTO を受けるべき | Repository を使う場合は `createFromDTO(BaseDTO $dto)` に変更 |
+| **BaseRepository の `create()` が `array` を受ける** | 型安全性が低い。Data を受けるべき | Repository を使う場合は `createFromData(BaseData $dto)` に変更 |
 | **BaseRepository のコンストラクタで `app()` を使用** | テスト時のモック差し替えが困難 | コンストラクタインジェクションに変更 |
 | **`query()` メソッドが公開されている** | Repository の抽象化が漏洩する（呼び出し側が自由にクエリを組める） | `query()` を protected にし、具体メソッドのみ公開する |

@@ -13,7 +13,7 @@ use JsonSerializable;
 abstract readonly class BaseValueObject implements Stringable, JsonSerializable
 {
     /**
-     * 内部保持値
+     * 値
      *
      * @var string
      */
@@ -22,7 +22,7 @@ abstract readonly class BaseValueObject implements Stringable, JsonSerializable
     /**
      * コンストラクタ
      *
-     * @param string $value 値オブジェクトが保持する生値
+     * @param string $value 値
      */
     final public function __construct(string $value)
     {
@@ -31,17 +31,16 @@ abstract readonly class BaseValueObject implements Stringable, JsonSerializable
     }
 
     /**
-     * 値の妥当性を検証する。
+     * 値の妥当性を検証する
      *
      * @param string $value 検証対象の値
-     * @return void
      */
     abstract protected function assert(string $value): void;
 
     /**
-     * 保持している値を取得する。
+     * 値を取得する
      *
-     * @return string 内部保持値
+     * @return string 値
      */
     final public function value(): string
     {
@@ -49,7 +48,7 @@ abstract readonly class BaseValueObject implements Stringable, JsonSerializable
     }
 
     /**
-     * 他のValueObjectと等価かどうかを判定する。
+     * 他のValueObjectと等価かどうかを判定する
      *
      * @param self $other 比較対象のValueObject
      * @return bool 値が等しければ true

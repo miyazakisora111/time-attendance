@@ -35,7 +35,7 @@ openapi/
 │   ├── requestBodies.yaml           # HTTPリクエストボディ定義（スキーマへの参照）
 │   ├── responses.yaml               # エラーHTTPレスポンス定義
 │   ├── securitySchemes.yaml         # JWT Bearer 認証
-│   └── schemas/                     # DTO 定義（ドメイン別）
+│   └── schemas/                     # Data 定義（ドメイン別）
 │       ├── attendance/              #   勤怠ドメイン
 │       ├── auth/                    #   認証ドメイン
 │       ├── dashboard/               #   ダッシュボードドメイン
@@ -61,7 +61,7 @@ openapi/
 | ディレクトリ | 責務 | 編集頻度 |
 |---|---|---|
 | `components/enums/` | 全ての列挙型を一元管理 | 低（値追加時のみ） |
-| `components/schemas/` | DTO（データ構造）をドメイン別に格納 | 中 |
+| `components/schemas/` | Data（データ構造）をドメイン別に格納 | 中 |
 | `components/parameters.yaml` | 再利用可能なパス・クエリパラメータ | 低 |
 | `components/requestBodies.yaml` | HTTPリクエストボディのラッパー定義 | 低 |
 | `components/responses.yaml` | 共通エラーHTTPレスポンス（401, 403, 404, 409, 422, 500） | 低 |
@@ -79,7 +79,7 @@ openapi/
 | 分離対象 | 理由 |
 |---|---|
 | **Enum** | 同一 enum が複数スキーマで参照される。1箇所で管理することで不整合を防ぐ |
-| **Schema（DTO）** | ドメインごとに閉じた構造を持つ。ファイル単位の変更差分で影響範囲が明確 |
+| **Schema（Data）** | ドメインごとに閉じた構造を持つ。ファイル単位の変更差分で影響範囲が明確 |
 | **Parameters** | `from`/`to`（日付範囲）や `year`/`month` は複数エンドポイントで同じ意味で使用 |
 | **RequestBody** | スキーマとHTTP層の関心を分離。Content-Type 変更時に吸収しやすい |
 | **Error Response** | 全エンドポイント共通のエラーフォーマットを1箇所で定義 |
@@ -127,7 +127,7 @@ status:
   enum: [out, in, break]
 ```
 
-### Schema（DTO）
+### Schema（Data）
 
 - ドメインごとのサブディレクトリに配置: `schemas/{domain}/`
 - 1ファイル = 1スキーマ（例外: 密接に関連する小さいスキーマは同居可能）
@@ -201,7 +201,7 @@ stats:
 |---|---|---|
 | `{Domain}Response` | `DashboardResponse` | API HTTPレスポンス全体 |
 | `{Domain}{Sub}Request` | `AttendanceClockInRequest` | HTTPリクエストボディ |
-| `{Domain}{Sub}` | `DashboardStats` | HTTPレスポンス内の部品DTO |
+| `{Domain}{Sub}` | `DashboardStats` | HTTPレスポンス内の部品Data |
 | `Update{Domain}Request` | `UpdateSettingsRequest` | 更新HTTPリクエスト |
 
 ### Enum 命名

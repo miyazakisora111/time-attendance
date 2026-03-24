@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Application\Services;
 
 use App\Exceptions\DomainException;
 use App\Models\LoginHistory;

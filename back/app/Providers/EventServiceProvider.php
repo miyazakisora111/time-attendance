@@ -7,7 +7,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 /**
- * イベントとリスナーのマッピングを定義します。
+ * イベントとリスナーのマッピングを登録するサービスプロバイダー
  */
 class EventServiceProvider extends ServiceProvider
 {

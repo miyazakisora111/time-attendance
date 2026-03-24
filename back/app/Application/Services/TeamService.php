@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Application\Services;
 
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;

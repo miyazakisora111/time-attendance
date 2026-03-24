@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Application;
 
-use Illuminate\Auth\AuthenticationException;
 use App\Models\User;
+use Illuminate\Auth\AuthenticationException;
 
 /**
- * ユーザーのサービス
+ * 認証済みユーザーを解決するクラス
  */
-final class UserService extends BaseService
+final class AuthUserProvider
 {
     /**
-     * 認証済みユーザーを取得する。
+     * 認証済みユーザーを必ず取得する。
      *
      * @return User 認証済みユーザー
      *
      * @throws AuthenticationException 未認証の場合
      */
-    public function getAuthUser(): User
+    public function requireUser(): User
     {
         /** @var User|null $user */
         $user = auth()->user();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             throw new AuthenticationException('ログインしていません');
         }
 

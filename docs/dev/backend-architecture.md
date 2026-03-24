@@ -9,12 +9,12 @@ graph TD
     CTRL["Controller<br/>(BaseController — 薄いハンドラー)"]
     FR["FormRequest<br/>(BaseRequest — OpenAPI 自動生成バリデーション)"]
     SVC["Service<br/>(BaseService — ビジネスロジック + トランザクション管理)"]
-    DTO["DTO / ValueObject"]
+    Data["Data / ValueObject"]
     MDL["Model<br/>(Eloquent — スコープ・ドメイン判定)"]
     RES["ApiResponse::success() / error()"]
 
     HTTP --> MW --> CTRL --> FR --> SVC
-    SVC --> DTO
+    SVC --> Data
     SVC --> MDL
     SVC --> RES
 ```
@@ -28,7 +28,7 @@ graph TD
 | **Controller** | HTTPリクエスト受付・Service 呼び出し・HTTPレスポンス返却 | `resolveAuthUser()` で認証ユーザー取得、`ApiResponse` 返却 | ビジネスロジック、DB クエリ、条件分岐 |
 | **FormRequest** | 入力バリデーション・型正規化 | OpenAPI ルール参照、`filterNumber()` / `filterBoolean()` | DB アクセス、ビジネスルール判定 |
 | **Service** | ビジネスルール・ドメインロジック・トランザクション管理 | `transaction()` / `log()` / `logError()` / `resolveTimezone()`、Eloquent 直接使用 | 直接HTTPレスポンスを返す、Request / Response に依存する |
-| **DTO** | レイヤー間の型安全なデータ受け渡し | `fromArray()` / `toArray()` 変換、ValueObject 保持 | DB アクセス、ビジネスロジック |
+| **Data** | レイヤー間の型安全なデータ受け渡し | `fromArray()` / `toArray()` 変換、ValueObject 保持 | DB アクセス、ビジネスロジック |
 | **ValueObject** | 値の妥当性保証・不変性 | コンストラクタで `assert()`、`equals()` 比較 | 状態変更、外部副作用 |
 | **Model** | テーブル定義・リレーション・スコープ・ドメイン判定 | キャスト、スコープ、`isClockedIn()` 等の判定メソッド | HTTP 関連の処理、トランザクション管理 |
 
@@ -182,12 +182,12 @@ public function calculateWorkedMinutes(?CarbonImmutable $now = null): ?int;
 public function toLocalTimePayload(): array;
 ```
 
-## 6. DTO / ValueObject
+## 6. Data / ValueObject
 
-### BaseDTO
+### BaseData
 
 ```php
-final class UserProfile extends BaseDTO
+final class UserProfileData extends BaseData
 {
     public function __construct(
         public readonly string $id,
@@ -199,7 +199,7 @@ final class UserProfile extends BaseDTO
 }
 
 // 使用例
-$dto = new UserProfile(id: $user->id, name: $user->name, ...);
+$dto = new UserProfileData(id: $user->id, name: $user->name, ...);
 return $dto->toArray();
 ```
 
@@ -352,7 +352,7 @@ throw new DomainException('メッセージ', 'ERROR_CODE');
 | 🚨 問題 | `AuthService.php` で `AuthenticationException` が未 import。`refresh()` 呼び出しで Fatal Error |
 | 🚨 問題 | `AttendanceBreak` モデルに `booted()` UUID フックが未定義。レコード作成時に ID が null |
 | 🚨 問題 | 既存テスト（tests/Feature, tests/Unit）が旧 DDD アーキテクチャのクラスを参照しており全て失敗する |
-| 💡 改善 | DTO の使用が `UserProfile` の1クラスのみ。Service が `array` を返す箇所は DTO を定義すべき |
+| 💡 改善 | Data の使用が `UserProfileData` の1クラスのみ。Service が `array` を返す箇所は Data を定義すべき |
 | 💡 改善 | `clockIn()` に楽観的ロック（`lockForUpdate()`）を追加し、レースコンディション対策すべき |
-| ⚠️ アンチパターン | Service の `store()` / `update()` が `array $input` を受け取っている。型安全性のため DTO を使用すべき |
+| ⚠️ アンチパターン | Service の `store()` / `update()` が `array $input` を受け取っている。型安全性のため Data を使用すべき |
 | ⚠️ アンチパターン | `BaseRepository` が定義されているが使われていない。混乱を避けるため削除推奨 |

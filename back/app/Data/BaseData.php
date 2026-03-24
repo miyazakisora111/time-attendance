@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DTO;
+namespace App\Data;
 
 use ReflectionClass;
 use ReflectionNamedType;
@@ -12,15 +12,15 @@ use BackedEnum;
 use DateTimeImmutable;
 
 /**
- * 基底のDTOクラス
+ * 基底のDataクラス
  */
-abstract class BaseDTO
+abstract class BaseData
 {
     /**
      * 配列からクラスを作成する。
      * 
      * @param array $data クラスのプロパティに対応するキーを持つ配列
-     * @return BaseDTO 基底のDTOクラス
+     * @return BaseData 基底のDataクラス
      */
     public static function fromArray(array $data): static
     {

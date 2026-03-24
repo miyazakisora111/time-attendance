@@ -68,9 +68,9 @@ public function store(ClockRequest $request): JsonResponse
 - スコープは `scope` プレフィクスをつける: `scopeActive()`, `scopeMonth()`
 - ドメインに密接なメソッドはモデルに置いてよい: `isClockedIn()`, `calculateWorkedMinutes()`
 
-## DTO / ValueObject
+## Data / ValueObject
 
-- DTO は `BaseDTO` を継承し、`readonly` コンストラクタプロモーションを使う
+- Data は `BaseData` を継承し、`readonly` コンストラクタプロモーションを使う
 - ValueObject は `BaseValueObject` を継承し、`assert()` で妥当性検証を行う
 - ValueObject のバリデーション失敗は `App\Exceptions\DomainException` を使う
 

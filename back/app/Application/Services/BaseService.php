@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Application\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,13 +16,6 @@ use Illuminate\Support\Facades\Log;
  */
 abstract class BaseService
 {
-    /** アプリケーション既定タイムゾーン */
-    protected const DEFAULT_TIMEZONE = 'Asia/Tokyo';
-
-    // ────────────────────────────────────────────
-    // ログ
-    // ────────────────────────────────────────────
-
     /**
      * 情報ログを記録する。
      *
@@ -56,16 +49,8 @@ abstract class BaseService
         Log::error($message, $context);
     }
 
-    // ────────────────────────────────────────────
-    // トランザクション
-    // ────────────────────────────────────────────
-
     /**
      * トランザクション内でコールバックを実行する。
-     *
-     * コミット成功後に情報ログ、ロールバック時にエラーログを記録する。
-     * DB::transaction() がロールバックを担うため、呼び出し側で
-     * 明示的にロールバックする必要はない。
      *
      * @template T
      * @param callable(): T $callback
