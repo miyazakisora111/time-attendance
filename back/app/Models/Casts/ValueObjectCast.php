@@ -17,10 +17,10 @@ abstract class ValueObjectCast implements CastsAttributes
     abstract protected function valueObjectClass(): string;
 
     /**
-     * DBから取得した値をValueObjectへ変換する。
+     * 値をValueObjectへ変換する。
      *
-     * @param mixed $value DBに保存されている値
-     * @return object ValueObjectインスタンス
+     * @param mixed $value 値
+     * @return object ValueObject
      */
     public function get($model, string $key, $value, array $attributes): object
     {
@@ -30,10 +30,10 @@ abstract class ValueObjectCast implements CastsAttributes
     }
 
     /**
-     * ValueObjectをDB保存可能な値へ変換する。
+     * ValueObjectを値へ変換する。
      *
-     * @param mixed $value ValueObject または プリミティブ値
-     * @return mixed 永続化可能な値
+     * @param mixed $value ValueObject
+     * @return mixed 値
      */
     public function set($model, string $key, $value, array $attributes): mixed
     {
