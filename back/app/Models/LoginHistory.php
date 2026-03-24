@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class LoginHistory extends Model
+class LoginHistory extends BaseModel
 {
     use HasFactory;
 
@@ -32,7 +32,7 @@ class LoginHistory extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'logged_in_at' => 'datetime',

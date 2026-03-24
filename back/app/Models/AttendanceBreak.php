@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 
-class AttendanceBreak extends Model
+class AttendanceBreak extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
@@ -42,7 +42,7 @@ class AttendanceBreak extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'break_start' => 'string',

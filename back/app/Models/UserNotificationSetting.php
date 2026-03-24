@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class UserNotificationSetting extends Model
+class UserNotificationSetting extends BaseModel
 {
     use HasFactory;
 
@@ -29,7 +29,7 @@ class UserNotificationSetting extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'clock_in_reminder' => 'boolean',

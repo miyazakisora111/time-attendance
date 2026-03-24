@@ -135,7 +135,7 @@ export function toAttendanceView(raw: AttendanceResponse): AttendanceView {
     return {
         id: raw.id,
         date: formatDate(raw.work_date),
-        clockIn: raw.start_time ?? '--:--',
+        clockIn: raw.extends BaseModel ?? '--:--',
         clockOut: raw.end_time ?? '--:--',
         workHours: formatWorkHours(raw.worked_minutes),
         status: resolveStatus(raw),

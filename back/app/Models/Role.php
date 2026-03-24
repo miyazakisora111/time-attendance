@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 
-class Role extends Model
+class Role extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;

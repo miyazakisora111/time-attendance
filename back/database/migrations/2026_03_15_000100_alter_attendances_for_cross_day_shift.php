@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('attendances', function (Blueprint $table): void {
-            $table->timestampTz('clock_in_at')->nullable()->after('end_time')->comment('出勤日時(タイムゾーン付き)');
+            $table->timestampTz('clock_in_at')->nullable()->comment('出勤日時(タイムゾーン付き)');
             $table->timestampTz('clock_out_at')->nullable()->after('clock_in_at')->comment('退勤日時(タイムゾーン付き)');
             $table->string('work_timezone', 64)->default('Asia/Tokyo')->after('clock_out_at')->comment('勤務タイムゾーン(IANA)');
             $table->unsignedInteger('break_minutes')->default(0)->after('work_timezone')->comment('休憩分数');
@@ -28,24 +28,6 @@ return new class extends Migration
 
         DB::statement("CREATE INDEX idx_attendances_user_clock_in_at ON attendances (user_id, clock_in_at)");
         DB::statement("CREATE INDEX idx_attendances_clock_out_at ON attendances (clock_out_at)");
-
-        DB::statement(<<<'SQL'
-            UPDATE attendances
-            SET
-                clock_in_at = CASE
-                    WHEN start_time IS NULL THEN NULL
-                    ELSE ((work_date::text || ' ' || start_time::text || ' Asia/Tokyo')::timestamptz)
-                END,
-                clock_out_at = CASE
-                    WHEN end_time IS NULL THEN NULL
-                    ELSE ((work_date::text || ' ' || end_time::text || ' Asia/Tokyo')::timestamptz)
-                END,
-                worked_minutes = CASE
-                    WHEN start_time IS NOT NULL AND end_time IS NOT NULL AND end_time >= start_time
-                        THEN EXTRACT(EPOCH FROM (end_time - start_time))::integer / 60
-                    ELSE NULL
-                END
-        SQL);
     }
 
     public function down(): void
@@ -57,7 +39,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_break_minutes_non_negative");
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_worked_minutes_non_negative");
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_timezone_not_blank");
-        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (end_time IS NULL OR start_time IS NULL OR end_time >= start_time)");
+        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (end_time IS NULL OR extends BaseModel IS NULL OR end_time >= extends BaseModel)");
 
         Schema::table('attendances', function (Blueprint $table): void {
             $table->dropColumn([

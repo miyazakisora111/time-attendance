@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Holiday extends Model
+class Holiday extends BaseModel
 {
     use HasFactory;
 
@@ -29,7 +29,7 @@ class Holiday extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'holiday_date' => 'date',

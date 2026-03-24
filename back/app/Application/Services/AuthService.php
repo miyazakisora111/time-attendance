@@ -21,11 +21,6 @@ use Tymon\JWTAuth\JWTGuard;
 final class AuthService extends BaseService
 {
     /**
-     * コンストラクタ
-     */
-    public function __construct() {}
-
-    /**
      * ユーザーを認証する
      *
      * @param Email $email Eメール

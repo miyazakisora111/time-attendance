@@ -18,7 +18,7 @@
 ## Eloquent モデル設定
 
 ```php
-class Attendance extends Model
+class Attendance extends BaseModel
 {
     // UUID 文字列型
     protected $keyType = 'string';

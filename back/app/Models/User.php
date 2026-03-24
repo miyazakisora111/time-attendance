@@ -52,7 +52,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'sort_order' => 'integer',

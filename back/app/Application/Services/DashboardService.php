@@ -57,13 +57,13 @@ final class DashboardService extends BaseService
 
         $totalHours = $this->sumWorkHours($currentAttendances);
         $workDays = $currentAttendances
-            ->filter(fn(Attendance $attendance): bool => $attendance->clock_in_at !== null || $attendance->start_time !== null)
+            ->filter(fn(Attendance $attendance): bool => $attendance->clock_in_at !== null || $attendance->extends BaseModel !== null)
             ->count();
         $targetHours = $workDays * 8;
         $avgHours = $workDays > 0 ? round($totalHours / $workDays, 1) : 0.0;
 
         $prevTotalHours = $this->sumWorkHours($prevAttendances);
-        $prevWorkDays = $prevAttendances->whereNotNull('start_time')->count();
+        $prevWorkDays = $prevAttendances->whereNotNull('extends BaseModel')->count();
         $prevAvgHours = $prevWorkDays > 0 ? round($prevTotalHours / $prevWorkDays, 1) : 0.0;
 
         $overtimeHours = 0.0;
@@ -101,7 +101,7 @@ final class DashboardService extends BaseService
                     'date' => $date->format('Y/m/d'),
                     'day' => $this->weekdayJa($date),
                     'clockIn' => $attendance->clock_in_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i')
-                        ?? (is_string($attendance->start_time) ? substr($attendance->start_time, 0, 5) : null),
+                        ?? (is_string($attendance->extends BaseModel) ? substr($attendance->extends BaseModel, 0, 5) : null),
                     'clockOut' => $attendance->clock_out_at?->setTimezone($this->resolveTimezone($attendance->work_timezone))->format('H:i')
                         ?? (is_string($attendance->end_time) ? substr($attendance->end_time, 0, 5) : null),
                     'workHours' => $workHours,
@@ -125,7 +125,7 @@ final class DashboardService extends BaseService
 
     private function buildTodayRecord(?Attendance $attendance): array
     {
-        if ($attendance === null || ($attendance->clock_in_at === null && $attendance->start_time === null)) {
+        if ($attendance === null || ($attendance->clock_in_at === null && $attendance->extends BaseModel === null)) {
             return [
                 'clockInTime' => null,
                 'totalWorkedHours' => null,
@@ -143,7 +143,7 @@ final class DashboardService extends BaseService
 
         return [
             'clockInTime' => $attendance->clock_in_at?->setTimezone($timezone)->format('H:i')
-                ?? (is_string($attendance->start_time) ? substr($attendance->start_time, 0, 5) : null),
+                ?? (is_string($attendance->extends BaseModel) ? substr($attendance->extends BaseModel, 0, 5) : null),
             'totalWorkedHours' => $hours,
         ];
     }

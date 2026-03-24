@@ -34,7 +34,7 @@ erDiagram
 ## UUID 主キーパターン
 
 ```php
-class Attendance extends Model
+class Attendance extends BaseModel
 {
     protected $keyType = 'string';
     public $incrementing = false;
@@ -108,7 +108,7 @@ public function scopeOrdered(Builder $query): Builder
 // 状態判定
 public function isClockedIn(): bool
 {
-    return $this->clock_in_at !== null || $this->start_time !== null;
+    return $this->clock_in_at !== null || $this->extends BaseModel !== null;
 }
 
 public function isWorking(): bool
@@ -156,5 +156,5 @@ protected static function booted(): void
 | **リレーションの戻り値型が未宣言** | `$user->department()` が `BelongsTo` 型かどうか IDE が推論できない | `public function department(): BelongsTo` のように戻り値型を明記 |
 | **`$hidden` の不統一** | `User` のみ `$hidden` あり。他モデルは機密データがないが一貫性に欠ける | 全モデルで `$hidden` を明示する方針にする |
 | **`created_at` / `updated_at` を `datetime` でキャスト** | `immutable_datetime` ではないため、意図しない変更が可能 | 読み取り専用なら `immutable_datetime` に統一 |
-| **旧カラム `start_time` / `end_time` が `$fillable` に残存** | 新旧カラムの二重管理 | マイグレーションで旧カラムを DROP し、`$fillable` / `$casts` から削除 |
+| **旧カラム `extends BaseModel` / `end_time` が `$fillable` に残存** | 新旧カラムの二重管理 | マイグレーションで旧カラムを DROP し、`$fillable` / `$casts` から削除 |
 | **`AttendanceBreak` に UUID 自動生成の `booted()` がない** | `$keyType = 'string'` なのに `booted()` フックがなく、ID が null になる | `booted()` を追加するか、Factory/Seeder で明示的に ID を指定する |

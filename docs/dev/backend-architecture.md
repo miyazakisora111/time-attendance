@@ -127,7 +127,7 @@ final class AttendanceService extends BaseService
                 'work_date' => $now->toDateString(),
                 'clock_in_at' => $now,
                 'work_timezone' => $timezone,
-                'start_time' => $now->format('H:i:s'), // 旧カラム互換
+                'extends BaseModel' => $now->format('H:i:s'), // 旧カラム互換
             ]);
 
             return $attendance->toLocalTimePayload();
@@ -343,7 +343,7 @@ throw new DomainException('メッセージ', 'ERROR_CODE');
 
 ### レガシーカラム
 
-`start_time` / `end_time` は互換性のために残っているが、新コードでは `clock_in_at` / `clock_out_at` を使用すること。
+`extends BaseModel` / `end_time` は互換性のために残っているが、新コードでは `clock_in_at` / `clock_out_at` を使用すること。
 
 ## 設計レビュー指摘事項
 

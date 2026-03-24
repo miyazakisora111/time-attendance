@@ -6,33 +6,27 @@ namespace App\Models;
 
 use App\Exceptions\DomainException;
 use Carbon\CarbonImmutable;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Attendance extends Model
+/** 
+ * 勤怠のモデル 
+ */
+class Attendance extends BaseModel
 {
-    use HasFactory;
     use SoftDeletes;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'attendances';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'user_id',
         'work_date',
-        'start_time',
-        'end_time',
         'clock_in_at',
         'clock_out_at',
         'work_timezone',
@@ -42,12 +36,10 @@ class Attendance extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'work_date' => 'immutable_date',
-        'start_time' => 'string',
-        'end_time' => 'string',
         'clock_in_at' => 'immutable_datetime',
         'clock_out_at' => 'immutable_datetime',
         'break_minutes' => 'integer',
@@ -58,7 +50,7 @@ class Attendance extends Model
     ];
 
     /**
-     * User relation
+     * {@inheritdoc}
      */
     public function user()
     {
@@ -66,7 +58,7 @@ class Attendance extends Model
     }
 
     /**
-     * AttendanceBreak relation
+     * {@inheritdoc}
      */
     public function breaks(): HasMany
     {
@@ -74,98 +66,24 @@ class Attendance extends Model
     }
 
     /**
-     * Scope: 特定ユーザー
-     */
-    public function scopeUser(Builder $query, string $userId): Builder
-    {
-        return $query->where('user_id', $userId);
-    }
-
-    /**
-     * Scope: 特定日
-     */
-    public function scopeWorkDate(Builder $query, string $date): Builder
-    {
-        return $query->whereDate('work_date', $date);
-    }
-
-    /**
-     * Scope: 月検索
-     */
-    public function scopeMonth(Builder $query, int $year, int $month): Builder
-    {
-        return $query
-            ->whereYear('work_date', $year)
-            ->whereMonth('work_date', $month);
-    }
-
-    /**
-     * 出勤済み判定
+     * 出勤済みを判定する
+     * 
+     * @return bool 出勤済みかどうか
      */
     public function isClockedIn(): bool
     {
-        return $this->clock_in_at !== null || $this->start_time !== null;
+        return $this->clock_in_at !== null;
     }
 
     /**
-     * 退勤済み判定
+     * 退勤済みを判定する
+     * 
+     * @return bool 退勤済みかどうか
      */
     public function isClockedOut(): bool
     {
-        return $this->clock_out_at !== null || $this->end_time !== null;
+        return $this->clock_out_at !== null;
     }
-
-    /**
-     * 勤務中判定
-     */
-    public function isWorking(): bool
-    {
-        return $this->isClockedIn() && !$this->isClockedOut();
-    }
-
-    /**
-     * 日跨ぎ勤務かどうかを判定する。
-     */
-    public function isCrossDayShift(): bool
-    {
-        if ($this->clock_in_at === null || $this->clock_out_at === null) {
-            return false;
-        }
-
-        $timezone = $this->work_timezone ?? config('app.timezone', 'Asia/Tokyo');
-
-        return !$this->clock_in_at->setTimezone($timezone)->isSameDay(
-            $this->clock_out_at->setTimezone($timezone)
-        );
-    }
-
-    /**
-     * 現在の打刻状態を解決する。
-     *
-     * AttendanceBreak テーブルを参照し、休憩中かどうかも判定する。
-     *
-     * @return string 'out' | 'in' | 'break'
-     */
-    public function resolveClockStatus(): string
-    {
-        if (!$this->isClockedIn()) {
-            return 'out';
-        }
-
-        if ($this->isClockedOut()) {
-            return 'out';
-        }
-
-        $activeBreak = AttendanceBreak::query()
-            ->where('attendance_id', $this->id)
-            ->whereNotNull('break_start')
-            ->whereNull('break_end')
-            ->exists();
-
-        return $activeBreak ? 'break' : 'in';
-    }
-
-    // ─── 状態遷移ガード ───────────────────────────
 
     /**
      * 退勤可能な状態か検証する。

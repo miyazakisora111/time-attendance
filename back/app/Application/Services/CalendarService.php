@@ -118,7 +118,7 @@ final class CalendarService extends BaseService
         }
 
         $startTime = $attendance?->clock_in_at?->format('H:i')
-            ?? (is_string($attendance?->start_time) ? substr((string) $attendance->start_time, 0, 5) : null)
+            ?? (is_string($attendance?->extends BaseModel) ? substr((string) $attendance->extends BaseModel, 0, 5) : null)
             ?? '09:00';
 
         $endTime = $attendance?->clock_out_at?->format('H:i')

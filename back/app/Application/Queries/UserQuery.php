@@ -13,11 +13,6 @@ use App\Models\User;
 final class UserQuery
 {
     /**
-     * コンストラクタ
-     */
-    public function __construct() {}
-
-    /**
      * 認証済みユーザーのプロフィール情報を取得する
      * 
      * @param User $user 認証済みユーザー

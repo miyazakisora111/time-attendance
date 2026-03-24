@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PaidLeaveGrant extends Model
+class PaidLeaveGrant extends BaseModel
 {
     use HasFactory;
 
@@ -31,7 +31,7 @@ class PaidLeaveGrant extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'days' => 'float',

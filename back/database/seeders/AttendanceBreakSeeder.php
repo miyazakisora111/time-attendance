@@ -15,7 +15,7 @@ class AttendanceBreakSeeder extends Seeder
     {
         Attendance::query()
             ->select(['id', 'work_date'])
-            ->whereNotNull('start_time')
+            ->whereNotNull('extends BaseModel')
             ->whereNotNull('end_time')
             ->chunkById(200, function ($attendances): void {
                 foreach ($attendances as $attendance) {

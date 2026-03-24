@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class UserSetting extends Model
+class UserSetting extends BaseModel
 {
     use HasFactory;
 
@@ -29,7 +29,7 @@ class UserSetting extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'created_at' => 'datetime',

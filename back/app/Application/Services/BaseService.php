@@ -9,10 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
- * 全サービスの基底クラス。
- *
- * ログ出力・トランザクション管理・共通ユーティリティを提供する。
- * 個別サービスは本クラスを継承し、ビジネスロジックのみに集中する。
+ * 基底のサービスクラス
  */
 abstract class BaseService
 {

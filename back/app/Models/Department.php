@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 
-class Department extends Model
+class Department extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
@@ -33,7 +33,7 @@ class Department extends Model
     ];
 
     /**
-     * Casts
+     * {@inheritdoc}
      */
     protected $casts = [
         'sort_order' => 'integer',

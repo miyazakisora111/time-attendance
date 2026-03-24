@@ -14,7 +14,7 @@ attendance:
     label: 勤務日
     required: true
     description: 勤務対象日
-  start_time:
+  extends BaseModel:
     type: time
     label: 出勤時刻
     required: false
