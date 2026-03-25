@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Dashboard;
 
 use App\Application\BaseService;
-
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;

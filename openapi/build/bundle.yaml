@@ -1,0 +1,1357 @@
+openapi: 3.0.3
+info:
+  title: TimeAttendance API
+  version: 1.1.0
+  description: |
+    勤怠管理システムの REST API 定義。
+    従業員の出退勤・休憩管理、
+    ダッシュボード集計、カレンダー、ユーザー設定を提供する。
+
+    ## 認証
+    JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信する。
+    `/login` のみ認証不要。それ以外は全て認証必須。
+
+    ## エラーハンドリング
+    - 401: トークン無効または期限切れ
+    - 403: 権限不足
+    - 404: 指定リソースが存在しない
+    - 409: 状態の競合（二重打刻など）
+    - 422: バリデーションエラー（フィールド別メッセージ付き）
+    - 500: 予期しないサーバーエラー
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: '{scheme}://{host}/api'
+    description: API Server
+    variables:
+      scheme:
+        default: http
+        enum:
+          - http
+          - https
+      host:
+        default: localhost:8000
+        enum:
+          - localhost:8000
+          - api.example.com
+security:
+  - BearerAuth: []
+tags:
+  - name: Auth
+    description: |
+      認証・セッション管理。
+      ログイン時に JWT を発行し、ログアウト時に無効化する。
+      `/login` のみ認証不要。
+  - name: Dashboard
+    description: |
+      ダッシュボード集計。
+      当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
+      打刻アクション（出勤・退勤・休憩開始・休憩終了）もここから実行可能。
+  - name: Attendance
+    description: |
+      勤怠の CRUD と打刻操作。
+      出退勤・休憩の打刻、勤怠レコードの一覧取得・新規作成・更新を行う。
+  - name: Schedule
+    description: |
+      勤務スケジュール・カレンダー。
+      指定年月のカレンダー（日毎の勤務状態・シフト情報・サマリー）を返す。
+  - name: Team
+    description: |
+      チームメンバー管理。
+      ログインユーザーが所属するチームのメンバー一覧と現在の勤務状態を返す。
+  - name: Settings
+    description: |
+      ユーザー設定。
+      プロフィール・通知・テーマ・言語設定の取得と更新、パスワード変更、ログイン履歴を提供する。
+paths:
+  /login:
+    post:
+      operationId: login
+      tags:
+        - Auth
+      summary: ログイン
+      description: メールアドレスとパスワードで認証し、JWTトークンを返す。
+      security: []
+      requestBody:
+        $ref: '#/components/requestBodies/LoginBody'
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /logout:
+    post:
+      operationId: logout
+      tags:
+        - Auth
+      summary: ログアウト
+      description: 現在のJWTトークンを無効化する。
+      responses:
+        '200':
+          description: ログアウト成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /auth/me:
+    get:
+      operationId: getMe
+      tags:
+        - Auth
+      summary: ログイン中ユーザー情報取得
+      description: 現在認証中のユーザー情報を返す。
+      responses:
+        '200':
+          description: 認証済みユーザー情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/today:
+    get:
+      operationId: getTodayAttendance
+      tags:
+        - Attendance
+      summary: 今日の勤怠取得
+      description: ログイン中ユーザーの当日の勤怠レコードを返す。
+      responses:
+        '200':
+          description: 今日の勤怠情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/clock-in:
+    post:
+      operationId: createClockIn
+      tags:
+        - Attendance
+      summary: 出勤打刻
+      description: 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceClockInBody'
+      responses:
+        '200':
+          description: 出勤成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/clock-out:
+    post:
+      operationId: createClockOut
+      tags:
+        - Attendance
+      summary: 退勤打刻
+      description: 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceClockOutBody'
+      responses:
+        '200':
+          description: 退勤成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances:
+    get:
+      operationId: listAttendances
+      tags:
+        - Attendance
+      summary: 勤怠一覧取得
+      description: 指定期間のログインユーザー勤怠一覧をページネーション付きで返す。
+      parameters:
+        - $ref: '#/components/parameters/QueryDateFrom'
+        - $ref: '#/components/parameters/QueryDateTo'
+        - $ref: '#/components/parameters/QueryPage'
+        - $ref: '#/components/parameters/QueryPerPage'
+      responses:
+        '200':
+          description: 勤怠一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                  - pageInfo
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AttendanceResponse'
+                  pageInfo:
+                    $ref: '#/components/schemas/PageInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createAttendance
+      tags:
+        - Attendance
+      summary: 勤怠の新規登録
+      description: 手動で勤怠レコードを新規作成する。
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceStoreBody'
+      responses:
+        '201':
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/{attendanceId}:
+    patch:
+      operationId: updateAttendance
+      tags:
+        - Attendance
+      summary: 勤怠の更新
+      description: 既存の勤怠レコードを部分更新する。
+      parameters:
+        - $ref: '#/components/parameters/PathAttendanceId'
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceUpdateBody'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags:
+        - Dashboard
+      summary: ダッシュボード集計取得
+      description: 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
+      responses:
+        '200':
+          description: ダッシュボード情報
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /dashboard/clock:
+    post:
+      operationId: createDashboardClock
+      tags:
+        - Dashboard
+      summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
+      description: ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
+      requestBody:
+        $ref: '#/components/requestBodies/DashboardClockBody'
+      responses:
+        '200':
+          description: 打刻成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /schedule/calendar:
+    get:
+      operationId: getCalendar
+      tags:
+        - Schedule
+      summary: 月次カレンダー取得
+      description: 指定年月のカレンダー日付一覧とサマリーを返す。
+      parameters:
+        - $ref: '#/components/parameters/QueryYear'
+        - $ref: '#/components/parameters/QueryMonth'
+      responses:
+        '200':
+          description: 対象月の日付一覧
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /team/members:
+    get:
+      operationId: listTeamMembers
+      tags:
+        - Team
+      summary: チームメンバー一覧取得
+      description: ログインユーザーが所属するチームのメンバー一覧を返す。
+      responses:
+        '200':
+          description: チームメンバー一覧
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamMembersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /settings:
+    get:
+      operationId: getSettings
+      tags:
+        - Settings
+      summary: ユーザー設定取得
+      description: ログインユーザーのプロフィール・通知・セキュリティ設定を返す。
+      responses:
+        '200':
+          description: ユーザー設定
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      operationId: updateSettings
+      tags:
+        - Settings
+      summary: ユーザー設定更新
+      description: プロフィール・通知・テーマ・言語設定を更新する。
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateSettingsBody'
+      responses:
+        '200':
+          description: 更新後ユーザー設定
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /settings/password:
+    put:
+      operationId: updatePassword
+      tags:
+        - Settings
+      summary: パスワード変更
+      description: 現在のパスワードを検証し、新しいパスワードに変更する。
+      requestBody:
+        $ref: '#/components/requestBodies/ChangePasswordBody'
+      responses:
+        '200':
+          description: パスワード変更成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /settings/login-histories:
+    get:
+      operationId: listLoginHistories
+      tags:
+        - Settings
+      summary: ログイン履歴一覧取得
+      description: ログインユーザーのログイン履歴を新しい順に返す。
+      parameters:
+        - $ref: '#/components/parameters/QueryPage'
+        - $ref: '#/components/parameters/QueryPerPage'
+      responses:
+        '200':
+          description: ログイン履歴一覧
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                  - pageInfo
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LoginHistoryResponse'
+                  pageInfo:
+                    $ref: '#/components/schemas/PageInfo'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    ClockAction:
+      type: string
+      description: 打刻アクション種別
+      enum:
+        - in
+        - out
+        - breakStart
+        - breakEnd
+    ClockStatus:
+      type: string
+      description: 現在の打刻状態
+      enum:
+        - out
+        - in
+        - break
+    ThemeType:
+      type: string
+      description: UIテーマ設定
+      enum:
+        - light
+        - dark
+    LanguageCode:
+      type: string
+      description: 表示言語コード
+      enum:
+        - ja
+        - en
+    CalendarDayStatus:
+      type: string
+      description: カレンダー日付の勤務状態
+      enum:
+        - working
+        - 'off'
+        - holiday
+        - pending
+    TeamMemberStatus:
+      type: string
+      description: チームメンバーの勤務状態
+      enum:
+        - working
+        - break
+        - 'off'
+        - leave
+    AttendanceStatus:
+      type: string
+      description: 勤怠レコードの勤務区分
+      enum:
+        - working
+        - out
+        - break
+    UserStatus:
+      type: string
+      description: ユーザーアカウントの状態
+      enum:
+        - active
+        - inactive
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 255
+          description: メールアドレス
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 255
+          pattern: ^(?=.*[A-Za-z])(?=.*\d).+$
+          description: パスワード（英字+数字の混合必須）
+    LoginResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT access token。Authorization ヘッダーに Bearer <token> として送信する。
+    LogoutResponse:
+      type: object
+      description: ログアウト成功HTTPレスポンス
+      properties:
+        message:
+          type: string
+          example: Logged out successfully
+    UserResponse:
+      type: object
+      description: ユーザー情報
+      required:
+        - user
+      properties:
+        user:
+          type: object
+          required:
+            - id
+            - name
+            - email
+            - roles
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: ユーザーID
+              example: 9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f
+            name:
+              type: string
+              description: 表示名
+              example: 宮﨑 壮来
+            email:
+              type: string
+              format: email
+              description: メールアドレス
+              example: sora.miyazaki@example.com
+            roles:
+              type: array
+              description: 付与ロール名一覧
+              items:
+                type: string
+                example: manager
+              example:
+                - member
+                - manager
+            settings:
+              type: object
+              nullable: true
+              description: ユーザー設定
+              properties:
+                theme:
+                  $ref: '#/components/schemas/ThemeType'
+                language:
+                  $ref: '#/components/schemas/LanguageCode'
+              example:
+                theme: dark
+                language: ja
+    AttendanceClockInRequest:
+      type: object
+      required:
+        - workDate
+        - clockInAt
+      properties:
+        workDate:
+          type: string
+          format: date
+          description: 勤務日（YYYY-MM-DD）
+        clockInAt:
+          type: string
+          format: date-time
+          description: 出勤日時（ISO 8601）
+    AttendanceClockOutRequest:
+      type: object
+      required:
+        - workDate
+        - clockOutAt
+      properties:
+        workDate:
+          type: string
+          format: date
+          description: 勤務日（YYYY-MM-DD）
+        clockOutAt:
+          type: string
+          format: date-time
+          description: 退勤日時（ISO 8601）
+    AttendanceStoreRequest:
+      type: object
+      required:
+        - workDate
+        - clockInAt
+      properties:
+        workDate:
+          type: string
+          format: date
+          description: 勤務日（YYYY-MM-DD）
+        clockInAt:
+          type: string
+          format: date-time
+          description: 出勤日時（ISO 8601）
+        clockOutAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 退勤日時（ISO 8601）。省略時は勤務中として扱う。
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: 備考（申請理由・特記事項など）
+    AttendanceUpdateRequest:
+      type: object
+      properties:
+        clockInAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 出勤日時（ISO 8601）
+        clockOutAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 退勤日時（ISO 8601）
+        note:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: 備考
+    AttendanceResponse:
+      type: object
+      description: 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。
+      required:
+        - userId
+        - workDate
+        - clockInAt
+        - clockStatus
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。
+        userId:
+          type: string
+          format: uuid
+          description: 対象ユーザー ID。
+        workDate:
+          type: string
+          format: date
+          description: 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。
+        clockStatus:
+          $ref: '#/components/schemas/ClockStatus'
+        clockInAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
+        clockOutAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 退勤日時（ISO 8601）。未退勤の場合は null。
+        breakMinutes:
+          type: integer
+          nullable: true
+          description: 休憩合計（分）。AttendanceBreak から再計算される。
+        workedMinutes:
+          type: integer
+          nullable: true
+          description: 実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。
+    AttendanceIndexRequest:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+    DashboardClockRequest:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          $ref: '#/components/schemas/ClockAction'
+          description: 打刻アクション種別
+    DashboardResponse:
+      type: object
+      required:
+        - user
+        - clockStatus
+        - todayRecord
+        - stats
+        - recentRecords
+      properties:
+        user:
+          $ref: '#/components/schemas/DashboardUser'
+        clockStatus:
+          $ref: '#/components/schemas/ClockStatus'
+        todayRecord:
+          $ref: '#/components/schemas/DashboardTodayRecord'
+        stats:
+          $ref: '#/components/schemas/DashboardStats'
+        recentRecords:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardRecentRecord'
+    DashboardUser:
+      type: object
+      description: ダッシュボード用ユーザー情報
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    DashboardTodayRecord:
+      type: object
+      description: 今日の勤怠レコード
+      required:
+        - clockInTime
+        - totalWorkedHours
+      properties:
+        clockInTime:
+          type: string
+          nullable: true
+          example: '09:00'
+        totalWorkedHours:
+          type: number
+          format: float
+          nullable: true
+          example: 5.5
+    DashboardStats:
+      type: object
+      description: ダッシュボード月次統計
+      required:
+        - totalHours
+        - targetHours
+        - workDays
+        - remainingDays
+        - avgHours
+        - avgHoursDiff
+        - overtimeHours
+        - overtimeDiff
+      properties:
+        totalHours:
+          type: number
+          format: float
+        targetHours:
+          type: number
+          format: float
+        workDays:
+          type: integer
+        remainingDays:
+          type: integer
+        avgHours:
+          type: number
+          format: float
+        avgHoursDiff:
+          type: number
+          format: float
+        overtimeHours:
+          type: number
+          format: float
+        overtimeDiff:
+          type: number
+          format: float
+    DashboardRecentRecord:
+      type: object
+      description: 直近の勤怠レコード
+      required:
+        - date
+        - day
+        - clockIn
+        - clockOut
+        - workHours
+        - status
+      properties:
+        date:
+          type: string
+          example: 2026/03/14
+        day:
+          type: string
+          example: 土
+        clockIn:
+          type: string
+          nullable: true
+          example: '09:00'
+        clockOut:
+          type: string
+          nullable: true
+          example: '18:00'
+        workHours:
+          type: number
+          format: float
+          nullable: true
+          example: 8
+        status:
+          $ref: '#/components/schemas/AttendanceStatus'
+    CalendarIndexRequest:
+      type: object
+      required:
+        - year
+        - month
+      properties:
+        year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+    CalendarResponse:
+      type: object
+      required:
+        - year
+        - month
+        - summary
+        - days
+      properties:
+        year:
+          type: integer
+          minimum: 2000
+          maximum: 2100
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        summary:
+          $ref: '#/components/schemas/CalendarSummary'
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarDay'
+    CalendarSummary:
+      type: object
+      description: カレンダー月次サマリー
+      required:
+        - totalWorkHours
+        - targetHours
+        - scheduledWorkDays
+        - overtimeHours
+        - paidLeaveDays
+        - remainingPaidLeaveDays
+      properties:
+        totalWorkHours:
+          type: number
+          format: float
+          example: 154.5
+        targetHours:
+          type: number
+          format: float
+          example: 160
+        scheduledWorkDays:
+          type: integer
+          example: 20
+        overtimeHours:
+          type: number
+          format: float
+          example: 12
+        paidLeaveDays:
+          type: number
+          format: float
+          example: 2
+        remainingPaidLeaveDays:
+          type: number
+          format: float
+          example: 12.5
+    CalendarDay:
+      type: object
+      description: カレンダー1日分の情報
+      required:
+        - date
+        - label
+        - dayOfWeek
+        - status
+        - isToday
+        - isHoliday
+      properties:
+        date:
+          type: string
+          format: date
+          example: '2026-03-19'
+        label:
+          type: string
+          example: 3/19
+        dayOfWeek:
+          type: string
+          example: 木
+        status:
+          $ref: '#/components/schemas/CalendarDayStatus'
+        shift:
+          type: string
+          nullable: true
+          example: 通常勤務
+        timeRange:
+          type: string
+          nullable: true
+          example: 09:00 - 18:00
+        location:
+          type: string
+          nullable: true
+          example: Office-A
+        note:
+          type: string
+          nullable: true
+          example: 春分の日
+        isToday:
+          type: boolean
+        isHoliday:
+          type: boolean
+    SettingsResponse:
+      type: object
+      required:
+        - profile
+        - notifications
+        - security
+        - theme
+        - language
+      properties:
+        profile:
+          $ref: '#/components/schemas/SettingsProfile'
+        notifications:
+          $ref: '#/components/schemas/SettingsNotifications'
+        security:
+          $ref: '#/components/schemas/SettingsSecurity'
+        theme:
+          $ref: '#/components/schemas/ThemeType'
+        language:
+          $ref: '#/components/schemas/LanguageCode'
+    UpdateSettingsRequest:
+      type: object
+      required:
+        - profile
+        - notifications
+        - theme
+        - language
+      properties:
+        profile:
+          $ref: '#/components/schemas/UpdateSettingsProfile'
+        notifications:
+          $ref: '#/components/schemas/SettingsNotifications'
+        theme:
+          $ref: '#/components/schemas/ThemeType'
+        language:
+          $ref: '#/components/schemas/LanguageCode'
+    SettingsProfile:
+      type: object
+      description: ユーザープロフィール情報（HTTPレスポンス用）
+      required:
+        - name
+        - email
+        - department
+        - role
+        - employeeCode
+      properties:
+        name:
+          type: string
+          example: 田中 太郎
+        email:
+          type: string
+          format: email
+          example: t.tanaka@example.com
+        department:
+          type: string
+          example: 営業部
+        role:
+          type: string
+          example: 正社員
+        employeeCode:
+          type: string
+          example: EMP-2024001
+    UpdateSettingsProfile:
+      type: object
+      description: ユーザープロフィール更新（HTTPリクエスト用）
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 255
+    ChangePasswordRequest:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+        - newPasswordConfirmation
+      properties:
+        currentPassword:
+          type: string
+          format: password
+          minLength: 8
+          description: 現在のパスワード
+        newPassword:
+          type: string
+          format: password
+          minLength: 8
+          description: 新しいパスワード
+        newPasswordConfirmation:
+          type: string
+          format: password
+          minLength: 8
+          description: 新しいパスワード（確認）
+    LoginHistoryResponse:
+      type: object
+      required:
+        - id
+        - ipAddress
+        - userAgent
+        - loggedInAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        ipAddress:
+          type: string
+          nullable: true
+          description: IPアドレス
+        userAgent:
+          type: string
+          nullable: true
+          description: ユーザーエージェント
+        loggedInAt:
+          type: string
+          format: date-time
+          description: ログイン日時
+        loggedOutAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: ログアウト日時
+    SettingsNotifications:
+      type: object
+      description: 通知設定
+      required:
+        - clockInReminder
+        - leaveReminder
+      properties:
+        clockInReminder:
+          type: boolean
+        leaveReminder:
+          type: boolean
+    SettingsSecurity:
+      type: object
+      description: セキュリティ設定
+      required:
+        - twoFactorEnabled
+        - emailVerified
+      properties:
+        twoFactorEnabled:
+          type: boolean
+        emailVerified:
+          type: boolean
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+        passwordLastChangedAt:
+          type: string
+          format: date-time
+          nullable: true
+    TeamMembersResponse:
+      type: object
+      required:
+        - members
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/TeamMember'
+    TeamMember:
+      type: object
+      description: チームメンバー情報
+      required:
+        - id
+        - name
+        - role
+        - department
+        - status
+        - email
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+        department:
+          type: string
+        status:
+          $ref: '#/components/schemas/TeamMemberStatus'
+        clockInTime:
+          type: string
+          nullable: true
+          example: '09:00'
+        email:
+          type: string
+          format: email
+    ErrorResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: ユーザー向けエラーメッセージ。日本語で返される。
+          example: エラーが発生しました
+    ValidationErrorResponse:
+      type: object
+      required:
+        - message
+        - errors
+      properties:
+        message:
+          type: string
+          description: バリデーションエラーの総括メッセージ。
+          example: バリデーションエラー
+        errors:
+          type: object
+          description: フィールド名 → エラーメッセージ配列のマップ。
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            email:
+              - メールアドレスは必須です。
+            password:
+              - パスワードは8文字以上で入力してください。
+    PageInfo:
+      type: object
+      description: ページネーション情報。一覧系HTTPレスポンスに必ず付与される。
+      required:
+        - currentPage
+        - perPage
+        - totalItems
+        - totalPages
+      properties:
+        currentPage:
+          type: integer
+          minimum: 1
+          description: 現在のページ番号（1始まり）。
+          example: 1
+        perPage:
+          type: integer
+          minimum: 1
+          description: 1ページあたりの件数。クエリパラメータ perPage で指定可能。
+          example: 20
+        totalItems:
+          type: integer
+          minimum: 0
+          description: フィルター条件に合致する全件数。
+          example: 100
+        totalPages:
+          type: integer
+          minimum: 0
+          description: 全ページ数（ceil(totalItems / perPage)）。
+          example: 5
+  parameters:
+    QueryDateFrom:
+      name: from
+      in: query
+      required: true
+      description: 検索期間の開始日
+      schema:
+        type: string
+        format: date
+    QueryDateTo:
+      name: to
+      in: query
+      required: true
+      description: 検索期間の終了日
+      schema:
+        type: string
+        format: date
+    QueryPage:
+      name: page
+      in: query
+      required: false
+      description: ページ番号（デフォルト1）
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    QueryPerPage:
+      name: perPage
+      in: query
+      required: false
+      description: 1ページあたりの件数（デフォルト20）
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    PathAttendanceId:
+      name: attendanceId
+      in: path
+      required: true
+      description: 勤怠レコードID
+      schema:
+        type: string
+        format: uuid
+    QueryYear:
+      name: year
+      in: query
+      required: true
+      description: 対象年
+      schema:
+        type: integer
+        minimum: 2000
+        maximum: 2100
+    QueryMonth:
+      name: month
+      in: query
+      required: true
+      description: 対象月
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 12
+  requestBodies:
+    LoginBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+    AttendanceClockInBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceClockInRequest'
+    AttendanceClockOutBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceClockOutRequest'
+    AttendanceStoreBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceStoreRequest'
+    AttendanceUpdateBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceUpdateRequest'
+    DashboardClockBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DashboardClockRequest'
+    UpdateSettingsBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateSettingsRequest'
+    ChangePasswordBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ChangePasswordRequest'
+  responses:
+    Unauthorized:
+      description: 認証エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: バリデーションエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationErrorResponse'
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: 排他エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: リソース未存在エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: 認可エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

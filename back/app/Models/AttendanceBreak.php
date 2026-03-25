@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
+use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** 
  * 勤怠休憩のモデル 
@@ -40,19 +41,13 @@ class AttendanceBreak extends BaseModel
     ];
 
     /**
-     * 勤怠
+     * 勤怠休憩に紐づく勤怠
+     * 
+     * @return BelongsTo 勤怠のリレーション
      */
-    public function attendance()
+    public function attendance(): BelongsTo
     {
         return $this->belongsTo(Attendance::class);
-    }
-
-    /**
-     * Scope: 勤怠ID
-     */
-    public function scopeAttendance(Builder $query, string $attendanceId): Builder
-    {
-        return $query->where('attendance_id', $attendanceId);
     }
 
     /**
@@ -69,5 +64,19 @@ class AttendanceBreak extends BaseModel
     public function isFinished(): bool
     {
         return $this->break_end !== null;
+    }
+
+    /**
+     * 休憩の長さ（分）を返す
+     * 
+     * @return int 休憩の長さ（分）
+     */
+    public function breakMinutes(): int
+    {
+        $startAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_start);
+        $endAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_end);
+        $diff = $startAt->diffInMinutes($endAt, false);
+
+        return $diff >= 0 ? $diff : $diff + 24 * 60;
     }
 }

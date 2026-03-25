@@ -7,6 +7,7 @@ namespace App\Application\Attendance;
 use App\Application\BaseService;
 use App\Exceptions\DomainException;
 use App\Models\Attendance;
+use App\Models\AttendanceBreak;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 
@@ -15,7 +16,6 @@ use Carbon\CarbonImmutable;
  */
 final class AttendanceService extends BaseService
 {
-
     /**
      * コンストラクタ
      * 
@@ -107,14 +107,6 @@ final class AttendanceService extends BaseService
         $completedBreaks = $this->query->findCompletedBreaks($attendanceId);
 
         // 休憩時間を合算する。
-        return $completedBreaks->sum(function ($break) {
-            $start = CarbonImmutable::createFromFormat('H:i:s', $break->break_start);
-            $end = CarbonImmutable::createFromFormat('H:i:s', $break->break_end);
-            $diff = $start->diffInMinutes($end, false);
-
-            return $diff >= 0
-                ? $diff
-                : $diff + 24 * 60;
-        });
+        return $completedBreaks->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
     }
 }

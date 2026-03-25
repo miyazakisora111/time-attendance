@@ -85,6 +85,9 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('勤怠ID');
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete()->comment('ユーザーID');
             $table->date('work_date')->comment('勤務日');
+            $table->timestampTz('clock_in_at')->nullable()->comment('出勤日時');
+            $table->timestampTz('clock_out_at')->nullable()->after('clock_in_at')->comment('退勤日時');
+            $table->string('work_timezone', 64)->default('Asia/Tokyo')->after('clock_out_at')->comment('勤務タイムゾーン');
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->index('user_id', 'idx_attendances_user_id');

@@ -7,7 +7,6 @@
 /* eslint-disable */
 /* prettier-ignore */
 
-
 /**
  * 勤怠レコードの勤務区分
  * @source openapi/components/enums/AttendanceStatus.yaml

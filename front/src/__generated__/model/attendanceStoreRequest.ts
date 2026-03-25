@@ -22,6 +22,8 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 export interface AttendanceStoreRequest {
+  /** 出勤日時（ISO 8601） */
+  clockInAt: string;
   /**
    * 退勤日時（ISO 8601）。省略時は勤務中として扱う。
    * @nullable
@@ -33,8 +35,6 @@ export interface AttendanceStoreRequest {
    * @nullable
    */
   note?: string | null;
-  /** 出勤日時（ISO 8601） */
-  clockInAt: string;
   /** 勤務日（YYYY-MM-DD） */
   workDate: string;
 }

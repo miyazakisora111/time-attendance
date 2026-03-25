@@ -31,19 +31,19 @@ export interface AttendanceResponse {
    * @nullable
    */
   breakMinutes?: number | null;
-  clockStatus: ClockStatus;
-  /**
-   * 退勤日時（ISO 8601）。未退勤の場合は null。
-   * @nullable
-   */
-  clockOutAt?: string | null;
-  /** 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。 */
-  id?: string;
   /**
    * 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
    * @nullable
    */
   clockInAt: string | null;
+  /**
+   * 退勤日時（ISO 8601）。未退勤の場合は null。
+   * @nullable
+   */
+  clockOutAt?: string | null;
+  clockStatus: ClockStatus;
+  /** 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。 */
+  id?: string;
   /** 対象ユーザー ID。 */
   userId: string;
   /** 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。 */

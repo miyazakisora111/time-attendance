@@ -245,7 +245,7 @@ export namespace components.schemas {
   });
   export const ValidationErrorResponse = z.object({
     message: z.string(),
-    errors: z.record(z.string(), z.array(z.string())),
+    errors: z.record(z.array(z.string())),
   });
   /** @description ページネーション情報。一覧系HTTPレスポンスに必ず付与される。 */
   export const PageInfo = z.object({

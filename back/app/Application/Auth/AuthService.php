@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Application\Services;
 
+use App\Application\BaseService;
 use App\Exceptions\DomainException;
-use App\Data\UserProfileData;
 use App\Data\LoginHistoryData;
 use App\Models\LoginHistory;
 use App\Models\User;

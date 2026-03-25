@@ -23,6 +23,11 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
 export interface AttendanceUpdateRequest {
   /**
+   * 出勤日時（ISO 8601）
+   * @nullable
+   */
+  clockInAt?: string | null;
+  /**
    * 退勤日時（ISO 8601）
    * @nullable
    */
@@ -33,9 +38,4 @@ export interface AttendanceUpdateRequest {
    * @nullable
    */
   note?: string | null;
-  /**
-   * 出勤日時（ISO 8601）
-   * @nullable
-   */
-  clockInAt?: string | null;
 }

@@ -72,8 +72,6 @@ final class AttendancePolicy
         array $errors,
     ): void {
 
-        // TODO:共通化いるか？
-
         // 打刻状態を取得する
         $clockStatus = $this->resolver->resolveClockStatus($attendance);
         if (in_array($clockStatus, $allowed, true)) {
