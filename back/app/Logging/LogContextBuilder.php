@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Logging;
+namespace App\Logging;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -84,7 +84,7 @@ final class LogContextBuilder
      * HTTPレスポンスボディを抽出する。
      * 
      * @param Response $response HTTPレスポンス
-     * @return array|string|null 抽出したHTTPレスポンス内容
+     * @return array<string, mixed>|string|null 抽出したHTTPレスポンス内容
      */
     private function extractResponseBody(Response $response): array|string|null
     {

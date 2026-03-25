@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use App\Http\Responses\ApiResponse;
-use App\Http\Requests\BaseRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Illuminate\Http\Request;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -122,12 +122,12 @@ class Handler extends ExceptionHandler
     /**
      * 例外発生時のコンテキスト情報を構築する。
      * 
-     * @param BaseRequest $request 基底のHTTPリクエスト
+     * @param Request $request HTTPリクエスト
      * @param Throwable $e 例外オブジェクト
      * @param int $status HTTPステータスコード
      * @return array<string, mixed> コンテキスト情報
      */
-    private function buildContext(BaseRequest $request, Throwable $e, int $status): array
+    private function buildContext(Request $request, Throwable $e, int $status): array
     {
         return [
             'method' => $request->method(),
