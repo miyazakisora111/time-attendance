@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Responses\ApiResponse;
-use App\Application\Services\AuthService;
+use App\Application\Auth\AuthService;
 use App\Data\LoginHistoryData;
 use App\ValueObjects\Email;
 use Illuminate\Http\JsonResponse;

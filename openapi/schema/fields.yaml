@@ -19,7 +19,7 @@ attendance:
     label: 出勤時刻
     required: false
     description: 旧互換の出勤時刻
-  end_time:
+  clock_out_at:
     type: time
     label: 退勤時刻
     required: false

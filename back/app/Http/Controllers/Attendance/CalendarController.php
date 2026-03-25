@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Attendance;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Attendance\CalendarIndexRequest;
 use App\Http\Responses\ApiResponse;
-use App\Application\Services\CalendarService;
+use App\Application\Calendar\CalendarService;
 use Illuminate\Http\JsonResponse;
 
 /**

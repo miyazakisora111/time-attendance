@@ -15,8 +15,8 @@ class AttendanceBreakSeeder extends Seeder
     {
         Attendance::query()
             ->select(['id', 'work_date'])
-            ->whereNotNull('extends BaseModel')
-            ->whereNotNull('end_time')
+            ->whereNotNull('clock_in_at')
+            ->whereNotNull('clock_out_at')
             ->chunkById(200, function ($attendances): void {
                 foreach ($attendances as $attendance) {
                     $breakCount = fake()->numberBetween(0, 2);

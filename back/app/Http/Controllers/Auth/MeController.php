@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Application\Queries\UserQuery;
+use App\Application\User\UserQuery;
 use App\Http\Controllers\BaseController;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;

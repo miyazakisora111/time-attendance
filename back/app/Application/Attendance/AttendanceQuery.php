@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Queries;
+namespace App\Application\Attendance;
 
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use \Illuminate\Support\Collection;
 
 /**
  * 勤怠のクエリ
@@ -35,7 +36,7 @@ final class AttendanceQuery
             'userId' => $user->id,
             'workDate' => $today,
             'clockStatus' => 'out',
-            'startTime' => null,
+            'clockInAt' => null,
         ];
     }
 
@@ -77,7 +78,7 @@ final class AttendanceQuery
     }
 
     /**
-     * 休憩中かどうかを判定する。
+     * 休憩中の勤怠を取得する。
      * 
      * @param string $attendanceId 勤怠ID
      * @return ?AttendanceBreak 休憩中の勤怠
@@ -90,5 +91,20 @@ final class AttendanceQuery
             ->whereNull('break_end')
             ->latest('clock_in_at')
             ->first();
+    }
+
+    /**
+     * 休憩が終了済みの勤怠を取得する。
+     * 
+     * @param string $attendanceId 勤怠ID
+     * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
+     */
+    public function findCompletedBreaks(string $attendanceId): Collection
+    {
+        return AttendanceBreak::query()
+            ->where('attendance_id', $attendanceId)
+            ->whereNotNull('break_start')
+            ->whereNotNull('break_end')
+            ->get();
     }
 }

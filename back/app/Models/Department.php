@@ -43,18 +43,6 @@ class Department extends BaseModel
     ];
 
     /**
-     * UUID自動生成
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (Department $department) {
-            if (!$department->id) {
-                $department->id = (string) Str::uuid();
-            }
-        });
-    }
-
-    /**
      * 表示順ソート
      */
     public function scopeOrdered(Builder $query): Builder

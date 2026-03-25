@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Team;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Responses\ApiResponse;
-use App\Application\Services\TeamService;
+use App\Application\Team\TeamService;
 use Illuminate\Http\JsonResponse;
 
 /**

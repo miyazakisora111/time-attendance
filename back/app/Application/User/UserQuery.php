@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Queries;
+namespace App\Application\User;
 
 use App\Data\UserProfileData;
 use App\Models\User;

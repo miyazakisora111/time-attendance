@@ -343,7 +343,7 @@ throw new DomainException('メッセージ', 'ERROR_CODE');
 
 ### レガシーカラム
 
-`extends BaseModel` / `end_time` は互換性のために残っているが、新コードでは `clock_in_at` / `clock_out_at` を使用すること。
+`extends BaseModel` / `clock_out_at` は互換性のために残っているが、新コードでは `clock_in_at` / `clock_out_at` を使用すること。
 
 ## 設計レビュー指摘事項
 

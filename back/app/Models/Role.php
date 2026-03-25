@@ -44,18 +44,6 @@ class Role extends BaseModel
     ];
 
     /**
-     * Boot (UUID自動生成)
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (Role $role) {
-            if (!$role->id) {
-                $role->id = (string) Str::uuid();
-            }
-        });
-    }
-
-    /**
      * Scope: 有効な役職
      */
     public function scopeActive(Builder $query): Builder

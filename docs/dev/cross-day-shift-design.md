@@ -112,7 +112,7 @@ ALTER TABLE attendances
 
 | 問題 | 影響 | 改善案 |
 |---|---|---|
-| **旧カラム `extends BaseModel` / `end_time` が残存** | 二重管理。`toLocalTimePayload()` で両方を参照するロジックが複雑化 | マイグレーションで旧カラムを DROP し、`clock_in_at` / `clock_out_at` に一本化する |
+| **旧カラム `extends BaseModel` / `clock_out_at` が残存** | 二重管理。`toLocalTimePayload()` で両方を参照するロジックが複雑化 | マイグレーションで旧カラムを DROP し、`clock_in_at` / `clock_out_at` に一本化する |
 | **`clock_out_next_day` が DB に永続化されていない** | API HTTPレスポンス時に毎回 `isCrossDayShift()` で再計算が必要 | 頻度が低ければ許容。高頻度集計ならカラム追加を検討 |
 | **`worked_minutes` のキャッシュ整合性** | `break_minutes` の後修正時に `worked_minutes` が連動しない可能性 | `update` 時に常に再計算するか、Observer パターンで同期する |
 | **タイムゾーン変更への耐性** | ユーザーが `work_timezone` を変更しても過去データの `work_date` は更新されない | 設計として正しい（打刻時のローカル日付を記録する方針）。ドキュメントで明記する |

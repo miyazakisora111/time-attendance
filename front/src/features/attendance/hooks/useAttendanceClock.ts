@@ -64,7 +64,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             case 'in': {
                 clockInMutate(
                     {
-                        startTime: now.toISOString(),
+                        clockInAt: now.toISOString(),
                         workDate: workDate,
                     },
                     { onSuccess, onError }
@@ -74,7 +74,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             case 'out': {
                 clockOutMutate(
                     {
-                        endTime: now.toISOString(),
+                        clockOutAt: now.toISOString(),
                         workDate: workDate,
                     },
                     { onSuccess, onError }

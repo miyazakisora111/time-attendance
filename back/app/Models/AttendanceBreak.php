@@ -4,36 +4,23 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
 
+/** 
+ * 勤怠休憩のモデル 
+ */
 class AttendanceBreak extends BaseModel
 {
-    use HasFactory;
     use SoftDeletes;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'attendance_breaks';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    protected static function booted(): void
-    {
-        static::creating(function (self $model) {
-            if (!$model->id) {
-                $model->id = (string) Str::uuid();
-            }
-        });
-    }
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'attendance_id',

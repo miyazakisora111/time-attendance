@@ -3,12 +3,12 @@
 AttendanceUpdateRequest:
   type: object
   properties:
-    startTime:
+    clockInAt:
       type: string
       format: date-time
       nullable: true
       description: 出勤日時（ISO 8601）
-    endTime:
+    clockOutAt:
       type: string
       format: date-time
       nullable: true

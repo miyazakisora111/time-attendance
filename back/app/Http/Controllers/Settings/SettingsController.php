@@ -8,7 +8,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\Settings\ChangePasswordRequest;
 use App\Http\Requests\Settings\UpdateSettingsRequest;
 use App\Http\Responses\ApiResponse;
-use App\Application\Services\SettingsService;
+use App\Application\Settings\SettingsService;
 use Illuminate\Http\JsonResponse;
 
 /**

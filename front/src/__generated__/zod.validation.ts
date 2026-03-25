@@ -15,10 +15,10 @@ export const validationSchemas = {
         .string()
         .trim()
         .min(1, `${labelOf("workDate")}は必須です。`),
-      startTime: z
+      clockInAt: z
         .string()
         .trim()
-        .min(1, `${labelOf("startTime")}は必須です。`),
+        .min(1, `${labelOf("clockInAt")}は必須です。`),
     }),
   AttendanceClockOutRequest:
     generatedComponents.schemas.AttendanceClockOutRequest.extend({
@@ -26,10 +26,10 @@ export const validationSchemas = {
         .string()
         .trim()
         .min(1, `${labelOf("workDate")}は必須です。`),
-      endTime: z
+      clockOutAt: z
         .string()
         .trim()
-        .min(1, `${labelOf("endTime")}は必須です。`),
+        .min(1, `${labelOf("clockOutAt")}は必須です。`),
     }),
   AttendanceIndexRequest:
     generatedComponents.schemas.AttendanceIndexRequest.extend({
@@ -53,12 +53,12 @@ export const validationSchemas = {
       .trim()
       .min(1, `${labelOf("workDate")}は必須です。`),
     clockStatus: z.enum(["out", "in", "break"]),
-    startTime: z
+    clockInAt: z
       .string()
       .trim()
-      .min(1, `${labelOf("startTime")}は必須です。`)
+      .min(1, `${labelOf("clockInAt")}は必須です。`)
       .nullable(),
-    endTime: z.string().trim().nullable().optional(),
+    clockOutAt: z.string().trim().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),
   }),
@@ -68,11 +68,11 @@ export const validationSchemas = {
         .string()
         .trim()
         .min(1, `${labelOf("workDate")}は必須です。`),
-      startTime: z
+      clockInAt: z
         .string()
         .trim()
-        .min(1, `${labelOf("startTime")}は必須です。`),
-      endTime: z.string().trim().nullable().optional(),
+        .min(1, `${labelOf("clockInAt")}は必須です。`),
+      clockOutAt: z.string().trim().nullable().optional(),
       note: z
         .string()
         .trim()
@@ -82,8 +82,8 @@ export const validationSchemas = {
     }),
   AttendanceUpdateRequest:
     generatedComponents.schemas.AttendanceUpdateRequest.extend({
-      startTime: z.string().trim().nullable().optional(),
-      endTime: z.string().trim().nullable().optional(),
+      clockInAt: z.string().trim().nullable().optional(),
+      clockOutAt: z.string().trim().nullable().optional(),
       note: z
         .string()
         .trim()

@@ -49,7 +49,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
         />
         <ClockTodayRecord
           status={status}
-          clockInTime={todayAttendance?.startTime ?? undefined}
+          clockInTime={todayAttendance?.clockInAt ?? undefined}
           totalWorkedHours={todayWorkedTime}
         />
       </CardContent>

@@ -28,8 +28,8 @@ class AttendanceSeeder extends Seeder
                         ->forUser($user)
                         ->state([
                             'work_date' => $date->toDateString(),
-                            'extends BaseModel' => $start->format('H:i:s'),
-                            'end_time' => $end->format('H:i:s'),
+                            'clock_in_at' => $start->format('H:i:s'),
+                            'clock_out_at' => $end->format('H:i:s'),
                         ])
                         ->create();
                 }

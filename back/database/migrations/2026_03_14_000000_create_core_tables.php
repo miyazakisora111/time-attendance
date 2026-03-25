@@ -136,7 +136,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_status CHECK (status IN (0, 1))");
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_theme CHECK (theme IN ('light', 'dark'))");
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_language CHECK (language IN ('ja', 'en'))");
-        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (end_time IS NULL OR extends BaseModel IS NULL OR end_time >= extends BaseModel)");
+        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (clock_out_at IS NULL OR clock_in_at IS NULL OR clock_out_at >= clock_in_at)");
         DB::statement("ALTER TABLE attendance_breaks ADD CONSTRAINT chk_attendance_breaks_time_order CHECK (break_end IS NULL OR break_end >= break_start)");
         DB::statement("ALTER TABLE paid_leave_grants ADD CONSTRAINT chk_paid_leave_grants_days_positive CHECK (days > 0)");
 

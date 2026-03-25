@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services;
+namespace App\Application\Calendar;
+
+use App\Application\BaseService;
 
 use App\Models\Attendance;
 use App\Models\Holiday;
@@ -117,15 +119,15 @@ final class CalendarService extends BaseService
             return null;
         }
 
-        $startTime = $attendance?->clock_in_at?->format('H:i')
-            ?? (is_string($attendance?->extends BaseModel) ? substr((string) $attendance->extends BaseModel, 0, 5) : null)
+        $clockInAt = $attendance?->clock_in_at?->format('H:i')
+            ?? (is_string($attendance?->clock_in_at) ? substr((string) $attendance->clock_in_at, 0, 5) : null)
             ?? '09:00';
 
-        $endTime = $attendance?->clock_out_at?->format('H:i')
-            ?? (is_string($attendance?->end_time) ? substr((string) $attendance->end_time, 0, 5) : null)
+        $clockOutAt = $attendance?->clock_out_at?->format('H:i')
+            ?? (is_string($attendance?->clock_out_at) ? substr((string) $attendance->clock_out_at, 0, 5) : null)
             ?? '18:00';
 
-        return sprintf('%s - %s', $startTime, $endTime);
+        return sprintf('%s - %s', $clockInAt, $clockOutAt);
     }
 
     /**

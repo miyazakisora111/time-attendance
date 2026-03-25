@@ -39,7 +39,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_break_minutes_non_negative");
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_worked_minutes_non_negative");
         DB::statement("ALTER TABLE attendances DROP CONSTRAINT IF EXISTS chk_attendances_timezone_not_blank");
-        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (end_time IS NULL OR extends BaseModel IS NULL OR end_time >= extends BaseModel)");
+        DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (clock_out_at IS NULL OR clock_in_at IS NULL OR clock_out_at >= clock_in_at)");
 
         Schema::table('attendances', function (Blueprint $table): void {
             $table->dropColumn([

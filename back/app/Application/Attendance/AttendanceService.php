@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services;
+namespace App\Application\Attendance;
 
-use App\Application\Queries\AttendanceQuery;
+use App\Application\BaseService;
 use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Str;
 
 /**
  * 勤怠のサービス
@@ -21,9 +20,11 @@ final class AttendanceService extends BaseService
      * コンストラクタ
      * 
      * @param AttendanceQuery $query 勤怠のクエリ
+     * @param AttendancePolicy $policy 勤怠のポリシー
      */
     public function __construct(
         private AttendanceQuery $query,
+        private AttendancePolicy $policy,
     ) {}
 
     /**
@@ -43,10 +44,9 @@ final class AttendanceService extends BaseService
             }
 
             // 勤怠テーブルに登録する。
-            $timezone = $this->resolveTimezone($user->timezone ?? null);
+            $timezone = $this->resolveTimezone(timezone: $user->timezone);
             $now = CarbonImmutable::now($timezone);
             $attendance = Attendance::query()->create([
-                'id' => (string) Str::uuid(),
                 'user_id' => $user->id,
                 'work_date' => $now->toDateString(),
                 'clock_in_at' => $now,
@@ -73,26 +73,48 @@ final class AttendanceService extends BaseService
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
 
-            $attendance->assertCanClockOut();
+            // 退勤可能か検証する。
+            $this->policy->assertCanClockOut($attendance);
 
+            // 合計休憩時間を計算する。
+            $breakMinutes = $this->calculateBreakMinutes($attendance->id);
+
+            // 勤務時間を計算する。
             $timezone = $this->resolveTimezone($attendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
+            $workedMinutes = max(0, $attendance->clock_in_at->diffInMinutes($now) - $breakMinutes);
 
-            $attendance->recalculateBreakMinutes();
-            $attendance->refresh();
-
-            $workedMinutes = max(
-                0,
-                $attendance->clock_in_at->diffInMinutes($now) - (int) $attendance->break_minutes
-            );
-
+            // 勤怠テーブルを更新する。
             $attendance->update([
                 'clock_out_at' => $now,
+                'break_minutes' => $breakMinutes,
                 'worked_minutes' => $workedMinutes,
-                'end_time' => $now->format('H:i:s'),
             ]);
 
             return $attendance->toLocalTimePayload();
+        });
+    }
+
+    /**
+     * 合計休憩時間を計算する。
+     * 
+     * @param string $attendanceId 勤怠ID
+     * @return int 合計休憩時間（分）
+     */
+    private function calculateBreakMinutes(string $attendanceId): int
+    {
+        // 休憩が終了済みの勤怠を取得する。
+        $completedBreaks = $this->query->findCompletedBreaks($attendanceId);
+
+        // 休憩時間を合算する。
+        return $completedBreaks->sum(function ($break) {
+            $start = CarbonImmutable::createFromFormat('H:i:s', $break->break_start);
+            $end = CarbonImmutable::createFromFormat('H:i:s', $break->break_end);
+            $diff = $start->diffInMinutes($end, false);
+
+            return $diff >= 0
+                ? $diff
+                : $diff + 24 * 60;
         });
     }
 }

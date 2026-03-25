@@ -36,14 +36,14 @@ export interface AttendanceResponse {
    * 退勤日時（ISO 8601）。未退勤の場合は null。
    * @nullable
    */
-  endTime?: string | null;
+  clockOutAt?: string | null;
   /** 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。 */
   id?: string;
   /**
    * 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
    * @nullable
    */
-  startTime: string | null;
+  clockInAt: string | null;
   /** 対象ユーザー ID。 */
   userId: string;
   /** 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。 */

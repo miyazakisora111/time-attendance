@@ -5,8 +5,8 @@ export type AttendanceView = {
     clockStatus: ClockStatus;
     totalWorkedMinutes: number | null;
     breakMinutes: number | null;
-    startTime: string | null;
-    endTime: string | null;
+    clockInAt: string | null;
+    clockOutAt: string | null;
     workDate: string;
 };
 

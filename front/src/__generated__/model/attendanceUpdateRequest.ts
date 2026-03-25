@@ -26,7 +26,7 @@ export interface AttendanceUpdateRequest {
    * 退勤日時（ISO 8601）
    * @nullable
    */
-  endTime?: string | null;
+  clockOutAt?: string | null;
   /**
    * 備考
    * @maxLength 500
@@ -37,5 +37,5 @@ export interface AttendanceUpdateRequest {
    * 出勤日時（ISO 8601）
    * @nullable
    */
-  startTime?: string | null;
+  clockInAt?: string | null;
 }

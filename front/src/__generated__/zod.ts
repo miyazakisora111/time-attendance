@@ -73,21 +73,21 @@ export namespace components.schemas {
   });
   export const AttendanceClockInRequest = z.object({
     workDate: z.string(),
-    startTime: z.string(),
+    clockInAt: z.string(),
   });
   export const AttendanceClockOutRequest = z.object({
     workDate: z.string(),
-    endTime: z.string(),
+    clockOutAt: z.string(),
   });
   export const AttendanceStoreRequest = z.object({
     workDate: z.string(),
-    startTime: z.string(),
-    endTime: z.string().nullable().optional(),
+    clockInAt: z.string(),
+    clockOutAt: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
   export const AttendanceUpdateRequest = z.object({
-    startTime: z.string().nullable().optional(),
-    endTime: z.string().nullable().optional(),
+    clockInAt: z.string().nullable().optional(),
+    clockOutAt: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
   /** @description 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。 */
@@ -96,8 +96,8 @@ export namespace components.schemas {
     userId: z.string(),
     workDate: z.string(),
     clockStatus: components["schemas"]["ClockStatus"],
-    startTime: z.string().nullable(),
-    endTime: z.string().nullable().optional(),
+    clockInAt: z.string().nullable(),
+    clockOutAt: z.string().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),
   });

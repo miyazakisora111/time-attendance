@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services;
+namespace App\Application;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Traits\Timezone;
 
 /**
  * 基底のサービスクラス
  */
 abstract class BaseService
 {
+    use Timezone;
+
     /**
      * 情報ログを記録する。
      *
@@ -73,19 +76,6 @@ abstract class BaseService
 
             throw $e;
         }
-    }
-
-    /**
-     * タイムゾーン文字列を解決する。
-     *
-     * null や空文字が渡された場合は DEFAULT_TIMEZONE を返す。
-     *
-     * @param string|null $timezone タイムゾーン候補
-     * @return string 有効なタイムゾーン文字列
-     */
-    protected function resolveTimezone(?string $timezone): string
-    {
-        return (is_string($timezone) && $timezone !== '') ? $timezone : static::DEFAULT_TIMEZONE;
     }
 
     /**

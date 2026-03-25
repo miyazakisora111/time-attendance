@@ -8,7 +8,7 @@ AttendanceResponse:
   required:
     - userId
     - workDate
-    - startTime
+    - clockInAt
     - clockStatus
   properties:
     id:
@@ -25,12 +25,12 @@ AttendanceResponse:
       description: 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。
     clockStatus:
       $ref: "../../enums/ClockStatus.yaml#/ClockStatus"
-    startTime:
+    clockInAt:
       type: string
       format: date-time
       nullable: true
       description: 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
-    endTime:
+    clockOutAt:
       type: string
       format: date-time
       nullable: true

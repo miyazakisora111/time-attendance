@@ -65,21 +65,10 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * UUID自動生成
+     * 
      */
     protected static function booted(): void
     {
-        static::creating(function (User $user) {
-
-            if (!$user->id) {
-                $user->id = (string) Str::uuid();
-            }
-
-            if ($user->password) {
-                $user->password = Hash::make($user->password);
-            }
-        });
-
         static::updating(function (User $user) {
 
             if ($user->isDirty('password')) {
@@ -147,5 +136,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-
 }

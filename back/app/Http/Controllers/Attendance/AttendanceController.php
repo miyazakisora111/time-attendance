@@ -10,7 +10,7 @@ use App\Http\Requests\Attendance\AttendanceStoreRequest;
 use App\Http\Requests\Attendance\AttendanceUpdateRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\Attendance;
-use App\Application\Services\AttendanceService;
+use App\Application\Attendance\AttendanceService;
 use Illuminate\Http\JsonResponse;
 
 /**

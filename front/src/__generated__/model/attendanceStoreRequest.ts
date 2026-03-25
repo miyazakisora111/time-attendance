@@ -26,7 +26,7 @@ export interface AttendanceStoreRequest {
    * 退勤日時（ISO 8601）。省略時は勤務中として扱う。
    * @nullable
    */
-  endTime?: string | null;
+  clockOutAt?: string | null;
   /**
    * 備考（申請理由・特記事項など）
    * @maxLength 500
@@ -34,7 +34,7 @@ export interface AttendanceStoreRequest {
    */
   note?: string | null;
   /** 出勤日時（ISO 8601） */
-  startTime: string;
+  clockInAt: string;
   /** 勤務日（YYYY-MM-DD） */
   workDate: string;
 }

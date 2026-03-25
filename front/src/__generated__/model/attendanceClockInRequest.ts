@@ -23,7 +23,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
 export interface AttendanceClockInRequest {
   /** 出勤日時（ISO 8601） */
-  startTime: string;
+  clockInAt: string;
   /** 勤務日（YYYY-MM-DD） */
   workDate: string;
 }

@@ -32,11 +32,11 @@ final class OpenApiGeneratedRules
     private const SCHEMA_RULES = [
                 'AttendanceClockInRequest' => [
             'workDate' => ['required', 'string'],
-            'startTime' => ['required', 'string'],
+            'clockInAt' => ['required', 'string'],
         ],
         'AttendanceClockOutRequest' => [
             'workDate' => ['required', 'string'],
-            'endTime' => ['required', 'string'],
+            'clockOutAt' => ['required', 'string'],
         ],
         'AttendanceIndexRequest' => [
             'from' => ['required', 'string', 'date_format:Y-m-d'],
@@ -47,20 +47,20 @@ final class OpenApiGeneratedRules
             'userId' => ['required', 'string'],
             'workDate' => ['required', 'string'],
             'clockStatus' => ['required', 'in:out,in,break'],
-            'startTime' => ['required', 'nullable', 'string'],
-            'endTime' => ['sometimes', 'nullable', 'string'],
+            'clockInAt' => ['required', 'nullable', 'string'],
+            'clockOutAt' => ['sometimes', 'nullable', 'string'],
             'breakMinutes' => ['sometimes', 'nullable', 'integer'],
             'workedMinutes' => ['sometimes', 'nullable', 'integer'],
         ],
         'AttendanceStoreRequest' => [
             'workDate' => ['required', 'string'],
-            'startTime' => ['required', 'string'],
-            'endTime' => ['sometimes', 'nullable', 'string'],
+            'clockInAt' => ['required', 'string'],
+            'clockOutAt' => ['sometimes', 'nullable', 'string'],
             'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'AttendanceUpdateRequest' => [
-            'startTime' => ['sometimes', 'nullable', 'string'],
-            'endTime' => ['sometimes', 'nullable', 'string'],
+            'clockInAt' => ['sometimes', 'nullable', 'string'],
+            'clockOutAt' => ['sometimes', 'nullable', 'string'],
             'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'CalendarDay' => [
@@ -290,11 +290,11 @@ final class OpenApiGeneratedRules
     private const SCHEMA_ATTRIBUTES = [
                 'AttendanceClockInRequest' => [
             'workDate' => 'workDate',
-            'startTime' => 'startTime',
+            'clockInAt' => 'clockInAt',
         ],
         'AttendanceClockOutRequest' => [
             'workDate' => 'workDate',
-            'endTime' => 'endTime',
+            'clockOutAt' => 'clockOutAt',
         ],
         'AttendanceIndexRequest' => [
             'from' => '開始日',
@@ -305,20 +305,20 @@ final class OpenApiGeneratedRules
             'userId' => 'userId',
             'workDate' => 'workDate',
             'clockStatus' => '打刻状態',
-            'startTime' => 'startTime',
-            'endTime' => 'endTime',
+            'clockInAt' => 'clockInAt',
+            'clockOutAt' => 'clockOutAt',
             'breakMinutes' => 'breakMinutes',
             'workedMinutes' => 'workedMinutes',
         ],
         'AttendanceStoreRequest' => [
             'workDate' => 'workDate',
-            'startTime' => 'startTime',
-            'endTime' => 'endTime',
+            'clockInAt' => 'clockInAt',
+            'clockOutAt' => 'clockOutAt',
             'note' => '備考',
         ],
         'AttendanceUpdateRequest' => [
-            'startTime' => 'startTime',
-            'endTime' => 'endTime',
+            'clockInAt' => 'clockInAt',
+            'clockOutAt' => 'clockOutAt',
             'note' => '備考',
         ],
         'CalendarDay' => [
