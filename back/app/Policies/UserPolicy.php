@@ -6,61 +6,43 @@ namespace App\Policies;
 
 use App\Models\User;
 
+
+/**
+ * ユーザーに関する認可ルール
+ *
+ * - 作成・削除: 管理者のみ
+ * - 更新・参照: 管理者または本人
+ */
 class UserPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, User $target): bool
     {
-        return $user->id === $target->id;
+        return $this->isAdminOrSelf($user, $target);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, User $target): bool
     {
-        return $user->id === $target->id;
+        return $this->isAdminOrSelf($user, $target);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, User $target): bool
+    public function delete(User $user): bool
     {
-        return $user->id === $target->id;
+        return $user->isAdmin();
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, User $target): bool
+    private function isAdminOrSelf(User $user, User $target): bool
     {
-        return $user->id === $target->id;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, User $target): bool
-    {
-        return false;
+        // 認可条件を集約して可読性と保守性を向上させる
+        return $user->isAdmin() || $user->id === $target->id;
     }
 }

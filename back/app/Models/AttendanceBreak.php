@@ -79,4 +79,15 @@ class AttendanceBreak extends BaseModel
 
         return $diff >= 0 ? $diff : $diff + 24 * 60;
     }
+
+    /**
+     * 合計休憩の長さ（分）を返す
+     * 
+     * @param array $attendanceBreaks 勤怠休憩の配列
+     * @return int 合計休憩の長さ（分）
+     */
+    public function totalBreakMinutes(array $attendanceBreaks): int
+    {
+        return collect($attendanceBreaks)->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
+    }
 }

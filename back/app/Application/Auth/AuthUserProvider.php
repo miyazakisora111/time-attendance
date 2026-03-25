@@ -13,13 +13,13 @@ use Illuminate\Auth\AuthenticationException;
 final class AuthUserProvider
 {
     /**
-     * 認証済みユーザーを必ず取得する。
+     * 認証済みユーザーを取得する。
      *
      * @return User 認証済みユーザー
      *
      * @throws AuthenticationException 未認証の場合
      */
-    public function requireUser(): User
+    public function getAuthUser(): User
     {
         /** @var User|null $user */
         $user = auth()->user();

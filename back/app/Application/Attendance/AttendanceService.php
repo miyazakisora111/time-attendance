@@ -9,6 +9,7 @@ use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
+use App\Data\AttendanceData;
 use Carbon\CarbonImmutable;
 
 /**
@@ -20,23 +21,35 @@ final class AttendanceService extends BaseService
      * コンストラクタ
      * 
      * @param AttendanceQuery $query 勤怠のクエリ
-     * @param AttendancePolicy $policy 勤怠のポリシー
+     * @param AttendanceGuard $guard 勤怠のガード
+     * @param AttendanceDataFactory $factory 勤怠データのファクトリ
      */
     public function __construct(
         private AttendanceQuery $query,
-        private AttendancePolicy $policy,
+        private AttendanceGuard $guard,
+        private AttendanceDataFactory $factory,
     ) {}
+
+    /**
+     * 本日の勤怠情報を取得する
+     *
+     * @param User $user ユーザー
+     * @return array<string, mixed>
+     */
+    public function getToday(User $user): array
+    {
+        return $this->query->today($user);
+    }
 
     /**
      * 出勤を打刻する
      * 
      * @param User $user ユーザー
-     * @return array
+     * @return AttendanceData 勤怠データ
      */
-    public function clockIn(User $user): array
+    public function clockIn(User $user): AttendanceData
     {
-        return $this->transaction(function () use ($user): array {
-
+        return $this->transaction(function () use ($user): AttendanceData {
             // 退勤チェック
             $attendance = $this->query->findWorkingAttendance(user: $user);
             if ($attendance) {
@@ -53,19 +66,20 @@ final class AttendanceService extends BaseService
                 'work_timezone' => $timezone,
             ]);
 
-            return $attendance->toLocalTimePayload();
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
         });
     }
 
     /**
-     * 出勤を打刻する
+     * 退勤を打刻する
      * 
      * @param User $user ユーザー
-     * @return array
+     * @return AttendanceData 勤怠データ
      */
-    public function clockOut(User $user): array
+    public function clockOut(User $user): AttendanceData
     {
-        return $this->transaction(function () use ($user): array {
+        return $this->transaction(function () use ($user): AttendanceData {
 
             // 出勤チェック
             $attendance = $this->query->findWorkingAttendance(user: $user);
@@ -74,39 +88,141 @@ final class AttendanceService extends BaseService
             }
 
             // 退勤可能か検証する。
-            $this->policy->assertCanClockOut($attendance);
-
-            // 合計休憩時間を計算する。
-            $breakMinutes = $this->calculateBreakMinutes($attendance->id);
-
-            // 勤務時間を計算する。
-            $timezone = $this->resolveTimezone($attendance->work_timezone);
-            $now = CarbonImmutable::now($timezone);
-            $workedMinutes = max(0, $attendance->clock_in_at->diffInMinutes($now) - $breakMinutes);
+            $this->guard->assertCanClockOut($attendance);
 
             // 勤怠テーブルを更新する。
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
+            $now = CarbonImmutable::now($timezone);
             $attendance->update([
                 'clock_out_at' => $now,
-                'break_minutes' => $breakMinutes,
-                'worked_minutes' => $workedMinutes,
             ]);
 
-            return $attendance->toLocalTimePayload();
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
         });
     }
 
     /**
-     * 合計休憩時間を計算する。
-     * 
-     * @param string $attendanceId 勤怠ID
-     * @return int 合計休憩時間（分）
+     * 休憩を開始する
+     *
+     * @param User $user ユーザー
+     * @return AttendanceData 勤怠データ
      */
-    private function calculateBreakMinutes(string $attendanceId): int
+    public function breakStart(User $user): AttendanceData
     {
-        // 休憩が終了済みの勤怠を取得する。
-        $completedBreaks = $this->query->findCompletedBreaks($attendanceId);
+        return $this->transaction(function () use ($user): AttendanceData {
 
-        // 休憩時間を合算する。
-        return $completedBreaks->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
+            $attendance = $this->query->findWorkingAttendance(user: $user);
+            if (!$attendance) {
+                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
+            }
+
+            // 休憩開始可能か検証する。
+            $this->guard->assertCanBreakStart($attendance);
+
+            // 勤怠休憩テーブルに登録する。
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
+            $now = CarbonImmutable::now($timezone);
+            AttendanceBreak::query()->create([
+                'attendance_id' => $attendance->id,
+                'break_start' => $now->format('H:i:s'),
+            ]);
+
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
+        });
+    }
+
+    /**
+     * 休憩を終了する
+     *
+     * @param User $user ユーザー
+     * @return AttendanceData 勤怠データ
+     */
+    public function breakEnd(User $user): AttendanceData
+    {
+        return $this->transaction(function () use ($user): AttendanceData {
+
+            $attendance = $this->query->findWorkingAttendance(user: $user);
+            if (!$attendance) {
+                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
+            }
+
+            $breakingAttendance = $this->query->findBreakingAttendance($attendance->id);
+            if (!$breakingAttendance) {
+                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
+            }
+
+            // 勤怠休憩テーブルを更新する。
+            $timezone = $this->resolveTimezone($attendance->work_timezone);
+            $now = CarbonImmutable::now($timezone);
+            $breakingAttendance->update([
+                'break_end' => $now->format('H:i:s'),
+            ]);
+
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
+        });
+    }
+
+    /**
+     * 勤怠一覧を取得する
+     *
+     * @param User $user ユーザー
+     * @param string $from 開始日
+     * @param string $to 終了日
+     * @return array<int, array<string, mixed>> 勤怠一覧
+     */
+    public function index(User $user, string $from, string $to): array
+    {
+        return $this->query->list($user, $from, $to);
+    }
+
+    /**
+     * 勤怠を新規登録する
+     *
+     * @param User $user ユーザー
+     * @param array<string, mixed> $input 入力値
+     * @return AttendanceData 勤怠データ
+     */
+    public function store(User $user, array $input): AttendanceData
+    {
+        return $this->transaction(function () use ($user, $input): AttendanceData {
+            $attendance = Attendance::query()->create([
+                'user_id' => $user->id,
+                'work_date' => $input['work_date'],
+                'clock_in_at' => $input['clock_in_at'] ?? null,
+                'clock_out_at' => $input['clock_out_at'] ?? null,
+                'work_timezone' => $input['work_timezone'] ?? $this->resolveTimezone(timezone: $user->timezone),
+            ]);
+
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
+        });
+    }
+
+    /**
+     * 勤怠を更新する
+     *
+     * @param User $user ユーザー
+     * @param Attendance $attendance 更新対象の勤怠
+     * @param array<string, mixed> $input 入力値
+     * @return AttendanceData 勤怠データ
+     */
+    public function update(User $user, Attendance $attendance, array $input): AttendanceData
+    {
+        return $this->transaction(function () use ($user, $attendance, $input): AttendanceData {
+            if ($attendance->user_id !== $user->id) {
+                throw new DomainException('権限がありません', 'FORBIDDEN');
+            }
+
+            $attendance->update(array_filter([
+                'clock_in_at' => $input['clock_in_at'] ?? null,
+                'clock_out_at' => $input['clock_out_at'] ?? null,
+            ], fn($v) => $v !== null));
+
+            // 勤怠データを生成して返す。
+            return $this->factory->createFromModel($attendance);
+        });
     }
 }

@@ -142,7 +142,7 @@ final class CalendarService extends BaseService
     ): array {
         $scheduledWorkDays = $days->filter(fn(array $day): bool => $day['status'] === 'working')->count();
         $totalWorkHours = round((float) $attendances
-            ->map(fn(Attendance $attendance): float => ($attendance->calculateWorkedMinutes() ?? ($attendance->worked_minutes ?? 0)) / 60)
+            ->map(fn(Attendance $attendance): float => ($attendance->calculateWorkedMinutes() ?? 0) / 60)
             ->sum(), 1);
 
         $overtimeHours = 0.0;

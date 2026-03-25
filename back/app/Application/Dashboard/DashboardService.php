@@ -93,7 +93,7 @@ final class DashboardService extends BaseService
                 $workHours = $this->calculateWorkHours(
                     startAt: $attendance->clock_in_at,
                     endAt: $attendance->clock_out_at,
-                    workedMinutes: $attendance->worked_minutes,
+                    workedMinutes: $attendance->calculateWorkedMinutes(),
                 );
 
                 $date = Carbon::parse($attendance->work_date);
@@ -136,7 +136,7 @@ final class DashboardService extends BaseService
         $hours = $this->calculateWorkHours(
             startAt: $attendance->clock_in_at,
             endAt: $attendance->clock_out_at,
-            workedMinutes: $attendance->worked_minutes,
+            workedMinutes: $attendance->calculateWorkedMinutes(),
             fallbackEndTime: now(),
         );
 
@@ -154,7 +154,7 @@ final class DashboardService extends BaseService
         return round((float) $attendances
             ->map(
                 fn(Attendance $attendance): float =>
-                $this->calculateWorkHours($attendance->clock_in_at, $attendance->clock_out_at, $attendance->worked_minutes) ?? 0.0
+                $this->calculateWorkHours($attendance->clock_in_at, $attendance->clock_out_at, $attendance->calculateWorkedMinutes()) ?? 0.0
             )
             ->sum(), 1);
     }

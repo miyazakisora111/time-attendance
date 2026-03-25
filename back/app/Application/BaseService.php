@@ -88,42 +88,4 @@ abstract class BaseService
     {
         return ['日', '月', '火', '水', '木', '金', '土'][$date->dayOfWeek];
     }
-
-    /**
-     * 勤務時間（時間単位）を算出する。
-     *
-     * worked_minutes が記録済みならそれを優先し、
-     * 未記録なら出勤・退勤時刻の差分から計算する。
-     *
-     * @param mixed $startAt 出勤日時（Carbon / string / null）
-     * @param mixed $endAt 退勤日時（Carbon / string / null）
-     * @param int|null $workedMinutes 記録済み実働分数
-     * @param Carbon|null $fallbackEndTime 退勤未打刻時の代替終了時刻
-     * @return float|null 勤務時間（時間）。算出不能の場合は null
-     */
-    protected function calculateWorkHours(
-        mixed $startAt,
-        mixed $endAt,
-        ?int $workedMinutes = null,
-        ?Carbon $fallbackEndTime = null,
-    ): ?float {
-        if ($workedMinutes !== null) {
-            return round($workedMinutes / 60, 1);
-        }
-
-        if ($startAt === null) {
-            return null;
-        }
-
-        $start = Carbon::parse((string) $startAt);
-        $end = $endAt !== null
-            ? Carbon::parse((string) $endAt)
-            : $fallbackEndTime;
-
-        if ($end === null || $end->lt($start)) {
-            return null;
-        }
-
-        return round($end->diffInMinutes($start) / 60, 1);
-    }
 }

@@ -14,7 +14,7 @@ class AttendanceData extends BaseData
         public readonly string $workDate,
         public readonly string $clockStatus,
         public readonly int $breakMinutes,
-        public readonly int $workedMinutes,
+        public readonly float $workedMinutes,
     ) {}
 
     public static function fromModel(Attendance $attendance): self

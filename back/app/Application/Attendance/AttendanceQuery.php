@@ -89,7 +89,7 @@ final class AttendanceQuery
             ->where('attendance_id', $attendanceId)
             ->whereNotNull('break_start')
             ->whereNull('break_end')
-            ->latest('clock_in_at')
+            ->latest('break_start')
             ->first();
     }
 
