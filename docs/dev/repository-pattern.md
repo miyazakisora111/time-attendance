@@ -77,7 +77,7 @@ final class AttendanceRepository extends BaseRepository
         return Attendance::class;
     }
 
-    public function findOpenAttendance(string $userId): ?Attendance
+    public function findWorkingAttendance(string $userId): ?Attendance
     {
         return $this->query()
             ->where('user_id', $userId)
@@ -96,7 +96,7 @@ public function __construct(
 public function clockIn(User $user): array
 {
     return $this->transaction(function () use ($user): array {
-        if ($this->repo->findOpenAttendance($user->id) !== null) {
+        if ($this->repo->findWorkingAttendance($user->id) !== null) {
             throw new DomainException('未退勤の勤務が存在します');
         }
         // ...

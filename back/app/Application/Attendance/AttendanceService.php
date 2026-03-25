@@ -37,7 +37,7 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): array {
 
             // 退勤チェック
-            $attendance = $this->query->findOpenAttendance(user: $user);
+            $attendance = $this->query->findWorkingAttendance(user: $user);
             if ($attendance) {
                 throw new DomainException('未退勤の勤務が存在します', 'OPEN_ATTENDANCE_EXISTS');
             }
@@ -68,7 +68,7 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): array {
 
             // 出勤チェック
-            $attendance = $this->query->findOpenAttendance(user: $user);
+            $attendance = $this->query->findWorkingAttendance(user: $user);
             if (!$attendance) {
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
