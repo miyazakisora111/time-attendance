@@ -38,7 +38,6 @@ class User extends Authenticatable implements JWTSubject
         'sort_order',
         'email',
         'password',
-        'status',
         'email_verified_at',
         'last_login_at',
     ];
@@ -56,7 +55,6 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $casts = [
         'sort_order' => 'integer',
-        'status' => 'integer',
         'email_verified_at' => 'datetime',
         'last_login_at' => 'datetime',
         'created_at' => 'datetime',
@@ -108,7 +106,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', 1);
+        return $query->whereNull('deleted_at');
     }
 
     /**

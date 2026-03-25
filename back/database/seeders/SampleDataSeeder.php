@@ -23,7 +23,7 @@ class SampleDataSeeder extends Seeder
         $departments = DepartmentFactory::new()->count(3)->create();
 
         foreach ($departments as $department) {
-            UserFactory::new()->count(8)->forDepartment($department)->active()->create();
+            UserFactory::new()->count(8)->forDepartment($department)->create();
         }
 
         User::query()->each(function (User $user): void {

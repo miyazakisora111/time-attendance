@@ -15,21 +15,19 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 冪等性を確保するため、依存関係の逆順でテーブルをトランケートする。
-        DB::statement('SET CONSTRAINTS ALL DEFERRED');
-
-        DB::table('paid_leave_grants')->truncate();
-        DB::table('holidays')->truncate();
-        DB::table('attendance_breaks')->truncate();
-        DB::table('attendances')->truncate();
-        DB::table('login_histories')->truncate();
-        DB::table('user_notification_settings')->truncate();
-        DB::table('user_settings')->truncate();
-        DB::table('users')->truncate();
-        DB::table('departments')->truncate();
-        DB::table('roles')->truncate();
-
-        DB::statement('SET CONSTRAINTS ALL IMMEDIATE');
+        // 冪等性を確保するため、全テーブルを CASCADE でトランケートする（PostgreSQL 対応）。
+        DB::statement('TRUNCATE
+            paid_leave_grants,
+            holidays,
+            attendance_breaks,
+            attendances,
+            login_histories,
+            user_notification_settings,
+            user_settings,
+            users,
+            departments,
+            roles
+            CASCADE');
 
         $this->call([
             RoleSeeder::class,

@@ -36,10 +36,9 @@ final class AuthService extends BaseService
         $token = $guard->attempt(credentials: [
             'email' => $email->value(),
             'password' => $password,
-            'status' => 1,
         ]);
         if (!is_string($token) || $token === '') {
-            throw new DomainException('認証に失敗しました');
+            throw new DomainException('メールアドレスまたはパスワードが正しくありません');
         }
 
         // ユーザーを取得する。

@@ -17,27 +17,18 @@ class RoleFactory extends Factory
     public function definition(): array
     {
         $roles = [
-            ['name' => '代表取締役', 'level' => 5],
-            ['name' => '部長', 'level' => 4],
-            ['name' => '課長', 'level' => 3],
-            ['name' => 'チームリーダー', 'level' => 2],
-            ['name' => '一般社員', 'level' => 1],
+            ['name' => '代表取締役'],
+            ['name' => '部長'],
+            ['name' => '課長'],
+            ['name' => 'チームリーダー'],
+            ['name' => '一般社員'],
         ];
 
         $role = fake()->randomElement($roles);
 
         return [
             'name' => $role['name'],
-            'level' => $role['level'],
             'sort_order' => fake()->numberBetween(1, 100),
-            'status' => fake()->randomElement(['active', 'inactive']),
         ];
-    }
-
-    public function active(): static
-    {
-        return $this->state(fn(): array => [
-            'status' => 'active',
-        ]);
     }
 }

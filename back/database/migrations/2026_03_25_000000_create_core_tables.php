@@ -15,7 +15,6 @@ return new class extends Migration
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('役職ID');
             $table->string('name', 50)->comment('役職名');
             $table->unsignedInteger('sort_order')->default(0)->comment('表示順');
-            $table->string('status', 20)->default('active')->comment('状態（active / inactive）');
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->index('name', 'idx_roles_name');
@@ -40,12 +39,11 @@ return new class extends Migration
             $table->unsignedInteger('sort_order')->default(0)->comment('表示順');
             $table->string('email', 255)->comment('メールアドレス');
             $table->string('password')->comment('パスワードハッシュ');
-            $table->smallInteger('status')->default(1)->comment('状態（1:有効 / 0:無効）');
             $table->timestampTz('email_verified_at')->nullable()->comment('メール認証日時');
             $table->timestampTz('last_login_at')->nullable()->comment('最終ログイン日時');
             $table->rememberToken();
             $table->timestampsTz();
-            $table->softDeletesTz();
+            $table->softDeletesTz()->comment('削除日時');
             $table->index('department_id', 'idx_users_department_id');
             $table->index('role_id', 'idx_users_role_id');
             $table->index('sort_order', 'idx_users_sort_order');
@@ -135,8 +133,6 @@ return new class extends Migration
 
         DB::statement("COMMENT ON TABLE holidays IS '祝日マスタ'");
 
-        DB::statement("ALTER TABLE roles ADD CONSTRAINT chk_roles_status CHECK (status IN ('active', 'inactive'))");
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_users_status CHECK (status IN (0, 1))");
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_theme CHECK (theme IN ('light', 'dark'))");
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_language CHECK (language IN ('ja', 'en'))");
         DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (clock_out_at IS NULL OR clock_in_at IS NULL OR clock_out_at >= clock_in_at)");

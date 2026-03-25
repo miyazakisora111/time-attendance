@@ -30,7 +30,6 @@ class Role extends BaseModel
         'id',
         'name',
         'sort_order',
-        'status',
     ];
 
     /**
@@ -48,7 +47,7 @@ class Role extends BaseModel
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', 'active');
+        return $query->whereNull('deleted_at');
     }
 
     /**

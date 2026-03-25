@@ -40,12 +40,8 @@ export function LoginPage() {
    * 認証APIへログイン情報を送信する。
    */
   const onSubmit = async (data: LoginFormData) => {
-    try {
-      await loginMutation.mutateAsync(data);
-      sonner.success('ログインしました。');
-    } catch {
-      sonner.error('メールアドレスまたはパスワードが正しくありません。');
-    }
+    await loginMutation.mutateAsync(data);
+    sonner.success('ログインしました。');
   };
 
   return (
@@ -59,8 +55,8 @@ export function LoginPage() {
           onSubmit={onSubmit}
           unstableClassName="space-y-4 max-w-md mx-4"
         >
-          <Input label="メールアドレス" name="email" placeholder="test@test.com" />
-          <Input label="パスワード" name="password" type="password" placeholder="Password@1" />
+          <Input label="メールアドレス test@test.com" name="email" placeholder="test@test.com" />
+          <Input label="パスワード Password@1" name="password" type="password" placeholder="Password@1" />
           <SubmitButton unstableClassName="w-full" variant="solid" intent="primary">
             ログイン
           </SubmitButton>

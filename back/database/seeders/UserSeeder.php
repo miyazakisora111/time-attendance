@@ -9,19 +9,19 @@ use App\Models\Role;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
         $departments = Department::query()->get();
-        $roles = Role::query()->where('status', 'active')->get();
+        $roles = Role::query()->get();
 
         $defaultUser = User::query()->firstOrNew(['email' => 'test@test.com']);
         $defaultUser->fill([
             'name' => 'テストユーザー',
-            'password' => 'Password@1',
-            'status' => 1,
+            'password' => Hash::make('Password@1'),
             'sort_order' => 1,
             'email_verified_at' => now(),
         ]);
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         $defaultUser->save();
 
         for ($i = 0; $i < 59; $i++) {
-            $factory = UserFactory::new()->active();
+            $factory = UserFactory::new();
 
             if ($departments->isNotEmpty()) {
                 $factory = $factory->forDepartment($departments->random());

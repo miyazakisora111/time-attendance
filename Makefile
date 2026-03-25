@@ -16,7 +16,8 @@ BUNDLE_JSON := $(OPENAPI_DIR)/build/bundle.json
 .PHONY: setup up build down restart logs ps sh init migrate seed fresh test optimize \
 	front-install front-dev front-build front-typecheck front-lint local-back health \
 	openapi-lint openapi-bundle openapi-client openapi-zod openapi-validators openapi-examples openapi openapi-clean \
-	openapi-enums openapi-enums-check
+	openapi-enums openapi-enums-check \
+	dev in-db
 
 setup:
 	@[ -f .env ] || cp .env.example .env
@@ -129,3 +130,10 @@ openapi-enums-check:
 	@echo "✅ Generated enums are up-to-date"
 
 openapi: openapi-enums openapi-zod openapi-client openapi-validators
+
+dev: openapi
+	$(MAKE) front-dev
+	cd $(BACK_DIR) && php artisan serve --host=0.0.0.0 --port=8000
+
+in-db:
+	sudo -u postgres psql
