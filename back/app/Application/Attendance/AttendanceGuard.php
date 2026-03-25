@@ -14,24 +14,15 @@ use App\__Generated__\Enums\ClockStatus;
 final class AttendanceGuard
 {
     /**
-     * コンストラクタ
-     *
-     * @param AttendanceResolver $resolver 勤怠に関する状態を判定するクラス
-     */
-    public function __construct(
-        private readonly AttendanceResolver $resolver,
-    ) {}
-
-    /**
      * 出勤可能か検証する
      *
-     * @param Attendance $attendance 勤怠
+     * @param ClockStatus $clockStatus 打刻状態
      * @throws DomainException
      */
-    public function assertCanClockIn(Attendance $attendance): void
+    public function assertCanClockIn(ClockStatus $clockStatus): void
     {
         $this->assertAllowed(
-            attendance: $attendance,
+            clockStatus: $clockStatus,
             allowed: [ClockStatus::OUT->value],
             errors: [
                 ClockStatus::IN->value => ['すでに出勤しています', 'ALREADY_CLOCKED_IN'],
@@ -43,13 +34,13 @@ final class AttendanceGuard
     /**
      * 退勤可能か検証する
      *
-     * @param Attendance $attendance 勤怠
+     * @param ClockStatus $clockStatus 打刻状態
      * @throws DomainException
      */
-    public function assertCanClockOut(Attendance $attendance): void
+    public function assertCanClockOut(ClockStatus $clockStatus): void
     {
         $this->assertAllowed(
-            attendance: $attendance,
+            clockStatus: $clockStatus,
             allowed: [ClockStatus::IN->value],
             errors: [
                 ClockStatus::BREAK->value => ['休憩中は退勤できません。先に休憩を終了してください', 'CANNOT_CLOCK_OUT_ON_BREAK'],
@@ -61,13 +52,13 @@ final class AttendanceGuard
     /**
      * 休憩開始可能か検証する
      *
-     * @param Attendance $attendance 勤怠
+     * @param ClockStatus $clockStatus 打刻状態
      * @throws DomainException
      */
-    public function assertCanBreakStart(Attendance $attendance): void
+    public function assertCanBreakStart(ClockStatus $clockStatus): void
     {
         $this->assertAllowed(
-            attendance: $attendance,
+            clockStatus: $clockStatus,
             allowed: [ClockStatus::IN->value],
             errors: [
                 ClockStatus::BREAK->value => ['すでに休憩中です', 'ALREADY_ON_BREAK'],
@@ -79,13 +70,13 @@ final class AttendanceGuard
     /**
      * 休憩終了可能か検証する
      *
-     * @param Attendance $attendance 勤怠
+     * @param ClockStatus $clockStatus 打刻状態
      * @throws DomainException
      */
-    public function assertCanBreakEnd(Attendance $attendance): void
+    public function assertCanBreakEnd(ClockStatus $clockStatus): void
     {
         $this->assertAllowed(
-            attendance: $attendance,
+            clockStatus: $clockStatus,
             allowed: [ClockStatus::BREAK->value],
             errors: [
                 ClockStatus::IN->value => ['休憩中ではありません', 'NOT_ON_BREAK'],
@@ -97,24 +88,26 @@ final class AttendanceGuard
     /**
      * 共通の検証処理
      *
-     * @param Attendance $attendance
-     * @param ClockStatus[] $allowed 許可された打刻状態
-     * @param array $errors ClockStatus => [message, errorCode]
+     * @param ClockStatus $clockStatus
+     * @param string[] $allowed 許可された打刻状態
+     * @param array $errors 許可されなかった打刻状態とエラーメッセージのマップ
      * @throws DomainException
      */
     private function assertAllowed(
-        Attendance $attendance,
+        ClockStatus $clockStatus,
         array $allowed,
         array $errors,
     ): void {
-        $clockStatus = $this->resolver->resolveClockStatus($attendance);
 
-        if (in_array($clockStatus, $allowed, true)) {
+        // 例外が発生しない場合は許可された状態なので処理を終了する。
+        $clockStatusValue = $clockStatus->value;
+        if (in_array($clockStatusValue, $allowed, true)) {
             return;
         }
 
-        if (isset($errors[$clockStatus->value])) {
-            [$message, $code] = $errors[$clockStatus->value];
+        // 許可されていない状態の場合はエラーをスローする
+        if (isset($errors[$clockStatusValue])) {
+            [$message, $code] = $errors[$clockStatusValue];
             throw new DomainException($message, $code);
         }
 

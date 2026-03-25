@@ -62,17 +62,15 @@ final class AttendanceQuery
     }
 
     /**
-     * 勤務中の勤怠を取得する。
+     * 最新の勤怠を取得する。
      * 
      * @param User $user ユーザー
-     * @return ?Attendance 勤務中の勤怠
+     * @return ?Attendance 最新の勤怠
      */
-    public function findWorkingAttendance(User $user): ?Attendance
+    public function findLatestAttendance(User $user): ?Attendance
     {
         return Attendance::query()
             ->where('user_id', $user->id)
-            ->whereNotNull('clock_in_at')
-            ->whereNull('clock_out_at')
             ->latest('clock_in_at')
             ->first();
     }
