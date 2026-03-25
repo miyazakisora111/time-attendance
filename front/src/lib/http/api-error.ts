@@ -10,6 +10,13 @@ export type ApiError = {
     errors?: Record<string, string[]>;
 };
 
+export class UnauthorizedError extends Error {
+    constructor(message = 'Unauthorized') {
+        super(message)
+        this.name = 'UnauthorizedError'
+    }
+}
+
 /**
  * APIエラーコード定数。
  *
@@ -42,7 +49,6 @@ export const isApiError = (value: unknown): value is ApiError => {
  * @returns ApiError（抽出できない場合はデフォルト値）
  */
 export const toApiError = (error: unknown): ApiError => {
-    // error.response.data パターン（AxiosError）
     if (typeof error === 'object' && error !== null) {
         const axiosLike = error as Record<string, unknown>;
         if (typeof axiosLike.response === 'object' && axiosLike.response !== null) {

@@ -2,8 +2,9 @@ import axios, { type AxiosRequestConfig } from 'axios';
 import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
-import { ApiErrorCode, isApiError } from '@/lib/http/api-error';
+import { ApiErrorCode, isApiError, UnauthorizedError } from '@/lib/http/api-error';
 import { useErrorStore } from '@/shared/stores/errorStore';
+import { authStore } from '@/shared/stores/authStore';
 
 /**
  * Axios共通インスタンス。
@@ -91,7 +92,8 @@ const notifyByStatus = (status: number | undefined, data: unknown): void => {
 
   // 認証エラー（401）はグローバル通知しない（トークン削除のみ）。
   if (code === ApiErrorCode.Auth || status === HttpStatusCode.Unauthorized) {
-    return;
+    authStore.getState().reset()
+    throw new UnauthorizedError()
   }
 
   const { setError } = useErrorStore.getState();
