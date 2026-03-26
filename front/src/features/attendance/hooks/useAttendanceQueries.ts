@@ -5,6 +5,8 @@ import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { AttendanceClockInRequest } from '@/__generated__/model/attendanceClockInRequest';
 import type { AttendanceClockOutRequest } from '@/__generated__/model/attendanceClockOutRequest';
+import type { AttendanceBreakStartRequest } from '@/__generated__/model/attendanceBreakStartRequest';
+import type { AttendanceBreakEndRequest } from '@/__generated__/model/attendanceBreakEndRequest';
 
 /**
  * React Query キー。
@@ -58,10 +60,10 @@ export const useClockOutMutation = (
  * 休憩開始
  */
 export const useBreakStartMutation = (
-  options?: UseMutationOptions<AttendanceResponse, Error, void>,
+  options?: UseMutationOptions<AttendanceResponse, Error, AttendanceBreakStartRequest>,
 ) => useMutation({
   mutationKey: attendanceQueryKeys.breakStart(),
-  mutationFn: () => breakStart(),
+  mutationFn: (payload: AttendanceBreakStartRequest) => breakStart(payload),
   ...options,
 });
 
@@ -69,9 +71,9 @@ export const useBreakStartMutation = (
  * 休憩終了
  */
 export const useBreakEndMutation = (
-  options?: UseMutationOptions<AttendanceResponse, Error, void>,
+  options?: UseMutationOptions<AttendanceResponse, Error, AttendanceBreakEndRequest>,
 ) => useMutation({
   mutationKey: attendanceQueryKeys.breakEnd(),
-  mutationFn: () => breakEnd(),
+  mutationFn: (payload: AttendanceBreakEndRequest) => breakEnd(payload),
   ...options,
 });

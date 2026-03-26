@@ -30,13 +30,13 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-                'AttendanceClockInRequest' => [
-            'workDate' => ['required', 'string'],
-            'clockInAt' => ['required', 'string'],
+                'AttendanceBreakEndRequest' => [
+        ],
+        'AttendanceBreakStartRequest' => [
+        ],
+        'AttendanceClockInRequest' => [
         ],
         'AttendanceClockOutRequest' => [
-            'workDate' => ['required', 'string'],
-            'clockOutAt' => ['required', 'string'],
         ],
         'AttendanceIndexRequest' => [
             'from' => ['required', 'string', 'date_format:Y-m-d'],
@@ -56,7 +56,6 @@ final class OpenApiGeneratedRules
             'workDate' => ['required', 'string'],
             'clockInAt' => ['required', 'string'],
             'clockOutAt' => ['sometimes', 'nullable', 'string'],
-            'note' => ['sometimes', 'nullable', 'string', 'max:500'],
         ],
         'AttendanceUpdateRequest' => [
             'clockInAt' => ['sometimes', 'nullable', 'string'],
@@ -114,9 +113,6 @@ final class OpenApiGeneratedRules
             'currentPassword' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
             'newPassword' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
             'newPasswordConfirmation' => ['required', 'string', 'min:8', 'regex:/[A-Za-z]/', 'regex:/\\d/'],
-        ],
-        'DashboardClockRequest' => [
-            'action' => ['required', 'in:in,out,breakStart,breakEnd'],
         ],
         'DashboardRecentRecord' => [
             'date' => ['required', 'string', 'date_format:Y-m-d'],
@@ -205,7 +201,7 @@ final class OpenApiGeneratedRules
             'email' => ['required', 'string', 'email'],
             'department' => ['required', 'string'],
             'role' => ['required', 'string'],
-            'employeeCode' => ['sometimes', 'string'],
+            'employeeCode' => ['required', 'string'],
         ],
         'SettingsResponse' => [
             'profile' => ['required', 'array'],
@@ -213,7 +209,7 @@ final class OpenApiGeneratedRules
             'profile.email' => ['required', 'string', 'email'],
             'profile.department' => ['required', 'string'],
             'profile.role' => ['required', 'string'],
-            'profile.employeeCode' => ['sometimes', 'string'],
+            'profile.employeeCode' => ['required', 'string'],
             'notifications' => ['required', 'array'],
             'notifications.clockInReminder' => ['required', 'boolean'],
             'notifications.leaveReminder' => ['required', 'boolean'],
@@ -288,13 +284,13 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-                'AttendanceClockInRequest' => [
-            'workDate' => 'workDate',
-            'clockInAt' => 'clockInAt',
+                'AttendanceBreakEndRequest' => [
+        ],
+        'AttendanceBreakStartRequest' => [
+        ],
+        'AttendanceClockInRequest' => [
         ],
         'AttendanceClockOutRequest' => [
-            'workDate' => 'workDate',
-            'clockOutAt' => 'clockOutAt',
         ],
         'AttendanceIndexRequest' => [
             'from' => '開始日',
@@ -314,12 +310,11 @@ final class OpenApiGeneratedRules
             'workDate' => 'workDate',
             'clockInAt' => 'clockInAt',
             'clockOutAt' => 'clockOutAt',
-            'note' => '備考',
         ],
         'AttendanceUpdateRequest' => [
             'clockInAt' => 'clockInAt',
             'clockOutAt' => 'clockOutAt',
-            'note' => '備考',
+            'note' => 'note',
         ],
         'CalendarDay' => [
             'date' => '日付',
@@ -329,7 +324,7 @@ final class OpenApiGeneratedRules
             'shift' => '勤務区分',
             'timeRange' => '勤務時間帯',
             'location' => '勤務場所',
-            'note' => '備考',
+            'note' => 'note',
             'isToday' => '今日フラグ',
             'isHoliday' => '休日フラグ',
         ],
@@ -356,7 +351,7 @@ final class OpenApiGeneratedRules
             'days.*.shift' => '勤務区分',
             'days.*.timeRange' => '勤務時間帯',
             'days.*.location' => '勤務場所',
-            'days.*.note' => '備考',
+            'days.*.note' => 'note',
             'days.*.isToday' => '今日フラグ',
             'days.*.isHoliday' => '休日フラグ',
         ],
@@ -372,9 +367,6 @@ final class OpenApiGeneratedRules
             'currentPassword' => 'currentPassword',
             'newPassword' => 'newPassword',
             'newPasswordConfirmation' => 'newPasswordConfirmation',
-        ],
-        'DashboardClockRequest' => [
-            'action' => '打刻アクション',
         ],
         'DashboardRecentRecord' => [
             'date' => '日付',
@@ -463,7 +455,7 @@ final class OpenApiGeneratedRules
             'email' => 'メールアドレス',
             'department' => '部署',
             'role' => '役職',
-            'employeeCode' => '社員番号',
+            'employeeCode' => 'employeeCode',
         ],
         'SettingsResponse' => [
             'profile' => 'profile',
@@ -471,7 +463,7 @@ final class OpenApiGeneratedRules
             'profile.email' => 'メールアドレス',
             'profile.department' => '部署',
             'profile.role' => '役職',
-            'profile.employeeCode' => '社員番号',
+            'profile.employeeCode' => 'employeeCode',
             'notifications' => 'notifications',
             'notifications.clockInReminder' => '打刻忘れ通知',
             'notifications.leaveReminder' => '休暇リマインド通知',

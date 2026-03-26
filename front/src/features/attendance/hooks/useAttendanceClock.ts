@@ -48,10 +48,12 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
         const now = new Date();
         const nowText = formatJapaneseHourMinute(now);
         const label = getClockActionLabel(clockAction);
-        const workDate = todayAttendance?.workDate ?? now.toISOString().slice(0, 10);
 
         const onSuccess = () => {
-            void queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.todayAttendance() });
+
+            // 打刻後は最新の勤怠情報を取得し直す
+            void queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
+
             options?.onActionSuccess?.({ action: clockAction, timeText: nowText });
             sonner.success(`${label}しました (${nowText})`);
         };
@@ -62,31 +64,19 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
 
         switch (clockAction) {
             case 'in': {
-                clockInMutate(
-                    {
-                        clockInAt: now.toISOString(),
-                        workDate: workDate,
-                    },
-                    { onSuccess, onError }
-                );
+                clockInMutate({ options: { onSuccess, onError } });
                 break;
             }
             case 'out': {
-                clockOutMutate(
-                    {
-                        clockOutAt: now.toISOString(),
-                        workDate: workDate,
-                    },
-                    { onSuccess, onError }
-                );
+                clockOutMutate({ options: { onSuccess, onError } });
                 break;
             }
             case 'breakStart': {
-                breakStartMutate(undefined, { onSuccess, onError });
+                breakStartMutate({ options: { onSuccess, onError } });
                 break;
             }
             case 'breakEnd': {
-                breakEndMutate(undefined, { onSuccess, onError });
+                breakEndMutate({ options: { onSuccess, onError } });
                 break;
             }
             default:

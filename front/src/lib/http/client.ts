@@ -1,4 +1,5 @@
 import axios, { type AxiosRequestConfig } from 'axios';
+import { env, isDevelopment } from '@/env';
 import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
@@ -161,7 +162,7 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     // ネットワークエラー
     if (!error.response) {
-      if (import.meta.env.DEV) {
+      if (isDevelopment) {
         console.error('[API ERROR] Network Error', {
           message: error.message,
           config: error.config,
@@ -178,7 +179,7 @@ axiosInstance.interceptors.response.use(
     const { status, data } = error.response;
 
     // 開発環境のみログを出力
-    if (import.meta.env.DEV) {
+    if (isDevelopment) {
       console.error('[API ERROR]', {
         status,
         url: error.config?.url,

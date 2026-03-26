@@ -74,13 +74,13 @@ export namespace components.schemas {
     }),
   });
   /** @description 出勤打刻のHTTPリクエスト */
-  export const AttendanceClockInRequest = z.record(z.any());
+  export const AttendanceClockInRequest = z.record(z.string(), z.any());
   /** @description 退勤打刻のHTTPリクエスト */
-  export const AttendanceClockOutRequest = z.record(z.any());
+  export const AttendanceClockOutRequest = z.record(z.string(), z.any());
   /** @description 休憩開始打刻のHTTPリクエスト */
-  export const AttendanceBreakStartRequest = z.record(z.any());
+  export const AttendanceBreakStartRequest = z.record(z.string(), z.any());
   /** @description 休憩終了打刻のHTTPリクエスト */
-  export const AttendanceBreakEndRequest = z.record(z.any());
+  export const AttendanceBreakEndRequest = z.record(z.string(), z.any());
   /** @description 勤怠の新規作成のHTTPリクエスト */
   export const AttendanceStoreRequest = z.object({
     workDate: z.string(),
@@ -248,7 +248,7 @@ export namespace components.schemas {
   /** @description バリデーションエラー発生時のHTTPレスポンス */
   export const ValidationErrorResponse = z.object({
     message: z.string(),
-    errors: z.record(z.array(z.string())),
+    errors: z.record(z.string(), z.array(z.string())),
   });
   /** @description ページネーション情報。一覧系HTTPレスポンスに必ず付与される。 */
   export const PageInfo = z.object({

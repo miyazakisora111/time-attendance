@@ -35,9 +35,9 @@ final class AttendanceService extends BaseService
      * 本日の勤怠情報を取得する
      *
      * @param User $user ユーザー
-     * @return array<string, mixed>
+     * @return Collection<Attendance>
      */
-    public function getToday(User $user): array
+    public function getToday(User $user): Collection
     {
         return $this->query->today($user);
     }
@@ -217,10 +217,6 @@ final class AttendanceService extends BaseService
     public function update(User $user, Attendance $attendance, array $input): AttendanceData
     {
         return $this->transaction(function () use ($user, $attendance, $input): AttendanceData {
-            if ($attendance->user_id !== $user->id) {
-                throw new DomainException('権限がありません', 'FORBIDDEN');
-            }
-
             $attendance->update(array_filter([
                 'clock_in_at' => $input['clock_in_at'] ?? null,
                 'clock_out_at' => $input['clock_out_at'] ?? null,

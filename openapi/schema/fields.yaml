@@ -1,3 +1,4 @@
+# TODO: これ使うようにしたい。これも整理
 attendance:
   id:
     type: uuid
@@ -19,11 +20,6 @@ attendance:
     label: 出勤時刻
     required: false
     description: 旧互換の出勤時刻
-  clock_out_at:
-    type: time
-    label: 退勤時刻
-    required: false
-    description: 旧互換の退勤時刻
   clock_in_at:
     type: datetime
     label: 出勤日時
@@ -34,21 +30,6 @@ attendance:
     label: 退勤日時
     required: false
     description: タイムゾーン付きの退勤日時
-  clock_in_local_time:
-    type: time
-    label: 出勤時間
-    required: false
-    description: ローカル時刻表示の出勤時間
-  clock_out_local_time:
-    type: time
-    label: 退勤時間
-    required: false
-    description: ローカル時刻表示の退勤時間
-  clock_out_next_day:
-    type: boolean
-    label: 翌日退勤フラグ
-    required: false
-    description: 退勤が翌日に跨るかどうか
   work_timezone:
     type: timezone
     label: 勤務タイムゾーン
@@ -64,11 +45,6 @@ attendance:
     label: 実働分数
     required: false
     description: 計算済み実働分
-  note:
-    type: text
-    label: 備考
-    required: false
-    description: 管理用メモ
   from:
     type: date
     label: 開始日
@@ -138,11 +114,6 @@ user:
     label: パスワード
     required: true
     description: ログインパスワード
-  status:
-    type: integer
-    label: 状態
-    required: true
-    description: 有効/無効ステータス
   roles:
     type: array
     label: ロール一覧
@@ -153,11 +124,6 @@ user:
     label: ユーザー設定
     required: false
     description: ユーザー個別設定
-  employeeCode:
-    type: string
-    label: 社員番号
-    required: false
-    description: 画面表示用の社員番号
 
 user_settings:
   theme:

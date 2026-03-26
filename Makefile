@@ -120,16 +120,16 @@ openapi-clean:
 openapi-enums:
 	node openapi/scripts/generate-php-enums.mjs
 	node openapi/scripts/generate-ts-enums.mjs
+	
+openapi-php-dto: openapi-bundle \
+    openapi-generator-cli generate \
+        -i $(BUNDLE) \
+        -g php \
+        -o $(BACK_DIR)/app/__Generated__/Responses \
+        --global-property=models \
+        --additional-properties=phpVersion=8.2,readonlyProperties=true,modelPropertyNaming=camelCase,enumClassPrefix=true
 
-openapi-enums-check:
-	@echo "=== Checking generated enums are up-to-date ==="
-	@node openapi/scripts/generate-php-enums.mjs
-	@node openapi/scripts/generate-ts-enums.mjs
-	@git diff --exit-code $(BACK_DIR)/app/__Generated__/Enums/ $(FRONT_DIR)/src/__generated__/enums.ts \
-		|| (echo "❌ Generated enums are out of date. Run: make openapi-enums" && exit 1)
-	@echo "✅ Generated enums are up-to-date"
-
-openapi: openapi-enums openapi-zod openapi-client openapi-validators
+openapi: openapi-enums openapi-php-dto openapi-zod openapi-client openapi-validators
 
 dev: openapi
 	$(MAKE) front-dev

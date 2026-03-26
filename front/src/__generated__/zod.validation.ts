@@ -9,28 +9,14 @@ const labels = labelsJson as Record<string, string>;
 const labelOf = (field: string): string => labels[field] ?? field;
 
 export const validationSchemas = {
+  AttendanceBreakEndRequest:
+    generatedComponents.schemas.AttendanceBreakEndRequest,
+  AttendanceBreakStartRequest:
+    generatedComponents.schemas.AttendanceBreakStartRequest,
   AttendanceClockInRequest:
-    generatedComponents.schemas.AttendanceClockInRequest.extend({
-      workDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("workDate")}は必須です。`),
-      clockInAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("clockInAt")}は必須です。`),
-    }),
+    generatedComponents.schemas.AttendanceClockInRequest,
   AttendanceClockOutRequest:
-    generatedComponents.schemas.AttendanceClockOutRequest.extend({
-      workDate: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("workDate")}は必須です。`),
-      clockOutAt: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("clockOutAt")}は必須です。`),
-    }),
+    generatedComponents.schemas.AttendanceClockOutRequest,
   AttendanceIndexRequest:
     generatedComponents.schemas.AttendanceIndexRequest.extend({
       from: z
@@ -73,12 +59,6 @@ export const validationSchemas = {
         .trim()
         .min(1, `${labelOf("clockInAt")}は必須です。`),
       clockOutAt: z.string().trim().nullable().optional(),
-      note: z
-        .string()
-        .trim()
-        .max(500, `${labelOf("note")}は500文字以内で入力してください。`)
-        .nullable()
-        .optional(),
     }),
   AttendanceUpdateRequest:
     generatedComponents.schemas.AttendanceUpdateRequest.extend({
@@ -187,10 +167,6 @@ export const validationSchemas = {
         )
         .regex(/[A-Za-z]/, "パスワードに英字を1文字以上含めてください。")
         .regex(/\d/, "パスワードに数字を1文字以上含めてください。"),
-    }),
-  DashboardClockRequest:
-    generatedComponents.schemas.DashboardClockRequest.extend({
-      action: z.enum(["in", "out", "breakStart", "breakEnd"]),
     }),
   DashboardRecentRecord:
     generatedComponents.schemas.DashboardRecentRecord.extend({
