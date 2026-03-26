@@ -33,9 +33,9 @@ final class AttendanceService extends BaseService
      * 本日の勤怠情報を取得する
      *
      * @param User $user ユーザー
-     * @return Collection<Attendance>
+     * @return ?Attendance
      */
-    public function getToday(User $user): Collection
+    public function getToday(User $user): ?Attendance
     {
         return $this->query->today($user);
     }
@@ -145,8 +145,8 @@ final class AttendanceService extends BaseService
             if (!$latestAttendance) {
                 throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
             }
-            $breakingAttendance = $this->query->findBreakingAttendance($latestAttendance->id);
-            if (!$breakingAttendance) {
+            $latestAttendanceBreak = $this->query->findLatestAttendanceBreak($latestAttendance->id);
+            if (!$latestAttendanceBreak) {
                 throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
             }
             $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
@@ -155,7 +155,7 @@ final class AttendanceService extends BaseService
             // 勤怠休憩テーブルを更新する。
             $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $breakingAttendance->update([
+            $latestAttendanceBreak->update([
                 'break_end' => $now->format('H:i:s'),
             ]);
 

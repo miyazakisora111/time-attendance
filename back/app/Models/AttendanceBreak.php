@@ -62,7 +62,7 @@ class AttendanceBreak extends BaseModel
     /**
      * 終了済み判定
      */
-    public function isFinished(): bool
+    public function isBreakFinished(): bool
     {
         return $this->break_end !== null;
     }

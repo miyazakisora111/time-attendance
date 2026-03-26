@@ -46,7 +46,7 @@ class Attendance extends BaseModel
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
-    
+
     /**
      * ユーザーで絞り込む
      */
@@ -78,6 +78,7 @@ class Attendance extends BaseModel
      */
     public function completedBreaks(): HasMany
     {
+        // TODO:Queryに置こう
         return $this->breaks()
             ->whereNotNull('break_start')
             ->whereNotNull('break_end');

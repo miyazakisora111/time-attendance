@@ -140,7 +140,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE paid_leave_grants ADD CONSTRAINT chk_paid_leave_grants_days_positive CHECK (days > 0)");
 
         DB::statement("CREATE UNIQUE INDEX uq_users_email_active ON users (email) WHERE deleted_at IS NULL");
-        DB::statement("CREATE UNIQUE INDEX uq_attendances_user_work_date_active ON attendances (user_id, work_date) WHERE deleted_at IS NULL");
+        DB::statement("CREATE UNIQUE INDEX ux_attendances_user_active ON attendances (user_id) WHERE clock_out_at IS NULL");
     }
 
     public function down(): void

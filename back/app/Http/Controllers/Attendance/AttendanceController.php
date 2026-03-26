@@ -85,7 +85,8 @@ final class AttendanceController extends BaseController
      */
     public function today(): JsonResponse
     {
-        $result = $this->service->getToday(user: $this->resolveAuthUser());
+        $attendance = $this->service->getToday(user: $this->resolveAuthUser());
+        $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }
 

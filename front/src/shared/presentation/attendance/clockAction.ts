@@ -4,18 +4,30 @@ import type { badgeVariants } from '@/shared/design-system/variants/badge';
 
 type BadgeIntent = NonNullable<VariantProps<typeof badgeVariants>['intent']>;
 
-const clockActionLabelMap: Record<ClockAction, string> = {
-    in: '出勤',
-    out: '退勤',
-    breakStart: '休憩開始',
-    breakEnd: '休憩終了',
+/**
+ * 打刻アクションに対応する次のアクションを返す。
+ */
+export const getNextClockAction = (action: ClockAction): ClockAction => {
+    const map: Record<ClockAction, ClockAction> = {
+        in: 'breakStart',
+        breakStart: 'breakEnd',
+        breakEnd: 'out',
+        out: 'in',
+    };
+    return map[action];
 };
 
 /**
  * 打刻アクションに対応する表示ラベルを返す。
  */
 export const getClockActionLabel = (action: ClockAction): string => {
-    return clockActionLabelMap[action];
+    const map: Record<ClockAction, string> = {
+        in: '出勤',
+        out: '退勤',
+        breakStart: '休憩開始',
+        breakEnd: '休憩終了',
+    };
+    return map[action];
 };
 
 /**

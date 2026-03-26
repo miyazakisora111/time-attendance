@@ -35,8 +35,8 @@ class AttendanceResolver
         }
 
         // 休憩中
-        $breakingAttendance = $this->query->findBreakingAttendance($attendance->id);
-        if ($breakingAttendance !== null) {
+        $latestAttendanceBreak = $this->query->findLatestAttendanceBreak($attendance->id);
+        if ($latestAttendanceBreak && !$latestAttendanceBreak->isBreaking()) {
             return ClockStatus::BREAK;
         }
 

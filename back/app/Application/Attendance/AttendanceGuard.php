@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Attendance;
 
-use App\Models\Attendance;
 use App\Exceptions\DomainException;
 use App\__Generated__\Enums\ClockStatus;
 

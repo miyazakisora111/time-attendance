@@ -19,9 +19,9 @@ final class AttendanceQuery
      * 今日の勤怠を取得する
      * 
      * @param User $user ユーザー
-     * @return Collection<Attendance> 今日の勤怠
+     * @return ?Attendance 今日の勤怠
      */
-    public function today(User $user): Collection
+    public function today(User $user): ?Attendance
     {
         $timezone = $user->timezone ?? config('app.timezone');
         $today = CarbonImmutable::today($timezone)->toDateString();
@@ -69,12 +69,12 @@ final class AttendanceQuery
     }
 
     /**
-     * 休憩中の勤怠を取得する。
+     * 最近の勤怠休憩を取得する。
      * 
      * @param string $attendanceId 勤怠ID
-     * @return ?AttendanceBreak 休憩中の勤怠
+     * @return ?AttendanceBreak 最近の勤怠休憩
      */
-    public function findBreakingAttendance(string $attendanceId): ?AttendanceBreak
+    public function findLatestAttendanceBreak(string $attendanceId): ?AttendanceBreak
     {
         return AttendanceBreak::query()
             ->forAttendance($attendanceId)
