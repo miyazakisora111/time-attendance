@@ -8,10 +8,11 @@ export const toAttendanceView: Mapper<
 > = (src) => {
     return {
         clockStatus: src.clockStatus,
-        totalWorkedMinutes: src.workedMinutes,
-        breakMinutes: src.breakMinutes,
         clockInAt: src.clockInAt,
         clockOutAt: src.clockOutAt,
         workDate: src.workDate,
+        breakMinutes: src.breakMinutes,
+        totalWorkedMinutes: src.workedMinutes,
+        overtimeMinutes: src.overtimeMinutes,
     };
 };

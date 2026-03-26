@@ -44,6 +44,11 @@ export interface AttendanceResponse {
   clockStatus: ClockStatus;
   /** 勤怠レコードID */
   id?: string;
+  /**
+   * 残業時間（分）
+   * @nullable
+   */
+  overtimeMinutes?: number | null;
   /** 対象ユーザーID */
   userId: string;
   /** 勤務日 */

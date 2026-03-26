@@ -77,11 +77,9 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     };
 
     return {
+        ...todayAttendance,
         clockStatus,
         attendanceStatus: clockStatusToAttendanceStatusMap[clockStatus],
-        todayAttendance,
-        totalWorkedMinutes: todayAttendance?.totalWorkedMinutes,
-        breakMinutes: todayAttendance?.breakMinutes,
         isLoading,
         isError,
         isPending: isClockingIn || isClockingOut || isBreakStarting || isBreakEnding,

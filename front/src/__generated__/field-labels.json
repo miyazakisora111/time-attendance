@@ -9,6 +9,7 @@
   "clockOutAt": "clockOutAt",
   "breakMinutes": "breakMinutes",
   "workedMinutes": "workedMinutes",
+  "overtimeMinutes": "overtimeMinutes",
   "note": "note",
   "date": "日付",
   "label": "日付表示",

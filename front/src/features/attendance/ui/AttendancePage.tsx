@@ -50,6 +50,7 @@ export function AttendancePage() {
     isPending,
     totalWorkedMinutes,
     breakMinutes,
+    overtimeMinutes,
     handleAction,
   } = useAttendance();
 
@@ -130,7 +131,7 @@ export function AttendancePage() {
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
               <Typography variant="h3" unstableClassName="flex items-center gap-2">
                 <History size={18} className="text-gray-400" />
-                本日の履歴
+                直近の勤怠
               </Typography>
               <Typography variant="small" intent="muted">
                 直近3件を表示
@@ -188,10 +189,10 @@ export function AttendancePage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <Typography variant="small">
-                    残業予定
+                    残業時間
                   </Typography>
                   <Typography variant="label">
-                    00:00
+                    {formatMinutes(overtimeMinutes)}
                   </Typography>
                 </div>
               </div>

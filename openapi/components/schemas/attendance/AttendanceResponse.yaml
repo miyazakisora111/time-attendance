@@ -40,3 +40,7 @@ AttendanceResponse:
       type: integer
       nullable: true
       description: 実働時間（分）
+    overtimeMinutes:
+      type: integer
+      nullable: true
+      description: 残業時間（分）

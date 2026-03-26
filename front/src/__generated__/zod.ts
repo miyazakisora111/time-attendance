@@ -103,6 +103,7 @@ export namespace components.schemas {
     clockOutAt: z.string().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),
+    overtimeMinutes: z.number().int().nullable().optional(),
   });
   /** @description 勤怠レコード取得のHTTPリクエスト */
   export const AttendanceIndexRequest = z.object({

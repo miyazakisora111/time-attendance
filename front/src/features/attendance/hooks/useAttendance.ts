@@ -8,16 +8,7 @@ import { type LastAction } from '@/features/attendance/ui/types';
  */
 export const useAttendance = () => {
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
-  const {
-    clockStatus,
-    attendanceStatus,
-    totalWorkedMinutes,
-    breakMinutes,
-    isLoading,
-    isError,
-    isPending,
-    handleAction,
-  } = useAttendanceClock({
+  const attendance = useAttendanceClock({
     onActionSuccess: ({ action, timeText }) => {
       setLastAction({ clockAction: action, time: timeText });
     },
@@ -30,14 +21,7 @@ export const useAttendance = () => {
   );
 
   return {
-    clockStatus,
-    attendanceStatus,
+    ...attendance,
     lastAction: lastActionView,
-    isLoading,
-    isError,
-    isPending,
-    totalWorkedMinutes,
-    breakMinutes,
-    handleAction,
   };
 };

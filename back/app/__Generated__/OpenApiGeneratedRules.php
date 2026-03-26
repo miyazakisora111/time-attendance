@@ -51,6 +51,7 @@ final class OpenApiGeneratedRules
             'clockOutAt' => ['sometimes', 'nullable', 'string'],
             'breakMinutes' => ['sometimes', 'nullable', 'integer'],
             'workedMinutes' => ['sometimes', 'nullable', 'integer'],
+            'overtimeMinutes' => ['sometimes', 'nullable', 'integer'],
         ],
         'AttendanceStoreRequest' => [
             'workDate' => ['required', 'string'],
@@ -305,6 +306,7 @@ final class OpenApiGeneratedRules
             'clockOutAt' => 'clockOutAt',
             'breakMinutes' => 'breakMinutes',
             'workedMinutes' => 'workedMinutes',
+            'overtimeMinutes' => 'overtimeMinutes',
         ],
         'AttendanceStoreRequest' => [
             'workDate' => 'workDate',

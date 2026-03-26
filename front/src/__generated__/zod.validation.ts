@@ -47,6 +47,7 @@ export const validationSchemas = {
     clockOutAt: z.string().trim().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),
+    overtimeMinutes: z.number().int().nullable().optional(),
   }),
   AttendanceStoreRequest:
     generatedComponents.schemas.AttendanceStoreRequest.extend({

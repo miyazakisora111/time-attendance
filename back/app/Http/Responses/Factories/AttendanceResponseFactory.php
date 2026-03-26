@@ -45,6 +45,7 @@ class AttendanceResponseFactory
             clockOutAt: $attendance->clock_out_at?->toDateTimeString(),
             breakMinutes: $totalBreakMinutes,
             workedMinutes: $workedMinutes,
+            overtimeMinutes: max(0, $workedMinutes - config('attendance.standard_work_minutes')),
         );
     }
 }

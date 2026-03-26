@@ -23,5 +23,6 @@ final readonly class AttendanceResponse
         public ?string $clockOutAt = null,
         public ?int $breakMinutes = null,
         public ?int $workedMinutes = null,
+        public ?int $overtimeMinutes = null,
     ) {}
 }
