@@ -8,6 +8,7 @@ use App\Traits\Timezone;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Carbon\CarbonImmutable;
 
 /** 
@@ -47,6 +48,50 @@ class Attendance extends BaseModel
     ];
 
     /**
+     * 勤怠で絞り込む
+     */
+    public function scopeForAttendance(Builder $query, string $attendanceId): Builder
+    {
+        return $query->where('attendance_id', $attendanceId);
+    }
+
+    /**
+     * ユーザーで絞り込む
+     */
+    public function scopeForUser(Builder $query, string $userId): Builder
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    /**
+     * 勤務日で絞り込む
+     */
+    public function scopeWorkDate(Builder $query, string $date): Builder
+    {
+        return $query->where('work_date', $date);
+    }
+
+    /**
+     * 年月で絞り込む
+     */
+    public function scopeMonth(Builder $query, int $year, int $month): Builder
+    {
+        return $query
+            ->whereYear('work_date', $year)
+            ->whereMonth('work_date', $month);
+    }
+
+    /**
+     * 休憩完了の勤怠休憩を取得する。
+     */
+    public function completedBreaks(): HasMany
+    {
+        return $this->breaks()
+            ->whereNotNull('break_start')
+            ->whereNotNull('break_end');
+    }
+
+    /**
      * 勤怠に紐づくユーザー
      */
     public function user(): BelongsTo
@@ -79,9 +124,7 @@ class Attendance extends BaseModel
     }
 
     /**
-     * 勤務時間（分）を算出する。
-     *
-     * @return int 勤務時間（分）
+     * 勤務時間（分）を算出する
      */
     public function workMinutes(): int
     {
@@ -102,13 +145,13 @@ class Attendance extends BaseModel
     }
 
     /**
-     * 分数を時間に変換する。
-     *
-     * @param int $minutes 分数
-     * @return float 時間（小数点1桁）
+     * 合計休憩時間（分）を算出する
      */
-    public function minutesToHours(int $minutes): float
+    public function totalBreakMinutes(): int
     {
-        return round($minutes / 60, 1);
+        $this->loadMissing('completedBreaks');
+
+        return $this->completedBreaks
+            ->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
     }
 }

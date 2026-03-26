@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Ramsey\Collection\Collection;
 
 /** 
  * 勤怠休憩のモデル 
@@ -68,8 +69,6 @@ class AttendanceBreak extends BaseModel
 
     /**
      * 休憩の長さ（分）を返す
-     * 
-     * @return int 休憩の長さ（分）
      */
     public function breakMinutes(): int
     {
@@ -83,11 +82,11 @@ class AttendanceBreak extends BaseModel
     /**
      * 合計休憩の長さ（分）を返す
      * 
-     * @param array $attendanceBreaks 勤怠休憩の配列
+     * @param Collection<AttendanceBreak> $attendanceBreaks 勤怠休憩のコレクション
      * @return int 合計休憩の長さ（分）
      */
-    public function totalBreakMinutes(array $attendanceBreaks): int
+    public static function totalBreakMinutes(Collection $attendanceBreaks): int
     {
-        return collect($attendanceBreaks)->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
+        return $attendanceBreaks->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
     }
 }

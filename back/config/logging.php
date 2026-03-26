@@ -33,7 +33,7 @@ return [
 
         'daily' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/laravel.log'),
+            'path' => storage_path('logs/error/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
             'days' => 14,
             'replace_placeholders' => true,
@@ -41,7 +41,7 @@ return [
 
         'api' => [
             'driver' => 'daily',
-            'path' => storage_path('logs/api.log'),
+            'path' => storage_path('logs/api/api.log'),
             'level' => env('LOG_LEVEL', 'info'),
             'days' => 14,
             'replace_placeholders' => true,

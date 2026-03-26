@@ -24,7 +24,7 @@ final class DashboardService extends BaseService
     public function getDashboard(User $user): array
     {
         $todayAttendance = Attendance::query()
-            ->user($user->id)
+            ->forUser($user->id)
             ->workDate(today()->toDateString())
             ->first();
 
@@ -46,13 +46,13 @@ final class DashboardService extends BaseService
         $prevMonth = $currentMonth->copy()->subMonth();
 
         $currentAttendances = Attendance::query()
-            ->user($user->id)
+            ->forUser($user->id)
             ->month($currentMonth->year, $currentMonth->month)
             ->orderByDesc('work_date')
             ->get();
 
         $prevAttendances = Attendance::query()
-            ->user($user->id)
+            ->forUser($user->id)
             ->month($prevMonth->year, $prevMonth->month)
             ->get();
 
@@ -85,7 +85,7 @@ final class DashboardService extends BaseService
     private function buildRecentRecords(User $user): array
     {
         return Attendance::query()
-            ->user($user->id)
+            ->forUser($user->id)
             ->orderByDesc('work_date')
             ->limit(6)
             ->get()

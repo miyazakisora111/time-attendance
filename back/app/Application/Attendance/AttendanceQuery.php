@@ -27,8 +27,8 @@ final class AttendanceQuery
         $today = CarbonImmutable::today($timezone)->toDateString();
 
         $attendance = Attendance::query()
-            ->where('user_id', $user->id)
-            ->where('work_date', $today)
+            ->forUser($user->id)
+            ->workDate($today)
             ->latest('clock_in_at')
             ->first();
 
@@ -51,7 +51,7 @@ final class AttendanceQuery
     public function list(User $user, string $from, string $to): array
     {
         return Attendance::query()
-            ->where('user_id', $user->id)
+            ->forUser($user->id)
             ->whereBetween('work_date', [$from, $to])
             ->orderBy('work_date')
             ->orderBy('clock_in_at')
@@ -70,7 +70,7 @@ final class AttendanceQuery
     public function findLatestAttendance(User $user): ?Attendance
     {
         return Attendance::query()
-            ->where('user_id', $user->id)
+            ->forUser($user->id)
             ->latest('clock_in_at')
             ->first();
     }
@@ -84,7 +84,7 @@ final class AttendanceQuery
     public function findBreakingAttendance(string $attendanceId): ?AttendanceBreak
     {
         return AttendanceBreak::query()
-            ->where('attendance_id', $attendanceId)
+            ->forAttendance($attendanceId)
             ->whereNotNull('break_start')
             ->whereNull('break_end')
             ->latest('break_start')
