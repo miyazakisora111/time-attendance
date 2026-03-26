@@ -121,9 +121,9 @@ openapi-enums:
 	node openapi/scripts/generate-php-enums.mjs
 	node openapi/scripts/generate-ts-enums.mjs
 	
-openapi-php-dto: openapi-bundle \
-    openapi-generator-cli generate \
-        -i $(BUNDLE) \
+openapi-php-dto: openapi-bundle
+    npx @openapitools/openapi-generator-cli generate \
+    	-i $(BUNDLE) \
         -g php \
         -o $(BACK_DIR)/app/__Generated__/Responses \
         --global-property=models \
