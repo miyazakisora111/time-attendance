@@ -19,6 +19,20 @@ AttendanceClockOutBody:
       schema:
         $ref: "./schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
 
+AttendanceBreakStartBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceBreakStartRequest.yaml#/AttendanceBreakStartRequest"
+
+AttendanceBreakEndBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "./schemas/attendance/AttendanceBreakEndRequest.yaml#/AttendanceBreakEndRequest"
+
 AttendanceStoreBody:
   required: true
   content:

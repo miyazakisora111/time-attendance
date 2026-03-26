@@ -23,33 +23,33 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 import type { ClockStatus } from "./clockStatus";
 
 /**
- * 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。
+ * 勤怠レコードの表示用のHTTPレスポンス
  */
 export interface AttendanceResponse {
   /**
-   * 休憩合計（分）。AttendanceBreak から再計算される。
+   * 休憩合計（分）
    * @nullable
    */
   breakMinutes?: number | null;
   /**
-   * 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
+   * 出勤日時
    * @nullable
    */
   clockInAt: string | null;
   /**
-   * 退勤日時（ISO 8601）。未退勤の場合は null。
+   * 退勤日時
    * @nullable
    */
   clockOutAt?: string | null;
   clockStatus: ClockStatus;
-  /** 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。 */
+  /** 勤怠レコードID */
   id?: string;
-  /** 対象ユーザー ID。 */
+  /** 対象ユーザーID */
   userId: string;
-  /** 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。 */
+  /** 勤務日 */
   workDate: string;
   /**
-   * 実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。
+   * 実働時間（分）
    * @nullable
    */
   workedMinutes?: number | null;

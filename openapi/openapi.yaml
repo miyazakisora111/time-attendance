@@ -76,14 +76,16 @@ paths:
     $ref: "./paths/attendance.yaml#/clockIn"
   /attendances/clock-out:
     $ref: "./paths/attendance.yaml#/clockOut"
+  /attendances/break-start:
+    $ref: "./paths/attendance.yaml#/breakStart"
+  /attendances/break-end:
+    $ref: "./paths/attendance.yaml#/breakEnd"
   /attendances:
     $ref: "./paths/attendance.yaml#/attendances"
   /attendances/{attendanceId}:
     $ref: "./paths/attendance.yaml#/attendanceUpdate"
   /dashboard:
     $ref: "./paths/dashboard.yaml#/dashboard"
-  /dashboard/clock:
-    $ref: "./paths/dashboard.yaml#/dashboardClock"
   /schedule/calendar:
     $ref: "./paths/schedule.yaml#/calendar"
   /team/members:
@@ -130,6 +132,10 @@ components:
       $ref: "./components/schemas/attendance/AttendanceClockInRequest.yaml#/AttendanceClockInRequest"
     AttendanceClockOutRequest:
       $ref: "./components/schemas/attendance/AttendanceClockOutRequest.yaml#/AttendanceClockOutRequest"
+    AttendanceBreakStartRequest:
+      $ref: "./components/schemas/attendance/AttendanceBreakStartRequest.yaml#/AttendanceBreakStartRequest"
+    AttendanceBreakEndRequest:
+      $ref: "./components/schemas/attendance/AttendanceBreakEndRequest.yaml#/AttendanceBreakEndRequest"
     AttendanceStoreRequest:
       $ref: "./components/schemas/attendance/AttendanceStoreRequest.yaml#/AttendanceStoreRequest"
     AttendanceUpdateRequest:

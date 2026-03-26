@@ -22,9 +22,12 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 import type { ValidationErrorResponseErrors } from "./validationErrorResponseErrors";
 
+/**
+ * バリデーションエラー発生時のHTTPレスポンス
+ */
 export interface ValidationErrorResponse {
-  /** フィールド名 → エラーメッセージ配列のマップ。 */
+  /** フィールド名 → エラーメッセージ配列のマップ */
   errors: ValidationErrorResponseErrors;
-  /** バリデーションエラーの総括メッセージ。 */
+  /** バリデーションエラーの総括メッセージ */
   message: string;
 }

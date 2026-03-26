@@ -22,6 +22,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 /**
- * フィールド名 → エラーメッセージ配列のマップ。
+ * フィールド名 → エラーメッセージ配列のマップ
  */
 export type ValidationErrorResponseErrors = { [key: string]: string[] };

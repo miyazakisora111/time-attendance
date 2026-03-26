@@ -21,7 +21,10 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
+/**
+ * ログイン成功のHTTPレスポンス
+ */
 export interface LoginResponse {
-  /** JWT access token。Authorization ヘッダーに Bearer <token> として送信する。 */
+  /** JWT access token */
   token: string;
 }

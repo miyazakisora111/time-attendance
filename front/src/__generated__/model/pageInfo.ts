@@ -26,22 +26,22 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 export interface PageInfo {
   /**
-   * 現在のページ番号（1始まり）。
+   * 現在のページ番号（1始まり）
    * @minimum 1
    */
   currentPage: number;
   /**
-   * 1ページあたりの件数。クエリパラメータ perPage で指定可能。
+   * 1ページあたりの件数
    * @minimum 1
    */
   perPage: number;
   /**
-   * フィルター条件に合致する全件数。
+   * フィルター条件に合致する全件数
    * @minimum 0
    */
   totalItems: number;
   /**
-   * 全ページ数（ceil(totalItems / perPage)）。
+   * 全ページ数（ceil(totalItems / perPage)）
    * @minimum 0
    */
   totalPages: number;

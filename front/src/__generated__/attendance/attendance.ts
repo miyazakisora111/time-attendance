@@ -21,6 +21,8 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 import type {
+  AttendanceBreakEndBodyBody,
+  AttendanceBreakStartBodyBody,
   AttendanceClockInBodyBody,
   AttendanceClockOutBodyBody,
   AttendanceResponse,
@@ -43,7 +45,7 @@ export const getAttendance = () => {
     });
   };
   /**
-   * 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+   * 当日の出勤打刻を行う。
    * @summary 出勤打刻
    */
   const createClockIn = (
@@ -57,7 +59,7 @@ export const getAttendance = () => {
     });
   };
   /**
-   * 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+   * 当日の退勤打刻を行う。
    * @summary 退勤打刻
    */
   const createClockOut = (
@@ -68,6 +70,40 @@ export const getAttendance = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       data: attendanceClockOutBodyBody,
+    });
+  };
+  /**
+ * 勤務中のユーザーが休憩を開始する。
+サーバー側で現在時刻を休憩開始時刻として記録する。
+Request Body は空オブジェクト `{}` を送信する。
+
+ * @summary 休憩開始打刻
+ */
+  const createBreakStart = (
+    attendanceBreakStartBodyBody: AttendanceBreakStartBodyBody,
+  ) => {
+    return customInstance<AttendanceResponse>({
+      url: `/attendances/break-start`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: attendanceBreakStartBodyBody,
+    });
+  };
+  /**
+ * 休憩中のユーザーが休憩を終了する。
+サーバー側で現在時刻を休憩終了時刻として記録する。
+Request Body は空オブジェクト `{}` を送信する。
+
+ * @summary 休憩終了打刻
+ */
+  const createBreakEnd = (
+    attendanceBreakEndBodyBody: AttendanceBreakEndBodyBody,
+  ) => {
+    return customInstance<AttendanceResponse>({
+      url: `/attendances/break-end`,
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      data: attendanceBreakEndBodyBody,
     });
   };
   /**
@@ -82,7 +118,7 @@ export const getAttendance = () => {
     });
   };
   /**
-   * 手動で勤怠レコードを新規作成する。
+   * 勤怠レコードを新規作成する。
    * @summary 勤怠の新規登録
    */
   const createAttendance = (
@@ -96,7 +132,7 @@ export const getAttendance = () => {
     });
   };
   /**
-   * 既存の勤怠レコードを部分更新する。
+   * 勤怠レコードを更新する。
    * @summary 勤怠の更新
    */
   const updateAttendance = (
@@ -114,6 +150,8 @@ export const getAttendance = () => {
     getTodayAttendance,
     createClockIn,
     createClockOut,
+    createBreakStart,
+    createBreakEnd,
     listAttendances,
     createAttendance,
     updateAttendance,
@@ -132,6 +170,12 @@ export type CreateClockInResult = NonNullable<
 >;
 export type CreateClockOutResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockOut"]>>
+>;
+export type CreateBreakStartResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createBreakStart"]>>
+>;
+export type CreateBreakEndResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createBreakEnd"]>>
 >;
 export type ListAttendancesResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["listAttendances"]>>

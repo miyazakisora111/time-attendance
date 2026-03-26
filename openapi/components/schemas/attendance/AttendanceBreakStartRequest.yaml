@@ -1,0 +1,4 @@
+AttendanceBreakStartRequest:
+  type: object
+  description: 休憩開始打刻のHTTPリクエスト
+  additionalProperties: false

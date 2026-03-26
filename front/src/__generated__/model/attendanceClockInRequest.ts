@@ -21,9 +21,9 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
+/**
+ * 出勤打刻のHTTPリクエスト
+ */
 export interface AttendanceClockInRequest {
-  /** 出勤日時（ISO 8601） */
-  clockInAt: string;
-  /** 勤務日（YYYY-MM-DD） */
-  workDate: string;
+  [key: string]: unknown;
 }

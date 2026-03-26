@@ -47,10 +47,12 @@ export namespace components.schemas {
    * @enum {string}
    */
   export const UserStatus = z.enum(["active", "inactive"]);
+  /** @description ログインのHTTPリクエスト */
   export const LoginRequest = z.object({
     email: z.string(),
     password: z.string(),
   });
+  /** @description ログイン成功のHTTPレスポンス */
   export const LoginResponse = z.object({
     token: z.string(),
   });
@@ -71,26 +73,27 @@ export namespace components.schemas {
       }).nullable().optional(),
     }),
   });
-  export const AttendanceClockInRequest = z.object({
-    workDate: z.string(),
-    clockInAt: z.string(),
-  });
-  export const AttendanceClockOutRequest = z.object({
-    workDate: z.string(),
-    clockOutAt: z.string(),
-  });
+  /** @description 出勤打刻のHTTPリクエスト */
+  export const AttendanceClockInRequest = z.record(z.any());
+  /** @description 退勤打刻のHTTPリクエスト */
+  export const AttendanceClockOutRequest = z.record(z.any());
+  /** @description 休憩開始打刻のHTTPリクエスト */
+  export const AttendanceBreakStartRequest = z.record(z.any());
+  /** @description 休憩終了打刻のHTTPリクエスト */
+  export const AttendanceBreakEndRequest = z.record(z.any());
+  /** @description 勤怠の新規作成のHTTPリクエスト */
   export const AttendanceStoreRequest = z.object({
     workDate: z.string(),
     clockInAt: z.string(),
     clockOutAt: z.string().nullable().optional(),
-    note: z.string().nullable().optional(),
   });
+  /** @description 勤怠レコード更新のHTTPリクエスト */
   export const AttendanceUpdateRequest = z.object({
     clockInAt: z.string().nullable().optional(),
     clockOutAt: z.string().nullable().optional(),
     note: z.string().nullable().optional(),
   });
-  /** @description 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。 */
+  /** @description 勤怠レコードの表示用のHTTPレスポンス */
   export const AttendanceResponse = z.object({
     id: z.string().optional(),
     userId: z.string(),
@@ -101,12 +104,10 @@ export namespace components.schemas {
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),
   });
+  /** @description 勤怠レコード取得のHTTPリクエスト */
   export const AttendanceIndexRequest = z.object({
     from: z.string(),
     to: z.string(),
-  });
-  export const DashboardClockRequest = z.object({
-    action: components["schemas"]["ClockAction"],
   });
   export const DashboardResponse = z.object({
     user: components["schemas"]["DashboardUser"],
@@ -240,9 +241,11 @@ export namespace components.schemas {
     clockInTime: z.string().nullable().optional(),
     email: z.string(),
   });
+  /** @description エラー発生時のHTTPレスポンス */
   export const ErrorResponse = z.object({
     message: z.string(),
   });
+  /** @description バリデーションエラー発生時のHTTPレスポンス */
   export const ValidationErrorResponse = z.object({
     message: z.string(),
     errors: z.record(z.array(z.string())),
@@ -325,6 +328,16 @@ export namespace components.requestBodies {
       "application/json": components["schemas"]["AttendanceClockOutRequest"],
     },
   };
+  export const AttendanceBreakStartBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceBreakStartRequest"],
+    },
+  };
+  export const AttendanceBreakEndBody = {
+    content: {
+      "application/json": components["schemas"]["AttendanceBreakEndRequest"],
+    },
+  };
   export const AttendanceStoreBody = {
     content: {
       "application/json": components["schemas"]["AttendanceStoreRequest"],
@@ -333,11 +346,6 @@ export namespace components.requestBodies {
   export const AttendanceUpdateBody = {
     content: {
       "application/json": components["schemas"]["AttendanceUpdateRequest"],
-    },
-  };
-  export const DashboardClockBody = {
-    content: {
-      "application/json": components["schemas"]["DashboardClockRequest"],
     },
   };
   export const SettingsUpdateBody = {
@@ -423,7 +431,7 @@ export const operations = {
   createClockIn: {
     /**
      * 出勤打刻 
-     * @description 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+     * @description 当日の出勤打刻を行う。
      */
     requestBody: components["requestBodies"]["AttendanceClockInBody"],
     responses: {
@@ -442,11 +450,53 @@ export const operations = {
   createClockOut: {
     /**
      * 退勤打刻 
-     * @description 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+     * @description 当日の退勤打刻を行う。
      */
     requestBody: components["requestBodies"]["AttendanceClockOutBody"],
     responses: {
       /** @description 退勤成功 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AttendanceResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      409: components["responses"]["Conflict"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  createBreakStart: {
+    /**
+     * 休憩開始打刻 
+     * @description 勤務中のユーザーが休憩を開始する。
+     * サーバー側で現在時刻を休憩開始時刻として記録する。
+     * Request Body は空オブジェクト `{}` を送信する。
+     */
+    requestBody: components["requestBodies"]["AttendanceBreakStartBody"],
+    responses: {
+      /** @description 休憩開始成功 */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AttendanceResponse"],
+        },
+      },
+      401: components["responses"]["Unauthorized"],
+      409: components["responses"]["Conflict"],
+      422: components["responses"]["ValidationError"],
+      500: components["responses"]["InternalServerError"],
+    },
+  },
+  createBreakEnd: {
+    /**
+     * 休憩終了打刻 
+     * @description 休憩中のユーザーが休憩を終了する。
+     * サーバー側で現在時刻を休憩終了時刻として記録する。
+     * Request Body は空オブジェクト `{}` を送信する。
+     */
+    requestBody: components["requestBodies"]["AttendanceBreakEndBody"],
+    responses: {
+      /** @description 休憩終了成功 */
       200: {
         content: {
           "application/json": components["schemas"]["AttendanceResponse"],
@@ -481,7 +531,7 @@ export const operations = {
   createAttendance: {
     /**
      * 勤怠の新規登録 
-     * @description 手動で勤怠レコードを新規作成する。
+     * @description 勤怠レコードを新規作成する。
      */
     requestBody: components["requestBodies"]["AttendanceStoreBody"],
     responses: {
@@ -499,7 +549,7 @@ export const operations = {
   updateAttendance: {
     /**
      * 勤怠の更新 
-     * @description 既存の勤怠レコードを部分更新する。
+     * @description 勤怠レコードを更新する。
      */
     requestBody: components["requestBodies"]["AttendanceUpdateBody"],
     responses: {
@@ -528,25 +578,6 @@ export const operations = {
         },
       },
       401: components["responses"]["Unauthorized"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createDashboardClock: {
-    /**
-     * 打刻アクション（出勤・退勤・休憩開始・休憩終了） 
-     * @description ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
-     */
-    requestBody: components["requestBodies"]["DashboardClockBody"],
-    responses: {
-      /** @description 打刻成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["DashboardResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      409: components["responses"]["Conflict"],
-      422: components["responses"]["ValidationError"],
       500: components["responses"]["InternalServerError"],
     },
   },
@@ -688,16 +719,34 @@ export const paths = {
   "/attendances/clock-in": {
     /**
      * 出勤打刻 
-     * @description 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+     * @description 当日の出勤打刻を行う。
      */
     post: operations["createClockIn"],
   },
   "/attendances/clock-out": {
     /**
      * 退勤打刻 
-     * @description 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+     * @description 当日の退勤打刻を行う。
      */
     post: operations["createClockOut"],
+  },
+  "/attendances/break-start": {
+    /**
+     * 休憩開始打刻 
+     * @description 勤務中のユーザーが休憩を開始する。
+     * サーバー側で現在時刻を休憩開始時刻として記録する。
+     * Request Body は空オブジェクト `{}` を送信する。
+     */
+    post: operations["createBreakStart"],
+  },
+  "/attendances/break-end": {
+    /**
+     * 休憩終了打刻 
+     * @description 休憩中のユーザーが休憩を終了する。
+     * サーバー側で現在時刻を休憩終了時刻として記録する。
+     * Request Body は空オブジェクト `{}` を送信する。
+     */
+    post: operations["createBreakEnd"],
   },
   "/attendances": {
     /**
@@ -707,14 +756,14 @@ export const paths = {
     get: operations["listAttendances"],
     /**
      * 勤怠の新規登録 
-     * @description 手動で勤怠レコードを新規作成する。
+     * @description 勤怠レコードを新規作成する。
      */
     post: operations["createAttendance"],
   },
   "/attendances/{attendanceId}": {
     /**
      * 勤怠の更新 
-     * @description 既存の勤怠レコードを部分更新する。
+     * @description 勤怠レコードを更新する。
      */
     patch: operations["updateAttendance"],
   },
@@ -724,13 +773,6 @@ export const paths = {
      * @description 当月の勤怠統計・今日の勤怠・直近の勤怠記録をまとめて返す。
      */
     get: operations["getDashboard"],
-  },
-  "/dashboard/clock": {
-    /**
-     * 打刻アクション（出勤・退勤・休憩開始・休憩終了） 
-     * @description ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
-     */
-    post: operations["createDashboardClock"],
   },
   "/schedule/calendar": {
     /**

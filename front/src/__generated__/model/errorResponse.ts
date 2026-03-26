@@ -21,7 +21,10 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
+/**
+ * エラー発生時のHTTPレスポンス
+ */
 export interface ErrorResponse {
-  /** ユーザー向けエラーメッセージ。日本語で返される。 */
+  /** ユーザー向けエラーメッセージ */
   message: string;
 }

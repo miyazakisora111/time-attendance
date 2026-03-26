@@ -21,9 +21,9 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 import type {
-  PasswordChangeBodyBody,
   ListLoginHistories200,
   ListLoginHistoriesParams,
+  PasswordChangeBodyBody,
   SettingsResponse,
   SettingsUpdateBodyBody,
 } from ".././model";
@@ -44,24 +44,24 @@ export const getSettings = () => {
    * プロフィール・通知・テーマ・言語設定を更新する。
    * @summary ユーザー設定更新
    */
-  const updateSettings = (SettingsUpdateBodyBody: SettingsUpdateBodyBody) => {
+  const updateSettings = (settingsUpdateBodyBody: SettingsUpdateBodyBody) => {
     return customInstance<SettingsResponse>({
       url: `/settings`,
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      data: SettingsUpdateBodyBody,
+      data: settingsUpdateBodyBody,
     });
   };
   /**
    * 現在のパスワードを検証し、新しいパスワードに変更する。
    * @summary パスワード変更
    */
-  const updatePassword = (PasswordChangeBodyBody: PasswordChangeBodyBody) => {
+  const updatePassword = (passwordChangeBodyBody: PasswordChangeBodyBody) => {
     return customInstance<SettingsResponse>({
       url: `/settings/password`,
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      data: PasswordChangeBodyBody,
+      data: passwordChangeBodyBody,
     });
   };
   /**

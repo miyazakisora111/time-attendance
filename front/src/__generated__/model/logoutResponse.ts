@@ -25,5 +25,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * ログアウト成功HTTPレスポンス
  */
 export interface LogoutResponse {
+  /** JWT access tokenを無効化した後のレスポンスメッセージ */
   message?: string;
 }

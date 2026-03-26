@@ -22,7 +22,9 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 import type { ClockAction } from "./clockAction";
 
+/**
+ * ダッシュボード打刻のHTTPリクエスト
+ */
 export interface DashboardClockRequest {
-  /** 打刻アクション種別 */
   action: ClockAction;
 }

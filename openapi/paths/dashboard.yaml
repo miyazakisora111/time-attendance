@@ -16,28 +16,3 @@ dashboard:
         $ref: "../components/responses.yaml#/Unauthorized"
       "500":
         $ref: "../components/responses.yaml#/InternalServerError"
-
-dashboardClock:
-  post:
-    operationId: createDashboardClock
-    tags:
-      - Dashboard
-    summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
-    description: ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
-    requestBody:
-      $ref: "../components/requestBodies.yaml#/DashboardClockBody"
-    responses:
-      "200":
-        description: 打刻成功
-        content:
-          application/json:
-            schema:
-              $ref: "../components/schemas/dashboard/DashboardResponse.yaml#/DashboardResponse"
-      "401":
-        $ref: "../components/responses.yaml#/Unauthorized"
-      "409":
-        $ref: "../components/responses.yaml#/Conflict"
-      "422":
-        $ref: "../components/responses.yaml#/ValidationError"
-      "500":
-        $ref: "../components/responses.yaml#/InternalServerError"

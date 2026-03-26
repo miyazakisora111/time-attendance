@@ -148,7 +148,7 @@ paths:
       tags:
         - Attendance
       summary: 出勤打刻
-      description: 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+      description: 当日の出勤打刻を行う。
       requestBody:
         $ref: '#/components/requestBodies/AttendanceClockInBody'
       responses:
@@ -172,12 +172,66 @@ paths:
       tags:
         - Attendance
       summary: 退勤打刻
-      description: 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+      description: 当日の退勤打刻を行う。
       requestBody:
         $ref: '#/components/requestBodies/AttendanceClockOutBody'
       responses:
         '200':
           description: 退勤成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/break-start:
+    post:
+      operationId: createBreakStart
+      tags:
+        - Attendance
+      summary: 休憩開始打刻
+      description: |
+        勤務中のユーザーが休憩を開始する。
+        サーバー側で現在時刻を休憩開始時刻として記録する。
+        Request Body は空オブジェクト `{}` を送信する。
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceBreakStartBody'
+      responses:
+        '200':
+          description: 休憩開始成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /attendances/break-end:
+    post:
+      operationId: createBreakEnd
+      tags:
+        - Attendance
+      summary: 休憩終了打刻
+      description: |
+        休憩中のユーザーが休憩を終了する。
+        サーバー側で現在時刻を休憩終了時刻として記録する。
+        Request Body は空オブジェクト `{}` を送信する。
+      requestBody:
+        $ref: '#/components/requestBodies/AttendanceBreakEndBody'
+      responses:
+        '200':
+          description: 休憩終了成功
           content:
             application/json:
               schema:
@@ -230,7 +284,7 @@ paths:
       tags:
         - Attendance
       summary: 勤怠の新規登録
-      description: 手動で勤怠レコードを新規作成する。
+      description: 勤怠レコードを新規作成する。
       requestBody:
         $ref: '#/components/requestBodies/AttendanceStoreBody'
       responses:
@@ -252,7 +306,7 @@ paths:
       tags:
         - Attendance
       summary: 勤怠の更新
-      description: 既存の勤怠レコードを部分更新する。
+      description: 勤怠レコードを更新する。
       parameters:
         - $ref: '#/components/parameters/PathAttendanceId'
       requestBody:
@@ -288,30 +342,6 @@ paths:
                 $ref: '#/components/schemas/DashboardResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-  /dashboard/clock:
-    post:
-      operationId: createDashboardClock
-      tags:
-        - Dashboard
-      summary: 打刻アクション（出勤・退勤・休憩開始・休憩終了）
-      description: ダッシュボードからの打刻操作を実行し、更新後のダッシュボード情報を返す。
-      requestBody:
-        $ref: '#/components/requestBodies/DashboardClockBody'
-      responses:
-        '200':
-          description: 打刻成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DashboardResponse'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '422':
-          $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /schedule/calendar:
@@ -507,6 +537,7 @@ components:
         - inactive
     LoginRequest:
       type: object
+      description: ログインのHTTPリクエスト
       required:
         - email
         - password
@@ -523,15 +554,16 @@ components:
           minLength: 8
           maxLength: 255
           pattern: ^(?=.*[A-Za-z])(?=.*\d).+$
-          description: パスワード（英字+数字の混合必須）
+          description: パスワード
     LoginResponse:
       type: object
+      description: ログイン成功のHTTPレスポンス
       required:
         - token
       properties:
         token:
           type: string
-          description: JWT access token。Authorization ヘッダーに Bearer <token> として送信する。
+          description: JWT access token
     LogoutResponse:
       type: object
       description: ログアウト成功HTTPレスポンス
@@ -539,6 +571,7 @@ components:
         message:
           type: string
           example: Logged out successfully
+          description: JWT access tokenを無効化した後のレスポンスメッセージ
     UserResponse:
       type: object
       description: ユーザー情報
@@ -590,34 +623,23 @@ components:
                 language: ja
     AttendanceClockInRequest:
       type: object
-      required:
-        - workDate
-        - clockInAt
-      properties:
-        workDate:
-          type: string
-          format: date
-          description: 勤務日（YYYY-MM-DD）
-        clockInAt:
-          type: string
-          format: date-time
-          description: 出勤日時（ISO 8601）
+      description: 出勤打刻のHTTPリクエスト
+      additionalProperties: false
     AttendanceClockOutRequest:
       type: object
-      required:
-        - workDate
-        - clockOutAt
-      properties:
-        workDate:
-          type: string
-          format: date
-          description: 勤務日（YYYY-MM-DD）
-        clockOutAt:
-          type: string
-          format: date-time
-          description: 退勤日時（ISO 8601）
+      description: 退勤打刻のHTTPリクエスト
+      additionalProperties: false
+    AttendanceBreakStartRequest:
+      type: object
+      description: 休憩開始打刻のHTTPリクエスト
+      additionalProperties: false
+    AttendanceBreakEndRequest:
+      type: object
+      description: 休憩終了打刻のHTTPリクエスト
+      additionalProperties: false
     AttendanceStoreRequest:
       type: object
+      description: 勤怠の新規作成のHTTPリクエスト
       required:
         - workDate
         - clockInAt
@@ -625,34 +647,30 @@ components:
         workDate:
           type: string
           format: date
-          description: 勤務日（YYYY-MM-DD）
+          description: 勤務日
         clockInAt:
           type: string
           format: date-time
-          description: 出勤日時（ISO 8601）
+          description: 出勤日時
         clockOutAt:
           type: string
           format: date-time
           nullable: true
-          description: 退勤日時（ISO 8601）。省略時は勤務中として扱う。
-        note:
-          type: string
-          nullable: true
-          maxLength: 500
-          description: 備考（申請理由・特記事項など）
+          description: 退勤日時
     AttendanceUpdateRequest:
       type: object
+      description: 勤怠レコード更新のHTTPリクエスト
       properties:
         clockInAt:
           type: string
           format: date-time
           nullable: true
-          description: 出勤日時（ISO 8601）
+          description: 出勤日時
         clockOutAt:
           type: string
           format: date-time
           nullable: true
-          description: 退勤日時（ISO 8601）
+          description: 退勤日時
         note:
           type: string
           nullable: true
@@ -660,7 +678,7 @@ components:
           description: 備考
     AttendanceResponse:
       type: object
-      description: 勤怠レコード。出退勤・休憩の打刻状態とローカル時刻を含む。
+      description: 勤怠レコードの表示用のHTTPレスポンス
       required:
         - userId
         - workDate
@@ -670,37 +688,38 @@ components:
         id:
           type: string
           format: uuid
-          description: 勤怠レコード ID。新規打刻前（today で未出勤）は含まれない。
+          description: 勤怠レコードID
         userId:
           type: string
           format: uuid
-          description: 対象ユーザー ID。
+          description: 対象ユーザーID
         workDate:
           type: string
           format: date
-          description: 勤務日（YYYY-MM-DD）。タイムゾーン変換後の日付。
+          description: 勤務日
         clockStatus:
           $ref: '#/components/schemas/ClockStatus'
         clockInAt:
           type: string
           format: date-time
           nullable: true
-          description: 出勤日時（ISO 8601）。ローカルタイムゾーンで返す。
+          description: 出勤日時
         clockOutAt:
           type: string
           format: date-time
           nullable: true
-          description: 退勤日時（ISO 8601）。未退勤の場合は null。
+          description: 退勤日時
         breakMinutes:
           type: integer
           nullable: true
-          description: 休憩合計（分）。AttendanceBreak から再計算される。
+          description: 休憩合計（分）
         workedMinutes:
           type: integer
           nullable: true
-          description: 実働時間（分）。出退勤の差分から breakMinutes を差し引いた値。
+          description: 実働時間（分）
     AttendanceIndexRequest:
       type: object
+      description: 勤怠レコード取得のHTTPリクエスト
       required:
         - from
         - to
@@ -708,17 +727,11 @@ components:
         from:
           type: string
           format: date
+          description: 取得開始日
         to:
           type: string
           format: date
-    DashboardClockRequest:
-      type: object
-      required:
-        - action
-      properties:
-        action:
-          $ref: '#/components/schemas/ClockAction'
-          description: 打刻アクション種別
+          description: 取得終了日
     DashboardResponse:
       type: object
       required:
@@ -1144,26 +1157,28 @@ components:
           format: email
     ErrorResponse:
       type: object
+      description: エラー発生時のHTTPレスポンス
       required:
         - message
       properties:
         message:
           type: string
-          description: ユーザー向けエラーメッセージ。日本語で返される。
           example: エラーが発生しました
+          description: ユーザー向けエラーメッセージ
     ValidationErrorResponse:
       type: object
+      description: バリデーションエラー発生時のHTTPレスポンス
       required:
         - message
         - errors
       properties:
         message:
           type: string
-          description: バリデーションエラーの総括メッセージ。
+          description: バリデーションエラーの総括メッセージ
           example: バリデーションエラー
         errors:
           type: object
-          description: フィールド名 → エラーメッセージ配列のマップ。
+          description: フィールド名 → エラーメッセージ配列のマップ
           additionalProperties:
             type: array
             items:
@@ -1185,22 +1200,22 @@ components:
         currentPage:
           type: integer
           minimum: 1
-          description: 現在のページ番号（1始まり）。
+          description: 現在のページ番号（1始まり）
           example: 1
         perPage:
           type: integer
           minimum: 1
-          description: 1ページあたりの件数。クエリパラメータ perPage で指定可能。
+          description: 1ページあたりの件数
           example: 20
         totalItems:
           type: integer
           minimum: 0
-          description: フィルター条件に合致する全件数。
+          description: フィルター条件に合致する全件数
           example: 100
         totalPages:
           type: integer
           minimum: 0
-          description: 全ページ数（ceil(totalItems / perPage)）。
+          description: 全ページ数（ceil(totalItems / perPage)）
           example: 5
   parameters:
     QueryDateFrom:
@@ -1283,6 +1298,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AttendanceClockOutRequest'
+    AttendanceBreakStartBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceBreakStartRequest'
+    AttendanceBreakEndBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AttendanceBreakEndRequest'
     AttendanceStoreBody:
       required: true
       content:
@@ -1295,12 +1322,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AttendanceUpdateRequest'
-    DashboardClockBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/DashboardClockRequest'
     SettingsUpdateBody:
       required: true
       content:

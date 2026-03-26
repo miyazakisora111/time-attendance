@@ -21,6 +21,9 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
+/**
+ * ログインのHTTPリクエスト
+ */
 export interface LoginRequest {
   /**
    * メールアドレス
@@ -29,7 +32,7 @@ export interface LoginRequest {
    */
   email: string;
   /**
-   * パスワード（英字+数字の混合必須）
+   * パスワード
    * @minLength 8
    * @maxLength 255
    * @pattern ^(?=.*[A-Za-z])(?=.*\d).+$

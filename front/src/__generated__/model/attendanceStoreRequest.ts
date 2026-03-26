@@ -21,20 +21,17 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
+/**
+ * 勤怠の新規作成のHTTPリクエスト
+ */
 export interface AttendanceStoreRequest {
-  /** 出勤日時（ISO 8601） */
+  /** 出勤日時 */
   clockInAt: string;
   /**
-   * 退勤日時（ISO 8601）。省略時は勤務中として扱う。
+   * 退勤日時
    * @nullable
    */
   clockOutAt?: string | null;
-  /**
-   * 備考（申請理由・特記事項など）
-   * @maxLength 500
-   * @nullable
-   */
-  note?: string | null;
-  /** 勤務日（YYYY-MM-DD） */
+  /** 勤務日 */
   workDate: string;
 }

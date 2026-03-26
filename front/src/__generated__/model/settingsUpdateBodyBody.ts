@@ -20,13 +20,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
  * OpenAPI spec version: 1.1.0
  */
+import type { UpdateSettingsRequest } from "./updateSettingsRequest";
 
-/**
- * 勤怠レコード取得のHTTPリクエスト
- */
-export interface AttendanceIndexRequest {
-  /** 取得開始日 */
-  from: string;
-  /** 取得終了日 */
-  to: string;
-}
+export type SettingsUpdateBodyBody = UpdateSettingsRequest;
