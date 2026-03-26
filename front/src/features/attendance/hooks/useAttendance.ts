@@ -11,7 +11,7 @@ export const useAttendance = () => {
   const {
     clockStatus,
     attendanceStatus,
-    todayWorkedTime,
+    totalWorkedMinutes,
     breakMinutes,
     isLoading,
     isError,
@@ -36,7 +36,7 @@ export const useAttendance = () => {
     isLoading,
     isError,
     isPending,
-    todayWorkedTime,
+    totalWorkedMinutes,
     breakMinutes,
     handleAction,
   };

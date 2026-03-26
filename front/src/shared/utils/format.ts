@@ -8,8 +8,8 @@ export const EMPTY_TIME_RANGE_TEXT = '--:-- - --:--';
 export const EMPTY_DURATION_TEXT = '--h --m';
 export const EMPTY_VALUE_TEXT = '-';
 
-export const formatMinutes = (minutes: number | null): string => {
-    if (minutes === null) return EMPTY_TIME_TEXT;
+export const formatMinutes = (minutes: number | null | undefined): string => {
+    if (minutes === null || typeof minutes === 'undefined') return EMPTY_TIME_TEXT;
 
     const safe = Math.max(0, minutes);
     const h = Math.floor(safe / 60).toString().padStart(2, '0');

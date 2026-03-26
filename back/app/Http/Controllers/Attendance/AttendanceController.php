@@ -91,24 +91,6 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 勤怠一覧を取得する。
-     *
-     * @param AttendanceIndexRequest $request HTTPリクエスト
-     * @return JsonResponse JSONレスポンス
-     */
-    public function index(AttendanceIndexRequest $request): JsonResponse
-    {
-        // TODO:そんな機能、frontaにあったっけか。
-        $result = $this->service->index(
-            user: $this->resolveAuthUser(),
-            from: (string) $request->input('from'),
-            to: (string) $request->input('to'),
-        );
-
-        return ApiResponse::success($result);
-    }
-
-    /**
      * 勤怠を新規登録する。
      *
      * @param AttendanceStoreRequest $request HTTPリクエスト

@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
-import type { AttendanceStatus, ClockAction, ClockStatus } from '@/__generated__/enums';
+import type { ClockAction, ClockStatus } from '@/__generated__/enums';
 import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance';
 import {
     attendanceQueryKeys,
@@ -10,7 +10,7 @@ import {
     useBreakEndMutation,
     useTodayAttendanceQuery,
 } from '@/features/attendance/hooks/useAttendanceQueries';
-import { formatJapaneseHourMinute, formatWorkedHours } from '@/shared/utils/format';
+import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 
 export interface ClockActionSuccessPayload {
@@ -33,36 +33,26 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const { mutate: breakStartMutate, isPending: isBreakStarting } = useBreakStartMutation();
     const { mutate: breakEndMutate, isPending: isBreakEnding } = useBreakEndMutation();
 
-    const isPending = isClockingIn || isClockingOut || isBreakStarting || isBreakEnding;
-
+    // データが存在しない場合は、未出勤のため「out」とする
     const clockStatus: ClockStatus = todayAttendance?.clockStatus ?? 'out';
-    const attendanceStatus: AttendanceStatus = clockStatusToAttendanceStatusMap[clockStatus];
-
-    const workedHours =
-        todayAttendance?.totalWorkedMinutes != null
-            ? todayAttendance.totalWorkedMinutes / 60
-            : null;
-    const todayWorkedTime = formatWorkedHours(workedHours);
 
     const handleAction = (clockAction: ClockAction) => {
         const now = new Date();
         const nowText = formatJapaneseHourMinute(now);
         const label = getClockActionLabel(clockAction);
 
-        const onSuccess = () => {
+        const mutationOptions = {
+            onSuccess: () => {
+                // 打刻後は最新の勤怠情報を取得し直す
+                void queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
 
-            // 打刻後は最新の勤怠情報を取得し直す
-            void queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
-
-            options?.onActionSuccess?.({ action: clockAction, timeText: nowText });
-            sonner.success(`${label}しました (${nowText})`);
+                options?.onActionSuccess?.({ action: clockAction, timeText: nowText });
+                sonner.success(`${label}しました (${nowText})`);
+            },
+            onError: () => {
+                sonner.error(`${label}に失敗しました`);
+            }
         };
-
-        const onError = () => {
-            sonner.error(`${label}に失敗しました`);
-        };
-
-        const mutationOptions = { onSuccess, onError };
 
         switch (clockAction) {
             case 'in': {
@@ -88,13 +78,13 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
 
     return {
         clockStatus,
-        attendanceStatus,
+        attendanceStatus: clockStatusToAttendanceStatusMap[clockStatus],
         todayAttendance,
-        todayWorkedTime,
-        breakMinutes: todayAttendance?.breakMinutes ?? null,
+        totalWorkedMinutes: todayAttendance?.totalWorkedMinutes,
+        breakMinutes: todayAttendance?.breakMinutes,
         isLoading,
         isError,
-        isPending,
+        isPending: isClockingIn || isClockingOut || isBreakStarting || isBreakEnding,
         handleAction,
     };
 };

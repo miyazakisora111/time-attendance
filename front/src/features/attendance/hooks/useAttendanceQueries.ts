@@ -15,7 +15,7 @@ const SCOPE = 'attendance' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const attendanceQueryKeys = {
   all: () => scoped.all(),
-  todayAttendance: () => scoped.nest('todayAttendance'),
+  today: () => scoped.nest('today'),
   clockIn: () => scoped.nest('clockIn'),
   clockOut: () => scoped.nest('clockOut'),
   breakStart: () => scoped.nest('breakStart'),
@@ -27,7 +27,7 @@ export const attendanceQueryKeys = {
  */
 export const useTodayAttendanceQuery = () =>
   useQuery({
-    queryKey: attendanceQueryKeys.todayAttendance(),
+    queryKey: attendanceQueryKeys.today(),
     queryFn: () => fetchTodayAttendance(),
     select: (data) => toAttendanceView(data),
     staleTime: 0, // 打刻直後の refetch を即時実行するため

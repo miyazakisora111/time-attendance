@@ -11,7 +11,9 @@ import { call } from '@/lib/http/result';
 
 const client = getAttendance();
 
-/** 勤怠を取得 */
+/** 
+ * 勤怠を取得 
+ */
 export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.getTodayAttendance());
 
 /** 

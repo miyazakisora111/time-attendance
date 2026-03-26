@@ -9,7 +9,7 @@ import type { AttendanceStatus } from '@/__generated__/enums';
 import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
-import { EMPTY_TIME_TEXT, formatMinutes } from '@/shared/utils/format';
+import { formatMinutes } from '@/shared/utils/format';
 import { getAttendanceStatusIconSpec } from '@/shared/presentation/attendance/attendanceStatus';
 import { stack } from '@/shared/design-system/layout';
 
@@ -48,7 +48,7 @@ export function AttendancePage() {
     isLoading,
     isError,
     isPending,
-    todayWorkedTime,
+    totalWorkedMinutes,
     breakMinutes,
     handleAction,
   } = useAttendance();
@@ -167,30 +167,30 @@ export function AttendancePage() {
               </div>
             </CardContent>
           </Card>
-          <Card padding="lg" intent="primary" unstableClassName="border-none shadow-sm rounded-3xl text-white">
+          <Card padding="lg" intent="primary" unstableClassName="border-none shadow-sm rounded-3xl">
             <div className="flex flex-col justify-between h-full">
               <div>
-                <Typography variant="small" intent="white" unstableClassName="opacity-80 mb-1 font-medium">
+                <Typography variant="small" unstableClassName="opacity-80 mb-1 font-medium">
                   現在の勤務時間
                 </Typography>
-                <Typography variant="h3" intent="white" unstableClassName="mb-6 tracking-tight">
-                  {todayWorkedTime ?? EMPTY_TIME_TEXT}
+                <Typography variant="h3" unstableClassName="mb-6 tracking-tight">
+                  {formatMinutes(totalWorkedMinutes)}
                 </Typography>
               </div>
               <div className={`${stack.md} pt-6 border-t border-blue-500/50`}>
                 <div className="flex items-center justify-between">
-                  <Typography variant="small" unstableClassName="text-blue-100">
+                  <Typography variant="small">
                     休憩合計
                   </Typography>
-                  <Typography variant="label" intent="white">
+                  <Typography variant="label">
                     {formatMinutes(breakMinutes)}
                   </Typography>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Typography variant="small" unstableClassName="text-blue-100">
+                  <Typography variant="small">
                     残業予定
                   </Typography>
-                  <Typography variant="label" intent="white">
+                  <Typography variant="label">
                     00:00
                   </Typography>
                 </div>
