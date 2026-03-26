@@ -5,3 +5,4 @@ LogoutResponse:
     message:
       type: string
       example: "Logged out successfully"
+      description: JWT access tokenを無効化した後のレスポンスメッセージ

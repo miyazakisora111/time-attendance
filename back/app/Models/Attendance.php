@@ -46,15 +46,7 @@ class Attendance extends BaseModel
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
-
-    /**
-     * 勤怠で絞り込む
-     */
-    public function scopeForAttendance(Builder $query, string $attendanceId): Builder
-    {
-        return $query->where('attendance_id', $attendanceId);
-    }
-
+    
     /**
      * ユーザーで絞り込む
      */

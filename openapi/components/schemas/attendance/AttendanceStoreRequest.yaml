@@ -1,7 +1,6 @@
-# 勤怠の手動新規作成HTTPリクエスト。
-# 管理者またはユーザー自身が過去の勤怠を後から登録するケースを想定。
 AttendanceStoreRequest:
   type: object
+  description: 勤怠の新規作成のHTTPリクエスト
   required:
     - workDate
     - clockInAt
@@ -9,18 +8,13 @@ AttendanceStoreRequest:
     workDate:
       type: string
       format: date
-      description: 勤務日（YYYY-MM-DD）
+      description: 勤務日
     clockInAt:
       type: string
       format: date-time
-      description: 出勤日時（ISO 8601）
+      description: 出勤日時
     clockOutAt:
       type: string
       format: date-time
       nullable: true
-      description: 退勤日時（ISO 8601）。省略時は勤務中として扱う。
-    note:
-      type: string
-      nullable: true
-      maxLength: 500
-      description: 備考（申請理由・特記事項など）
+      description: 退勤日時

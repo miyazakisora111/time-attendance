@@ -1,5 +1,6 @@
 AttendanceIndexRequest:
   type: object
+  description: 勤怠レコード取得のHTTPリクエスト
   required:
     - from
     - to
@@ -7,6 +8,8 @@ AttendanceIndexRequest:
     from:
       type: string
       format: date
+      description: 取得開始日
     to:
       type: string
       format: date
+      description: 取得終了日

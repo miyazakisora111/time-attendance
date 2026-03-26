@@ -380,7 +380,7 @@ paths:
       summary: ユーザー設定更新
       description: プロフィール・通知・テーマ・言語設定を更新する。
       requestBody:
-        $ref: '#/components/requestBodies/UpdateSettingsBody'
+        $ref: '#/components/requestBodies/SettingsUpdateBody'
       responses:
         '200':
           description: 更新後ユーザー設定
@@ -402,7 +402,7 @@ paths:
       summary: パスワード変更
       description: 現在のパスワードを検証し、新しいパスワードに変更する。
       requestBody:
-        $ref: '#/components/requestBodies/ChangePasswordBody'
+        $ref: '#/components/requestBodies/PasswordChangeBody'
       responses:
         '200':
           description: パスワード変更成功
@@ -1301,13 +1301,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/DashboardClockRequest'
-    UpdateSettingsBody:
+    SettingsUpdateBody:
       required: true
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/UpdateSettingsRequest'
-    ChangePasswordBody:
+    PasswordChangeBody:
       required: true
       content:
         application/json:

@@ -1,4 +1,3 @@
-# --- Reason: path param name を camelCase+Id に統一 ---
 PathAttendanceId:
   name: attendanceId
   in: path

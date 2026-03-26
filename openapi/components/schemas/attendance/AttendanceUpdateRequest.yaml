@@ -1,18 +1,17 @@
-# 既存の勤怠レコード部分更新HTTPリクエスト。
-# PATCH なので送信したフィールドのみ更新される。
 AttendanceUpdateRequest:
   type: object
+  description: 勤怠レコード更新のHTTPリクエスト
   properties:
     clockInAt:
       type: string
       format: date-time
       nullable: true
-      description: 出勤日時（ISO 8601）
+      description: 出勤日時
     clockOutAt:
       type: string
       format: date-time
       nullable: true
-      description: 退勤日時（ISO 8601）
+      description: 退勤日時
     note:
       type: string
       nullable: true

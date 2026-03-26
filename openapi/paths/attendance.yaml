@@ -1,11 +1,3 @@
-# --- Reason: operationId → 動詞+対象のcamelCase (Api サフィックス削除)
-# --- Reason: description 追加（全 operation に summary + description 必須）
-# --- Reason: listAttendances のHTTPレスポンスをページネーション対応ラッパーに変更
-# --- Reason: storeAttendanceApi → createAttendance (store は許可動詞外)
-# --- Reason: todayAttendanceApi → getTodayAttendance (動詞先頭)
-# --- Reason: clockInApi → createClockIn, clockOutApi → createClockOut
-# --- Reason: attendanceUpdate キー名は参照元と整合(変更なし)
-
 todayAttendance:
   get:
     operationId: getTodayAttendance
@@ -31,7 +23,7 @@ clockIn:
     tags:
       - Attendance
     summary: 出勤打刻
-    description: 当日の出勤打刻を行う。既に出勤済みの場合は 409 を返す。
+    description: 当日の出勤打刻を行う。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceClockInBody"
     responses:
@@ -56,7 +48,7 @@ clockOut:
     tags:
       - Attendance
     summary: 退勤打刻
-    description: 当日の退勤打刻を行う。未出勤の場合は 409 を返す。
+    description: 当日の退勤打刻を行う。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceClockOutBody"
     responses:
@@ -115,7 +107,7 @@ attendances:
     tags:
       - Attendance
     summary: 勤怠の新規登録
-    description: 手動で勤怠レコードを新規作成する。
+    description: 勤怠レコードを新規作成する。
     requestBody:
       $ref: "../components/requestBodies.yaml#/AttendanceStoreBody"
     responses:
@@ -138,7 +130,7 @@ attendanceUpdate:
     tags:
       - Attendance
     summary: 勤怠の更新
-    description: 既存の勤怠レコードを部分更新する。
+    description: 勤怠レコードを更新する。
     parameters:
       - $ref: "../components/parameters.yaml#/PathAttendanceId"
     requestBody:

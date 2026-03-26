@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Ramsey\Collection\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 /** 
  * 勤怠休憩のモデル 
@@ -68,6 +68,14 @@ class AttendanceBreak extends BaseModel
     }
 
     /**
+     * 勤怠で絞り込む
+     */
+    public function scopeForAttendance(Builder $query, string $attendanceId): Builder
+    {
+        return $query->where('attendance_id', $attendanceId);
+    }
+
+    /**
      * 休憩の長さ（分）を返す
      */
     public function breakMinutes(): int
@@ -77,16 +85,5 @@ class AttendanceBreak extends BaseModel
         $diff = $startAt->diffInMinutes($endAt, false);
 
         return $diff >= 0 ? $diff : $diff + 24 * 60;
-    }
-
-    /**
-     * 合計休憩の長さ（分）を返す
-     * 
-     * @param Collection<AttendanceBreak> $attendanceBreaks 勤怠休憩のコレクション
-     * @return int 合計休憩の長さ（分）
-     */
-    public static function totalBreakMinutes(Collection $attendanceBreaks): int
-    {
-        return $attendanceBreaks->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
     }
 }

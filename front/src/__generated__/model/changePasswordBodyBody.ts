@@ -22,4 +22,4 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 import type { ChangePasswordRequest } from "./changePasswordRequest";
 
-export type ChangePasswordBodyBody = ChangePasswordRequest;
+export type PasswordChangeBodyBody = ChangePasswordRequest;

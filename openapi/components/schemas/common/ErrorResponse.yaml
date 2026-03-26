@@ -1,12 +1,10 @@
-# 全てのエラーHTTPレスポンスの基底構造。
-# DomainException, AuthorizationException 等は全てこの形式で返される。
-# フロントエンドは message をユーザー向けトーストに使用する。
 ErrorResponse:
   type: object
+  description: エラー発生時のHTTPレスポンス
   required:
     - message
   properties:
     message:
       type: string
-      description: ユーザー向けエラーメッセージ。日本語で返される。
       example: エラーが発生しました
+      description: ユーザー向けエラーメッセージ

@@ -19,25 +19,18 @@ final class AttendanceQuery
      * 今日の勤怠を取得する
      * 
      * @param User $user ユーザー
-     * @return array|array<string, mixed> 今日の勤怠
+     * @return Collection<Attendance> 今日の勤怠
      */
-    public function today(User $user): array
+    public function today(User $user): Collection
     {
         $timezone = $user->timezone ?? config('app.timezone');
         $today = CarbonImmutable::today($timezone)->toDateString();
 
-        $attendance = Attendance::query()
+        return Attendance::query()
             ->forUser($user->id)
             ->workDate($today)
             ->latest('clock_in_at')
             ->first();
-
-        return $attendance?->toLocalTimePayload() ?? [
-            'userId' => $user->id,
-            'workDate' => $today,
-            'clockStatus' => 'out',
-            'clockInAt' => null,
-        ];
     }
 
     /**

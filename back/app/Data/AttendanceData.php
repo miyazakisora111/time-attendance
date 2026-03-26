@@ -9,8 +9,8 @@ use App\Models\Attendance;
 class AttendanceData extends BaseData
 {
     public function __construct(
-        public readonly int $id,
-        public readonly int $userId,
+        public readonly string $id,
+        public readonly string $userId,
         public readonly string $workDate,
         public readonly string $clockStatus,
         public readonly int $breakMinutes,

@@ -1,16 +1,4 @@
-# 出勤打刻HTTPリクエスト。ダッシュボード打刻（ClockAction=in）とは別ルートで、
-# 明示的に workDate と clockInAt を指定して出勤記録を作成する。
 AttendanceClockInRequest:
   type: object
-  required:
-    - workDate
-    - clockInAt
-  properties:
-    workDate:
-      type: string
-      format: date
-      description: 勤務日（YYYY-MM-DD）
-    clockInAt:
-      type: string
-      format: date-time
-      description: 出勤日時（ISO 8601）
+  description: 出勤打刻のHTTPリクエスト
+  additionalProperties: false

@@ -1,19 +1,17 @@
-# Laravel の FormRequest が返す 422 HTTPレスポンスの構造。
-# errors はフィールド名をキー、エラーメッセージ配列を値とする。
-# フロントエンドはフィールド単位でインラインエラーを表示する。
 ValidationErrorResponse:
   type: object
+  description: バリデーションエラー発生時のHTTPレスポンス
   required:
     - message
     - errors
   properties:
     message:
       type: string
-      description: バリデーションエラーの総括メッセージ。
+      description: バリデーションエラーの総括メッセージ
       example: バリデーションエラー
     errors:
       type: object
-      description: フィールド名 → エラーメッセージ配列のマップ。
+      description: フィールド名 → エラーメッセージ配列のマップ
       additionalProperties:
         type: array
         items:

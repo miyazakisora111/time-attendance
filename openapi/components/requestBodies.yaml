@@ -33,21 +33,14 @@ AttendanceUpdateBody:
       schema:
         $ref: "./schemas/attendance/AttendanceUpdateRequest.yaml#/AttendanceUpdateRequest"
 
-DashboardClockBody:
-  required: true
-  content:
-    application/json:
-      schema:
-        $ref: "./schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
-
-UpdateSettingsBody:
+SettingsUpdateBody:
   required: true
   content:
     application/json:
       schema:
         $ref: "./schemas/settings/UpdateSettingsRequest.yaml#/UpdateSettingsRequest"
 
-ChangePasswordBody:
+PasswordChangeBody:
   required: true
   content:
     application/json:

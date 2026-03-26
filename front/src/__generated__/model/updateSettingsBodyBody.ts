@@ -22,4 +22,4 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 import type { UpdateSettingsRequest } from "./updateSettingsRequest";
 
-export type UpdateSettingsBodyBody = UpdateSettingsRequest;
+export type SettingsUpdateBodyBody = UpdateSettingsRequest;

@@ -340,12 +340,12 @@ export namespace components.requestBodies {
       "application/json": components["schemas"]["DashboardClockRequest"],
     },
   };
-  export const UpdateSettingsBody = {
+  export const SettingsUpdateBody = {
     content: {
       "application/json": components["schemas"]["UpdateSettingsRequest"],
     },
   };
-  export const ChangePasswordBody = {
+  export const PasswordChangeBody = {
     content: {
       "application/json": components["schemas"]["ChangePasswordRequest"],
     },
@@ -604,7 +604,7 @@ export const operations = {
      * ユーザー設定更新 
      * @description プロフィール・通知・テーマ・言語設定を更新する。
      */
-    requestBody: components["requestBodies"]["UpdateSettingsBody"],
+    requestBody: components["requestBodies"]["SettingsUpdateBody"],
     responses: {
       /** @description 更新後ユーザー設定 */
       200: {
@@ -622,7 +622,7 @@ export const operations = {
      * パスワード変更 
      * @description 現在のパスワードを検証し、新しいパスワードに変更する。
      */
-    requestBody: components["requestBodies"]["ChangePasswordBody"],
+    requestBody: components["requestBodies"]["PasswordChangeBody"],
     responses: {
       /** @description パスワード変更成功 */
       200: {

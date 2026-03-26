@@ -1,19 +1,4 @@
 openapi: 3.0.3
-
-# ──────────────────────────────────────────────────────────────
-# TimeAttendance API — 唯一の正とする設計書
-#
-# 設計方針:
-#   - パスは kebab-case 複数名詞。パスパラメータは camelCase + Id。
-#   - operationId は「動詞 + 対象」の camelCase。
-#   - スキーマは PascalCase、プロパティは camelCase。
-#   - 全 operation に summary / description / tags / operationId を付与。
-#   - エラーは ErrorResponse / ValidationErrorResponse に統一。
-#   - 認証は JWT Bearer（security: BearerAuth）。未認証 API は security: [] を明示。
-#   - 一覧系は items[] + pageInfo のラッパーで統一（ページネーション非対応の場合も構造を揃える）。
-#   - Enum は string 型。値は camelCase に統一。
-# ──────────────────────────────────────────────────────────────
-
 info:
   title: TimeAttendance API
   version: 1.1.0
@@ -79,14 +64,12 @@ tags:
       プロフィール・通知・テーマ・言語設定の取得と更新、パスワード変更、ログイン履歴を提供する。
 
 paths:
-  # --- Reason: /authme → /auth/me (kebab-case) ---
   /login:
     $ref: "./paths/auth.yaml#/login"
   /logout:
     $ref: "./paths/auth.yaml#/logout"
   /auth/me:
     $ref: "./paths/auth.yaml#/authMe"
-  # --- Reason: /attendances/attendance → /attendances/today (冗長解消) ---
   /attendances/today:
     $ref: "./paths/attendance.yaml#/todayAttendance"
   /attendances/clock-in:
@@ -95,14 +78,12 @@ paths:
     $ref: "./paths/attendance.yaml#/clockOut"
   /attendances:
     $ref: "./paths/attendance.yaml#/attendances"
-  # --- Reason: {attendance} → {attendanceId} (camelCase+Id) ---
   /attendances/{attendanceId}:
     $ref: "./paths/attendance.yaml#/attendanceUpdate"
   /dashboard:
     $ref: "./paths/dashboard.yaml#/dashboard"
   /dashboard/clock:
     $ref: "./paths/dashboard.yaml#/dashboardClock"
-  # --- Reason: /auth/calendar → /schedule/calendar (ドメイン整合) ---
   /schedule/calendar:
     $ref: "./paths/schedule.yaml#/calendar"
   /team/members:
@@ -159,8 +140,6 @@ components:
       $ref: "./components/schemas/attendance/AttendanceIndexRequest.yaml#/AttendanceIndexRequest"
 
     # --- Dashboard ---
-    DashboardClockRequest:
-      $ref: "./components/schemas/dashboard/DashboardClockRequest.yaml#/DashboardClockRequest"
     DashboardResponse:
       $ref: "./components/schemas/dashboard/DashboardResponse.yaml#/DashboardResponse"
     DashboardUser:

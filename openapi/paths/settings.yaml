@@ -23,7 +23,7 @@ settings:
     summary: ユーザー設定更新
     description: プロフィール・通知・テーマ・言語設定を更新する。
     requestBody:
-      $ref: "../components/requestBodies.yaml#/UpdateSettingsBody"
+      $ref: "../components/requestBodies.yaml#/SettingsUpdateBody"
     responses:
       "200":
         description: 更新後ユーザー設定
@@ -46,7 +46,7 @@ changePassword:
     summary: パスワード変更
     description: 現在のパスワードを検証し、新しいパスワードに変更する。
     requestBody:
-      $ref: "../components/requestBodies.yaml#/ChangePasswordBody"
+      $ref: "../components/requestBodies.yaml#/PasswordChangeBody"
     responses:
       "200":
         description: パスワード変更成功

@@ -4996,7 +4996,7 @@
           }
         }
       },
-      "UpdateSettingsBody": {
+      "SettingsUpdateBody": {
         "required": true,
         "content": {
           "application/json": {
@@ -5066,7 +5066,7 @@
           }
         }
       },
-      "ChangePasswordBody": {
+      "PasswordChangeBody": {
         "required": true,
         "content": {
           "application/json": {
