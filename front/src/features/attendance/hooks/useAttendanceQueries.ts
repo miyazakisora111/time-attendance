@@ -30,6 +30,7 @@ export const useTodayAttendanceQuery = () =>
     queryKey: attendanceQueryKeys.todayAttendance(),
     queryFn: () => fetchTodayAttendance(),
     select: (data) => toAttendanceView(data),
+    staleTime: 0, // 打刻直後の refetch を即時実行するため
   });
 
 /**

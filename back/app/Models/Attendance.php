@@ -117,6 +117,22 @@ class Attendance extends BaseModel
     }
 
     /**
+     * 勤務中かどうか
+     */
+    public function isWorking(): bool
+    {
+        return $this->clock_in_at !== null && $this->clock_out_at === null;
+    }
+
+    /**
+     * 勤務が完了しているかどうか
+     */
+    public function isFinished(): bool
+    {
+        return $this->clock_in_at !== null && $this->clock_out_at !== null;
+    }
+
+    /**
      * 勤務時間（分）を算出する
      */
     public function workMinutes(): int

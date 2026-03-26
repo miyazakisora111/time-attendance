@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Dashboard;
 
+use App\Application\Attendance\AttendanceResolver;
 use App\Application\BaseService;
 use App\Models\Attendance;
 use App\Models\User;
@@ -15,6 +16,9 @@ use Illuminate\Support\Collection;
  */
 final class DashboardService extends BaseService
 {
+    public function __construct(
+        private readonly AttendanceResolver $resolver,
+    ) {}
     /**
      * ダッシュボード情報を取得する。
      *
@@ -117,11 +121,7 @@ final class DashboardService extends BaseService
 
     private function resolveClockStatus(?Attendance $attendance): string
     {
-        if ($attendance === null) {
-            return 'out';
-        }
-
-        return $attendance->resolveClockStatus();
+        return $this->resolver->resolveClockStatus($attendance)->value;
     }
 
     private function buildTodayRecord(?Attendance $attendance): array

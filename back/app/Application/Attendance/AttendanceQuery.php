@@ -55,47 +55,61 @@ final class AttendanceQuery
     }
 
     /**
-     * 最新の勤怠を取得する。
-     * 
+     * 勤務中の勤怠を取得する。
+     *
      * @param User $user ユーザー
-     * @return ?Attendance 最新の勤怠
+     * @return ?Attendance 勤務中の勤怠
      */
-    public function findLatestAttendance(User $user): ?Attendance
+    public function findWorkingAttendance(User $user): ?Attendance
     {
         return Attendance::query()
             ->forUser($user->id)
-            ->latest('clock_in_at')
+            ->whereNull('clock_out_at')
             ->first();
     }
 
-    /**
-     * 最近の勤怠休憩を取得する。
-     * 
-     * @param string $attendanceId 勤怠ID
-     * @return ?AttendanceBreak 最近の勤怠休憩
-     */
-    public function findLatestAttendanceBreak(string $attendanceId): ?AttendanceBreak
-    {
-        return AttendanceBreak::query()
-            ->forAttendance($attendanceId)
-            ->whereNotNull('break_start')
-            ->whereNull('break_end')
-            ->latest('break_start')
-            ->first();
-    }
+    // /**
+    //  * 最新の勤怠を取得する。
+    //  * 
+    //  * @param User $user ユーザー
+    //  * @return ?Attendance 最新の勤怠
+    //  */
+    // public function findLatestAttendance(User $user): ?Attendance
+    // {
+    //     return Attendance::query()
+    //         ->forUser($user->id)
+    //         ->latest('clock_in_at')
+    //         ->first();
+    // }
 
-    /**
-     * 休憩が終了済みの勤怠を取得する。
-     * 
-     * @param string $attendanceId 勤怠ID
-     * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
-     */
-    public function findCompletedBreaks(string $attendanceId): Collection
-    {
-        return AttendanceBreak::query()
-            ->where('attendance_id', $attendanceId)
-            ->whereNotNull('break_start')
-            ->whereNotNull('break_end')
-            ->get();
-    }
+    // /**
+    //  * 最近の勤怠休憩を取得する。
+    //  * 
+    //  * @param string $attendanceId 勤怠ID
+    //  * @return ?AttendanceBreak 最近の勤怠休憩
+    //  */
+    // public function findLatestAttendanceBreak(string $attendanceId): ?AttendanceBreak
+    // {
+    //     return AttendanceBreak::query()
+    //         ->forAttendance($attendanceId)
+    //         ->whereNotNull('break_start')
+    //         ->whereNull('break_end')
+    //         ->latest('break_start')
+    //         ->first();
+    // }
+
+    // /**
+    //  * 休憩が終了済みの勤怠を取得する。
+    //  * 
+    //  * @param string $attendanceId 勤怠ID
+    //  * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
+    //  */
+    // public function findCompletedBreaks(string $attendanceId): Collection
+    // {
+    //     return AttendanceBreak::query()
+    //         ->where('attendance_id', $attendanceId)
+    //         ->whereNotNull('break_start')
+    //         ->whereNotNull('break_end')
+    //         ->get();
+    // }
 }

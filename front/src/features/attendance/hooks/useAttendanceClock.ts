@@ -62,21 +62,23 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             sonner.error(`${label}に失敗しました`);
         };
 
+        const mutationOptions = { onSuccess, onError };
+
         switch (clockAction) {
             case 'in': {
-                clockInMutate({ options: { onSuccess, onError } });
+                clockInMutate({}, mutationOptions);
                 break;
             }
             case 'out': {
-                clockOutMutate({ options: { onSuccess, onError } });
+                clockOutMutate({}, mutationOptions);
                 break;
             }
             case 'breakStart': {
-                breakStartMutate({ options: { onSuccess, onError } });
+                breakStartMutate({}, mutationOptions);
                 break;
             }
             case 'breakEnd': {
-                breakEndMutate({ options: { onSuccess, onError } });
+                breakEndMutate({}, mutationOptions);
                 break;
             }
             default:

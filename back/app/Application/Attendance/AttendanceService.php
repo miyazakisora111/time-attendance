@@ -30,6 +30,19 @@ final class AttendanceService extends BaseService
     ) {}
 
     /**
+     * 勤怠一覧を取得する
+     *
+     * @param User $user ユーザー
+     * @param string $from 開始日
+     * @param string $to 終了日
+     * @return array<int, array<string, mixed>> 勤怠一覧
+     */
+    public function index(User $user, string $from, string $to): array
+    {
+        return $this->query->list($user, $from, $to);
+    }
+
+    /**
      * 本日の勤怠情報を取得する
      *
      * @param User $user ユーザー
@@ -51,11 +64,8 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): Attendance {
 
             // 出勤可能か検証する。
-            $latestAttendance = $this->query->findLatestAttendance(user: $user);
-            if ($latestAttendance && !$latestAttendance->isClockedOut()) {
-                throw new DomainException('未退勤の勤務が存在します', 'OPEN_ATTENDANCE_EXISTS');
-            }
-            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
+            $workingAttendance = $this->query->findWorkingAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
             $this->guard->assertCanClockIn($clockStatus);
 
             // 勤怠テーブルに登録する。
@@ -83,21 +93,18 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): Attendance {
 
             // 退勤可能か検証する。
-            $latestAttendance = $this->query->findLatestAttendance(user: $user);
-            if (!$latestAttendance || $latestAttendance->isClockedOut()) {
-                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
-            }
-            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
+            $workingAttendance = $this->query->findWorkingAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
             $this->guard->assertCanClockOut($clockStatus);
 
             // 勤怠テーブルを更新する。
-            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $latestAttendance->update([
+            $workingAttendance->update([
                 'clock_out_at' => $now,
             ]);
 
-            return $latestAttendance;
+            return $workingAttendance;
         });
     }
 
@@ -111,22 +118,19 @@ final class AttendanceService extends BaseService
     {
         return $this->transaction(function () use ($user): Attendance {
             // 休憩開始可能か検証する。
-            $latestAttendance = $this->query->findLatestAttendance(user: $user);
-            if (!$latestAttendance) {
-                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
-            }
-            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
+            $workingAttendance = $this->query->findWorkingAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
             $this->guard->assertCanBreakStart($clockStatus);
 
             // 勤怠休憩テーブルに登録する。
-            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
             AttendanceBreak::query()->create([
-                'attendance_id' => $latestAttendance->id,
+                'attendance_id' => $workingAttendance->id,
                 'break_start' => $now->format('H:i:s'),
             ]);
 
-            return $latestAttendance;
+            return $workingAttendance;
         });
     }
 
@@ -141,39 +145,24 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): Attendance {
 
             // 休憩終了可能か検証する。
-            $latestAttendance = $this->query->findLatestAttendance(user: $user);
-            if (!$latestAttendance) {
-                throw new DomainException('出勤していません', 'NOT_CLOCKED_IN');
-            }
-            $latestAttendanceBreak = $this->query->findLatestAttendanceBreak($latestAttendance->id);
-            if (!$latestAttendanceBreak) {
-                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
-            }
-            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
+            $workingAttendance = $this->query->findWorkingAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
             $this->guard->assertCanBreakEnd($clockStatus);
 
+            $activeBreak = $this->resolver->findActiveBreak($workingAttendance);
+            if ($activeBreak === null) {
+                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
+            }
+
             // 勤怠休憩テーブルを更新する。
-            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $latestAttendanceBreak->update([
+            $activeBreak->update([
                 'break_end' => $now->format('H:i:s'),
             ]);
 
-            return $latestAttendance;
+            return $workingAttendance;
         });
-    }
-
-    /**
-     * 勤怠一覧を取得する
-     *
-     * @param User $user ユーザー
-     * @param string $from 開始日
-     * @param string $to 終了日
-     * @return array<int, array<string, mixed>> 勤怠一覧
-     */
-    public function index(User $user, string $from, string $to): array
-    {
-        return $this->query->list($user, $from, $to);
     }
 
     /**
@@ -194,7 +183,6 @@ final class AttendanceService extends BaseService
                 'work_timezone' => $input['work_timezone'] ?? $this->resolveTimezone(timezone: $user->timezone),
             ]);
 
-            // 勤怠データを生成して返す。
             return $attendance;
         });
     }
@@ -202,20 +190,18 @@ final class AttendanceService extends BaseService
     /**
      * 勤怠を更新する
      *
-     * @param User $user ユーザー
      * @param Attendance $attendance 更新対象の勤怠
      * @param array<string, mixed> $input 入力値
      * @return Attendance 勤怠
      */
-    public function update(User $user, Attendance $attendance, array $input): Attendance
+    public function update(Attendance $attendance, array $input): Attendance
     {
-        return $this->transaction(function () use ($user, $attendance, $input): Attendance {
+        return $this->transaction(function () use ($attendance, $input): Attendance {
             $attendance->update(array_filter([
                 'clock_in_at' => $input['clock_in_at'] ?? null,
                 'clock_out_at' => $input['clock_out_at'] ?? null,
             ], fn($v) => $v !== null));
 
-            // 勤怠データを生成して返す。
             return $attendance;
         });
     }
