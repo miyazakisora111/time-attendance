@@ -121,13 +121,8 @@ openapi-enums:
 	node openapi/scripts/generate-php-enums.mjs
 	node openapi/scripts/generate-ts-enums.mjs
 	
-openapi-php-dto: openapi-bundle
-    npx @openapitools/openapi-generator-cli generate \
-    	-i $(BUNDLE) \
-        -g php \
-        -o $(BACK_DIR)/app/__Generated__/Responses \
-        --global-property=models \
-        --additional-properties=phpVersion=8.2,readonlyProperties=true,modelPropertyNaming=camelCase,enumClassPrefix=true
+openapi-php-dto:
+	node openapi/scripts/generate-php-response-dtos.mjs
 
 openapi: openapi-enums openapi-php-dto openapi-zod openapi-client openapi-validators
 
