@@ -8,7 +8,7 @@ namespace App\__Generated__\Enums;
  * 現在の打刻状態
  *
  * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
+ * Re-run: just openapi-enums
  * Source: openapi/components/enums/ClockStatus.yaml
  */
 enum ClockStatus: string

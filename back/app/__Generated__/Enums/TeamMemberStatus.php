@@ -8,7 +8,7 @@ namespace App\__Generated__\Enums;
  * チームメンバーの勤務状態
  *
  * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
+ * Re-run: just openapi-enums
  * Source: openapi/components/enums/TeamMemberStatus.yaml
  */
 enum TeamMemberStatus: string

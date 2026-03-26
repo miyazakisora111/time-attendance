@@ -8,7 +8,7 @@ namespace App\__Generated__\Enums;
  * 勤怠レコードの勤務区分
  *
  * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
+ * Re-run: just openapi-enums
  * Source: openapi/components/enums/AttendanceStatus.yaml
  */
 enum AttendanceStatus: string

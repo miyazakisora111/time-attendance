@@ -9,7 +9,6 @@ use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
-use App\Data\AttendanceData;
 use Carbon\CarbonImmutable;
 
 /**
@@ -22,13 +21,12 @@ final class AttendanceService extends BaseService
      * 
      * @param AttendanceQuery $query 勤怠のクエリ
      * @param AttendanceGuard $guard 勤怠のガード
-     * @param AttendanceDataFactory $factory 勤怠データのファクトリ
+     * @param AttendanceResolver $resolver 勤怠リゾルバ
      */
     public function __construct(
         private readonly AttendanceQuery $query,
         private readonly AttendanceGuard $guard,
         private readonly AttendanceResolver $resolver,
-        private readonly AttendanceDataFactory $factory,
     ) {}
 
     /**
@@ -46,11 +44,11 @@ final class AttendanceService extends BaseService
      * 出勤を打刻する
      * 
      * @param User $user ユーザー
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function clockIn(User $user): AttendanceData
+    public function clockIn(User $user): Attendance
     {
-        return $this->transaction(function () use ($user): AttendanceData {
+        return $this->transaction(function () use ($user): Attendance {
 
             // 出勤可能か検証する。
             $latestAttendance = $this->query->findLatestAttendance(user: $user);
@@ -70,8 +68,7 @@ final class AttendanceService extends BaseService
                 'work_timezone' => $timezone,
             ]);
 
-            // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($attendance);
+            return $attendance;
         });
     }
 
@@ -79,11 +76,11 @@ final class AttendanceService extends BaseService
      * 退勤を打刻する
      * 
      * @param User $user ユーザー
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function clockOut(User $user): AttendanceData
+    public function clockOut(User $user): Attendance
     {
-        return $this->transaction(function () use ($user): AttendanceData {
+        return $this->transaction(function () use ($user): Attendance {
 
             // 退勤可能か検証する。
             $latestAttendance = $this->query->findLatestAttendance(user: $user);
@@ -100,8 +97,7 @@ final class AttendanceService extends BaseService
                 'clock_out_at' => $now,
             ]);
 
-            // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($latestAttendance);
+            return $latestAttendance;
         });
     }
 
@@ -109,12 +105,11 @@ final class AttendanceService extends BaseService
      * 休憩を開始する
      *
      * @param User $user ユーザー
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function breakStart(User $user): AttendanceData
+    public function breakStart(User $user): Attendance
     {
-        return $this->transaction(function () use ($user): AttendanceData {
-
+        return $this->transaction(function () use ($user): Attendance {
             // 休憩開始可能か検証する。
             $latestAttendance = $this->query->findLatestAttendance(user: $user);
             if (!$latestAttendance) {
@@ -131,8 +126,7 @@ final class AttendanceService extends BaseService
                 'break_start' => $now->format('H:i:s'),
             ]);
 
-            // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($latestAttendance);
+            return $latestAttendance;
         });
     }
 
@@ -140,11 +134,11 @@ final class AttendanceService extends BaseService
      * 休憩を終了する
      *
      * @param User $user ユーザー
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function breakEnd(User $user): AttendanceData
+    public function breakEnd(User $user): Attendance
     {
-        return $this->transaction(function () use ($user): AttendanceData {
+        return $this->transaction(function () use ($user): Attendance {
 
             // 休憩終了可能か検証する。
             $latestAttendance = $this->query->findLatestAttendance(user: $user);
@@ -165,8 +159,7 @@ final class AttendanceService extends BaseService
                 'break_end' => $now->format('H:i:s'),
             ]);
 
-            // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($latestAttendance);
+            return $latestAttendance;
         });
     }
 
@@ -188,11 +181,11 @@ final class AttendanceService extends BaseService
      *
      * @param User $user ユーザー
      * @param array<string, mixed> $input 入力値
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function store(User $user, array $input): AttendanceData
+    public function store(User $user, array $input): Attendance
     {
-        return $this->transaction(function () use ($user, $input): AttendanceData {
+        return $this->transaction(function () use ($user, $input): Attendance {
             $attendance = Attendance::query()->create([
                 'user_id' => $user->id,
                 'work_date' => $input['work_date'],
@@ -202,7 +195,7 @@ final class AttendanceService extends BaseService
             ]);
 
             // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($attendance);
+            return $attendance;
         });
     }
 
@@ -212,18 +205,18 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @param Attendance $attendance 更新対象の勤怠
      * @param array<string, mixed> $input 入力値
-     * @return AttendanceData 勤怠データ
+     * @return Attendance 勤怠
      */
-    public function update(User $user, Attendance $attendance, array $input): AttendanceData
+    public function update(User $user, Attendance $attendance, array $input): Attendance
     {
-        return $this->transaction(function () use ($user, $attendance, $input): AttendanceData {
+        return $this->transaction(function () use ($user, $attendance, $input): Attendance {
             $attendance->update(array_filter([
                 'clock_in_at' => $input['clock_in_at'] ?? null,
                 'clock_out_at' => $input['clock_out_at'] ?? null,
             ], fn($v) => $v !== null));
 
             // 勤怠データを生成して返す。
-            return $this->factory->createFromModel($attendance);
+            return $attendance;
         });
     }
 }

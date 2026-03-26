@@ -9,9 +9,9 @@
         "openapi:bundle": "npm run openapi:lint && npx @redocly/cli bundle ./openapi/openapi.yaml -o ./openapi/build/bundle.yaml && npx @redocly/cli bundle ./openapi/openapi.yaml --dereferenced --ext json -o ./openapi/build/bundle.json",
         "openapi:client": "npx --prefix ./front orval",
         "openapi:zod": "npx --prefix ./front openapi-zod ./openapi/build/bundle.yaml -o ./front/src/__generated__/zod.ts",
-        "openapi:validators": "node ./openapi/scripts/generate-openapi-validators.mjs && npx prettier --write ./front/src/__generated__/zod.validation.ts",
+        "openapi:validators": "node ./openapi/scripts/generators/validators.mjs && npx prettier --write ./front/src/__generated__/zod.validation.ts",
         "openapi:examples": "node ./openapi/scripts/generate-openapi-examples.mjs",
-        "openapi:enums": "node ./openapi/scripts/generate-php-enums.mjs && node ./openapi/scripts/generate-ts-enums.mjs",
+        "openapi:enums": "node ./openapi/scripts/generators/php-enums.mjs && node ./openapi/scripts/generators/ts-enums.mjs",
         "openapi:clean": "rm -rf ./openapi/build/* ./openapi/examples/* ./front/src/__generated__/* ./back/app/Enums/Generated/*",
         "openapi:generate": "npm run openapi:enums && npm run openapi:bundle && npm run openapi:zod && npm run openapi:client && npm run openapi:validators && npm run openapi:examples"
     },

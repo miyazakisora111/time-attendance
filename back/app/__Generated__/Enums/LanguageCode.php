@@ -8,7 +8,7 @@ namespace App\__Generated__\Enums;
  * 表示言語コード
  *
  * ⚠️ AUTO-GENERATED — DO NOT EDIT MANUALLY.
- * Re-run: make openapi-enums
+ * Re-run: just openapi-enums
  * Source: openapi/components/enums/LanguageCode.yaml
  */
 enum LanguageCode: string

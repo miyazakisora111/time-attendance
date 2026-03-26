@@ -108,7 +108,7 @@ openapi-zod: openapi-bundle
 	npx --prefix $(FRONT_DIR) openapi-zod $(BUNDLE) -o $(FRONT_DIR)/src/__generated__/zod.ts
 
 openapi-validators: openapi-bundle openapi-zod
-	node openapi/scripts/generate-openapi-validators.mjs
+	node openapi/scripts/generators/validators.mjs
 	npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 openapi-clean:
@@ -118,11 +118,11 @@ openapi-clean:
 	rm -rf $(BACK_DIR)/app/__Generated__/*
 
 openapi-enums:
-	node openapi/scripts/generate-php-enums.mjs
-	node openapi/scripts/generate-ts-enums.mjs
+	node openapi/scripts/generators/php-enums.mjs
+	node openapi/scripts/generators/ts-enums.mjs
 	
 openapi-php-dto:
-	node openapi/scripts/generate-php-response-dtos.mjs
+	node openapi/scripts/generators/php-response-dtos.mjs
 
 openapi: openapi-enums openapi-php-dto openapi-zod openapi-client openapi-validators
 

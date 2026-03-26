@@ -55,8 +55,8 @@ jobs:
       # Enum の生成 → diff チェック
       - name: Generate enums
         run: |
-          node openapi/scripts/generate-php-enums.mjs
-          node openapi/scripts/generate-ts-enums.mjs
+          node openapi/scripts/generators/php-enums.mjs
+          node openapi/scripts/generators/ts-enums.mjs
 
       - name: Check enum drift
         run: |
@@ -78,7 +78,7 @@ jobs:
 
       - name: Check validator drift
         run: |
-          node openapi/scripts/generate-openapi-validators.mjs
+          node openapi/scripts/generators/validators.mjs
           if ! git diff --exit-code back/app/Http/Requests/Generated/; then
             echo ""
             echo "❌ Generated Laravel validation rules are out of date."

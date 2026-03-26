@@ -144,7 +144,7 @@ openapi-zod: openapi-bundle
 
 # バリデーター生成
 openapi-validators: openapi-bundle openapi-zod
-    node openapi/scripts/generate-openapi-validators.mjs
+    node openapi/scripts/generators/validators.mjs
     npx prettier --write ./front/src/__generated__/zod.validation.ts
 
 # 生成物クリーン
@@ -156,12 +156,12 @@ openapi-clean:
 
 # PHP / TypeScript Enum 生成
 openapi-enums:
-    node openapi/scripts/generate-php-enums.mjs
-    node openapi/scripts/generate-ts-enums.mjs
+    node openapi/scripts/generators/php-enums.mjs
+    node openapi/scripts/generators/ts-enums.mjs
 
 # PHP Response DTO 生成
 openapi-php-dto:
-    node openapi/scripts/generate-php-response-dtos.mjs
+    node openapi/scripts/generators/php-response-dtos.mjs
 
 # OpenAPI 全生成（enums → PHP DTO → zod → client → validators）
 openapi: openapi-enums openapi-php-dto openapi-zod openapi-client openapi-validators

@@ -11,6 +11,7 @@ use App\Http\Requests\Attendance\AttendanceUpdateRequest;
 use App\Http\Responses\ApiResponse;
 use App\Models\Attendance;
 use App\Application\Attendance\AttendanceService;
+use App\Http\Responses\Factories\AttendanceResponseFactory;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -22,9 +23,11 @@ final class AttendanceController extends BaseController
      * コンストラクタ
      *
      * @param AttendanceService $service 勤怠のサービス
+     * @param AttendanceResponseFactory $factory 勤怠データのファクトリ
      */
     public function __construct(
         private readonly AttendanceService $service,
+        private readonly AttendanceResponseFactory $factory,
     ) {}
 
     /**
@@ -34,7 +37,8 @@ final class AttendanceController extends BaseController
      */
     public function clockIn(): JsonResponse
     {
-        $result = $this->service->clockIn(user: $this->resolveAuthUser());
+        $attendance = $this->service->clockIn(user: $this->resolveAuthUser());
+        $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }
 
@@ -45,7 +49,8 @@ final class AttendanceController extends BaseController
      */
     public function clockOut(): JsonResponse
     {
-        $result = $this->service->clockOut(user: $this->resolveAuthUser());
+        $attendance = $this->service->clockOut(user: $this->resolveAuthUser());
+        $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }
 
@@ -56,7 +61,8 @@ final class AttendanceController extends BaseController
      */
     public function breakStart(): JsonResponse
     {
-        $result = $this->service->breakStart(user: $this->resolveAuthUser());
+        $attendance = $this->service->breakStart(user: $this->resolveAuthUser());
+        $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }
 
@@ -67,7 +73,8 @@ final class AttendanceController extends BaseController
      */
     public function breakEnd(): JsonResponse
     {
-        $result = $this->service->breakEnd(user: $this->resolveAuthUser());
+        $attendance = $this->service->breakEnd(user: $this->resolveAuthUser());
+        $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }
 
@@ -109,10 +116,11 @@ final class AttendanceController extends BaseController
     public function store(AttendanceStoreRequest $request): JsonResponse
     {
         // TODO:勤怠修正機能の作成。
-        $result = $this->service->store(
+        $attendance = $this->service->store(
             user: $this->resolveAuthUser(),
             input: $request->validated(),
         );
+        $result = $this->factory->createFromModel($attendance);
 
         return ApiResponse::success($result, status: 201);
     }
@@ -127,11 +135,12 @@ final class AttendanceController extends BaseController
     public function update(AttendanceUpdateRequest $request, Attendance $attendance): JsonResponse
     {
         // TODO:勤怠修正機能の作成。
-        $result = $this->service->update(
+        $attendance = $this->service->update(
             user: $this->resolveAuthUser(),
             attendance: $attendance,
             input: $request->validated(),
         );
+        $result = $this->factory->createFromModel($attendance);
 
         return ApiResponse::success($result);
     }
