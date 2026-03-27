@@ -16,24 +16,6 @@ use \Illuminate\Support\Collection;
  */
 final class AttendanceQuery
 {
-    // /**
-    //  * 今日の勤怠を取得する
-    //  * 
-    //  * @param User $user ユーザー
-    //  * @return ?Attendance 今日の勤怠
-    //  */
-    // public function today(User $user): ?Attendance
-    // {
-    //     $timezone = $user->timezone ?? config('app.timezone');
-    //     $today = CarbonImmutable::today($timezone)->toDateString();
-
-    //     return Attendance::query()
-    //         ->forUser($user->id)
-    //         ->workDate($today)
-    //         ->latest('clock_in_at')
-    //         ->first();
-    // }
-
     /**
      * 勤怠一覧を取得する
      * 
@@ -91,36 +73,6 @@ final class AttendanceQuery
             ->limit(1)
             ->first();
     }
-
-    // /**
-    //  * 最新の勤怠を取得する。
-    //  * 
-    //  * @param User $user ユーザー
-    //  * @return ?Attendance 最新の勤怠
-    //  */
-    // public function findLatestAttendance(User $user): ?Attendance
-    // {
-    //     return Attendance::query()
-    //         ->forUser($user->id)
-    //         ->latest('clock_in_at')
-    //         ->first();
-    // }
-
-    // /**
-    //  * 最近の勤怠休憩を取得する。
-    //  * 
-    //  * @param string $attendanceId 勤怠ID
-    //  * @return ?AttendanceBreak 最近の勤怠休憩
-    //  */
-    // public function findLatestAttendanceBreak(string $attendanceId): ?AttendanceBreak
-    // {
-    //     return AttendanceBreak::query()
-    //         ->forAttendance($attendanceId)
-    //         ->whereNotNull('break_start_at')
-    //         ->whereNull('break_end_at')
-    //         ->latest('break_start_at')
-    //         ->first();
-    // }
 
     /**
      * 休憩が終了済みの勤怠を取得する。

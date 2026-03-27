@@ -29,19 +29,6 @@ final class AttendanceService extends BaseService
     ) {}
 
     /**
-     * 勤怠一覧を取得する
-     *
-     * @param User $user ユーザー
-     * @param string $from 開始日
-     * @param string $to 終了日
-     * @return array<int, array<string, mixed>> 勤怠一覧
-     */
-    public function index(User $user, string $from, string $to): array
-    {
-        return $this->query->list($user, $from, $to);
-    }
-
-    /**
      * 本日の勤怠情報を取得する
      *
      * @param User $user ユーザー
@@ -113,7 +100,7 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @return Attendance 勤怠
      */
-    public function breakStartAt(User $user): Attendance
+    public function breakStart(User $user): Attendance
     {
         return $this->transaction(function () use ($user): Attendance {
 
@@ -140,7 +127,7 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @return Attendance 勤怠
      */
-    public function breakEndAt(User $user): Attendance
+    public function breakEnd(User $user): Attendance
     {
         return $this->transaction(function () use ($user): Attendance {
 
