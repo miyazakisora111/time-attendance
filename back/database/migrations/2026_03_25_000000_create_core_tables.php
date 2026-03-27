@@ -95,8 +95,8 @@ return new class extends Migration
         Schema::create('attendance_breaks', function (Blueprint $table): void {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'))->comment('休憩ID');
             $table->foreignUuid('attendance_id')->constrained('attendances')->cascadeOnDelete()->comment('勤怠ID');
-            $table->time('break_start')->comment('休憩開始時刻');
-            $table->time('break_end')->nullable()->comment('休憩終了時刻');
+            $table->time('break_start_at')->comment('休憩開始時刻');
+            $table->time('break_end_at')->nullable()->comment('休憩終了時刻');
             $table->timestampsTz();
             $table->softDeletesTz();
             $table->index('attendance_id', 'idx_attendance_breaks_attendance_id');
@@ -136,7 +136,7 @@ return new class extends Migration
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_theme CHECK (theme IN ('light', 'dark'))");
         DB::statement("ALTER TABLE user_settings ADD CONSTRAINT chk_user_settings_language CHECK (language IN ('ja', 'en'))");
         DB::statement("ALTER TABLE attendances ADD CONSTRAINT chk_attendances_time_order CHECK (clock_out_at IS NULL OR clock_in_at IS NULL OR clock_out_at >= clock_in_at)");
-        DB::statement("ALTER TABLE attendance_breaks ADD CONSTRAINT chk_attendance_breaks_time_order CHECK (break_end IS NULL OR break_end >= break_start)");
+        DB::statement("ALTER TABLE attendance_breaks ADD CONSTRAINT chk_attendance_breaks_time_order CHECK (break_end_at IS NULL OR break_end_at >= break_start_at)");
         DB::statement("ALTER TABLE paid_leave_grants ADD CONSTRAINT chk_paid_leave_grants_days_positive CHECK (days > 0)");
 
         DB::statement("CREATE UNIQUE INDEX uq_users_email_active ON users (email) WHERE deleted_at IS NULL");

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query';
 import { makeScopedKeys } from '@/lib/query/keys';
-import { fetchTodayAttendance, clockIn, clockOut, breakStart, breakEnd } from '@/api/attendance.api';
+import { fetchLatestAttendance, clockIn, clockOut, breakStart, breakEnd } from '@/api/attendance.api';
 import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { AttendanceClockInRequest } from '@/__generated__/model/attendanceClockInRequest';
@@ -15,7 +15,7 @@ const SCOPE = 'attendance' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const attendanceQueryKeys = {
   all: () => scoped.all(),
-  today: () => scoped.nest('today'),
+  latest: () => scoped.nest('latest'),
   clockIn: () => scoped.nest('clockIn'),
   clockOut: () => scoped.nest('clockOut'),
   breakStart: () => scoped.nest('breakStart'),
@@ -23,12 +23,12 @@ export const attendanceQueryKeys = {
 } as const;
 
 /** 
- * 勤怠取得 
+ * 最新の勤怠情報を取得 
  */
-export const useTodayAttendanceQuery = () =>
+export const useLatestAttendanceQuery = () =>
   useQuery({
-    queryKey: attendanceQueryKeys.today(),
-    queryFn: () => fetchTodayAttendance(),
+    queryKey: attendanceQueryKeys.latest(),
+    queryFn: () => fetchLatestAttendance(),
     select: (data) => toAttendanceView(data),
     staleTime: 0, // 打刻直後の refetch を即時実行するため
   });

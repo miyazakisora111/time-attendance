@@ -8,7 +8,7 @@ import {
     useClockOutMutation,
     useBreakStartMutation,
     useBreakEndMutation,
-    useTodayAttendanceQuery,
+    useLatestAttendanceQuery,
 } from '@/features/attendance/hooks/useAttendanceQueries';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
@@ -27,14 +27,14 @@ interface UseAttendanceClockOptions {
  */
 export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const queryClient = useQueryClient();
-    const { data: todayAttendance, isLoading, isError } = useTodayAttendanceQuery();
+    const { data: LatestAttendance, isLoading, isError } = useLatestAttendanceQuery();
     const { mutate: clockInMutate, isPending: isClockingIn } = useClockInMutation();
     const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOutMutation();
-    const { mutate: breakStartMutate, isPending: isBreakStarting } = useBreakStartMutation();
-    const { mutate: breakEndMutate, isPending: isBreakEnding } = useBreakEndMutation();
+    const { mutate: breakStartAtMutate, isPending: isBreakStarting } = useBreakStartMutation();
+    const { mutate: breakEndAtMutate, isPending: isBreakEnding } = useBreakEndMutation();
 
     // データが存在しない場合は、未出勤のため「out」とする
-    const clockStatus: ClockStatus = todayAttendance?.clockStatus ?? 'out';
+    const clockStatus: ClockStatus = LatestAttendance?.clockStatus ?? 'out';
 
     const handleAction = (clockAction: ClockAction) => {
         const now = new Date();
@@ -77,7 +77,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     };
 
     return {
-        ...todayAttendance,
+        ...LatestAttendance,
         clockStatus,
         attendanceStatus: clockStatusToAttendanceStatusMap[clockStatus],
         isLoading,

@@ -22,15 +22,15 @@ class AttendanceBreakSeeder extends Seeder
                     $breakCount = fake()->numberBetween(0, 2);
 
                     for ($i = 0; $i < $breakCount; $i++) {
-                        $breakStart = Carbon::parse($attendance->work_date)
+                        $breakStartAt = Carbon::parse($attendance->work_date)
                             ->setTime(12 + $i, fake()->numberBetween(0, 20), 0);
-                        $breakEnd = $breakStart->copy()->addMinutes(fake()->numberBetween(15, 45));
+                        $breakEndAt = $breakStartAt->copy()->addMinutes(fake()->numberBetween(15, 45));
 
                         AttendanceBreakFactory::new()
                             ->forAttendance($attendance)
                             ->state([
-                                'break_start' => $breakStart->format('H:i:s'),
-                                'break_end' => $breakEnd->format('H:i:s'),
+                                'break_start_at' => $breakStartAt->format('H:i:s'),
+                                'break_end_at' => $breakEndAt->format('H:i:s'),
                             ])
                             ->create();
                     }

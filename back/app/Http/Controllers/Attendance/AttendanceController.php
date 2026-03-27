@@ -79,13 +79,13 @@ final class AttendanceController extends BaseController
     }
 
     /**
-     * 本日の勤怠情報を取得する。
+     * 最新の勤怠情報を取得する。
      *
      * @return JsonResponse JSONレスポンス
      */
-    public function today(): JsonResponse
+    public function latest(): JsonResponse
     {
-        $attendance = $this->service->getToday(user: $this->resolveAuthUser());
+        $attendance = $this->service->getLatestAttendance(user: $this->resolveAuthUser());
         $result = $this->factory->createFromModel($attendance);
         return ApiResponse::success($result);
     }

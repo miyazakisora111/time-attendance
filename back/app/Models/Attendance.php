@@ -74,16 +74,6 @@ class Attendance extends BaseModel
     }
 
     /**
-     * 休憩完了の勤怠休憩を取得する。
-     */
-    public function completedBreaks(): HasMany
-    {
-        return $this->breaks()
-            ->whereNotNull('break_start')
-            ->whereNotNull('break_end');
-    }
-
-    /**
      * 勤怠に紐づくユーザー
      */
     public function user(): BelongsTo
@@ -150,16 +140,5 @@ class Attendance extends BaseModel
         }
 
         return $end->diffInMinutes($start);
-    }
-
-    /**
-     * 合計休憩時間（分）を算出する
-     */
-    public function totalBreakMinutes(): int
-    {
-        $this->loadMissing('completedBreaks');
-
-        return $this->completedBreaks
-            ->sum(fn(AttendanceBreak $break) => $break->breakMinutes());
     }
 }

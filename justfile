@@ -114,7 +114,7 @@ front-lint:
 
 # Laravel 開発サーバー（ローカル）
 local-back:
-    cd {{ back_dir }} && php artisan serve --host=0.0.0.0 --port=8000
+    cd {{ back_dir }} && XDEBUG_MODE=debug,develop php artisan serve --host=0.0.0.0 --port=8000
 
 # ヘルスチェック
 health:
@@ -150,7 +150,6 @@ openapi-validators: openapi-bundle openapi-zod
 # 生成物クリーン
 openapi-clean:
     rm -rf {{ openapi_dir }}/build/*
-    rm -rf {{ openapi_dir }}/examples/*
     rm -rf {{ front_dir }}/src/__generated__/*
     rm -rf {{ back_dir }}/app/__Generated__/*
 

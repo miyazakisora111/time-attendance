@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Attendance;
 
 use App\Application\BaseService;
-use App\Exceptions\DomainException;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
@@ -48,9 +47,9 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @return ?Attendance
      */
-    public function getToday(User $user): ?Attendance
+    public function getLatestAttendance(User $user): ?Attendance
     {
-        return $this->query->today($user);
+        return $this->query->getLatestAttendance($user);
     }
 
     /**
@@ -64,8 +63,8 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): Attendance {
 
             // 出勤可能か検証する。
-            $workingAttendance = $this->query->findWorkingAttendance($user);
-            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
+            $latestAttendance = $this->query->getLatestAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
             $this->guard->assertCanClockIn($clockStatus);
 
             // 勤怠テーブルに登録する。
@@ -93,18 +92,18 @@ final class AttendanceService extends BaseService
         return $this->transaction(function () use ($user): Attendance {
 
             // 退勤可能か検証する。
-            $workingAttendance = $this->query->findWorkingAttendance($user);
-            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
+            $latestAttendance = $this->query->getLatestAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
             $this->guard->assertCanClockOut($clockStatus);
 
             // 勤怠テーブルを更新する。
-            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $workingAttendance->update([
+            $latestAttendance->update([
                 'clock_out_at' => $now,
             ]);
 
-            return $workingAttendance;
+            return $latestAttendance->refresh();
         });
     }
 
@@ -114,23 +113,24 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @return Attendance 勤怠
      */
-    public function breakStart(User $user): Attendance
+    public function breakStartAt(User $user): Attendance
     {
         return $this->transaction(function () use ($user): Attendance {
+
             // 休憩開始可能か検証する。
-            $workingAttendance = $this->query->findWorkingAttendance($user);
-            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
+            $latestAttendance = $this->query->getLatestAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
             $this->guard->assertCanBreakStart($clockStatus);
 
             // 勤怠休憩テーブルに登録する。
-            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
             AttendanceBreak::query()->create([
-                'attendance_id' => $workingAttendance->id,
-                'break_start' => $now->format('H:i:s'),
+                'attendance_id' => $latestAttendance->id,
+                'break_start_at' => $now->format('H:i:s'),
             ]);
 
-            return $workingAttendance;
+            return $latestAttendance;
         });
     }
 
@@ -140,28 +140,24 @@ final class AttendanceService extends BaseService
      * @param User $user ユーザー
      * @return Attendance 勤怠
      */
-    public function breakEnd(User $user): Attendance
+    public function breakEndAt(User $user): Attendance
     {
         return $this->transaction(function () use ($user): Attendance {
 
             // 休憩終了可能か検証する。
-            $workingAttendance = $this->query->findWorkingAttendance($user);
-            $clockStatus = $this->resolver->resolveClockStatus($workingAttendance);
+            $latestAttendance = $this->query->getLatestAttendance($user);
+            $clockStatus = $this->resolver->resolveClockStatus($latestAttendance);
             $this->guard->assertCanBreakEnd($clockStatus);
 
-            $activeBreak = $this->resolver->findActiveBreak($workingAttendance);
-            if ($activeBreak === null) {
-                throw new DomainException('休憩中ではありません', 'NOT_ON_BREAK');
-            }
-
             // 勤怠休憩テーブルを更新する。
-            $timezone = $this->resolveTimezone($workingAttendance->work_timezone);
+            $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $activeBreak->update([
-                'break_end' => $now->format('H:i:s'),
+            $latestAttendanceBreak = $this->query->getLatestAttendanceBreak($user);
+            $latestAttendanceBreak->update([
+                'break_end_at' => $now->format('H:i:s'),
             ]);
 
-            return $workingAttendance;
+            return $latestAttendance;
         });
     }
 

@@ -67,12 +67,12 @@ attendance_break:
     label: 勤怠ID
     required: true
     description: 紐付く勤怠レコード
-  break_start:
+  break_start_at:
     type: time
     label: 休憩開始時刻
     required: true
     description: 休憩開始時刻
-  break_end:
+  break_end_at:
     type: time
     label: 休憩終了時刻
     required: false

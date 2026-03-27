@@ -34,7 +34,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
     // 勤怠
     Route::prefix('attendances')->group(function () {
-        Route::get('/today', [AttendanceController::class, 'today']);
+        Route::get('/latest', [AttendanceController::class, 'latest']);
         Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
         Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
         Route::post('/break-start', [AttendanceController::class, 'breakStart']);

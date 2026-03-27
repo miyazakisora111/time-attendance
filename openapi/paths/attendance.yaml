@@ -1,13 +1,13 @@
-todayAttendance:
+latestAttendance:
   get:
-    operationId: getTodayAttendance
+    operationId: getLatestAttendance
     tags:
       - Attendance
-    summary: 今日の勤怠取得
-    description: ログイン中ユーザーの当日の勤怠レコードを返す。
+    summary: 最新の勤怠情報取得
+    description: ログイン中ユーザーの最新の勤怠情報を返す。
     responses:
       "200":
-        description: 今日の勤怠情報
+        description: 最新の勤怠情報
         content:
           application/json:
             schema:

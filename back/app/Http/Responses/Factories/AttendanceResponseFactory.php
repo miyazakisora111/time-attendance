@@ -6,6 +6,7 @@ namespace App\Http\Responses\Factories;
 
 use App\__Generated__\Responses\AttendanceResponse;
 use App\Application\Attendance\AttendanceResolver;
+use App\Application\Attendance\AttendanceQuery;
 use App\Models\Attendance;
 
 /**
@@ -17,9 +18,11 @@ class AttendanceResponseFactory
      * コンストラクタ
      * 
      * @param AttendanceResolver $attendanceResolver 勤怠リゾルバ
+     * @param AttendanceQuery $attendanceQuery 勤怠クエリ
      */
     public function __construct(
         private readonly AttendanceResolver $resolver,
+        private readonly AttendanceQuery $query,
     ) {}
 
     /**
@@ -31,7 +34,8 @@ class AttendanceResponseFactory
     public function createFromModel(Attendance $attendance): AttendanceResponse
     {
         // 休憩時間を計算する。
-        $totalBreakMinutes = $attendance->totalBreakMinutes();
+        $totalBreakMinutes = $this->query->getBreaks($attendance->user, $attendance->work_date)
+            ->sum(fn($b) => $b->breakMinutes());
 
         // 勤務時間を計算する。
         $workedMinutes = $attendance->workMinutes() - $totalBreakMinutes;

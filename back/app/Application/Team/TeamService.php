@@ -82,9 +82,9 @@ final class TeamService extends BaseService
 
         $activeBreak = AttendanceBreak::query()
             ->where('attendance_id', $attendance->id)
-            ->whereNotNull('break_start')
-            ->whereNull('break_end')
-            ->latest('break_start')
+            ->whereNotNull('break_start_at')
+            ->whereNull('break_end_at')
+            ->latest('break_start_at')
             ->first();
 
         if ($activeBreak !== null) {

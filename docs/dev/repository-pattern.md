@@ -77,7 +77,7 @@ final class AttendanceRepository extends BaseRepository
         return Attendance::class;
     }
 
-    public function findWorkingAttendance(string $userId): ?Attendance
+    public function getLatestAttendance(string $userId): ?Attendance
     {
         return $this->query()
             ->where('user_id', $userId)
@@ -96,7 +96,7 @@ public function __construct(
 public function clockIn(User $user): array
 {
     return $this->transaction(function () use ($user): array {
-        if ($this->repo->findWorkingAttendance($user->id) !== null) {
+        if ($this->repo->getLatestAttendance($user->id) !== null) {
             throw new DomainException('未退勤の勤務が存在します');
         }
         // ...
@@ -106,13 +106,13 @@ public function clockIn(User $user): array
 
 ## Repository 導入の判断基準
 
-| 基準 | 現状 | 判断 |
-|---|---|---|
-| DB エンジン変更の可能性 | PostgreSQL で固定 | 不要 |
-| テストでモック差し替え | `Attendance::query()` を直接使用 | Model スコープで代替可能 |
-| クエリの再利用性 | スコープで充分 | 不要 |
-| チーム規模 | 小〜中規模 | 過剰設計のリスク |
-| CQRS 導入予定 | なし | 不要 |
+| 基準                    | 現状                             | 判断                     |
+| ----------------------- | -------------------------------- | ------------------------ |
+| DB エンジン変更の可能性 | PostgreSQL で固定                | 不要                     |
+| テストでモック差し替え  | `Attendance::query()` を直接使用 | Model スコープで代替可能 |
+| クエリの再利用性        | スコープで充分                   | 不要                     |
+| チーム規模              | 小〜中規模                       | 過剰設計のリスク         |
+| CQRS 導入予定           | なし                             | 不要                     |
 
 ## 推奨方針
 
@@ -128,9 +128,9 @@ public function clockIn(User $user): array
 
 ## 注意: 設計レビュー指摘事項
 
-| 問題 | 影響 | 改善案 |
-|---|---|---|
-| **BaseRepository が存在するが未使用** | 新規メンバーが「使うべきか」混乱する | 削除するか、README に「現在未使用」と明記する |
-| **BaseRepository の `create()` が `array` を受ける** | 型安全性が低い。Data を受けるべき | Repository を使う場合は `createFromData(BaseData $dto)` に変更 |
-| **BaseRepository のコンストラクタで `app()` を使用** | テスト時のモック差し替えが困難 | コンストラクタインジェクションに変更 |
-| **`query()` メソッドが公開されている** | Repository の抽象化が漏洩する（呼び出し側が自由にクエリを組める） | `query()` を protected にし、具体メソッドのみ公開する |
+| 問題                                                 | 影響                                                              | 改善案                                                         |
+| ---------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------- |
+| **BaseRepository が存在するが未使用**                | 新規メンバーが「使うべきか」混乱する                              | 削除するか、README に「現在未使用」と明記する                  |
+| **BaseRepository の `create()` が `array` を受ける** | 型安全性が低い。Data を受けるべき                                 | Repository を使う場合は `createFromData(BaseData $dto)` に変更 |
+| **BaseRepository のコンストラクタで `app()` を使用** | テスト時のモック差し替えが困難                                    | コンストラクタインジェクションに変更                           |
+| **`query()` メソッドが公開されている**               | Repository の抽象化が漏洩する（呼び出し側が自由にクエリを組める） | `query()` を protected にし、具体メソッドのみ公開する          |

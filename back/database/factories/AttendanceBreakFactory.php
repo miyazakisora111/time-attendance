@@ -17,12 +17,12 @@ class AttendanceBreakFactory extends Factory
 
     public function definition(): array
     {
-        $breakStart = fake()->dateTimeBetween('-1 month', 'now');
+        $breakStartAt = fake()->dateTimeBetween('-1 month', 'now');
 
         return [
             'attendance_id' => null,
-            'break_start' => $breakStart->format('H:i:s'),
-            'break_end' => fake()->optional(0.8)->dateTimeBetween($breakStart, '+90 minutes')?->format('H:i:s'),
+            'break_start_at' => $breakStartAt->format('H:i:s'),
+            'break_end_at' => fake()->optional(0.8)->dateTimeBetween($breakStartAt, '+90 minutes')?->format('H:i:s'),
         ];
     }
 

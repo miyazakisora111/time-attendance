@@ -413,13 +413,13 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  getTodayAttendance: {
+  getLatestAttendance: {
     /**
-     * 今日の勤怠取得 
-     * @description ログイン中ユーザーの当日の勤怠レコードを返す。
+     * 最新の勤怠情報取得 
+     * @description ログイン中ユーザーの最新の勤怠情報を返す。
      */
     responses: {
-      /** @description 今日の勤怠情報 */
+      /** @description 最新の勤怠情報 */
       200: {
         content: {
           "application/json": components["schemas"]["AttendanceResponse"],
@@ -710,12 +710,12 @@ export const paths = {
      */
     get: operations["getMe"],
   },
-  "/attendances/today": {
+  "/attendances/latest": {
     /**
-     * 今日の勤怠取得 
-     * @description ログイン中ユーザーの当日の勤怠レコードを返す。
+     * 最新の勤怠情報取得 
+     * @description ログイン中ユーザーの最新の勤怠情報を返す。
      */
-    get: operations["getTodayAttendance"],
+    get: operations["getLatestAttendance"],
   },
   "/attendances/clock-in": {
     /**

@@ -26,16 +26,16 @@ class AttendanceBreak extends BaseModel
      */
     protected $fillable = [
         'attendance_id',
-        'break_start',
-        'break_end',
+        'break_start_at',
+        'break_end_at',
     ];
 
     /**
      * {@inheritdoc}
      */
     protected $casts = [
-        'break_start' => 'string',
-        'break_end' => 'string',
+        'break_start_at' => 'string',
+        'break_end_at' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -56,7 +56,7 @@ class AttendanceBreak extends BaseModel
      */
     public function isBreaking(): bool
     {
-        return $this->break_start !== null && $this->break_end === null;
+        return $this->break_start_at !== null && $this->break_end_at === null;
     }
 
     /**
@@ -64,7 +64,7 @@ class AttendanceBreak extends BaseModel
      */
     public function isBreakFinished(): bool
     {
-        return $this->break_end !== null;
+        return $this->break_end_at !== null;
     }
 
     /**
@@ -80,9 +80,9 @@ class AttendanceBreak extends BaseModel
      */
     public function breakMinutes(): int
     {
-        $startAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_start);
-        $endAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_end);
-        $diff = $startAt->diffInMinutes($endAt, false);
+        $breakStartAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_start_at);
+        $breakEndAt = CarbonImmutable::createFromFormat('H:i:s', $this->break_end_at);
+        $diff = $breakStartAt->diffInMinutes($breakEndAt, false);
 
         return $diff >= 0 ? $diff : $diff + 24 * 60;
     }

@@ -8,6 +8,7 @@ use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use \Illuminate\Support\Collection;
 
 /**
@@ -15,23 +16,23 @@ use \Illuminate\Support\Collection;
  */
 final class AttendanceQuery
 {
-    /**
-     * 今日の勤怠を取得する
-     * 
-     * @param User $user ユーザー
-     * @return ?Attendance 今日の勤怠
-     */
-    public function today(User $user): ?Attendance
-    {
-        $timezone = $user->timezone ?? config('app.timezone');
-        $today = CarbonImmutable::today($timezone)->toDateString();
+    // /**
+    //  * 今日の勤怠を取得する
+    //  * 
+    //  * @param User $user ユーザー
+    //  * @return ?Attendance 今日の勤怠
+    //  */
+    // public function today(User $user): ?Attendance
+    // {
+    //     $timezone = $user->timezone ?? config('app.timezone');
+    //     $today = CarbonImmutable::today($timezone)->toDateString();
 
-        return Attendance::query()
-            ->forUser($user->id)
-            ->workDate($today)
-            ->latest('clock_in_at')
-            ->first();
-    }
+    //     return Attendance::query()
+    //         ->forUser($user->id)
+    //         ->workDate($today)
+    //         ->latest('clock_in_at')
+    //         ->first();
+    // }
 
     /**
      * 勤怠一覧を取得する
@@ -55,16 +56,39 @@ final class AttendanceQuery
     }
 
     /**
-     * 勤務中の勤怠を取得する。
+     * 最新の勤怠を取得する。
      *
      * @param User $user ユーザー
-     * @return ?Attendance 勤務中の勤怠
+     * @return ?Attendance 最新の勤怠
      */
-    public function findWorkingAttendance(User $user): ?Attendance
+    public function getLatestAttendance(User $user): ?Attendance
     {
         return Attendance::query()
             ->forUser($user->id)
-            ->whereNull('clock_out_at')
+            ->latest('clock_in_at')
+            ->first();
+    }
+
+    /**
+     * 最新の勤怠を取得する。
+     *
+     * @param User $user ユーザー
+     * @return ?Attendance 最新の勤怠
+     */
+    public function getLatestAttendanceBreak(User $user): ?Attendance
+    {
+        return Attendance::query()
+            ->from('attendances as a')
+            ->leftJoin('attendance_breaks as b', 'b.attendance_id', '=', 'a.id')
+            ->where('a.user_id', $user->id)
+            ->orderByDesc('a.clock_in_at')
+            ->orderByDesc('b.break_start_at_at')
+            ->select([
+                'a.*',
+                'b.break_start_at_at',
+                'b.break_end_at_at',
+            ])
+            ->limit(1)
             ->first();
     }
 
@@ -92,24 +116,28 @@ final class AttendanceQuery
     // {
     //     return AttendanceBreak::query()
     //         ->forAttendance($attendanceId)
-    //         ->whereNotNull('break_start')
-    //         ->whereNull('break_end')
-    //         ->latest('break_start')
+    //         ->whereNotNull('break_start_at')
+    //         ->whereNull('break_end_at')
+    //         ->latest('break_start_at')
     //         ->first();
     // }
 
-    // /**
-    //  * 休憩が終了済みの勤怠を取得する。
-    //  * 
-    //  * @param string $attendanceId 勤怠ID
-    //  * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
-    //  */
-    // public function findCompletedBreaks(string $attendanceId): Collection
-    // {
-    //     return AttendanceBreak::query()
-    //         ->where('attendance_id', $attendanceId)
-    //         ->whereNotNull('break_start')
-    //         ->whereNotNull('break_end')
-    //         ->get();
-    // }
+    /**
+     * 休憩が終了済みの勤怠を取得する。
+     * 
+     * @param User $user ユーザー
+     * @param CarbonInterface $workDate 勤務日
+     * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
+     */
+    public function getBreaks(User $user, CarbonInterface $workDate): Collection
+    {
+        return AttendanceBreak::query()
+            ->leftJoin('attendances', 'attendance_breaks.attendance_id', '=', 'attendances.id')
+            ->where('attendances.user_id', $user->id)
+            ->whereDate('attendances.work_date', $workDate)
+            ->whereNotNull('attendance_breaks.break_start_at')
+            ->whereNotNull('attendance_breaks.break_end_at')
+            ->select('attendance_breaks.*')
+            ->get();
+    }
 }

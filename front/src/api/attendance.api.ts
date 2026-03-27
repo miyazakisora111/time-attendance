@@ -12,9 +12,9 @@ import { call } from '@/lib/http/result';
 const client = getAttendance();
 
 /** 
- * 勤怠を取得 
+ * 最新の勤怠情報を取得
  */
-export const fetchTodayAttendance = () => call<AttendanceResponse>(() => client.getTodayAttendance());
+export const fetchLatestAttendance = () => call<AttendanceResponse>(() => client.getLatestAttendance());
 
 /** 
  * 出勤打刻

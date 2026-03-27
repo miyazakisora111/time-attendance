@@ -70,8 +70,8 @@ paths:
     $ref: "./paths/auth.yaml#/logout"
   /auth/me:
     $ref: "./paths/auth.yaml#/authMe"
-  /attendances/today:
-    $ref: "./paths/attendance.yaml#/todayAttendance"
+  /attendances/latest:
+    $ref: "./paths/attendance.yaml#/latestAttendance"
   /attendances/clock-in:
     $ref: "./paths/attendance.yaml#/clockIn"
   /attendances/clock-out:

@@ -24,7 +24,7 @@ openapi/
 ├── openapi.yaml                     # エントリポイント（パス・コンポーネント登録）
 ├── components/
 │   ├── enums/                       # Enum 定義（全ドメイン共通）
-│   │   ├── ClockAction.yaml         #   打刻アクション: in, out, break_start, break_end
+│   │   ├── ClockAction.yaml         #   打刻アクション: in, out, break_start_at, break_end_at
 │   │   ├── ClockStatus.yaml         #   打刻状態: out, in, break
 │   │   ├── ThemeType.yaml           #   UIテーマ: light, dark
 │   │   ├── LanguageCode.yaml        #   言語コード: ja, en
@@ -58,17 +58,17 @@ openapi/
 
 ### 各ディレクトリの責務
 
-| ディレクトリ | 責務 | 編集頻度 |
-|---|---|---|
-| `components/enums/` | 全ての列挙型を一元管理 | 低（値追加時のみ） |
-| `components/schemas/` | Data（データ構造）をドメイン別に格納 | 中 |
-| `components/parameters.yaml` | 再利用可能なパス・クエリパラメータ | 低 |
-| `components/requestBodies.yaml` | HTTPリクエストボディのラッパー定義 | 低 |
-| `components/responses.yaml` | 共通エラーHTTPレスポンス（401, 403, 404, 409, 422, 500） | 低 |
-| `paths/` | API エンドポイント定義 | 高 |
-| `schema/fields.yaml` | UI生成用フィールドメタデータ | 中 |
-| `build/` | **自動生成** — 手動編集禁止 | — |
-| `examples/` | **自動生成** — 手動編集禁止 | — |
+| ディレクトリ                    | 責務                                                     | 編集頻度           |
+| ------------------------------- | -------------------------------------------------------- | ------------------ |
+| `components/enums/`             | 全ての列挙型を一元管理                                   | 低（値追加時のみ） |
+| `components/schemas/`           | Data（データ構造）をドメイン別に格納                     | 中                 |
+| `components/parameters.yaml`    | 再利用可能なパス・クエリパラメータ                       | 低                 |
+| `components/requestBodies.yaml` | HTTPリクエストボディのラッパー定義                       | 低                 |
+| `components/responses.yaml`     | 共通エラーHTTPレスポンス（401, 403, 404, 409, 422, 500） | 低                 |
+| `paths/`                        | API エンドポイント定義                                   | 高                 |
+| `schema/fields.yaml`            | UI生成用フィールドメタデータ                             | 中                 |
+| `build/`                        | **自動生成** — 手動編集禁止                              | —                  |
+| `examples/`                     | **自動生成** — 手動編集禁止                              | —                  |
 
 ---
 
@@ -76,13 +76,13 @@ openapi/
 
 ### なぜ分離しているのか
 
-| 分離対象 | 理由 |
-|---|---|
-| **Enum** | 同一 enum が複数スキーマで参照される。1箇所で管理することで不整合を防ぐ |
-| **Schema（Data）** | ドメインごとに閉じた構造を持つ。ファイル単位の変更差分で影響範囲が明確 |
-| **Parameters** | `from`/`to`（日付範囲）や `year`/`month` は複数エンドポイントで同じ意味で使用 |
-| **RequestBody** | スキーマとHTTP層の関心を分離。Content-Type 変更時に吸収しやすい |
-| **Error Response** | 全エンドポイント共通のエラーフォーマットを1箇所で定義 |
+| 分離対象           | 理由                                                                          |
+| ------------------ | ----------------------------------------------------------------------------- |
+| **Enum**           | 同一 enum が複数スキーマで参照される。1箇所で管理することで不整合を防ぐ       |
+| **Schema（Data）** | ドメインごとに閉じた構造を持つ。ファイル単位の変更差分で影響範囲が明確        |
+| **Parameters**     | `from`/`to`（日付範囲）や `year`/`month` は複数エンドポイントで同じ意味で使用 |
+| **RequestBody**    | スキーマとHTTP層の関心を分離。Content-Type 変更時に吸収しやすい               |
+| **Error Response** | 全エンドポイント共通のエラーフォーマットを1箇所で定義                         |
 
 ### なぜ共通化しているのか
 
@@ -168,14 +168,14 @@ stats:
 
 ### 何を共通化するか
 
-| 対象 | 共通化先 | 理由 |
-|---|---|---|
-| Enum（全て） | `components/enums/` | 値の追加・変更を1箇所に集約 |
-| ID（UUID） | 各スキーマ内 `type: string, format: uuid` | 意味的に統一 |
-| 日付 / 時間 | パラメータ定義で共通化 | `from`/`to` パターンの再利用 |
-| エラーフォーマット | `ErrorResponse` / `ValidationErrorResponse` | 全エンドポイント共通 |
-| エラーHTTPレスポンス | `components/responses.yaml` | 401/403/404/409/422/500 |
-| 通知設定 | `SettingsNotifications` | Request/Response で同一構造 |
+| 対象                 | 共通化先                                    | 理由                         |
+| -------------------- | ------------------------------------------- | ---------------------------- |
+| Enum（全て）         | `components/enums/`                         | 値の追加・変更を1箇所に集約  |
+| ID（UUID）           | 各スキーマ内 `type: string, format: uuid`   | 意味的に統一                 |
+| 日付 / 時間          | パラメータ定義で共通化                      | `from`/`to` パターンの再利用 |
+| エラーフォーマット   | `ErrorResponse` / `ValidationErrorResponse` | 全エンドポイント共通         |
+| エラーHTTPレスポンス | `components/responses.yaml`                 | 401/403/404/409/422/500      |
+| 通知設定             | `SettingsNotifications`                     | Request/Response で同一構造  |
 
 ### 共通化の判断基準
 
@@ -197,28 +197,28 @@ stats:
 {ドメイン}{サブドメイン?}{役割}
 ```
 
-| パターン | 例 | 説明 |
-|---|---|---|
-| `{Domain}Response` | `DashboardResponse` | API HTTPレスポンス全体 |
-| `{Domain}{Sub}Request` | `AttendanceClockInRequest` | HTTPリクエストボディ |
-| `{Domain}{Sub}` | `DashboardStats` | HTTPレスポンス内の部品Data |
-| `Update{Domain}Request` | `UpdateSettingsRequest` | 更新HTTPリクエスト |
+| パターン                | 例                         | 説明                       |
+| ----------------------- | -------------------------- | -------------------------- |
+| `{Domain}Response`      | `DashboardResponse`        | API HTTPレスポンス全体     |
+| `{Domain}{Sub}Request`  | `AttendanceClockInRequest` | HTTPリクエストボディ       |
+| `{Domain}{Sub}`         | `DashboardStats`           | HTTPレスポンス内の部品Data |
+| `Update{Domain}Request` | `UpdateSettingsRequest`    | 更新HTTPリクエスト         |
 
 ### Enum 命名
 
-| パターン | 例 |
-|---|---|
+| パターン                     | 例                                         |
+| ---------------------------- | ------------------------------------------ |
 | `{名詞}{Type\|Status\|Code}` | `ClockStatus`, `ThemeType`, `LanguageCode` |
-| ドメイン固有の状態 | `CalendarDayStatus`, `TeamMemberStatus` |
+| ドメイン固有の状態           | `CalendarDayStatus`, `TeamMemberStatus`    |
 
 ### Response 命名
 
-| パターン | 用途 |
-|---|---|
-| `{Domain}Response` | 単一リソースのHTTPレスポンス |
-| `{Domain}MembersResponse` | 一覧HTTPレスポンス |
-| `ErrorResponse` | 共通エラー |
-| `ValidationErrorResponse` | バリデーションエラー |
+| パターン                  | 用途                         |
+| ------------------------- | ---------------------------- |
+| `{Domain}Response`        | 単一リソースのHTTPレスポンス |
+| `{Domain}MembersResponse` | 一覧HTTPレスポンス           |
+| `ErrorResponse`           | 共通エラー                   |
+| `ValidationErrorResponse` | バリデーションエラー         |
 
 ---
 
@@ -240,13 +240,13 @@ stats:
 
 ### Schema 変更時の影響範囲
 
-| 変更内容 | 影響範囲 |
-|---|---|
-| プロパティ追加（optional） | フロント: 型に追加されるが既存コードは動く |
-| プロパティ追加（required） | **⚠️ Breaking:** フロントの既存コードが壊れる可能性 |
-| プロパティ削除 | **⚠️ Breaking:** フロントで使用している箇所がエラーになる |
-| Enum 値の追加 | フロント: exhaustive check がエラーになる可能性 |
-| 型の変更 | **⚠️ Breaking:** フロント・バックエンド両方に影響 |
+| 変更内容                   | 影響範囲                                                 |
+| -------------------------- | -------------------------------------------------------- |
+| プロパティ追加（optional） | フロント: 型に追加されるが既存コードは動く               |
+| プロパティ追加（required） | **⚠️ Breaking:** フロントの既存コードが壊れる可能性       |
+| プロパティ削除             | **⚠️ Breaking:** フロントで使用している箇所がエラーになる |
+| Enum 値の追加              | フロント: exhaustive check がエラーになる可能性          |
+| 型の変更                   | **⚠️ Breaking:** フロント・バックエンド両方に影響         |
 
 ### Breaking Change の考え方
 
@@ -282,12 +282,12 @@ make openapi-clean  # 生成物をクリーン → 再生成
 
 ### 生成されるファイル
 
-| ツール | 出力先 | 内容 |
-|---|---|---|
-| Orval | `front/src/__generated__/` | React Query hooks, Axios クライアント |
-| Orval | `front/src/__generated__/model/` | TypeScript 型定義 |
-| openapi-zod | `front/src/__generated__/zod.ts` | Zod スキーマ |
-| validators | `front/src/__generated__/zod.validation.ts` | カスタムバリデーション |
+| ツール      | 出力先                                      | 内容                                  |
+| ----------- | ------------------------------------------- | ------------------------------------- |
+| Orval       | `front/src/__generated__/`                  | React Query hooks, Axios クライアント |
+| Orval       | `front/src/__generated__/model/`            | TypeScript 型定義                     |
+| openapi-zod | `front/src/__generated__/zod.ts`            | Zod スキーマ                          |
+| validators  | `front/src/__generated__/zod.validation.ts` | カスタムバリデーション                |
 
 ### フロントでの使い方
 
@@ -310,13 +310,13 @@ function Dashboard() {
 
 ### Laravel との対応
 
-| OpenAPI | Laravel | ファイル配置 |
-|---|---|---|
-| `*Request` スキーマ | `FormRequest` | `app/Http/Requests/` |
+| OpenAPI              | Laravel                     | ファイル配置          |
+| -------------------- | --------------------------- | --------------------- |
+| `*Request` スキーマ  | `FormRequest`               | `app/Http/Requests/`  |
 | `*Response` スキーマ | `Resource` / `JsonResource` | `app/Http/Resources/` |
-| Enum | `App\Enums\*` | `app/Enums/` |
-| パスパラメータ | Route Model Binding | `routes/api.php` |
-| バリデーションルール | `FormRequest::rules()` | `app/Http/Requests/` |
+| Enum                 | `App\Enums\*`               | `app/Enums/`          |
+| パスパラメータ       | Route Model Binding         | `routes/api.php`      |
+| バリデーションルール | `FormRequest::rules()`      | `app/Http/Requests/`  |
 
 ### 対応例
 
@@ -414,15 +414,15 @@ user:
 
 ### PR レビュー観点
 
-| チェック項目 | 確認内容 |
-|---|---|
-| Enum の配置 | `components/enums/` に配置されているか |
-| インライン定義 | 新しいインラインオブジェクトや enum が追加されていないか |
-| 命名規則 | `{Domain}{Role}` のパターンに従っているか |
-| `$ref` の使用 | 重複定義せず `$ref` で参照しているか |
-| Breaking Change | required プロパティの追加・削除、型変更がないか |
+| チェック項目    | 確認内容                                                            |
+| --------------- | ------------------------------------------------------------------- |
+| Enum の配置     | `components/enums/` に配置されているか                              |
+| インライン定義  | 新しいインラインオブジェクトや enum が追加されていないか            |
+| 命名規則        | `{Domain}{Role}` のパターンに従っているか                           |
+| `$ref` の使用   | 重複定義せず `$ref` で参照しているか                                |
+| Breaking Change | required プロパティの追加・削除、型変更がないか                     |
 | nullable の明示 | null を返す可能性があるフィールドに `nullable: true` が付いているか |
-| 影響範囲の記載 | PR 説明にフロント/バックへの影響が記載されているか |
+| 影響範囲の記載  | PR 説明にフロント/バックへの影響が記載されているか                  |
 
 ### 新しいエンドポイントを追加する手順
 

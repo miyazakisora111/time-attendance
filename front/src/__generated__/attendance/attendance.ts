@@ -35,12 +35,12 @@ import { customInstance } from "../../lib/http/client";
 
 export const getAttendance = () => {
   /**
-   * ログイン中ユーザーの当日の勤怠レコードを返す。
-   * @summary 今日の勤怠取得
+   * ログイン中ユーザーの最新の勤怠情報を返す。
+   * @summary 最新の勤怠情報取得
    */
-  const getTodayAttendance = () => {
+  const getLatestAttendance = () => {
     return customInstance<AttendanceResponse>({
-      url: `/attendances/today`,
+      url: `/attendances/latest`,
       method: "GET",
     });
   };
@@ -147,7 +147,7 @@ Request Body は空オブジェクト `{}` を送信する。
     });
   };
   return {
-    getTodayAttendance,
+    getLatestAttendance,
     createClockIn,
     createClockOut,
     createBreakStart,
@@ -162,8 +162,8 @@ type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 
-export type GetTodayAttendanceResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["getTodayAttendance"]>>
+export type GetLatestAttendanceResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["getLatestAttendance"]>>
 >;
 export type CreateClockInResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockIn"]>>
