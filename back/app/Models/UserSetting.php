@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\__Generated__\Enums\ThemeType;
+use App\__Generated__\Enums\LanguageCode;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserSetting extends BaseModel
@@ -32,6 +33,8 @@ class UserSetting extends BaseModel
      * {@inheritdoc}
      */
     protected $casts = [
+        'theme' => ThemeType::class,
+        'language' => LanguageCode::class,
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

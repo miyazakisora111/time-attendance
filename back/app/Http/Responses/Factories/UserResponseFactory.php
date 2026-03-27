@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Responses\Factories;
 
 use App\__Generated__\Responses\User\UserResponse;
+use App\__Generated__\Responses\User\Settings;
 use App\Models\User;
 
 /**
@@ -31,7 +32,22 @@ class UserResponseFactory
             name: $user->name,
             email: $user->email,
             roles: $user->role !== null ? [$user->role->name] : [],
-            settings: $user->userSetting,
+            settings: $this->buildSettings($user),
+        );
+    }
+
+    /**
+     * ユーザー設定レスポンスを生成する。
+     */
+    private function buildSettings(User $user): ?Settings
+    {
+        if ($user->userSetting === null) {
+            return null;
+        }
+
+        return new Settings(
+            theme: $user->userSetting->theme,
+            language: $user->userSetting->language,
         );
     }
 }
