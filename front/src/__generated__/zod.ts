@@ -62,16 +62,14 @@ export namespace components.schemas {
   });
   /** @description ユーザー情報 */
   export const UserResponse = z.object({
-    user: z.object({
-      id: z.string(),
-      name: z.string(),
-      email: z.string(),
-      roles: z.array(z.string()),
-      settings: z.object({
-        theme: components["schemas"]["ThemeType"].optional(),
-        language: components["schemas"]["LanguageCode"].optional(),
-      }).nullable().optional(),
-    }),
+    id: z.string(),
+    name: z.string(),
+    email: z.string(),
+    roles: z.array(z.string()),
+    settings: z.object({
+      theme: components["schemas"]["ThemeType"].optional(),
+      language: components["schemas"]["LanguageCode"].optional(),
+    }).nullable().optional(),
   });
   /** @description 出勤打刻のHTTPリクエスト */
   export const AttendanceClockInRequest = z.record(z.string(), z.any());

@@ -4,33 +4,33 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Application\User\UserQuery;
+use App\Http\Responses\Factories\UserResponseFactory;
 use App\Http\Controllers\BaseController;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
 /**
- * 認証済みユーザー自身の情報を取得する
+ * ユーザー自身の情報を取得する
  */
 final class MeController extends BaseController
 {
     /**
      * コンストラクタ
      *
-     * @param UserQuery $userQuery ユーザー取得クエリ
+     * @param UserResponseFactory $factory ユーザーレスポンスファクトリ
      */
     public function __construct(
-        private readonly UserQuery $userQuery,
+        private readonly UserResponseFactory $factory,
     ) {}
 
     /**
-     * 認証済みユーザーのプロフィール情報を取得する
+     * ユーザーのプロフィール情報を取得する
      *
-     * @return JsonResponse
+     * @return JsonResponse JSONレスポンス
      */
     public function __invoke(): JsonResponse
     {
-        $result = $this->userQuery->getUserProfile(user: $this->resolveAuthUser());
+        $result = $this->factory->fromUser(user: $this->resolveAuthUser());
         return ApiResponse::success($result);
     }
 }

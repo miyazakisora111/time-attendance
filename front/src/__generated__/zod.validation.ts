@@ -503,34 +503,32 @@ export const validationSchemas = {
       language: z.enum(["ja", "en"]),
     }),
   UserResponse: generatedComponents.schemas.UserResponse.extend({
-    user: z.object({
-      id: z
+    id: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("id")}は必須です。`),
+    name: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("name")}は必須です。`),
+    email: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("email")}は必須です。`)
+      .email(`${labelOf("email")}の形式が正しくありません。`),
+    roles: z.array(
+      z
         .string()
         .trim()
-        .min(1, `${labelOf("id")}は必須です。`),
-      name: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("name")}は必須です。`),
-      email: z
-        .string()
-        .trim()
-        .min(1, `${labelOf("email")}は必須です。`)
-        .email(`${labelOf("email")}の形式が正しくありません。`),
-      roles: z.array(
-        z
-          .string()
-          .trim()
-          .min(1, `${labelOf("item")}は必須です。`),
-      ),
-      settings: z
-        .object({
-          theme: z.enum(["light", "dark"]).optional(),
-          language: z.enum(["ja", "en"]).optional(),
-        })
-        .nullable()
-        .optional(),
-    }),
+        .min(1, `${labelOf("item")}は必須です。`),
+    ),
+    settings: z
+      .object({
+        theme: z.enum(["light", "dark"]).optional(),
+        language: z.enum(["ja", "en"]).optional(),
+      })
+      .nullable()
+      .optional(),
   }),
   ValidationErrorResponse:
     generatedComponents.schemas.ValidationErrorResponse.extend({

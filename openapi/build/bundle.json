@@ -299,74 +299,66 @@
                   "type": "object",
                   "description": "ユーザー情報",
                   "required": [
-                    "user"
+                    "id",
+                    "name",
+                    "email",
+                    "roles"
                   ],
                   "properties": {
-                    "user": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "description": "ユーザーID",
+                      "example": "9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "表示名",
+                      "example": "宮﨑 壮来"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "メールアドレス",
+                      "example": "sora.miyazaki@example.com"
+                    },
+                    "roles": {
+                      "type": "array",
+                      "description": "付与ロール名一覧",
+                      "items": {
+                        "type": "string",
+                        "example": "manager"
+                      },
+                      "example": [
+                        "member",
+                        "manager"
+                      ]
+                    },
+                    "settings": {
                       "type": "object",
-                      "required": [
-                        "id",
-                        "name",
-                        "email",
-                        "roles"
-                      ],
+                      "nullable": true,
+                      "description": "ユーザー設定",
                       "properties": {
-                        "id": {
+                        "theme": {
                           "type": "string",
-                          "format": "uuid",
-                          "description": "ユーザーID",
-                          "example": "9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f"
-                        },
-                        "name": {
-                          "type": "string",
-                          "description": "表示名",
-                          "example": "宮﨑 壮来"
-                        },
-                        "email": {
-                          "type": "string",
-                          "format": "email",
-                          "description": "メールアドレス",
-                          "example": "sora.miyazaki@example.com"
-                        },
-                        "roles": {
-                          "type": "array",
-                          "description": "付与ロール名一覧",
-                          "items": {
-                            "type": "string",
-                            "example": "manager"
-                          },
-                          "example": [
-                            "member",
-                            "manager"
+                          "description": "UIテーマ設定",
+                          "enum": [
+                            "light",
+                            "dark"
                           ]
                         },
-                        "settings": {
-                          "type": "object",
-                          "nullable": true,
-                          "description": "ユーザー設定",
-                          "properties": {
-                            "theme": {
-                              "type": "string",
-                              "description": "UIテーマ設定",
-                              "enum": [
-                                "light",
-                                "dark"
-                              ]
-                            },
-                            "language": {
-                              "type": "string",
-                              "description": "表示言語コード",
-                              "enum": [
-                                "ja",
-                                "en"
-                              ]
-                            }
-                          },
-                          "example": {
-                            "theme": "dark",
-                            "language": "ja"
-                          }
+                        "language": {
+                          "type": "string",
+                          "description": "表示言語コード",
+                          "enum": [
+                            "ja",
+                            "en"
+                          ]
                         }
+                      },
+                      "example": {
+                        "theme": "dark",
+                        "language": "ja"
                       }
                     }
                   }
@@ -3576,74 +3568,66 @@
         "type": "object",
         "description": "ユーザー情報",
         "required": [
-          "user"
+          "id",
+          "name",
+          "email",
+          "roles"
         ],
         "properties": {
-          "user": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ユーザーID",
+            "example": "9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f"
+          },
+          "name": {
+            "type": "string",
+            "description": "表示名",
+            "example": "宮﨑 壮来"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "メールアドレス",
+            "example": "sora.miyazaki@example.com"
+          },
+          "roles": {
+            "type": "array",
+            "description": "付与ロール名一覧",
+            "items": {
+              "type": "string",
+              "example": "manager"
+            },
+            "example": [
+              "member",
+              "manager"
+            ]
+          },
+          "settings": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "email",
-              "roles"
-            ],
+            "nullable": true,
+            "description": "ユーザー設定",
             "properties": {
-              "id": {
+              "theme": {
                 "type": "string",
-                "format": "uuid",
-                "description": "ユーザーID",
-                "example": "9e6f1c4a-8b3b-4b2a-9d2e-1f3b6c7d8e9f"
-              },
-              "name": {
-                "type": "string",
-                "description": "表示名",
-                "example": "宮﨑 壮来"
-              },
-              "email": {
-                "type": "string",
-                "format": "email",
-                "description": "メールアドレス",
-                "example": "sora.miyazaki@example.com"
-              },
-              "roles": {
-                "type": "array",
-                "description": "付与ロール名一覧",
-                "items": {
-                  "type": "string",
-                  "example": "manager"
-                },
-                "example": [
-                  "member",
-                  "manager"
+                "description": "UIテーマ設定",
+                "enum": [
+                  "light",
+                  "dark"
                 ]
               },
-              "settings": {
-                "type": "object",
-                "nullable": true,
-                "description": "ユーザー設定",
-                "properties": {
-                  "theme": {
-                    "type": "string",
-                    "description": "UIテーマ設定",
-                    "enum": [
-                      "light",
-                      "dark"
-                    ]
-                  },
-                  "language": {
-                    "type": "string",
-                    "description": "表示言語コード",
-                    "enum": [
-                      "ja",
-                      "en"
-                    ]
-                  }
-                },
-                "example": {
-                  "theme": "dark",
-                  "language": "ja"
-                }
+              "language": {
+                "type": "string",
+                "description": "表示言語コード",
+                "enum": [
+                  "ja",
+                  "en"
+                ]
               }
+            },
+            "example": {
+              "theme": "dark",
+              "language": "ja"
             }
           }
         }

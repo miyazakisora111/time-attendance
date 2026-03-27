@@ -20,23 +20,14 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
  * OpenAPI spec version: 1.1.0
  */
-import type { UserResponseSettings } from "./userResponseSettings";
+import type { LanguageCode } from "./languageCode";
+import type { ThemeType } from "./themeType";
 
 /**
- * ユーザー情報
+ * ユーザー設定
+ * @nullable
  */
-export interface UserResponse {
-  /** メールアドレス */
-  email: string;
-  /** ユーザーID */
-  id: string;
-  /** 表示名 */
-  name: string;
-  /** 付与ロール名一覧 */
-  roles: string[];
-  /**
-   * ユーザー設定
-   * @nullable
-   */
-  settings?: UserResponseSettings;
-}
+export type UserResponseSettings = {
+  language?: LanguageCode;
+  theme?: ThemeType;
+} | null;

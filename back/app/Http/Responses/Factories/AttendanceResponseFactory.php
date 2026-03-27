@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Responses\Factories;
 
-use App\__Generated__\Responses\AttendanceResponse;
+use App\__Generated__\Responses\Attendance\AttendanceResponse;
 use App\Application\Attendance\AttendanceResolver;
 use App\Application\Attendance\AttendanceQuery;
 use App\Models\Attendance;

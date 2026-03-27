@@ -119,7 +119,6 @@ final class AttendanceController extends BaseController
     {
         // TODO:勤怠修正機能の作成。
         $attendance = $this->service->update(
-            user: $this->resolveAuthUser(),
             attendance: $attendance,
             input: $request->validated(),
         );

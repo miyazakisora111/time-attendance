@@ -97,3 +97,4 @@ export * from "./userResponseUserSettings";
 export * from "./userStatus";
 export * from "./validationErrorResponse";
 export * from "./validationErrorResponseErrors";
+export * from "./userResponseSettings";

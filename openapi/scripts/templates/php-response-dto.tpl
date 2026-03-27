@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\__Generated__\Responses;
+namespace {{namespace}};
 {{head}}
 final readonly class {{className}}
 {
