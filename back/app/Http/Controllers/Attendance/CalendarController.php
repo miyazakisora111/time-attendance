@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Attendance;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Attendance\CalendarIndexRequest;
 use App\Http\Responses\ApiResponse;
-use App\Application\Calendar\CalendarService;
+use App\Application\Schedule\ScheduleService;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -18,10 +18,10 @@ final class CalendarController extends BaseController
     /**
      * コンストラクタ
      *
-     * @param CalendarService $service カレンダーのサービス
+     * @param ScheduleService $service スケジュールのサービス
      */
     public function __construct(
-        private readonly CalendarService $service,
+        private readonly ScheduleService $service,
     ) {}
 
     /**

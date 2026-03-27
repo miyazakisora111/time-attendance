@@ -28,7 +28,7 @@ class UserResponseFactory
         ]);
 
         return new UserResponse(
-            id: (string) $user->id,
+            id: $user->id,
             name: $user->name,
             email: $user->email,
             roles: $user->role !== null ? [$user->role->name] : [],
