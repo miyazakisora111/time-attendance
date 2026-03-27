@@ -128,7 +128,7 @@ final class SettingsService extends BaseService
         $histories = $this->query->getLoginHistories($user);
 
         return $histories
-            ->map(fn ($history) => $this->factory->fromLoginHistory($history))
+            ->map(fn($history) => $this->factory->fromLoginHistory($history))
             ->all();
     }
 }

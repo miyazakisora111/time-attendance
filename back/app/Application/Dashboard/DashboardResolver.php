@@ -48,7 +48,7 @@ final class DashboardResolver
 
         if ($attendance->isWorking()) {
             $hasActiveBreak = $attendance->breaks
-                ->contains(fn ($break) => $break->isBreaking());
+                ->contains(fn($break) => $break->isBreaking());
 
             return $hasActiveBreak
                 ? AttendanceStatus::BREAK
@@ -79,10 +79,10 @@ final class DashboardResolver
         }
 
         // 実績を集計する。
-        $workedMinutes = $attendances->sum(fn (Attendance $a) => $a->workMinutes());
+        $workedMinutes = $attendances->sum(fn(Attendance $a) => $a->workMinutes());
         $totalHours = round($workedMinutes / 60, 1);
         $targetHours = round($targetWorkDays * 8, 1);
-        $workDays = $attendances->filter(fn (Attendance $a) => $a->isClockedIn())->count();
+        $workDays = $attendances->filter(fn(Attendance $a) => $a->isClockedIn())->count();
 
         // 残日数は当日以降の平日数。
         $remainingDays = 0;

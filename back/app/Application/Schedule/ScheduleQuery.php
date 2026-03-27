@@ -30,7 +30,7 @@ final class ScheduleQuery
             ->forUser($user->id)
             ->month($year, $month)
             ->get()
-            ->keyBy(fn (Attendance $a): string => $a->work_date?->toDateString() ?? '');
+            ->keyBy(fn(Attendance $a): string => $a->work_date?->toDateString() ?? '');
     }
 
     /**
@@ -45,7 +45,7 @@ final class ScheduleQuery
         return Holiday::query()
             ->month($year, $month)
             ->get()
-            ->keyBy(fn (Holiday $h): string => $h->holiday_date?->toDateString() ?? '');
+            ->keyBy(fn(Holiday $h): string => $h->holiday_date?->toDateString() ?? '');
     }
 
     /**

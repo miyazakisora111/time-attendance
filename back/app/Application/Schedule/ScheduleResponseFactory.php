@@ -52,7 +52,7 @@ final class ScheduleResponseFactory
         float $remainingPaidLeaveDays,
     ): CalendarSummary {
         $totalWorkHours = round((float) $attendances
-            ->sum(fn (Attendance $a): float => $a->workMinutes() / 60), 1);
+            ->sum(fn(Attendance $a): float => $a->workMinutes() / 60), 1);
 
         return new CalendarSummary(
             totalWorkHours: $totalWorkHours,

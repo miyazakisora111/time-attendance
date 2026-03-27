@@ -61,7 +61,7 @@ final class DashboardResponseFactory
                 overtimeDiff: $stats['overtimeDiff'],
             ),
             recentRecords: $recentAttendances
-                ->map(fn (Attendance $a) => $this->toRecentRecord($a))
+                ->map(fn(Attendance $a) => $this->toRecentRecord($a))
                 ->values()
                 ->all(),
         );
