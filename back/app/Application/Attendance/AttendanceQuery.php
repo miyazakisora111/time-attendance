@@ -7,7 +7,6 @@ namespace App\Application\Attendance;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use \Illuminate\Support\Collection;
 
@@ -55,16 +54,16 @@ final class AttendanceQuery
      * 最新の勤怠を取得する。
      *
      * @param User $user ユーザー
-     * @return ?Attendance 最新の勤怠
+     * @return ?AttendanceBreak 最新の休憩
      */
-    public function getLatestAttendanceBreak(User $user): ?Attendance
+    public function getLatestAttendanceBreak(Attendance $attendance): ?AttendanceBreak
     {
-        return Attendance::query()
-            ->forUser($user->id)
-            ->with(['breaks' => fn($q) => $q->latest('break_start_at')])
-            ->latest('clock_in_at')
+        return $attendance
+            ->breaks()
+            ->latest('break_start_at')
             ->first();
     }
+
 
     /**
      * 休憩が終了済みの勤怠を取得する。

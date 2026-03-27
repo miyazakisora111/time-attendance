@@ -139,7 +139,7 @@ final class AttendanceService extends BaseService
             // 勤怠休憩テーブルを更新する。
             $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $latestAttendanceBreak = $this->query->getLatestAttendanceBreak($user);
+            $latestAttendanceBreak = $this->query->getLatestAttendanceBreak($latestAttendance);
             $latestAttendanceBreak->update([
                 'break_end_at' => $now->format('H:i:s'),
             ]);
