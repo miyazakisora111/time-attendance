@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\__Generated__\Enums\ThemeType;
 use App\__Generated__\Enums\LanguageCode;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\__Generated__\Enums\ThemeType;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * ユーザー設定のモデル
+ */
 class UserSetting extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'user_settings';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'user_id',
@@ -40,26 +38,10 @@ class UserSetting extends BaseModel
     ];
 
     /**
-     * User relation
+     * ユーザー設定に紐づくユーザー
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * ダークテーマ判定
-     */
-    public function isDarkTheme(): bool
-    {
-        return $this->theme === 'dark';
-    }
-
-    /**
-     * 日本語判定
-     */
-    public function isJapanese(): bool
-    {
-        return $this->language === 'ja';
     }
 }

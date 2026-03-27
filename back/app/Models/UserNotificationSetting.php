@@ -4,23 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * ユーザー通知設定のモデル
+ */
 class UserNotificationSetting extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'user_notification_settings';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'user_id',
@@ -39,9 +36,9 @@ class UserNotificationSetting extends BaseModel
     ];
 
     /**
-     * User relation (belongsTo)
+     * 通知設定に紐づくユーザー
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

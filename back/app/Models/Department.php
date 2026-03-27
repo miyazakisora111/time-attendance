@@ -4,30 +4,26 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * 部署のモデル
+ */
 class Department extends BaseModel
 {
-    use HasFactory;
     use SoftDeletes;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'departments';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
-        'id',
         'name',
         'sort_order',
     ];
@@ -43,30 +39,18 @@ class Department extends BaseModel
     ];
 
     /**
-     * 表示順ソート
+     * 部署に紐づくユーザー
+     */
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    /**
+     * 表示順で並べる
      */
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order');
-    }
-
-    /**
-     * 名前検索
-     */
-    public function scopeSearch(Builder $query, ?string $keyword): Builder
-    {
-        if (!$keyword) {
-            return $query;
-        }
-
-        return $query->where('name', 'like', "%{$keyword}%");
-    }
-
-    /**
-     * ユーザーとのリレーション（例）
-     */
-    public function users()
-    {
-        return $this->hasMany(User::class);
     }
 }

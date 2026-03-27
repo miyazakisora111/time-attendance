@@ -4,36 +4,32 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * 役職のモデル
+ */
 class Role extends BaseModel
 {
-    use HasFactory;
     use SoftDeletes;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'roles';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
-        'id',
         'name',
         'sort_order',
     ];
 
     /**
-     * Attribute casting
+     * {@inheritdoc}
      */
     protected $casts = [
         'sort_order' => 'integer',
@@ -43,19 +39,18 @@ class Role extends BaseModel
     ];
 
     /**
-     * Scope: 有効な役職
+     * 役職に紐づくユーザー
      */
-    public function scopeActive(Builder $query): Builder
+    public function users(): HasMany
     {
-        return $query->whereNull('deleted_at');
+        return $this->hasMany(User::class);
     }
 
     /**
-     * Scope: 表示順
+     * 表示順で並べる
      */
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order');
     }
-
 }

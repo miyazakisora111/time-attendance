@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * 祝日のモデル
+ */
 class Holiday extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'holidays';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'holiday_date',
@@ -32,34 +28,18 @@ class Holiday extends BaseModel
      * {@inheritdoc}
      */
     protected $casts = [
-        'holiday_date' => 'date',
+        'holiday_date' => 'immutable_date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     /**
-     * Scope: 年検索
+     * 年月で絞り込む
      */
-    public function scopeYear(Builder $query, int $year): Builder
-    {
-        return $query->whereYear('holiday_date', $year);
-    }
-
-    /**
-     * Scope: 月検索
-     */
-    public function scopeMonth(Builder $query, int $year, int $month): Builder
+    public function scopeForMonth(Builder $query, int $year, int $month): Builder
     {
         return $query
             ->whereYear('holiday_date', $year)
             ->whereMonth('holiday_date', $month);
-    }
-
-    /**
-     * 祝日判定
-     */
-    public static function isHoliday(string $date): bool
-    {
-        return static::whereDate('holiday_date', $date)->exists();
     }
 }

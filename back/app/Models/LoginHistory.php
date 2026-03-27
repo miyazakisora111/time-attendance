@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * ログイン履歴のモデル
+ */
 class LoginHistory extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'login_histories';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'user_id',
@@ -42,39 +39,31 @@ class LoginHistory extends BaseModel
     ];
 
     /**
-     * User relation
+     * ログイン履歴に紐づくユーザー
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Scope: 特定ユーザー
+     * ユーザーで絞り込む
      */
-    public function scopeUser(Builder $query, string $userId): Builder
+    public function scopeForUser(Builder $query, string $userId): Builder
     {
         return $query->where('user_id', $userId);
     }
 
     /**
-     * Scope: ログイン中
+     * 新しい順で並べる
      */
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->whereNull('logged_out_at');
-    }
-
-    /**
-     * Scope: 新しい順
-     */
-    public function scopeLatestLogin(Builder $query): Builder
+    public function scopeLatest(Builder $query): Builder
     {
         return $query->orderByDesc('logged_in_at');
     }
 
     /**
-     * ログイン中か判定
+     * ログイン中判定
      */
     public function isActive(): bool
     {

@@ -4,34 +4,43 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+/**
+ * ユーザーのモデル
+ */
 class User extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
     use Notifiable;
     use SoftDeletes;
 
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'users';
 
     /**
-     * UUID primary key
+     * {@inheritdoc}
      */
     protected $keyType = 'string';
+
+    /**
+     * {@inheritdoc}
+     */
     public $incrementing = false;
 
     /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
-        'id',
         'department_id',
         'role_id',
         'name',
@@ -43,7 +52,7 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * Hidden attributes
+     * {@inheritdoc}
      */
     protected $hidden = [
         'password',
@@ -63,54 +72,83 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * 
+     * {@inheritdoc}
      */
     protected static function booted(): void
     {
-        static::updating(function (User $user) {
-
-            if ($user->isDirty('password')) {
-                $user->password = Hash::make($user->password);
+        static::creating(function (self $model) {
+            if (!$model->id) {
+                $model->id = (string) Str::uuid();
             }
         });
     }
 
     /**
-     * 部署
+     * ユーザーに紐づく部署
      */
-    public function department()
+    public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
     }
 
     /**
-     * 役職
+     * ユーザーに紐づく役職
      */
-    public function role()
+    public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
     }
 
-    public function userSetting()
+    /**
+     * ユーザーに紐づく設定
+     */
+    public function userSetting(): HasOne
     {
         return $this->hasOne(UserSetting::class);
     }
 
-    public function userNotificationSetting()
+    /**
+     * ユーザーに紐づく通知設定
+     */
+    public function userNotificationSetting(): HasOne
     {
         return $this->hasOne(UserNotificationSetting::class);
     }
 
     /**
-     * 有効ユーザー
+     * ユーザーに紐づく勤怠
      */
-    public function scopeActive(Builder $query): Builder
+    public function attendances(): HasMany
     {
-        return $query->whereNull('deleted_at');
+        return $this->hasMany(Attendance::class);
     }
 
     /**
-     * 並び順
+     * ユーザーに紐づくログイン履歴
+     */
+    public function loginHistories(): HasMany
+    {
+        return $this->hasMany(LoginHistory::class);
+    }
+
+    /**
+     * ユーザーに紐づく有給付与
+     */
+    public function paidLeaveGrants(): HasMany
+    {
+        return $this->hasMany(PaidLeaveGrant::class);
+    }
+
+    /**
+     * 部署で絞り込む
+     */
+    public function scopeForDepartment(Builder $query, string $departmentId): Builder
+    {
+        return $query->where('department_id', $departmentId);
+    }
+
+    /**
+     * 表示順で並べる
      */
     public function scopeOrdered(Builder $query): Builder
     {
@@ -118,18 +156,24 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * メール検索
+     * メール認証済み判定
      */
-    public function scopeEmail(Builder $query, string $email): Builder
+    public function isEmailVerified(): bool
     {
-        return $query->where('email', $email);
+        return $this->email_verified_at !== null;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getJWTIdentifier(): string
     {
         return (string) $this->getKey();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getJWTCustomClaims(): array
     {
         return [];

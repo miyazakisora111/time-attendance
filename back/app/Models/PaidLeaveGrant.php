@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * 有給付与のモデル
+ */
 class PaidLeaveGrant extends BaseModel
 {
-    use HasFactory;
-
+    /**
+     * {@inheritdoc}
+     */
     protected $table = 'paid_leave_grants';
 
     /**
-     * UUID primary key
-     */
-    protected $keyType = 'string';
-    public $incrementing = false;
-
-    /**
-     * Mass assignment
+     * {@inheritdoc}
      */
     protected $fillable = [
         'user_id',
@@ -35,45 +32,26 @@ class PaidLeaveGrant extends BaseModel
      */
     protected $casts = [
         'days' => 'float',
-        'granted_at' => 'date',
-        'expires_at' => 'date',
+        'granted_at' => 'immutable_date',
+        'expires_at' => 'immutable_date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     /**
-     * ユーザー
+     * 有給付与に紐づくユーザー
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Scope: 特定ユーザー
+     * ユーザーで絞り込む
      */
-    public function scopeUser(Builder $query, string $userId): Builder
+    public function scopeForUser(Builder $query, string $userId): Builder
     {
         return $query->where('user_id', $userId);
-    }
-
-    /**
-     * Scope: 有効な付与
-     */
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where(function ($q) {
-            $q->whereNull('expires_at')
-                ->orWhere('expires_at', '>=', now());
-        });
-    }
-
-    /**
-     * Scope: 有効期限順
-     */
-    public function scopeExpireOrder(Builder $query): Builder
-    {
-        return $query->orderBy('expires_at');
     }
 
     /**

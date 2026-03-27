@@ -56,24 +56,6 @@ class Attendance extends BaseModel
     }
 
     /**
-     * 勤務日で絞り込む
-     */
-    public function scopeWorkDate(Builder $query, string $date): Builder
-    {
-        return $query->where('work_date', $date);
-    }
-
-    /**
-     * 年月で絞り込む
-     */
-    public function scopeMonth(Builder $query, int $year, int $month): Builder
-    {
-        return $query
-            ->whereYear('work_date', $year)
-            ->whereMonth('work_date', $month);
-    }
-
-    /**
      * 勤怠に紐づくユーザー
      */
     public function user(): BelongsTo
