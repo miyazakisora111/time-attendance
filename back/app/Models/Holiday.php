@@ -36,7 +36,7 @@ class Holiday extends BaseModel
     /**
      * 年月で絞り込む
      */
-    public function scopeForMonth(Builder $query, int $year, int $month): Builder
+    public function scopeMonth(Builder $query, int $year, int $month): Builder
     {
         return $query
             ->whereYear('holiday_date', $year)

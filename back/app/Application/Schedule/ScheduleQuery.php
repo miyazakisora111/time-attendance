@@ -57,8 +57,8 @@ final class ScheduleQuery
     public function getRemainingPaidLeaveDays(User $user): float
     {
         return round((float) PaidLeaveGrant::query()
-            ->user($user->id)
-            ->active()
+            ->forUser($user->id)
+            ->where('expires_at', '>=', now())
             ->sum('days'), 1);
     }
 }

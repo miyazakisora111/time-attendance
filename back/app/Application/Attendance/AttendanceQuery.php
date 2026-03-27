@@ -60,17 +60,9 @@ final class AttendanceQuery
     public function getLatestAttendanceBreak(User $user): ?Attendance
     {
         return Attendance::query()
-            ->from('attendances as a')
-            ->leftJoin('attendance_breaks as b', 'b.attendance_id', '=', 'a.id')
-            ->where('a.user_id', $user->id)
-            ->orderByDesc('a.clock_in_at')
-            ->orderByDesc('b.break_start_at_at')
-            ->select([
-                'a.*',
-                'b.break_start_at_at',
-                'b.break_end_at_at',
-            ])
-            ->limit(1)
+            ->forUser($user->id)
+            ->with(['breaks' => fn($q) => $q->latest('break_start_at')])
+            ->latest('clock_in_at')
             ->first();
     }
 

@@ -24,7 +24,7 @@ final class DashboardQuery
     {
         return Attendance::query()
             ->forUser($user->id)
-            ->workDate(today()->toDateString())
+            ->where('work_date', today()->toDateString())
             ->latest('clock_in_at')
             ->first();
     }

@@ -30,8 +30,8 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const { data: LatestAttendance, isLoading, isError } = useLatestAttendanceQuery();
     const { mutate: clockInMutate, isPending: isClockingIn } = useClockInMutation();
     const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOutMutation();
-    const { mutate: breakStartAtMutate, isPending: isBreakStarting } = useBreakStartMutation();
-    const { mutate: breakEndAtMutate, isPending: isBreakEnding } = useBreakEndMutation();
+    const { mutate: breakStartMutate, isPending: isBreakStarting } = useBreakStartMutation();
+    const { mutate: breakEndMutate, isPending: isBreakEnding } = useBreakEndMutation();
 
     // データが存在しない場合は、未出勤のため「out」とする
     const clockStatus: ClockStatus = LatestAttendance?.clockStatus ?? 'out';

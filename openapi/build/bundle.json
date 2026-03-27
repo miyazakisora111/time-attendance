@@ -427,12 +427,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -563,12 +557,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -760,12 +748,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -957,12 +939,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -1154,12 +1130,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -1393,12 +1363,6 @@
                       "items": {
                         "type": "object",
                         "description": "勤怠レコードの表示用のHTTPレスポンス",
-                        "required": [
-                          "userId",
-                          "workDate",
-                          "clockInAt",
-                          "clockStatus"
-                        ],
                         "properties": {
                           "id": {
                             "type": "string",
@@ -1627,12 +1591,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -1834,12 +1792,6 @@
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "required": [
-                    "userId",
-                    "workDate",
-                    "clockInAt",
-                    "clockStatus"
-                  ],
                   "properties": {
                     "id": {
                       "type": "string",
@@ -3705,12 +3657,6 @@
       "AttendanceResponse": {
         "type": "object",
         "description": "勤怠レコードの表示用のHTTPレスポンス",
-        "required": [
-          "userId",
-          "workDate",
-          "clockInAt",
-          "clockStatus"
-        ],
         "properties": {
           "id": {
             "type": "string",

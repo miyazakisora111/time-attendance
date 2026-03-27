@@ -45,8 +45,8 @@ final class SettingsResponseFactory
                 lastLoginAt: $user->last_login_at?->toIso8601String(),
                 passwordLastChangedAt: null,
             ),
-            theme: ThemeType::from($user->userSetting?->theme ?? 'light'),
-            language: LanguageCode::from($user->userSetting?->language ?? 'ja'),
+            theme: $user->userSetting?->theme ?? ThemeType::LIGHT,
+            language: $user->userSetting?->language ?? LanguageCode::JA,
         );
     }
 

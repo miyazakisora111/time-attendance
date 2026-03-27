@@ -30,20 +30,10 @@ export const validationSchemas = {
     }),
   AttendanceResponse: generatedComponents.schemas.AttendanceResponse.extend({
     id: z.string().trim().optional(),
-    userId: z
-      .string()
-      .trim()
-      .min(1, `${labelOf("userId")}は必須です。`),
-    workDate: z
-      .string()
-      .trim()
-      .min(1, `${labelOf("workDate")}は必須です。`),
-    clockStatus: z.enum(["out", "in", "break"]),
-    clockInAt: z
-      .string()
-      .trim()
-      .min(1, `${labelOf("clockInAt")}は必須です。`)
-      .nullable(),
+    userId: z.string().trim().optional(),
+    workDate: z.string().trim().optional(),
+    clockStatus: z.enum(["out", "in", "break"]).optional(),
+    clockInAt: z.string().trim().nullable().optional(),
     clockOutAt: z.string().trim().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),

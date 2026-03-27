@@ -35,13 +35,13 @@ export interface AttendanceResponse {
    * 出勤日時
    * @nullable
    */
-  clockInAt: string | null;
+  clockInAt?: string | null;
   /**
    * 退勤日時
    * @nullable
    */
   clockOutAt?: string | null;
-  clockStatus: ClockStatus;
+  clockStatus?: ClockStatus;
   /** 勤怠レコードID */
   id?: string;
   /**
@@ -50,9 +50,9 @@ export interface AttendanceResponse {
    */
   overtimeMinutes?: number | null;
   /** 対象ユーザーID */
-  userId: string;
+  userId?: string;
   /** 勤務日 */
-  workDate: string;
+  workDate?: string;
   /**
    * 実働時間（分）
    * @nullable

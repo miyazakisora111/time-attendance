@@ -28,13 +28,28 @@ class AttendanceResponseFactory
     /**
      * 勤怠レスポンスを作成する。
      * 
-     * @param Attendance $attendance 勤怠
+     * @param ?Attendance $attendance 勤怠
      * @return AttendanceResponse 勤怠レスポンス
      */
-    public function createFromModel(Attendance $attendance): AttendanceResponse
+    public function create(?Attendance $attendance): AttendanceResponse
     {
+        if ($attendance === null) {
+            return new AttendanceResponse(
+                id: null,
+                userId: null,
+                workDate: null,
+                clockStatus: $this->resolver->resolveClockStatus(null),
+                clockInAt: null,
+                clockOutAt: null,
+                breakMinutes: 0,
+                workedMinutes: 0,
+                overtimeMinutes: 0,
+            );
+        }
+
         // 休憩時間を計算する。
-        $totalBreakMinutes = $this->query->getBreaks($attendance->user, $attendance->work_date)
+        $totalBreakMinutes = $this->query
+            ->getBreaks($attendance->user, $attendance->work_date)
             ->sum(fn($b) => $b->breakMinutes());
 
         // 勤務時間を計算する。
@@ -49,7 +64,10 @@ class AttendanceResponseFactory
             clockOutAt: $attendance->clock_out_at?->toDateTimeString(),
             breakMinutes: $totalBreakMinutes,
             workedMinutes: $workedMinutes,
-            overtimeMinutes: max(0, $workedMinutes - config('attendance.standard_work_minutes')),
+            overtimeMinutes: max(
+                0,
+                $workedMinutes - config('attendance.standard_work_minutes')
+            ),
         );
     }
 }

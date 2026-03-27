@@ -40,7 +40,7 @@ final class TeamQuery
     {
         return \App\Models\Attendance::query()
             ->forUser($userId)
-            ->workDate($today)
+            ->where('work_date', $today)
             ->latest('clock_in_at')
             ->first();
     }

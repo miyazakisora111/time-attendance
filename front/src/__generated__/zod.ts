@@ -94,10 +94,10 @@ export namespace components.schemas {
   /** @description 勤怠レコードの表示用のHTTPレスポンス */
   export const AttendanceResponse = z.object({
     id: z.string().optional(),
-    userId: z.string(),
-    workDate: z.string(),
-    clockStatus: components["schemas"]["ClockStatus"],
-    clockInAt: z.string().nullable(),
+    userId: z.string().optional(),
+    workDate: z.string().optional(),
+    clockStatus: components["schemas"]["ClockStatus"].optional(),
+    clockInAt: z.string().nullable().optional(),
     clockOutAt: z.string().nullable().optional(),
     breakMinutes: z.number().int().nullable().optional(),
     workedMinutes: z.number().int().nullable().optional(),

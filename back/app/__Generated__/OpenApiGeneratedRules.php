@@ -44,10 +44,10 @@ final class OpenApiGeneratedRules
         ],
         'AttendanceResponse' => [
             'id' => ['required', 'string'],
-            'userId' => ['required', 'string'],
-            'workDate' => ['required', 'string'],
+            'userId' => ['sometimes', 'string'],
+            'workDate' => ['sometimes', 'string'],
             'clockStatus' => ['required', 'in:out,in,break'],
-            'clockInAt' => ['required', 'nullable', 'string'],
+            'clockInAt' => ['sometimes', 'nullable', 'string'],
             'clockOutAt' => ['sometimes', 'nullable', 'string'],
             'breakMinutes' => ['sometimes', 'nullable', 'integer'],
             'workedMinutes' => ['sometimes', 'nullable', 'integer'],

@@ -2,11 +2,6 @@
 AttendanceResponse:
   type: object
   description: 勤怠レコードの表示用のHTTPレスポンス
-  required:
-    - userId
-    - workDate
-    - clockInAt
-    - clockStatus
   properties:
     id:
       type: string

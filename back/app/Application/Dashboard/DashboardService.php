@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Dashboard;
 
-use App\Application\Attendance\AttendanceGuard;
 use App\Application\Attendance\AttendanceResolver;
 use App\Application\Attendance\AttendanceService;
 use App\Application\BaseService;
 use App\__Generated__\Enums\ClockAction;
 use App\__Generated__\Responses\Attendance\AttendanceResponse;
 use App\__Generated__\Responses\Dashboard\DashboardResponse;
-use App\Exceptions\DomainException;
 use App\Http\Responses\Factories\AttendanceResponseFactory;
 use App\Models\User;
 
@@ -88,6 +86,6 @@ final class DashboardService extends BaseService
             ClockAction::BREAK_END => $this->attendanceService->breakEnd($user),
         };
 
-        return $this->attendanceResponseFactory->createFromModel($attendance);
+        return $this->attendanceResponseFactory->create($attendance);
     }
 }

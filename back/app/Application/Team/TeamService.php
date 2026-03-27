@@ -35,7 +35,7 @@ final class TeamService extends BaseService
      */
     public function getMembers(User $user): TeamMembersResponse
     {
-        $today = CarbonImmutable::today($this->resolveTimezone())->toDateString();
+        $today = CarbonImmutable::today($this->resolveTimezone(null))->toDateString();
 
         $members = $this->query->getMembers($user);
 

@@ -38,7 +38,7 @@ final class AttendanceController extends BaseController
     public function clockIn(): JsonResponse
     {
         $attendance = $this->service->clockIn(user: $this->resolveAuthUser());
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
         return ApiResponse::success($result);
     }
 
@@ -50,7 +50,7 @@ final class AttendanceController extends BaseController
     public function clockOut(): JsonResponse
     {
         $attendance = $this->service->clockOut(user: $this->resolveAuthUser());
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
         return ApiResponse::success($result);
     }
 
@@ -62,7 +62,7 @@ final class AttendanceController extends BaseController
     public function breakStart(): JsonResponse
     {
         $attendance = $this->service->breakStart(user: $this->resolveAuthUser());
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
         return ApiResponse::success($result);
     }
 
@@ -74,7 +74,7 @@ final class AttendanceController extends BaseController
     public function breakEnd(): JsonResponse
     {
         $attendance = $this->service->breakEnd(user: $this->resolveAuthUser());
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
         return ApiResponse::success($result);
     }
 
@@ -86,7 +86,7 @@ final class AttendanceController extends BaseController
     public function latest(): JsonResponse
     {
         $attendance = $this->service->getLatestAttendance(user: $this->resolveAuthUser());
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
         return ApiResponse::success($result);
     }
 
@@ -103,7 +103,7 @@ final class AttendanceController extends BaseController
             user: $this->resolveAuthUser(),
             input: $request->validated(),
         );
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
 
         return ApiResponse::success($result, status: 201);
     }
@@ -122,7 +122,7 @@ final class AttendanceController extends BaseController
             attendance: $attendance,
             input: $request->validated(),
         );
-        $result = $this->factory->createFromModel($attendance);
+        $result = $this->factory->create($attendance);
 
         return ApiResponse::success($result);
     }
