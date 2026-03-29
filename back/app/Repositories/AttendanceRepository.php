@@ -11,60 +11,70 @@ class AttendanceRepository
      */
     public function getAttendances(int $userId)
     {
-        $sql = <<<SQL
+        $sql = <<<EOQ
+WITH params AS ( 
+    SELECT
+        '{5e58b918-feac-4fec-94eb-5e6cb5a02d6b}'::uuid AS user_id
+        , standard_work_minutes::int AS standard_work_minutes
+) 
+, attendances_cte AS ( 
+    SELECT
+        a1.id
+        , a1.user_id
+        , a1.work_date
+        , a1.clock_in_at
+        , a1.clock_out_at
+        , ROW_NUMBER() OVER (ORDER BY a1.clock_in_at DESC) AS rank
+    FROM
+        attendances a1 
+        CROSS JOIN params 
+    WHERE
+        a1.user_id = params.user_id
+) 
+, attendance_breaks_cte AS ( 
+    SELECT
+        ac1.id
+        , SUM(ab1.break_end_at - ab1.break_start_at) AS break_time
+    FROM
+        attendances_cte ac1 
+        LEFT JOIN attendance_breaks ab1 
+            ON ac1.id = ab1.attendance_id 
+    WHERE
+        EXISTS ( 
+            SELECT
+                1 
+            FROM
+                attendances_cte ac2 
+            WHERE
+                ac2.user_id = ac1.user_id 
+                AND ac2.work_date = ac1.work_date 
+                AND ac2.id <> ac1.id
+        ) 
+    GROUP BY
+        ac1.id
+) 
 SELECT
-    a1.*
-    , ab1.* 
+    MIN(ac1.clock_in_at) AS clock_in_at
+    , MAX(ac1.clock_out_at) FILTER (WHERE rank = 1) AS clock_out_at
+    , SUM(abc1.work_time) AS work_time
+    , SUM(abc1.break_time) AS break_time 
 FROM
-    attendances a1 
-    LEFT JOIN attendance_breaks ab1 
-        ON a1.id = ab1.attendance_id 
-WHERE
-    a1.user_id = :user_id
-    AND EXISTS ( 
+    attendances_cte ac1 
+    CROSS JOIN params
+    LEFT JOIN LATERAL ( 
         SELECT
-            1 
+            abc1.*
+            , ac1.clock_out_at - ac1.clock_in_at - abc1.break_time AS work_time 
         FROM
-            attendances a2 
-        WHERE
-            a2.user_id = a1.user_id 
-            AND a2.work_date = a1.work_date 
-            AND a2.id <> a1.id
-    ) 
-ORDER BY
-    a1.work_date
-    , a1.id
-SQL;
+            attendance_breaks_cte abc1
+    ) abc1 
+        ON ac1.id = abc1.id
+EOQ;
 
         $params = [
             'user_id' => $userId,
             'standard_work_minutes' => config('attendance.standard_work_minutes'),
         ];
-        return DB::select($sql, $params);
-    }
-
-    /**
-     * 指定ユーザーの月別勤怠サマリー
-     */
-    public function getMonthlySummary(int $userId, string $month): array
-    {
-        $result = DB::selectOne(
-            '
-            SELECT
-                COUNT(*) AS work_days,
-                COALESCE(SUM(work_minutes), 0) AS total_work_minutes,
-                COALESCE(SUM(break_minutes), 0) AS total_break_minutes
-            FROM attendances
-            WHERE user_id = ?
-              AND DATE_FORMAT(work_date, "%Y-%m") = ?
-            ',
-            [$userId, $month]
-        );
-
-        return [
-            'work_days'           => (int) $result->work_days,
-            'total_work_minutes'  => (int) $result->total_work_minutes,
-            'total_break_minutes' => (int) $result->total_break_minutes,
-        ];
+        return DB::selectOne($sql, $params);
     }
 }
