@@ -1,4 +1,0 @@
-AttendanceClockOutRequest:
-  type: object
-  description: 退勤打刻のHTTPリクエスト
-  additionalProperties: false

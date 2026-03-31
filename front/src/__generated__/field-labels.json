@@ -1,7 +1,7 @@
 {
+  "action": "打刻アクション",
   "from": "開始日",
   "to": "終了日",
-  "id": "ユーザーID",
   "userId": "userId",
   "workDate": "workDate",
   "clockStatus": "打刻状態",
@@ -38,6 +38,7 @@
   "clockOut": "clockOut",
   "workHours": "workHours",
   "user": "user",
+  "id": "ユーザーID",
   "name": "氏名",
   "todayRecord": "todayRecord",
   "clockInTime": "出勤時刻",

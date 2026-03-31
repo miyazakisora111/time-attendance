@@ -4,41 +4,28 @@ declare(strict_types=1);
 
 namespace App\Http\Responses\Factories;
 
+use App\__Generated__\Enums\ClockStatus;
 use App\__Generated__\Responses\Attendance\AttendanceResponse;
-use App\Application\Attendance\AttendanceResolver;
-use App\Infrastructure\Attendance\Query\AttendanceQuery;
-use App\Models\Attendance;
 
 /**
- * 勤怠レスポンスを生成する
+ * 勤怠レスポンスを生成する（整形のみ）
  */
 class AttendanceResponseFactory
 {
     /**
-     * コンストラクタ
-     * 
-     * @param AttendanceResolver $attendanceResolver 勤怠リゾルバ
-     * @param AttendanceQuery $attendanceQuery 勤怠クエリ
-     */
-    public function __construct(
-        private readonly AttendanceResolver $resolver,
-        private readonly AttendanceQuery $query,
-    ) {}
-
-    /**
-     * 勤怠レスポンスを作成する。
-     * 
-     * @param ?Attendance $attendance 勤怠
+     * ReadModel（SQL結果）から勤怠レスポンスを作成する。
+     *
+     * @param ?object $readModel SQL結果
+     * @param ClockStatus $clockStatus 打刻状態
      * @return AttendanceResponse 勤怠レスポンス
      */
-    public function create(?Attendance $attendance): AttendanceResponse
+    public function create(?object $readModel, ClockStatus $clockStatus): AttendanceResponse
     {
-        if ($attendance === null) {
+        if ($readModel === null) {
             return new AttendanceResponse(
-                id: null,
                 userId: null,
                 workDate: null,
-                clockStatus: $this->resolver->resolveClockStatus(null),
+                clockStatus: $clockStatus,
                 clockInAt: null,
                 clockOutAt: null,
                 breakMinutes: 0,
@@ -47,26 +34,19 @@ class AttendanceResponseFactory
             );
         }
 
-        // 休憩時間を計算する。
-        $totalBreakMinutes = $this->query
-            ->getBreaks($attendance->user, $attendance->work_date)
-            ->sum(fn($b) => $b->breakMinutes());
-
-        // 勤務時間を計算する。
-        $workedMinutes = $attendance->workMinutes() - $totalBreakMinutes;
+        $workedMinutes = (int) $readModel->worked_minutes;
 
         return new AttendanceResponse(
-            id: $attendance->id,
-            userId: $attendance->user_id,
-            workDate: $attendance->work_date->toDateString(),
-            clockStatus: $this->resolver->resolveClockStatus($attendance),
-            clockInAt: $attendance->clock_in_at?->toDateTimeString(),
-            clockOutAt: $attendance->clock_out_at?->toDateTimeString(),
-            breakMinutes: $totalBreakMinutes,
+            userId: $readModel->user_id,
+            workDate: $readModel->work_date,
+            clockStatus: $clockStatus,
+            clockInAt: $readModel->clock_in_at,
+            clockOutAt: $readModel->clock_out_at,
+            breakMinutes: (int) $readModel->break_minutes,
             workedMinutes: $workedMinutes,
             overtimeMinutes: max(
                 0,
-                $workedMinutes - config('attendance.standard_work_minutes')
+                $workedMinutes - (int) config('attendance.standard_work_minutes')
             ),
         );
     }

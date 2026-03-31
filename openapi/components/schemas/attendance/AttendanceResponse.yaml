@@ -3,10 +3,6 @@ AttendanceResponse:
   type: object
   description: 勤怠レコードの表示用のHTTPレスポンス
   properties:
-    id:
-      type: string
-      format: uuid
-      description: 勤怠レコードID
     userId:
       type: string
       format: uuid

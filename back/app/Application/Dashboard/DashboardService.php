@@ -5,13 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Dashboard;
 
 use App\Application\Attendance\AttendanceResolver;
-use App\Application\Attendance\AttendanceService;
 use App\Application\BaseService;
 use App\Infrastructure\Dashboard\Query\DashboardQuery;
-use App\__Generated__\Enums\ClockAction;
-use App\__Generated__\Responses\Attendance\AttendanceResponse;
 use App\__Generated__\Responses\Dashboard\DashboardResponse;
-use App\Http\Responses\Factories\AttendanceResponseFactory;
 use App\Models\User;
 
 /**
@@ -26,16 +22,12 @@ final class DashboardService extends BaseService
      * @param DashboardResolver $resolver ダッシュボードのリゾルバ
      * @param DashboardResponseFactory $factory ダッシュボードレスポンスファクトリ
      * @param AttendanceResolver $attendanceResolver 勤怠リゾルバ
-     * @param AttendanceService $attendanceService 勤怠サービス
-     * @param AttendanceResponseFactory $attendanceResponseFactory 勤怠レスポンスファクトリ
      */
     public function __construct(
         private readonly DashboardQuery $query,
         private readonly DashboardResolver $resolver,
         private readonly DashboardResponseFactory $factory,
         private readonly AttendanceResolver $attendanceResolver,
-        private readonly AttendanceService $attendanceService,
-        private readonly AttendanceResponseFactory $attendanceResponseFactory,
     ) {}
 
     /**
@@ -67,26 +59,5 @@ final class DashboardService extends BaseService
             stats: $stats,
             recentAttendances: $recentAttendances,
         );
-    }
-
-    /**
-     * ダッシュボードから打刻を実行する
-     *
-     * 打刻アクション種別に応じて AttendanceService に委譲する。
-     *
-     * @param User $user ユーザー
-     * @param ClockAction $action 打刻アクション
-     * @return AttendanceResponse 勤怠レスポンス
-     */
-    public function clock(User $user, ClockAction $action): AttendanceResponse
-    {
-        $attendance = match ($action) {
-            ClockAction::IN => $this->attendanceService->clockIn($user),
-            ClockAction::OUT => $this->attendanceService->clockOut($user),
-            ClockAction::BREAK_START => $this->attendanceService->breakStart($user),
-            ClockAction::BREAK_END => $this->attendanceService->breakEnd($user),
-        };
-
-        return $this->attendanceResponseFactory->create($attendance);
     }
 }

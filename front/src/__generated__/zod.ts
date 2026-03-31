@@ -71,14 +71,10 @@ export namespace components.schemas {
       language: components["schemas"]["LanguageCode"].optional(),
     }).nullable().optional(),
   });
-  /** @description 出勤打刻のHTTPリクエスト */
-  export const AttendanceClockInRequest = z.record(z.string(), z.any());
-  /** @description 退勤打刻のHTTPリクエスト */
-  export const AttendanceClockOutRequest = z.record(z.string(), z.any());
-  /** @description 休憩開始打刻のHTTPリクエスト */
-  export const AttendanceBreakStartRequest = z.record(z.string(), z.any());
-  /** @description 休憩終了打刻のHTTPリクエスト */
-  export const AttendanceBreakEndRequest = z.record(z.string(), z.any());
+  /** @description 打刻のHTTPリクエスト */
+  export const AttendanceClockRequest = z.object({
+    action: components["schemas"]["ClockAction"],
+  });
   /** @description 勤怠の新規作成のHTTPリクエスト */
   export const AttendanceStoreRequest = z.object({
     workDate: z.string(),
@@ -93,7 +89,6 @@ export namespace components.schemas {
   });
   /** @description 勤怠レコードの表示用のHTTPレスポンス */
   export const AttendanceResponse = z.object({
-    id: z.string().optional(),
     userId: z.string().optional(),
     workDate: z.string().optional(),
     clockStatus: components["schemas"]["ClockStatus"].optional(),
@@ -317,24 +312,9 @@ export namespace components.requestBodies {
       "application/json": components["schemas"]["LoginRequest"],
     },
   };
-  export const AttendanceClockInBody = {
+  export const AttendanceClockBody = {
     content: {
-      "application/json": components["schemas"]["AttendanceClockInRequest"],
-    },
-  };
-  export const AttendanceClockOutBody = {
-    content: {
-      "application/json": components["schemas"]["AttendanceClockOutRequest"],
-    },
-  };
-  export const AttendanceBreakStartBody = {
-    content: {
-      "application/json": components["schemas"]["AttendanceBreakStartRequest"],
-    },
-  };
-  export const AttendanceBreakEndBody = {
-    content: {
-      "application/json": components["schemas"]["AttendanceBreakEndRequest"],
+      "application/json": components["schemas"]["AttendanceClockRequest"],
     },
   };
   export const AttendanceStoreBody = {
@@ -427,75 +407,15 @@ export const operations = {
       500: components["responses"]["InternalServerError"],
     },
   },
-  createClockIn: {
+  createClock: {
     /**
-     * 出勤打刻 
-     * @description 当日の出勤打刻を行う。
+     * 打刻 
+     * @description 出勤・退勤・休憩開始・休憩終了の打刻を行う。
+     * `action` で打刻種別を指定する。
      */
-    requestBody: components["requestBodies"]["AttendanceClockInBody"],
+    requestBody: components["requestBodies"]["AttendanceClockBody"],
     responses: {
-      /** @description 出勤成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AttendanceResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      409: components["responses"]["Conflict"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createClockOut: {
-    /**
-     * 退勤打刻 
-     * @description 当日の退勤打刻を行う。
-     */
-    requestBody: components["requestBodies"]["AttendanceClockOutBody"],
-    responses: {
-      /** @description 退勤成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AttendanceResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      409: components["responses"]["Conflict"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createBreakStart: {
-    /**
-     * 休憩開始打刻 
-     * @description 勤務中のユーザーが休憩を開始する。
-     * サーバー側で現在時刻を休憩開始時刻として記録する。
-     * Request Body は空オブジェクト `{}` を送信する。
-     */
-    requestBody: components["requestBodies"]["AttendanceBreakStartBody"],
-    responses: {
-      /** @description 休憩開始成功 */
-      200: {
-        content: {
-          "application/json": components["schemas"]["AttendanceResponse"],
-        },
-      },
-      401: components["responses"]["Unauthorized"],
-      409: components["responses"]["Conflict"],
-      422: components["responses"]["ValidationError"],
-      500: components["responses"]["InternalServerError"],
-    },
-  },
-  createBreakEnd: {
-    /**
-     * 休憩終了打刻 
-     * @description 休憩中のユーザーが休憩を終了する。
-     * サーバー側で現在時刻を休憩終了時刻として記録する。
-     * Request Body は空オブジェクト `{}` を送信する。
-     */
-    requestBody: components["requestBodies"]["AttendanceBreakEndBody"],
-    responses: {
-      /** @description 休憩終了成功 */
+      /** @description 打刻成功 */
       200: {
         content: {
           "application/json": components["schemas"]["AttendanceResponse"],
@@ -715,37 +635,13 @@ export const paths = {
      */
     get: operations["getLatestAttendance"],
   },
-  "/attendances/clock-in": {
+  "/attendances/clock": {
     /**
-     * 出勤打刻 
-     * @description 当日の出勤打刻を行う。
+     * 打刻 
+     * @description 出勤・退勤・休憩開始・休憩終了の打刻を行う。
+     * `action` で打刻種別を指定する。
      */
-    post: operations["createClockIn"],
-  },
-  "/attendances/clock-out": {
-    /**
-     * 退勤打刻 
-     * @description 当日の退勤打刻を行う。
-     */
-    post: operations["createClockOut"],
-  },
-  "/attendances/break-start": {
-    /**
-     * 休憩開始打刻 
-     * @description 勤務中のユーザーが休憩を開始する。
-     * サーバー側で現在時刻を休憩開始時刻として記録する。
-     * Request Body は空オブジェクト `{}` を送信する。
-     */
-    post: operations["createBreakStart"],
-  },
-  "/attendances/break-end": {
-    /**
-     * 休憩終了打刻 
-     * @description 休憩中のユーザーが休憩を終了する。
-     * サーバー側で現在時刻を休憩終了時刻として記録する。
-     * Request Body は空オブジェクト `{}` を送信する。
-     */
-    post: operations["createBreakEnd"],
+    post: operations["createClock"],
   },
   "/attendances": {
     /**

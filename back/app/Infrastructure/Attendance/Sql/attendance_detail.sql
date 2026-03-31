@@ -1,21 +1,7 @@
-<?php
-
-namespace App\Repositories;
-
-use Illuminate\Support\Facades\DB;
-
-class AttendanceRepository
-{
-    /**
-     * 勤怠を取得する。
-     */
-    public function getAttendances(int $userId)
-    {
-        $sql = <<<EOQ
 WITH params AS ( 
     SELECT
-        '{5e58b918-feac-4fec-94eb-5e6cb5a02d6b}'::uuid AS user_id
-        , standard_work_minutes::int AS standard_work_minutes
+        :user_id::uuid AS user_id
+        , :work_date::date AS work_date
 ) 
 , attendances_cte AS ( 
     SELECT
@@ -30,6 +16,7 @@ WITH params AS (
         CROSS JOIN params 
     WHERE
         a1.user_id = params.user_id
+        AND a1.work_date = params.work_date
 ) 
 , attendance_breaks_cte AS ( 
     SELECT
@@ -54,13 +41,14 @@ WITH params AS (
         ac1.id
 ) 
 SELECT
-    MIN(ac1.clock_in_at) AS clock_in_at
+    (SELECT x.user_id FROM params x) AS user_id
+    , (SELECT x.work_date FROM params x) AS work_date
+    , MIN(ac1.clock_in_at) AS clock_in_at
     , MAX(ac1.clock_out_at) FILTER (WHERE rank = 1) AS clock_out_at
-    , SUM(abc1.work_time) AS work_time
-    , SUM(abc1.break_time) AS break_time 
+    , SUM(abc1.work_time) AS worked_minutes
+    , SUM(abc1.break_time) AS break_minutes
 FROM
-    attendances_cte ac1 
-    CROSS JOIN params
+    attendances_cte ac1
     LEFT JOIN LATERAL ( 
         SELECT
             abc1.*
@@ -69,12 +57,3 @@ FROM
             attendance_breaks_cte abc1
     ) abc1 
         ON ac1.id = abc1.id
-EOQ;
-
-        $params = [
-            'user_id' => $userId,
-            'standard_work_minutes' => config('attendance.standard_work_minutes'),
-        ];
-        return DB::selectOne($sql, $params);
-    }
-}

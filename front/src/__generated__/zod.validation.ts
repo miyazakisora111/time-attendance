@@ -9,14 +9,10 @@ const labels = labelsJson as Record<string, string>;
 const labelOf = (field: string): string => labels[field] ?? field;
 
 export const validationSchemas = {
-  AttendanceBreakEndRequest:
-    generatedComponents.schemas.AttendanceBreakEndRequest,
-  AttendanceBreakStartRequest:
-    generatedComponents.schemas.AttendanceBreakStartRequest,
-  AttendanceClockInRequest:
-    generatedComponents.schemas.AttendanceClockInRequest,
-  AttendanceClockOutRequest:
-    generatedComponents.schemas.AttendanceClockOutRequest,
+  AttendanceClockRequest:
+    generatedComponents.schemas.AttendanceClockRequest.extend({
+      action: z.enum(["in", "out", "breakStart", "breakEnd"]),
+    }),
   AttendanceIndexRequest:
     generatedComponents.schemas.AttendanceIndexRequest.extend({
       from: z
@@ -29,7 +25,6 @@ export const validationSchemas = {
         .min(1, `${labelOf("to")}は必須です。`),
     }),
   AttendanceResponse: generatedComponents.schemas.AttendanceResponse.extend({
-    id: z.string().trim().optional(),
     userId: z.string().trim().optional(),
     workDate: z.string().trim().optional(),
     clockStatus: z.enum(["out", "in", "break"]).optional(),

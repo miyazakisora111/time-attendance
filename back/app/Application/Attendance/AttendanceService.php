@@ -9,6 +9,7 @@ use App\Infrastructure\Attendance\Persistence\AttendanceRepository;
 use App\Infrastructure\Attendance\Query\AttendanceQuery;
 use App\Models\Attendance;
 use App\Models\User;
+use App\__Generated__\Enums\ClockAction;
 use Carbon\CarbonImmutable;
 
 /**
@@ -40,6 +41,23 @@ final class AttendanceService extends BaseService
     public function getLatestAttendance(User $user): ?Attendance
     {
         return $this->query->getLatestAttendance($user);
+    }
+
+    /**
+     * 打刻アクションに応じて打刻処理をディスパッチする
+     *
+     * @param User $user ユーザー
+     * @param ClockAction $action 打刻アクション
+     * @return Attendance 勤怠
+     */
+    public function clock(User $user, ClockAction $action): Attendance
+    {
+        return match ($action) {
+            ClockAction::IN => $this->clockIn($user),
+            ClockAction::OUT => $this->clockOut($user),
+            ClockAction::BREAK_START => $this->breakStart($user),
+            ClockAction::BREAK_END => $this->breakEnd($user),
+        };
     }
 
     /**

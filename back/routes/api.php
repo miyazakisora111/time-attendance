@@ -30,15 +30,11 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
     // ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'show']);
-    Route::post('/dashboard/clock', [DashboardController::class, 'clock']);
 
     // 勤怠
     Route::prefix('attendances')->group(function () {
         Route::get('/latest', [AttendanceController::class, 'latest']);
-        Route::post('/clock-in', [AttendanceController::class, 'clockIn']);
-        Route::post('/clock-out', [AttendanceController::class, 'clockOut']);
-        Route::post('/break-start', [AttendanceController::class, 'breakStart']);
-        Route::post('/break-end', [AttendanceController::class, 'breakEnd']);
+        Route::post('/clock', [AttendanceController::class, 'clock']);
         Route::get('/', [AttendanceController::class, 'index']);
         Route::post('/', [AttendanceController::class, 'store']);
         Route::patch('/{attendanceId}', [AttendanceController::class, 'update']);

@@ -4,10 +4,7 @@ import type { ClockAction, ClockStatus } from '@/__generated__/enums';
 import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance';
 import {
     attendanceQueryKeys,
-    useClockInMutation,
-    useClockOutMutation,
-    useBreakStartMutation,
-    useBreakEndMutation,
+    useClockMutation,
     useLatestAttendanceQuery,
 } from '@/features/attendance/hooks/useAttendanceQueries';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
@@ -28,10 +25,7 @@ interface UseAttendanceClockOptions {
 export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
     const queryClient = useQueryClient();
     const { data: LatestAttendance, isLoading, isError } = useLatestAttendanceQuery();
-    const { mutate: clockInMutate, isPending: isClockingIn } = useClockInMutation();
-    const { mutate: clockOutMutate, isPending: isClockingOut } = useClockOutMutation();
-    const { mutate: breakStartMutate, isPending: isBreakStarting } = useBreakStartMutation();
-    const { mutate: breakEndMutate, isPending: isBreakEnding } = useBreakEndMutation();
+    const { mutate: clockMutate, isPending } = useClockMutation();
 
     // データが存在しない場合は、未出勤のため「out」とする
     const clockStatus: ClockStatus = LatestAttendance?.clockStatus ?? 'out';
@@ -41,7 +35,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
         const nowText = formatJapaneseHourMinute(now);
         const label = getClockActionLabel(clockAction);
 
-        const mutationOptions = {
+        clockMutate(clockAction, {
             onSuccess: () => {
                 // 打刻後は最新の勤怠情報を取得し直す
                 void queryClient.invalidateQueries({ queryKey: attendanceQueryKeys.all() });
@@ -52,28 +46,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
             onError: () => {
                 sonner.error(`${label}に失敗しました`);
             }
-        };
-
-        switch (clockAction) {
-            case 'in': {
-                clockInMutate({}, mutationOptions);
-                break;
-            }
-            case 'out': {
-                clockOutMutate({}, mutationOptions);
-                break;
-            }
-            case 'breakStart': {
-                breakStartMutate({}, mutationOptions);
-                break;
-            }
-            case 'breakEnd': {
-                breakEndMutate({}, mutationOptions);
-                break;
-            }
-            default:
-                sonner.error('未対応の打刻アクションです');
-        }
+        });
     };
 
     return {
@@ -82,7 +55,7 @@ export const useAttendanceClock = (options?: UseAttendanceClockOptions) => {
         attendanceStatus: clockStatusToAttendanceStatusMap[clockStatus],
         isLoading,
         isError,
-        isPending: isClockingIn || isClockingOut || isBreakStarting || isBreakEnding,
+        isPending,
         handleAction,
     };
 };

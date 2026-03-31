@@ -30,20 +30,14 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, array<int, string>>>
      */
     private const SCHEMA_RULES = [
-                'AttendanceBreakEndRequest' => [
-        ],
-        'AttendanceBreakStartRequest' => [
-        ],
-        'AttendanceClockInRequest' => [
-        ],
-        'AttendanceClockOutRequest' => [
+                'AttendanceClockRequest' => [
+            'action' => ['required', 'in:in,out,breakStart,breakEnd'],
         ],
         'AttendanceIndexRequest' => [
             'from' => ['required', 'string', 'date_format:Y-m-d'],
             'to' => ['required', 'string', 'date_format:Y-m-d'],
         ],
         'AttendanceResponse' => [
-            'id' => ['required', 'string'],
             'userId' => ['sometimes', 'string'],
             'workDate' => ['sometimes', 'string'],
             'clockStatus' => ['required', 'in:out,in,break'],
@@ -284,20 +278,14 @@ final class OpenApiGeneratedRules
      * @var array<string, array<string, string>>
      */
     private const SCHEMA_ATTRIBUTES = [
-                'AttendanceBreakEndRequest' => [
-        ],
-        'AttendanceBreakStartRequest' => [
-        ],
-        'AttendanceClockInRequest' => [
-        ],
-        'AttendanceClockOutRequest' => [
+                'AttendanceClockRequest' => [
+            'action' => '打刻アクション',
         ],
         'AttendanceIndexRequest' => [
             'from' => '開始日',
             'to' => '終了日',
         ],
         'AttendanceResponse' => [
-            'id' => 'ユーザーID',
             'userId' => 'userId',
             'workDate' => 'workDate',
             'clockStatus' => '打刻状態',

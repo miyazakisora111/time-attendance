@@ -20,40 +20,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
 
  * OpenAPI spec version: 1.1.0
  */
-import type { ClockStatus } from "./clockStatus";
+import type { AttendanceClockRequest } from "./attendanceClockRequest";
 
-/**
- * 勤怠レコードの表示用のHTTPレスポンス
- */
-export interface AttendanceResponse {
-  /**
-   * 休憩合計（分）
-   * @nullable
-   */
-  breakMinutes?: number | null;
-  /**
-   * 出勤日時
-   * @nullable
-   */
-  clockInAt?: string | null;
-  /**
-   * 退勤日時
-   * @nullable
-   */
-  clockOutAt?: string | null;
-  clockStatus?: ClockStatus;
-  /**
-   * 残業時間（分）
-   * @nullable
-   */
-  overtimeMinutes?: number | null;
-  /** 対象ユーザーID */
-  userId?: string;
-  /** 勤務日 */
-  workDate?: string;
-  /**
-   * 実働時間（分）
-   * @nullable
-   */
-  workedMinutes?: number | null;
-}
+export type AttendanceClockBodyBody = AttendanceClockRequest;

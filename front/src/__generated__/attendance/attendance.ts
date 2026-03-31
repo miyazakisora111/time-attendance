@@ -21,10 +21,7 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 import type {
-  AttendanceBreakEndBodyBody,
-  AttendanceBreakStartBodyBody,
-  AttendanceClockInBodyBody,
-  AttendanceClockOutBodyBody,
+  AttendanceClockBodyBody,
   AttendanceResponse,
   AttendanceStoreBodyBody,
   AttendanceUpdateBodyBody,
@@ -45,65 +42,17 @@ export const getAttendance = () => {
     });
   };
   /**
-   * 当日の出勤打刻を行う。
-   * @summary 出勤打刻
-   */
-  const createClockIn = (
-    attendanceClockInBodyBody: AttendanceClockInBodyBody,
-  ) => {
-    return customInstance<AttendanceResponse>({
-      url: `/attendances/clock-in`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: attendanceClockInBodyBody,
-    });
-  };
-  /**
-   * 当日の退勤打刻を行う。
-   * @summary 退勤打刻
-   */
-  const createClockOut = (
-    attendanceClockOutBodyBody: AttendanceClockOutBodyBody,
-  ) => {
-    return customInstance<AttendanceResponse>({
-      url: `/attendances/clock-out`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: attendanceClockOutBodyBody,
-    });
-  };
-  /**
- * 勤務中のユーザーが休憩を開始する。
-サーバー側で現在時刻を休憩開始時刻として記録する。
-Request Body は空オブジェクト `{}` を送信する。
+ * 出勤・退勤・休憩開始・休憩終了の打刻を行う。
+`action` で打刻種別を指定する。
 
- * @summary 休憩開始打刻
+ * @summary 打刻
  */
-  const createBreakStart = (
-    attendanceBreakStartBodyBody: AttendanceBreakStartBodyBody,
-  ) => {
+  const createClock = (attendanceClockBodyBody: AttendanceClockBodyBody) => {
     return customInstance<AttendanceResponse>({
-      url: `/attendances/break-start`,
+      url: `/attendances/clock`,
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      data: attendanceBreakStartBodyBody,
-    });
-  };
-  /**
- * 休憩中のユーザーが休憩を終了する。
-サーバー側で現在時刻を休憩終了時刻として記録する。
-Request Body は空オブジェクト `{}` を送信する。
-
- * @summary 休憩終了打刻
- */
-  const createBreakEnd = (
-    attendanceBreakEndBodyBody: AttendanceBreakEndBodyBody,
-  ) => {
-    return customInstance<AttendanceResponse>({
-      url: `/attendances/break-end`,
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: attendanceBreakEndBodyBody,
+      data: attendanceClockBodyBody,
     });
   };
   /**
@@ -148,10 +97,7 @@ Request Body は空オブジェクト `{}` を送信する。
   };
   return {
     getLatestAttendance,
-    createClockIn,
-    createClockOut,
-    createBreakStart,
-    createBreakEnd,
+    createClock,
     listAttendances,
     createAttendance,
     updateAttendance,
@@ -165,17 +111,8 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 export type GetLatestAttendanceResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["getLatestAttendance"]>>
 >;
-export type CreateClockInResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockIn"]>>
->;
-export type CreateClockOutResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["createClockOut"]>>
->;
-export type CreateBreakStartResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["createBreakStart"]>>
->;
-export type CreateBreakEndResult = NonNullable<
-  Awaited<ReturnType<ReturnType<typeof getAttendance>["createBreakEnd"]>>
+export type CreateClockResult = NonNullable<
+  Awaited<ReturnType<ReturnType<typeof getAttendance>["createClock"]>>
 >;
 export type ListAttendancesResult = NonNullable<
   Awaited<ReturnType<ReturnType<typeof getAttendance>["listAttendances"]>>

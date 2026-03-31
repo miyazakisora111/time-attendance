@@ -15,7 +15,6 @@ use App\__Generated__\Enums\ClockStatus;
 final readonly class AttendanceResponse
 {
     public function __construct(
-        public ?string $id = null,
         public ?string $userId = null,
         public ?string $workDate = null,
         public ?ClockStatus $clockStatus = null,

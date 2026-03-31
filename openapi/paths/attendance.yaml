@@ -17,99 +17,20 @@ latestAttendance:
       "500":
         $ref: "../components/responses.yaml#/InternalServerError"
 
-clockIn:
+clock:
   post:
-    operationId: createClockIn
+    operationId: createClock
     tags:
       - Attendance
-    summary: 出勤打刻
-    description: 当日の出勤打刻を行う。
-    requestBody:
-      $ref: "../components/requestBodies.yaml#/AttendanceClockInBody"
-    responses:
-      "200":
-        description: 出勤成功
-        content:
-          application/json:
-            schema:
-              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
-      "401":
-        $ref: "../components/responses.yaml#/Unauthorized"
-      "409":
-        $ref: "../components/responses.yaml#/Conflict"
-      "422":
-        $ref: "../components/responses.yaml#/ValidationError"
-      "500":
-        $ref: "../components/responses.yaml#/InternalServerError"
-
-clockOut:
-  post:
-    operationId: createClockOut
-    tags:
-      - Attendance
-    summary: 退勤打刻
-    description: 当日の退勤打刻を行う。
-    requestBody:
-      $ref: "../components/requestBodies.yaml#/AttendanceClockOutBody"
-    responses:
-      "200":
-        description: 退勤成功
-        content:
-          application/json:
-            schema:
-              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
-      "401":
-        $ref: "../components/responses.yaml#/Unauthorized"
-      "409":
-        $ref: "../components/responses.yaml#/Conflict"
-      "422":
-        $ref: "../components/responses.yaml#/ValidationError"
-      "500":
-        $ref: "../components/responses.yaml#/InternalServerError"
-
-breakStart:
-  post:
-    operationId: createBreakStart
-    tags:
-      - Attendance
-    summary: 休憩開始打刻
+    summary: 打刻
     description: |
-      勤務中のユーザーが休憩を開始する。
-      サーバー側で現在時刻を休憩開始時刻として記録する。
-      Request Body は空オブジェクト `{}` を送信する。
+      出勤・退勤・休憩開始・休憩終了の打刻を行う。
+      `action` で打刻種別を指定する。
     requestBody:
-      $ref: "../components/requestBodies.yaml#/AttendanceBreakStartBody"
+      $ref: "../components/requestBodies.yaml#/AttendanceClockBody"
     responses:
       "200":
-        description: 休憩開始成功
-        content:
-          application/json:
-            schema:
-              $ref: "../components/schemas/attendance/AttendanceResponse.yaml#/AttendanceResponse"
-      "401":
-        $ref: "../components/responses.yaml#/Unauthorized"
-      "409":
-        $ref: "../components/responses.yaml#/Conflict"
-      "422":
-        $ref: "../components/responses.yaml#/ValidationError"
-      "500":
-        $ref: "../components/responses.yaml#/InternalServerError"
-
-breakEnd:
-  post:
-    operationId: createBreakEnd
-    tags:
-      - Attendance
-    summary: 休憩終了打刻
-    description: |
-      休憩中のユーザーが休憩を終了する。
-      サーバー側で現在時刻を休憩終了時刻として記録する。
-      Request Body は空オブジェクト `{}` を送信する。
-    requestBody:
-      $ref: "../components/requestBodies.yaml#/AttendanceBreakEndBody"
-    responses:
-      "200":
-        description: 休憩終了成功
+        description: 打刻成功
         content:
           application/json:
             schema:

@@ -428,11 +428,6 @@
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
                   "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
                     "userId": {
                       "type": "string",
                       "format": "uuid",
@@ -529,21 +524,36 @@
         }
       }
     },
-    "/attendances/clock-in": {
+    "/attendances/clock": {
       "post": {
-        "operationId": "createClockIn",
+        "operationId": "createClock",
         "tags": [
           "Attendance"
         ],
-        "summary": "出勤打刻",
-        "description": "当日の出勤打刻を行う。",
+        "summary": "打刻",
+        "description": "出勤・退勤・休憩開始・休憩終了の打刻を行う。\n`action` で打刻種別を指定する。\n",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "description": "出勤打刻のHTTPリクエスト",
+                "description": "打刻のHTTPリクエスト",
+                "required": [
+                  "action"
+                ],
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "打刻アクション種別",
+                    "enum": [
+                      "in",
+                      "out",
+                      "breakStart",
+                      "breakEnd"
+                    ]
+                  }
+                },
                 "additionalProperties": false
               }
             }
@@ -551,591 +561,13 @@
         },
         "responses": {
           "200": {
-            "description": "出勤成功",
+            "description": "打刻成功",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
                   "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
-                    "userId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "対象ユーザーID"
-                    },
-                    "workDate": {
-                      "type": "string",
-                      "format": "date",
-                      "description": "勤務日"
-                    },
-                    "clockStatus": {
-                      "type": "string",
-                      "description": "現在の打刻状態",
-                      "enum": [
-                        "out",
-                        "in",
-                        "break"
-                      ]
-                    },
-                    "clockInAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "出勤日時"
-                    },
-                    "clockOutAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "退勤日時"
-                    },
-                    "breakMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "休憩合計（分）"
-                    },
-                    "workedMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "実働時間（分）"
-                    },
-                    "overtimeMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "残業時間（分）"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "認証エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "排他エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "バリデーションエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "バリデーションエラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message",
-                    "errors"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "バリデーションエラーの総括メッセージ",
-                      "example": "バリデーションエラー"
-                    },
-                    "errors": {
-                      "type": "object",
-                      "description": "フィールド名 → エラーメッセージ配列のマップ",
-                      "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "example": {
-                        "email": [
-                          "メールアドレスは必須です。"
-                        ],
-                        "password": [
-                          "パスワードは8文字以上で入力してください。"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "サーバーエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/attendances/clock-out": {
-      "post": {
-        "operationId": "createClockOut",
-        "tags": [
-          "Attendance"
-        ],
-        "summary": "退勤打刻",
-        "description": "当日の退勤打刻を行う。",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "退勤打刻のHTTPリクエスト",
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "退勤成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
-                    "userId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "対象ユーザーID"
-                    },
-                    "workDate": {
-                      "type": "string",
-                      "format": "date",
-                      "description": "勤務日"
-                    },
-                    "clockStatus": {
-                      "type": "string",
-                      "description": "現在の打刻状態",
-                      "enum": [
-                        "out",
-                        "in",
-                        "break"
-                      ]
-                    },
-                    "clockInAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "出勤日時"
-                    },
-                    "clockOutAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "退勤日時"
-                    },
-                    "breakMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "休憩合計（分）"
-                    },
-                    "workedMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "実働時間（分）"
-                    },
-                    "overtimeMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "残業時間（分）"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "認証エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "排他エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "バリデーションエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "バリデーションエラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message",
-                    "errors"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "バリデーションエラーの総括メッセージ",
-                      "example": "バリデーションエラー"
-                    },
-                    "errors": {
-                      "type": "object",
-                      "description": "フィールド名 → エラーメッセージ配列のマップ",
-                      "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "example": {
-                        "email": [
-                          "メールアドレスは必須です。"
-                        ],
-                        "password": [
-                          "パスワードは8文字以上で入力してください。"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "サーバーエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/attendances/break-start": {
-      "post": {
-        "operationId": "createBreakStart",
-        "tags": [
-          "Attendance"
-        ],
-        "summary": "休憩開始打刻",
-        "description": "勤務中のユーザーが休憩を開始する。\nサーバー側で現在時刻を休憩開始時刻として記録する。\nRequest Body は空オブジェクト `{}` を送信する。\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "休憩開始打刻のHTTPリクエスト",
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "休憩開始成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
-                    "userId": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "対象ユーザーID"
-                    },
-                    "workDate": {
-                      "type": "string",
-                      "format": "date",
-                      "description": "勤務日"
-                    },
-                    "clockStatus": {
-                      "type": "string",
-                      "description": "現在の打刻状態",
-                      "enum": [
-                        "out",
-                        "in",
-                        "break"
-                      ]
-                    },
-                    "clockInAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "出勤日時"
-                    },
-                    "clockOutAt": {
-                      "type": "string",
-                      "format": "date-time",
-                      "nullable": true,
-                      "description": "退勤日時"
-                    },
-                    "breakMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "休憩合計（分）"
-                    },
-                    "workedMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "実働時間（分）"
-                    },
-                    "overtimeMinutes": {
-                      "type": "integer",
-                      "nullable": true,
-                      "description": "残業時間（分）"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "認証エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "排他エラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "バリデーションエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "バリデーションエラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message",
-                    "errors"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "description": "バリデーションエラーの総括メッセージ",
-                      "example": "バリデーションエラー"
-                    },
-                    "errors": {
-                      "type": "object",
-                      "description": "フィールド名 → エラーメッセージ配列のマップ",
-                      "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      },
-                      "example": {
-                        "email": [
-                          "メールアドレスは必須です。"
-                        ],
-                        "password": [
-                          "パスワードは8文字以上で入力してください。"
-                        ]
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "サーバーエラー",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "エラー発生時のHTTPレスポンス",
-                  "required": [
-                    "message"
-                  ],
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "エラーが発生しました",
-                      "description": "ユーザー向けエラーメッセージ"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/attendances/break-end": {
-      "post": {
-        "operationId": "createBreakEnd",
-        "tags": [
-          "Attendance"
-        ],
-        "summary": "休憩終了打刻",
-        "description": "休憩中のユーザーが休憩を終了する。\nサーバー側で現在時刻を休憩終了時刻として記録する。\nRequest Body は空オブジェクト `{}` を送信する。\n",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "休憩終了打刻のHTTPリクエスト",
-                "additionalProperties": false
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "休憩終了成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "description": "勤怠レコードの表示用のHTTPレスポンス",
-                  "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
                     "userId": {
                       "type": "string",
                       "format": "uuid",
@@ -1364,11 +796,6 @@
                         "type": "object",
                         "description": "勤怠レコードの表示用のHTTPレスポンス",
                         "properties": {
-                          "id": {
-                            "type": "string",
-                            "format": "uuid",
-                            "description": "勤怠レコードID"
-                          },
                           "userId": {
                             "type": "string",
                             "format": "uuid",
@@ -1592,11 +1019,6 @@
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
                   "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
                     "userId": {
                       "type": "string",
                       "format": "uuid",
@@ -1793,11 +1215,6 @@
                   "type": "object",
                   "description": "勤怠レコードの表示用のHTTPレスポンス",
                   "properties": {
-                    "id": {
-                      "type": "string",
-                      "format": "uuid",
-                      "description": "勤怠レコードID"
-                    },
                     "userId": {
                       "type": "string",
                       "format": "uuid",
@@ -3584,24 +3001,24 @@
           }
         }
       },
-      "AttendanceClockInRequest": {
+      "AttendanceClockRequest": {
         "type": "object",
-        "description": "出勤打刻のHTTPリクエスト",
-        "additionalProperties": false
-      },
-      "AttendanceClockOutRequest": {
-        "type": "object",
-        "description": "退勤打刻のHTTPリクエスト",
-        "additionalProperties": false
-      },
-      "AttendanceBreakStartRequest": {
-        "type": "object",
-        "description": "休憩開始打刻のHTTPリクエスト",
-        "additionalProperties": false
-      },
-      "AttendanceBreakEndRequest": {
-        "type": "object",
-        "description": "休憩終了打刻のHTTPリクエスト",
+        "description": "打刻のHTTPリクエスト",
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "打刻アクション種別",
+            "enum": [
+              "in",
+              "out",
+              "breakStart",
+              "breakEnd"
+            ]
+          }
+        },
         "additionalProperties": false
       },
       "AttendanceStoreRequest": {
@@ -3658,11 +3075,6 @@
         "type": "object",
         "description": "勤怠レコードの表示用のHTTPレスポンス",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "勤怠レコードID"
-          },
           "userId": {
             "type": "string",
             "format": "uuid",
@@ -4896,49 +4308,28 @@
           }
         }
       },
-      "AttendanceClockInBody": {
+      "AttendanceClockBody": {
         "required": true,
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
-              "description": "出勤打刻のHTTPリクエスト",
-              "additionalProperties": false
-            }
-          }
-        }
-      },
-      "AttendanceClockOutBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "description": "退勤打刻のHTTPリクエスト",
-              "additionalProperties": false
-            }
-          }
-        }
-      },
-      "AttendanceBreakStartBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "description": "休憩開始打刻のHTTPリクエスト",
-              "additionalProperties": false
-            }
-          }
-        }
-      },
-      "AttendanceBreakEndBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "description": "休憩終了打刻のHTTPリクエスト",
+              "description": "打刻のHTTPリクエスト",
+              "required": [
+                "action"
+              ],
+              "properties": {
+                "action": {
+                  "type": "string",
+                  "description": "打刻アクション種別",
+                  "enum": [
+                    "in",
+                    "out",
+                    "breakStart",
+                    "breakEnd"
+                  ]
+                }
+              },
               "additionalProperties": false
             }
           }

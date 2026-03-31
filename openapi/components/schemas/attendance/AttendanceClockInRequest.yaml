@@ -1,4 +1,0 @@
-AttendanceClockInRequest:
-  type: object
-  description: 出勤打刻のHTTPリクエスト
-  additionalProperties: false

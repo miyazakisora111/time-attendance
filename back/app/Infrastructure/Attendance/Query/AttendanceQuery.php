@@ -98,4 +98,20 @@ final class AttendanceQuery extends BaseQuery
             'user_id' => $user->id,
         ]);
     }
+
+    /**
+     * 勤怠詳細（ReadModel）を取得する。
+     *
+     * @param User $user ユーザー
+     * @return ?object 詳細行
+     */
+    public function getDetail(User $user): ?object
+    {
+        $sql = $this->loadSql('attendance_detail.sql');
+
+        return $this->selectOne($sql, [
+            'user_id' => $user->id,
+            'work_date' => now()->toDateString(),
+        ]);
+    }
 }

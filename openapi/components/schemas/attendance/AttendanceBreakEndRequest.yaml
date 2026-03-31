@@ -1,4 +1,0 @@
-AttendanceBreakEndRequest:
-  type: object
-  description: 休憩終了打刻のHTTPリクエスト
-  additionalProperties: false

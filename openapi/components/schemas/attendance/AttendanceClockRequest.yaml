@@ -1,0 +1,9 @@
+AttendanceClockRequest:
+  type: object
+  description: 打刻のHTTPリクエスト
+  required:
+    - action
+  properties:
+    action:
+      $ref: "../../enums/ClockAction.yaml#/ClockAction"
+  additionalProperties: false
