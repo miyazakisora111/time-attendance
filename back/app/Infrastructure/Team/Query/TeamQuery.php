@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Team;
+namespace App\Infrastructure\Team\Query;
 
 use App\Models\User;
 use Carbon\CarbonImmutable;

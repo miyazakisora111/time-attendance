@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Calendar;
 
 use App\Application\BaseService;
-
+use App\Infrastructure\Calendar\Query\CalendarQuery;
 use App\Models\Attendance;
 use App\Models\Holiday;
-use App\Models\PaidLeaveGrant;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -20,6 +19,10 @@ final class CalendarService extends BaseService
 {
     private const DEFAULT_SHIFT = '通常勤務';
     private const DEFAULT_LOCATION = 'Office-A';
+
+    public function __construct(
+        private readonly CalendarQuery $query,
+    ) {}
 
     /**
      * 指定された年月のカレンダー情報を取得する。
@@ -36,16 +39,9 @@ final class CalendarService extends BaseService
         $end = $start->copy()->endOfMonth();
         $today = today()->toDateString();
 
-        $attendances = Attendance::query()
-            ->user($user->id)
-            ->month($year, $month)
-            ->get()
-            ->keyBy(fn(Attendance $attendance): string => $attendance->work_date?->toDateString() ?? '');
+        $attendances = $this->query->getMonthlyAttendances($user, $year, $month);
 
-        $holidays = Holiday::query()
-            ->month($year, $month)
-            ->get()
-            ->keyBy(fn(Holiday $holiday): string => $holiday->holiday_date?->toDateString() ?? '');
+        $holidays = $this->query->getMonthlyHolidays($year, $month);
 
         $days = [];
         for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
@@ -148,10 +144,7 @@ final class CalendarService extends BaseService
         $overtimeHours = 0.0;
 
         $paidLeaveDays = 0.0;
-        $grantedDays = round((float) PaidLeaveGrant::query()
-            ->user($user->id)
-            ->active()
-            ->sum('days'), 1);
+        $grantedDays = $this->query->getGrantedPaidLeaveDays($user);
         $usedDays = 0.0;
 
         return [

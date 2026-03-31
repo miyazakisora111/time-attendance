@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Attendance;
 
 use App\Application\BaseService;
+use App\Infrastructure\Attendance\Persistence\AttendanceRepository;
+use App\Infrastructure\Attendance\Query\AttendanceQuery;
 use App\Models\Attendance;
-use App\Models\AttendanceBreak;
 use App\Models\User;
 use Carbon\CarbonImmutable;
 
@@ -19,11 +20,13 @@ final class AttendanceService extends BaseService
      * コンストラクタ
      * 
      * @param AttendanceQuery $query 勤怠のクエリ
+     * @param AttendanceRepository $repository 勤怠のリポジトリ
      * @param AttendanceGuard $guard 勤怠のガード
      * @param AttendanceResolver $resolver 勤怠リゾルバ
      */
     public function __construct(
         private readonly AttendanceQuery $query,
+        private readonly AttendanceRepository $repository,
         private readonly AttendanceGuard $guard,
         private readonly AttendanceResolver $resolver,
     ) {}
@@ -57,14 +60,13 @@ final class AttendanceService extends BaseService
             // 勤怠テーブルに登録する。
             $timezone = $this->resolveTimezone(timezone: $user->timezone);
             $now = CarbonImmutable::now($timezone);
-            $attendance = Attendance::query()->create([
+
+            return $this->repository->create([
                 'user_id' => $user->id,
                 'work_date' => $now->toDateString(),
                 'clock_in_at' => $now,
                 'work_timezone' => $timezone,
             ]);
-
-            return $attendance;
         });
     }
 
@@ -86,11 +88,10 @@ final class AttendanceService extends BaseService
             // 勤怠テーブルを更新する。
             $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            $latestAttendance->update([
+
+            return $this->repository->update($latestAttendance, [
                 'clock_out_at' => $now,
             ]);
-
-            return $latestAttendance->refresh();
         });
     }
 
@@ -112,7 +113,7 @@ final class AttendanceService extends BaseService
             // 勤怠休憩テーブルに登録する。
             $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
-            AttendanceBreak::query()->create([
+            $this->repository->createBreak([
                 'attendance_id' => $latestAttendance->id,
                 'break_start_at' => $now->format('H:i:s'),
             ]);
@@ -140,7 +141,7 @@ final class AttendanceService extends BaseService
             $timezone = $this->resolveTimezone($latestAttendance->work_timezone);
             $now = CarbonImmutable::now($timezone);
             $latestAttendanceBreak = $this->query->getLatestAttendanceBreak($latestAttendance);
-            $latestAttendanceBreak->update([
+            $this->repository->updateBreak($latestAttendanceBreak, [
                 'break_end_at' => $now->format('H:i:s'),
             ]);
 
@@ -158,15 +159,13 @@ final class AttendanceService extends BaseService
     public function store(User $user, array $input): Attendance
     {
         return $this->transaction(function () use ($user, $input): Attendance {
-            $attendance = Attendance::query()->create([
+            return $this->repository->create([
                 'user_id' => $user->id,
                 'work_date' => $input['work_date'],
                 'clock_in_at' => $input['clock_in_at'] ?? null,
                 'clock_out_at' => $input['clock_out_at'] ?? null,
                 'work_timezone' => $input['work_timezone'] ?? $this->resolveTimezone(timezone: $user->timezone),
             ]);
-
-            return $attendance;
         });
     }
 
@@ -180,7 +179,7 @@ final class AttendanceService extends BaseService
     public function update(Attendance $attendance, array $input): Attendance
     {
         return $this->transaction(function () use ($attendance, $input): Attendance {
-            $attendance->update(array_filter([
+            $this->repository->update($attendance, array_filter([
                 'clock_in_at' => $input['clock_in_at'] ?? null,
                 'clock_out_at' => $input['clock_out_at'] ?? null,
             ], fn($v) => $v !== null));

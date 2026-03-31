@@ -6,7 +6,7 @@ namespace App\Http\Responses\Factories;
 
 use App\__Generated__\Responses\Attendance\AttendanceResponse;
 use App\Application\Attendance\AttendanceResolver;
-use App\Application\Attendance\AttendanceQuery;
+use App\Infrastructure\Attendance\Query\AttendanceQuery;
 use App\Models\Attendance;
 
 /**

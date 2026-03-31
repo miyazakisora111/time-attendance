@@ -7,6 +7,7 @@ namespace App\Application\Dashboard;
 use App\Application\Attendance\AttendanceResolver;
 use App\Application\Attendance\AttendanceService;
 use App\Application\BaseService;
+use App\Infrastructure\Dashboard\Query\DashboardQuery;
 use App\__Generated__\Enums\ClockAction;
 use App\__Generated__\Responses\Attendance\AttendanceResponse;
 use App\__Generated__\Responses\Dashboard\DashboardResponse;

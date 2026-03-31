@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Team;
 
 use App\Application\BaseService;
+use App\Infrastructure\Team\Query\TeamQuery;
 use App\Models\User;
 use App\__Generated__\Responses\Team\TeamMembersResponse;
 use Carbon\CarbonImmutable;

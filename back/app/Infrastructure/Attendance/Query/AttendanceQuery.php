@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Attendance;
+namespace App\Infrastructure\Attendance\Query;
 
+use App\Infrastructure\BaseQuery;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
 use Carbon\CarbonInterface;
-use \Illuminate\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * 勤怠のクエリ
  */
-final class AttendanceQuery
+final class AttendanceQuery extends BaseQuery
 {
     /**
      * 勤怠一覧を取得する
@@ -51,9 +52,9 @@ final class AttendanceQuery
     }
 
     /**
-     * 最新の勤怠を取得する。
+     * 最新の休憩を取得する。
      *
-     * @param User $user ユーザー
+     * @param Attendance $attendance 勤怠
      * @return ?AttendanceBreak 最新の休憩
      */
     public function getLatestAttendanceBreak(Attendance $attendance): ?AttendanceBreak
@@ -64,23 +65,37 @@ final class AttendanceQuery
             ->first();
     }
 
-
     /**
-     * 休憩が終了済みの勤怠を取得する。
+     * 休憩が終了済みの休憩一覧を取得する。
      * 
      * @param User $user ユーザー
      * @param CarbonInterface $workDate 勤務日
-     * @return Collection<int, AttendanceBreak> 休憩が終了済みの勤怠
+     * @return Collection<int, AttendanceBreak> 休憩一覧
      */
     public function getBreaks(User $user, CarbonInterface $workDate): Collection
     {
-        return AttendanceBreak::query()
-            ->leftJoin('attendances', 'attendance_breaks.attendance_id', '=', 'attendances.id')
-            ->where('attendances.user_id', $user->id)
-            ->whereDate('attendances.work_date', $workDate)
-            ->whereNotNull('attendance_breaks.break_start_at')
-            ->whereNotNull('attendance_breaks.break_end_at')
-            ->select('attendance_breaks.*')
-            ->get();
+        $sql = $this->loadSql('attendance_breaks.sql');
+
+        $rows = $this->select($sql, [
+            'user_id' => $user->id,
+            'work_date' => $workDate->toDateString(),
+        ]);
+
+        return AttendanceBreak::hydrate($rows);
+    }
+
+    /**
+     * 勤怠サマリーを取得する。
+     *
+     * @param User $user ユーザー
+     * @return ?object サマリー行（clock_in_at, clock_out_at, work_time, break_time）
+     */
+    public function getSummary(User $user): ?object
+    {
+        $sql = $this->loadSql('attendance_summary.sql');
+
+        return $this->selectOne($sql, [
+            'user_id' => $user->id,
+        ]);
     }
 }

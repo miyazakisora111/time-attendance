@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Schedule;
 
 use App\Application\BaseService;
+use App\Infrastructure\Schedule\Query\ScheduleQuery;
 use App\__Generated__\Enums\CalendarDayStatus;
 use App\__Generated__\Responses\Calendar\CalendarDay;
 use App\__Generated__\Responses\Calendar\CalendarResponse;

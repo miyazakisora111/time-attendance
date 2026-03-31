@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Dashboard;
+namespace App\Infrastructure\Dashboard\Query;
 
 use App\Models\Attendance;
 use App\Models\User;
