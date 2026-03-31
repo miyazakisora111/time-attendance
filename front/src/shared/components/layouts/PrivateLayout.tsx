@@ -10,7 +10,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const defaultMenuItems: SidebarMenuItem[] = [
     { icon: Home, label: "ダッシュボード", href: AppRoutePath.Dashboard },
-    { icon: Clock, label: "打刻", href: AppRoutePath.Attendance },
+    { icon: Clock, label: "勤怠", href: AppRoutePath.Attendance },
     { icon: Calendar, label: "スケジュール", href: AppRoutePath.Schedule },
     { icon: Users, label: "チーム管理", href: AppRoutePath.Team },
     { icon: Settings, label: "設定", href: AppRoutePath.Settings },

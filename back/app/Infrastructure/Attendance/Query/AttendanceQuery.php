@@ -8,8 +8,6 @@ use App\Infrastructure\BaseQuery;
 use App\Models\Attendance;
 use App\Models\AttendanceBreak;
 use App\Models\User;
-use Carbon\CarbonInterface;
-use Illuminate\Support\Collection;
 
 /**
  * 勤怠のクエリ
@@ -66,41 +64,7 @@ final class AttendanceQuery extends BaseQuery
     }
 
     /**
-     * 休憩が終了済みの休憩一覧を取得する。
-     * 
-     * @param User $user ユーザー
-     * @param CarbonInterface $workDate 勤務日
-     * @return Collection<int, AttendanceBreak> 休憩一覧
-     */
-    public function getBreaks(User $user, CarbonInterface $workDate): Collection
-    {
-        $sql = $this->loadSql('attendance_breaks.sql');
-
-        $rows = $this->select($sql, [
-            'user_id' => $user->id,
-            'work_date' => $workDate->toDateString(),
-        ]);
-
-        return AttendanceBreak::hydrate($rows);
-    }
-
-    /**
-     * 勤怠サマリーを取得する。
-     *
-     * @param User $user ユーザー
-     * @return ?object サマリー行（clock_in_at, clock_out_at, work_time, break_time）
-     */
-    public function getSummary(User $user): ?object
-    {
-        $sql = $this->loadSql('attendance_summary.sql');
-
-        return $this->selectOne($sql, [
-            'user_id' => $user->id,
-        ]);
-    }
-
-    /**
-     * 勤怠詳細（ReadModel）を取得する。
+     * 勤怠詳細を取得する。
      *
      * @param User $user ユーザー
      * @return ?object 詳細行
