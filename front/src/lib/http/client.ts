@@ -1,5 +1,5 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import { env, isDevelopment } from '@/env';
+import { isDevelopment } from '@/env';
 import { API_CONFIG, HttpStatusCode } from '@/config/api';
 import { StorageKey } from '@/config/auth';
 import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
@@ -211,9 +211,4 @@ export const customInstance = <T>(
   return axiosInstance(config).then((res) => res.data);
 };
 
-/**
- * 既存UI互換のCSRF APIダミー。
- */
-export const getCsrfTokenApi = async (): Promise<void> => {
-  return Promise.resolve();
-};
+

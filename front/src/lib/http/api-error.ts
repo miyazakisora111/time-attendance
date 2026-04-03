@@ -42,26 +42,4 @@ export const isApiError = (value: unknown): value is ApiError => {
     return typeof record.message === 'string' && typeof record.code === 'string';
 };
 
-/**
- * AxiosError や catch された unknown から ApiError を安全に抽出する。
- *
- * @param error catch で受け取った値
- * @returns ApiError（抽出できない場合はデフォルト値）
- */
-export const toApiError = (error: unknown): ApiError => {
-    if (typeof error === 'object' && error !== null) {
-        const axiosLike = error as Record<string, unknown>;
-        if (typeof axiosLike.response === 'object' && axiosLike.response !== null) {
-            const resp = axiosLike.response as Record<string, unknown>;
-            if (isApiError(resp.data)) return resp.data;
-        }
-    }
 
-    // 直接 ApiError が渡された場合
-    if (isApiError(error)) return error;
-
-    return {
-        message: 'エラーが発生しました。',
-        code: ApiErrorCode.Internal,
-    };
-};
