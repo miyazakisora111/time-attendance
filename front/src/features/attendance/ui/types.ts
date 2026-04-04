@@ -10,12 +10,6 @@ export type AttendanceView = {
     workDate: string;
 };
 
-/** 直近打刻 */
-export interface LastActionView {
-    label: string;
-    time: string;
-}
-
 /**
  * 直近打刻情報。
  */
