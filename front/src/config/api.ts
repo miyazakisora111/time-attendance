@@ -8,8 +8,6 @@ export const API_CONFIG = {
   baseUrl: env.API_URL,
   /** APIタイムアウト(ms) */
   timeoutMs: env.API_TIMEOUT,
-  /** React Query キャッシュ時間(ms) */
-  cacheStaleTimeMs: 60_000,
 } as const;
 
 /**

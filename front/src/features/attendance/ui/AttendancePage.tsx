@@ -60,72 +60,127 @@ export function AttendancePage() {
 
   return (
     <Container size="full">
-      <div className={`max-w-4xl mx-auto ${stack.xl}`}>
-        <Card variant="elevated" padding="lg" unstableClassName="relative overflow-hidden border-gray-100">
+      <div className={`max-w-4xl mx-auto space-y-8`}>
+        <Card
+          variant="elevated"
+          padding="lg"
+          unstableClassName="relative overflow-hidden border-gray-100"
+        >
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl -mr-32 -mt-32 opacity-50" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Clock title={undefined} size="md" />
-              </motion.div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
-                <span className="flex items-center gap-1.5">
-                  <MapPin size={14} className="text-gray-300" />
-                  <Typography variant="small" intent="muted">
-                    東京都港区港南 / Office-A
-                  </Typography>
-                </span>
-                <span className="w-1 h-1 rounded-full bg-gray-200" />
-                <span className="flex items-center gap-1.5">
-                  <Shield size={14} className="text-gray-300" />
-                  <Typography variant="small" intent="muted">
-                    IP: 192.168.1.xxx
-                  </Typography>
-                </span>
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card variant="flat" padding="lg">
+              <div className="flex flex-col items-center justify-center h-full">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <Clock title={undefined} size="md" />
+                </motion.div>
+                <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+                  <span className="flex items-center gap-1.5">
+                    <MapPin size={14} className="text-gray-300" />
+                    <Typography variant="small" intent="muted">
+                      東京都港区港南 / Office-A
+                    </Typography>
+                  </span>
+
+                  <span className="w-1 h-1 rounded-full bg-gray-200" />
+
+                  <span className="flex items-center gap-1.5">
+                    <Shield size={14} className="text-gray-300" />
+                    <Typography variant="small" intent="muted">
+                      IP: 192.168.1.xxx
+                    </Typography>
+                  </span>
+                </div>
               </div>
-            </div>
-            <div className="w-full md:w-72">
-              <Card
-                variant="flat"
-                intent={currentStatus.intent}
-                padding="md"
-                unstableClassName="transition-colors duration-500"
-              >
-                <div className="flex flex-col items-center text-center">
-                  <IconWrapper
-                    icon={currentStatusIcon.icon}
-                    size={32}
-                    strokeWidth={2.5}
-                    iconColor={currentStatusIcon.iconColor}
-                    bgColor="bg-white shadow-sm"
-                    unstableClassName="w-16 h-16 mb-4 rounded-2xl"
-                  />
-                  <Typography variant="h3" intent={currentStatus.intent} unstableClassName="mb-2">
-                    {currentStatus.title}
-                  </Typography>
+            </Card>
+            <Card
+              variant="flat"
+              intent={currentStatus.intent}
+              padding="md"
+              unstableClassName="transition-colors duration-500"
+            >
+              <div className="flex flex-col items-center justify-center text-center h-full">
+                <IconWrapper
+                  icon={currentStatusIcon.icon}
+                  size={32}
+                  strokeWidth={2.5}
+                  iconColor={currentStatusIcon.iconColor}
+                  bgColor="bg-white shadow-sm"
+                  unstableClassName="w-16 h-16 mb-4 rounded-2xl"
+                />
+                <Typography
+                  variant="h3"
+                  intent={currentStatus.intent}
+                  unstableClassName="mb-2"
+                >
+                  {currentStatus.title}
+                </Typography>
+                <Typography
+                  variant="small"
+                  intent={currentStatus.intent}
+                  align="center"
+                  unstableClassName="block leading-relaxed"
+                >
+                  {currentStatus.description}
+                </Typography>
+              </div>
+            </Card>
+            <Card
+              padding="lg"
+              intent="primary"
+              unstableClassName="border-none shadow-sm rounded-3xl"
+            >
+              <div className="flex flex-col justify-between h-full">
+                <div>
                   <Typography
                     variant="small"
-                    intent={currentStatus.intent}
-                    align="center"
-                    unstableClassName="block leading-relaxed"
+                    unstableClassName="opacity-80 mb-1 font-medium"
                   >
-                    {currentStatus.description}
+                    現在の勤務時間
+                  </Typography>
+
+                  <Typography
+                    variant="h3"
+                    unstableClassName="mb-6 tracking-tight"
+                  >
+                    {formatMinutes(totalWorkedMinutes)}
                   </Typography>
                 </div>
-              </Card>
-            </div>
+                <div className="pt-6 border-t border-blue-500/50 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Typography variant="small">
+                      休憩合計
+                    </Typography>
+                    <Typography variant="label">
+                      {formatMinutes(breakMinutes)}
+                    </Typography>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Typography variant="small">
+                      残業時間
+                    </Typography>
+                    <Typography variant="label">
+                      {formatMinutes(overtimeMinutes)}
+                    </Typography>
+                  </div>
+                </div>
+              </div>
+            </Card>
+            <Card
+              padding="lg"
+              intent="primary"
+              unstableClassName="border-none shadow-sm rounded-3xl"
+            >
+              <ClockActionButtons
+                status={clockStatus}
+                isPending={isLoading || isPending}
+                onAction={handleAction}
+              />
+            </Card>
           </div>
         </Card>
-        <div className="rounded-3xl border border-gray-100 bg-white p-6">
-          <ClockActionButtons
-            status={clockStatus}
-            isPending={isLoading || isPending}
-            onAction={handleAction}
-          />
-        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card variant="elevated" padding="none" unstableClassName="col-span-1 md:col-span-2 overflow-hidden">
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
@@ -167,36 +222,6 @@ export function AttendancePage() {
                 </AsyncDataState>
               </div>
             </CardContent>
-          </Card>
-          <Card padding="lg" intent="primary" unstableClassName="border-none shadow-sm rounded-3xl">
-            <div className="flex flex-col justify-between h-full">
-              <div>
-                <Typography variant="small" unstableClassName="opacity-80 mb-1 font-medium">
-                  現在の勤務時間
-                </Typography>
-                <Typography variant="h3" unstableClassName="mb-6 tracking-tight">
-                  {formatMinutes(totalWorkedMinutes)}
-                </Typography>
-              </div>
-              <div className={`${stack.md} pt-6 border-t border-blue-500/50`}>
-                <div className="flex items-center justify-between">
-                  <Typography variant="small">
-                    休憩合計
-                  </Typography>
-                  <Typography variant="label">
-                    {formatMinutes(breakMinutes)}
-                  </Typography>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Typography variant="small">
-                    残業時間
-                  </Typography>
-                  <Typography variant="label">
-                    {formatMinutes(overtimeMinutes)}
-                  </Typography>
-                </div>
-              </div>
-            </div>
           </Card>
         </div>
       </div>

@@ -3,5 +3,5 @@ import type { AuthUser } from '@/domain/auth/types';
 import type { Mapper } from "@/shared/mapper";
 
 export const toAuthUser: Mapper<UserResponse, AuthUser> = (u) => ({
-    ...u.user,
+    ...u,
 });

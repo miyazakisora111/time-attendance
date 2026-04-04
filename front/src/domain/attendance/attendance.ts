@@ -1,14 +1,4 @@
-import type { ClockAction, AttendanceStatus, ClockStatus } from '@/__generated__/enums';
-
-/**
- * 打刻アクション → 勤怠状態
- */
-export const actionToAttendanceStatusMap = {
-  in: 'working',
-  out: 'out',
-  breakStart: 'break',
-  breakEnd: 'working',
-} as const satisfies Record<ClockAction, AttendanceStatus>;
+import type { AttendanceStatus, ClockStatus } from '@/__generated__/enums';
 
 /**
  * 打刻状態 → 勤怠状態

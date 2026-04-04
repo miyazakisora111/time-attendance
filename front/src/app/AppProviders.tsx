@@ -5,30 +5,40 @@ import { isDevelopment } from '@/env';
 import { createQueryClient } from '@/lib/query/query-client';
 import { Toaster } from 'sonner';
 import { ErrorModal } from '@/shared/components/errors/ErrorModal';
+import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallback } from '@/shared/components/errors/ErrorFallback';
+import { normalizeError } from '@/shared/utils/error';
 
 interface Props {
     children: React.ReactNode;
 }
 
-/**
- * アプリ全体に提供するグローバル Provider をまとめたコンポーネント
- */
 export function AppProviders({ children }: Props) {
     const [queryClient] = React.useState(() => createQueryClient());
 
     return (
-        <QueryClientProvider client={queryClient}>
-            {/* 子孫コンポーネント */}
-            {children}
+        <ErrorBoundary
+            FallbackComponent={({ error, resetErrorBoundary }) => (
+                <ErrorFallback error={normalizeError(error)} onRetry={resetErrorBoundary} />
+            )}
+            onError={(error) => {
+                if (!isDevelopment) {
+                    console.error(normalizeError(error));
+                }
+            }}
+        >
+            <QueryClientProvider client={queryClient}>
+                {children}
 
-            {/* エラーモーダル（Zustand store で状態管理。Provider 不要） */}
-            <ErrorModal />
+                {/* 非同期エラー */}
+                <ErrorModal />
 
-            {/* トースト通知 */}
-            <Toaster position="top-right" richColors closeButton />
+                {/* 通知 */}
+                <Toaster position="top-right" richColors closeButton />
 
-            {/* 開発環境のみ React Query Devtools を有効化 */}
-            {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
-        </QueryClientProvider>
+                {/* Devtools */}
+                {isDevelopment && <ReactQueryDevtools initialIsOpen={false} />}
+            </QueryClientProvider>
+        </ErrorBoundary>
     );
 }

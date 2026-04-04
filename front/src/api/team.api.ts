@@ -4,6 +4,8 @@ import { call } from '@/lib/http/result';
 
 const client = getTeam();
 
-/** チームメンバー一覧を取得 */
+/** 
+ * チームメンバー一覧を取得 
+ */
 export const fetchTeamMembers = () =>
   call<TeamMembersResponse>(() => client.listTeamMembers());
