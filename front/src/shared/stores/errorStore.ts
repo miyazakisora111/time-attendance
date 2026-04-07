@@ -1,22 +1,22 @@
 import { create } from 'zustand';
 
 /**
- * グローバルエラーモーダル表示用のペイロード。
+ * グローバルエラーモーダルに渡す表示データ。
  */
-export type ErrorPayload = {
+type ErrorPayload = {
     /** HTTPステータス（任意） */
     status?: number;
-    /** エラータイトル */
+    /** モーダルに表示するタイトル */
     title: string;
-    /** 表示メッセージ一覧 */
+    /** 表示するエラーメッセージ一覧 */
     messages: string[];
 };
 
 type ErrorStoreState = {
-    /** モーダル表示中か */
+    /** モーダルが表示中かどうか */
     isOpen: boolean;
     /** HTTPステータス */
-    status: number | undefined;
+    status?: number;
     /** タイトル */
     title: string;
     /** メッセージ一覧 */
@@ -24,10 +24,7 @@ type ErrorStoreState = {
 };
 
 type ErrorStoreActions = {
-    /**
-     * エラーを表示する。
-     * 既にモーダルが開いている場合は上書きしない（多重表示防止）。
-     */
+    /** エラーモーダルを表示する */
     setError: (payload: ErrorPayload) => void;
     /** モーダルを閉じて状態をリセットする */
     clearError: () => void;
@@ -43,18 +40,13 @@ const initialState: ErrorStoreState = {
 };
 
 /**
- * グローバルエラーストア。
- *
- * Zustand を採用した理由:
- * - React 外（axios interceptor）から getState() 経由で安全に書き込める
- * - Context + Provider が不要になり、Provider ツリーの複雑性が減る
- * - setApiErrorHandler のようなコールバック登録パターンを排除できる
+ * エラー状態を管理する Zustand ストア
  */
 export const useErrorStore = create<ErrorStore>()((set, get) => ({
     ...initialState,
 
     setError: (payload) => {
-        // 多重表示防止: 既にモーダルが開いている場合は上書きしない
+        // 多重表示を避けるため、表示中は上書きしない
         if (get().isOpen) return;
 
         set({

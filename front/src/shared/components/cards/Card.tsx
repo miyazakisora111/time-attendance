@@ -10,13 +10,24 @@ export interface CardProps
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ unstableClassName, variant, padding, intent, ...props }, ref) => {
+  (
+    { variant, padding, intent, unstableClassName, ...restProps },
+    ref
+  ) => {
     return (
       <div
         ref={ref}
-        className={cn(cardVariants({ variant, padding, intent }), unstableClassName)}
-        {...props}
+        className={cn(
+          cardVariants({ variant, padding, intent }),
+          unstableClassName
+        )}
+        {...restProps}
       />
     );
   }
 );
+
+Card.displayName = "Card";
+
+
+// TODO: 全部Card.displayName = "Card";つけたい

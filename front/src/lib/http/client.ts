@@ -1,18 +1,36 @@
 import axios, { type AxiosRequestConfig } from 'axios';
-import { env, isDevelopment } from '@/env';
-import { API_CONFIG, HttpStatusCode } from '@/config/api';
+import { isDevelopment } from '@/env';
+import {
+  API_CONFIG,
+  API_ERROR_CODE,
+  API_ERROR_MESSAGE,
+  API_ERROR_TITLE,
+  HTTP_STATUS_CODE,
+} from '@/config/api';
 import { StorageKey } from '@/config/auth';
-import { ApiErrorMessage, ApiErrorTitle } from '@/config/constants';
-import { ApiErrorCode, isApiError, UnauthorizedError } from '@/lib/http/api-error';
 import { useErrorStore } from '@/shared/stores/errorStore';
 import { authStore } from '@/shared/stores/authStore';
+import { isRecord } from '@/shared/utils/guards';
 
-/**
- * Axios共通インスタンス。
- */
+/** API 統一エラー形式 */
+type ApiError = {
+  message: string;
+  code: string;
+  errors?: Record<string, string[]>;
+};
+
+/** 認証エラー用例外 */
+class UnauthorizedError extends Error {
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = 'UnauthorizedError';
+  }
+}
+
+/** Axios 共通インスタンス */
 export const axiosInstance = axios.create({
-  baseURL: API_CONFIG.baseUrl,
-  timeout: API_CONFIG.timeoutMs,
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT_MS,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -20,134 +38,16 @@ export const axiosInstance = axios.create({
   },
 });
 
-/**
- * localStorage から認証トークンを取得する。
- */
-export const getAuthToken = (): string | null => localStorage.getItem(StorageKey.AuthToken);
-
-/**
- * 認証トークンを localStorage へ保存する。
- *
- * @param token JWTトークン
- */
-export const setAuthToken = (token: string): void => {
-  localStorage.setItem(StorageKey.AuthToken, token);
+/** Orval 用 Axios mutator */
+export const customInstance = <T>(
+  config: AxiosRequestConfig
+): Promise<T> => {
+  return axiosInstance(config).then((res) => res.data);
 };
 
-/**
- * localStorage から認証トークンを削除する。
- */
-export const clearAuthToken = (): void => {
-  localStorage.removeItem(StorageKey.AuthToken);
-};
-
-/**
- * オブジェクト判定を行う型ガード。
- */
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === 'object' && value !== null;
-};
-
-/**
- * APIエラーオブジェクトからメッセージ配列を抽出する。
- *
- * @param data エラーHTTPレスポンス
- */
-const extractErrorMessages = (data: unknown): string[] => {
-  if (!isRecord(data)) {
-    return [];
-  }
-
-  const messages: string[] = [];
-
-  if (typeof data.message === 'string' && data.message.trim()) {
-    messages.push(data.message);
-  }
-
-  if (isRecord(data.errors)) {
-    Object.values(data.errors).forEach((errorValue) => {
-      if (Array.isArray(errorValue)) {
-        errorValue.forEach((item) => {
-          if (typeof item === 'string' && item.trim()) {
-            messages.push(item);
-          }
-        });
-      } else if (typeof errorValue === 'string' && errorValue.trim()) {
-        messages.push(errorValue);
-      }
-    });
-  }
-
-  return Array.from(new Set(messages));
-};
-
-/**
- * エラーコードとステータスに応じてエラーストアへ通知する。
- *
- * @param status HTTPステータス
- * @param data エラーHTTPレスポンス
- */
-const notifyByStatus = (status: number | undefined, data: unknown): void => {
-  const messages = extractErrorMessages(data);
-  const code = isApiError(data) ? data.code : undefined;
-
-  // 認証エラー（401）はグローバル通知しない（トークン削除のみ）。
-  if (code === ApiErrorCode.Auth || status === HttpStatusCode.Unauthorized) {
-    authStore.getState().reset()
-    throw new UnauthorizedError()
-  }
-
-  const { setError } = useErrorStore.getState();
-
-  // バリデーションエラーはモーダルへ通知する。
-  if (code === ApiErrorCode.Validation) {
-    setError({
-      status,
-      title: ApiErrorTitle.Validation,
-      messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
-    });
-    return;
-  }
-
-  // ドメインエラー・権限エラー・Not Found はモーダルへ通知する。
-  if (
-    code === ApiErrorCode.Domain ||
-    code === ApiErrorCode.Forbidden ||
-    code === ApiErrorCode.NotFound ||
-    (
-      status !== undefined &&
-      status >= HttpStatusCode.ClientErrorMin &&
-      status <= HttpStatusCode.ClientErrorMax
-    )
-  ) {
-    setError({
-      status,
-      title: ApiErrorTitle.Validation,
-      messages: messages.length > 0 ? messages : [ApiErrorMessage.RequestFailed],
-    });
-    return;
-  }
-
-  // 5xx とその他もモーダルへ通知する。
-  const fallbackMessage =
-    status !== undefined && status >= HttpStatusCode.ServerErrorMin
-      ? ApiErrorMessage.ServerError
-      : ApiErrorMessage.GenericError;
-
-  setError({
-    status,
-    title: ApiErrorTitle.Server,
-    messages: [messages[0] ?? fallbackMessage],
-  });
-};
-
-/**
- * APIリクエスト送信前に認証ヘッダーを付与する。
- */
+/** リクエスト前処理 */
 axiosInstance.interceptors.request.use((config) => {
   const token = getAuthToken();
-
-  // トークンがある場合のみ Authorization ヘッダーを付与する。
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -156,11 +56,10 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// HTTPレスポンス共通処理
+/** レスポンス共通エラーハンドリング */
 axiosInstance.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    // ネットワークエラー
+  (error) => {
     if (!error.response) {
       if (isDevelopment) {
         console.error('[API ERROR] Network Error', {
@@ -170,15 +69,15 @@ axiosInstance.interceptors.response.use(
       }
 
       useErrorStore.getState().setError({
-        title: ApiErrorTitle.Network,
-        messages: [ApiErrorMessage.NetworkError],
+        title: API_ERROR_TITLE.NETWORK,
+        messages: [API_ERROR_MESSAGE.NETWORK_ERROR],
       });
+
       return Promise.reject(error);
     }
 
     const { status, data } = error.response;
 
-    // 開発環境のみログを出力
     if (isDevelopment) {
       console.error('[API ERROR]', {
         status,
@@ -189,31 +88,115 @@ axiosInstance.interceptors.response.use(
       });
     }
 
-    // 認証エラー
-    if (status === HttpStatusCode.Unauthorized) {
+    if (status === HTTP_STATUS_CODE.UNAUTHORIZED) {
       clearAuthToken();
     }
 
     notifyByStatus(status, data);
-
     return Promise.reject(error);
   }
 );
 
-/**
- * Orval 用 Axios mutator。
- *
- * @param config Axios設定
- */
-export const customInstance = <T>(
-  config: AxiosRequestConfig
-): Promise<T> => {
-  return axiosInstance(config).then((res) => res.data);
+// TODO:ローカルストレージじゃなくなる。。
+/** 認証トークン取得 */
+export const getAuthToken = (): string | null =>
+  localStorage.getItem(StorageKey.AuthToken);
+
+/** 認証トークン保存 */
+export const setAuthToken = (token: string): void => {
+  localStorage.setItem(StorageKey.AuthToken, token);
 };
 
-/**
- * 既存UI互換のCSRF APIダミー。
- */
-export const getCsrfTokenApi = async (): Promise<void> => {
-  return Promise.resolve();
+/** 認証トークン削除 */
+export const clearAuthToken = (): void => {
+  localStorage.removeItem(StorageKey.AuthToken);
+};
+
+/** API エラーレスポンスからメッセージを抽出 */
+const extractErrorMessages = (data: unknown): string[] => {
+  if (!isRecord(data)) return [];
+
+  const messages: string[] = [];
+
+  if (typeof data.message === 'string' && data.message.trim()) {
+    messages.push(data.message);
+  }
+
+  if (isRecord(data.errors)) {
+    Object.values(data.errors).forEach((value) => {
+      if (Array.isArray(value)) {
+        value.forEach((v) => {
+          if (typeof v === 'string' && v.trim()) {
+            messages.push(v);
+          }
+        });
+      } else if (typeof value === 'string' && value.trim()) {
+        messages.push(value);
+      }
+    });
+  }
+
+  return Array.from(new Set(messages));
+};
+
+/** Laravel API のエラー形式かどうか */
+const isApiError = (value: unknown): value is ApiError => {
+  if (!isRecord(value)) return false;
+  return typeof value.message === 'string' && typeof value.code === 'string';
+};
+
+/** ステータス・エラーコードに応じて通知処理を行う */
+const notifyByStatus = (
+  status: number | undefined,
+  data: unknown
+): void => {
+  const messages = extractErrorMessages(data);
+  const code = isApiError(data) ? data.code : undefined;
+
+  if (code === API_ERROR_CODE.AUTH || status === HTTP_STATUS_CODE.UNAUTHORIZED) {
+    authStore.getState().reset();
+    throw new UnauthorizedError();
+  }
+
+  const { setError } = useErrorStore.getState();
+
+  if (
+    code === API_ERROR_CODE.VALIDATION ||
+    status === HTTP_STATUS_CODE.UNPROCESSABLE_ENTITY
+  ) {
+    setError({
+      status,
+      title: API_ERROR_TITLE.VALIDATION,
+      messages: messages.length ? messages : [API_ERROR_MESSAGE.REQUEST_FAILED],
+    });
+    return;
+  }
+
+  if (
+    code === API_ERROR_CODE.DOMAIN ||
+    code === API_ERROR_CODE.FORBIDDEN ||
+    code === API_ERROR_CODE.NOT_FOUND ||
+    (status !== undefined &&
+      status >= HTTP_STATUS_CODE.CLIENT_ERROR_MIN &&
+      status <= HTTP_STATUS_CODE.CLIENT_ERROR_MAX)
+  ) {
+    setError({
+      status,
+      title: API_ERROR_TITLE.VALIDATION,
+      messages: messages.length ? messages : [API_ERROR_MESSAGE.REQUEST_FAILED],
+    });
+    return;
+  }
+
+  const fallback =
+    status !== undefined &&
+      status >= HTTP_STATUS_CODE.SERVER_ERROR_MIN
+      ? API_ERROR_MESSAGE.SERVER_ERROR
+      : API_ERROR_MESSAGE.GENERIC_ERROR;
+
+  setError({
+    status,
+    title: API_ERROR_TITLE.SERVER,
+    messages: [messages[0] ?? fallback],
+  });
 };

@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle, Typography, Button } from "@/
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { useDashboardCalendar } from "@/features/dashboard/hooks/useDashboardCalendar";
 import { formatJapaneseYearMonth } from "@/shared/utils/format";
-import { DAYS_OF_WEEK } from "@/shared/constants/date";
+import { DAYS } from "@/shared/presentation/day";
+import { cn } from "@/shared/utils/style";
+import { DAY_TYPE_CLASS } from "@/shared/presentation/day";
 
 const dashboardMiniCalendarLegends = [
   {
@@ -38,8 +40,6 @@ interface DashboardMiniCalendarDay {
   isHoliday?: boolean;
   isToday?: boolean;
 }
-
-const dashboardMiniCalendarDaysOfWeek = DAYS_OF_WEEK;
 
 const buildDashboardMiniCalendarDays = (
   days: ReadonlyArray<DashboardMiniCalendarSource>,
@@ -93,19 +93,15 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
       <CardContent>
         <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={calendarDays.length === 0}>
           <div className="grid grid-cols-7 gap-1">
-            {dashboardMiniCalendarDaysOfWeek.map((day, index) => (
+            {Object.values(DAYS).map((day) => (
               <div
-                key={day}
-                className={[
-                  "py-2 text-center text-xs font-semibold",
-                  index === 0
-                    ? "text-red-600"
-                    : index === 6
-                      ? "text-blue-600"
-                      : "text-gray-500",
-                ].join(" ")}
+                key={day.key}
+                className={cn(
+                  'py-2 text-center text-xs font-semibold',
+                  DAY_TYPE_CLASS[day.type]
+                )}
               >
-                {day}
+                {day.label}
               </div>
             ))}
             {calendarDays.map((day) => (

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuthme, useLogin, useLogout, authQueryKeys } from '@/features/auth/hooks/useAuthQueries';
+import { useAuthMe, useLogin, useLogout, authQueryKeys } from '@/features/auth/hooks/useAuthQueries';
 import { authStore } from '@/shared/stores/authStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/http/client';
 import type { AuthUser, LoginResult } from '@/domain/auth/types';
@@ -19,7 +19,7 @@ export const useAuth = () => {
     const hasToken = !!getAuthToken();
 
     // React Query（副作用なし版）を呼ぶ
-    const authQuery = useAuthme(hasToken);
+    const authQuery = useAuthMe(hasToken);
 
     // Store 同期
     useEffect(() => {

@@ -1,22 +1,20 @@
-import type { ClockStatus } from '@/__generated__/enums';
 import type { VariantProps } from 'class-variance-authority';
 import type { badgeVariants } from '@/shared/design-system/variants/badge';
 
-type BadgeIntent = NonNullable<VariantProps<typeof badgeVariants>['intent']>;
+type BadgeIntent = NonNullable<
+    VariantProps<typeof badgeVariants>['intent']
+>;
 
-export interface ClockStatusBadgeView {
-    text: string;
-    intent: BadgeIntent;
-}
+/** 勤怠記録ステータス → バッジ intent */
+const ATTENDANCE_STATUS_BADGE_INTENT_MAP: Record<string, BadgeIntent> = {
+    通常: 'default',
+    残業: 'warning',
+    休日: 'outline',
+};
 
-/**
- * 打刻ステータスに対応するバッジ表示情報を返す。
- */
-export const getClockStatusBadgeView = (status: ClockStatus): ClockStatusBadgeView => {
-    const clockStatusBadgeViewMap: Record<ClockStatus, ClockStatusBadgeView> = {
-        in: { text: '勤務中', intent: 'success' },
-        break: { text: '休憩中', intent: 'warning' },
-        out: { text: '未出勤', intent: 'outline' },
-    };
-    return clockStatusBadgeViewMap[status];
+/** 勤怠記録ステータスに対応するバッジ intent を返す */
+export const getAttendanceStatusBadgeIntent = (
+    status: string
+): BadgeIntent => {
+    return ATTENDANCE_STATUS_BADGE_INTENT_MAP[status] ?? 'default';
 };

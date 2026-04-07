@@ -21,7 +21,7 @@ export const authQueryKeys = {
 /**
  * 認証ユーザー
  */
-export const useAuthme = (
+export const useAuthMe = (
     enabled: boolean,
 ) => useQuery({
     queryKey: authQueryKeys.authMe(),

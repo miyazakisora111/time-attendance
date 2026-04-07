@@ -17,3 +17,5 @@ const teamMemberStatusViewMap: Record<TeamMemberStatus, TeamMemberStatusView> = 
 export const getTeamMemberStatusView = (status: TeamMemberStatus): TeamMemberStatusView => {
   return teamMemberStatusViewMap[status];
 };
+
+// TODO:用整理

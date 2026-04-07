@@ -1,6 +1,6 @@
 import React from "react";
 import { Typography } from "@/shared/components/Typography";
-import { useCurrentTime } from "@/shared/hooks/useCurrentTime";
+import { useNow } from "@/shared/hooks/useNow";
 import { cva, type VariantProps } from "class-variance-authority";
 import { formatJapaneseLongDate, formatJapaneseTime } from "@/shared/utils/format";
 
@@ -44,7 +44,7 @@ export const Clock = React.memo(function Clock({
     size,
     fullWidth,
 }: ClockProps) {
-    const now = useCurrentTime(1000);
+    const now = useNow(1000);
 
     return (
         <div className={clockVariants({ variant, size, fullWidth })}>

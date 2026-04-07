@@ -1,3 +1,4 @@
+/** unknown を Error に正規化する */
 export function normalizeError(error: unknown): Error {
     if (error instanceof Error) return error;
 

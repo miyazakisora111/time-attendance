@@ -49,3 +49,5 @@ const scheduleStatusViewMap: Record<CalendarDayStatus, ScheduleStatusView> = {
 export const getScheduleStatusView = (status: CalendarDayStatus): ScheduleStatusView => {
     return scheduleStatusViewMap[status];
 };
+
+// TODO:用整理

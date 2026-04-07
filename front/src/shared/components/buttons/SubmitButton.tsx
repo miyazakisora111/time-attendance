@@ -8,6 +8,8 @@ interface SubmitButtonBaseProps {
     loadingText?: string;
 }
 
+// TODO: 普通のGETとかの送信ボタンもローディング付けたい。
+
 export type SubmitButtonProps = Omit<ButtonProps, 'type' | 'asChild'> & SubmitButtonBaseProps;
 
 export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProps>(

@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Clock as ClockIcon } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Clock } from "@/shared/components";
 import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
-import { useAttendanceClock } from "@/features/attendance/hooks/useAttendanceClock";
+import { useDashboardClock } from "@/features/attendance/hooks/useDashboardClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { ClockTodayRecord } from "@/features/dashboard/ui/ClockTodayRecord";
 import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockStatus";
@@ -22,7 +22,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
     todayWorkedTime,
     isPending,
     handleAction,
-  } = useAttendanceClock({
+  } = useDashboardClock({
     onActionSuccess: () => {
       queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },

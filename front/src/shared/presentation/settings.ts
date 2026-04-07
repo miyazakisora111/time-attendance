@@ -51,3 +51,5 @@ export const settingsSecurityActionLabels = [
   'パスワードの変更',
   'ログイン履歴の確認',
 ] as const;
+
+// TODO:用整理
