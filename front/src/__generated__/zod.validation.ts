@@ -316,6 +316,11 @@ export const validationSchemas = {
       .string()
       .trim()
       .min(1, `${labelOf("token")}は必須です。`),
+    token_type: z
+      .string()
+      .trim()
+      .min(1, `${labelOf("token_type")}は必須です。`),
+    expires_in: z.number().int(),
   }),
   LogoutResponse: generatedComponents.schemas.LogoutResponse.extend({
     message: z.string().trim().optional(),

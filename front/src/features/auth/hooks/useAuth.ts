@@ -3,7 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuthMe, useLogin, useLogout, authQueryKeys } from '@/features/auth/hooks/useAuthQueries';
 import { authStore } from '@/shared/stores/authStore';
 import { getAuthToken, setAuthToken, clearAuthToken } from '@/lib/http/client';
-import type { AuthUser, LoginResult } from '@/domain/auth/types';
+import type { AuthUser } from '@/domain/auth/types';
+import type { LoginResponse } from '@/__generated__/model/loginResponse';
 
 /**
  * 認証状態のフック
@@ -64,8 +65,8 @@ export const useAuth = () => {
 
     // ログイン
     const loginMutation = useLogin({
-        onSuccess: async (result: LoginResult) => {
-            if (result.token) setAuthToken(result.token);
+        onSuccess: async (response: LoginResponse) => {
+            if (response.token) setAuthToken(response.token);
             await queryClient.invalidateQueries({ queryKey: authQueryKeys.authMe() });
         },
         onError: () => {

@@ -59,6 +59,8 @@
   "email": "メールアドレス",
   "password": "パスワード",
   "token": "認証トークン",
+  "token_type": "トークン種別",
+  "expires_in": "有効期限秒数",
   "currentPage": "currentPage",
   "perPage": "perPage",
   "totalItems": "totalItems",

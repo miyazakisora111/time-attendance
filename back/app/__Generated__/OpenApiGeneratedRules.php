@@ -177,6 +177,8 @@ final class OpenApiGeneratedRules
         ],
         'LoginResponse' => [
             'token' => ['sometimes', 'string'],
+            'token_type' => ['sometimes', 'string'],
+            'expires_in' => ['sometimes', 'integer'],
         ],
         'LogoutResponse' => [
             'message' => ['sometimes', 'string'],
@@ -425,6 +427,8 @@ final class OpenApiGeneratedRules
         ],
         'LoginResponse' => [
             'token' => '認証トークン',
+            'token_type' => 'トークン種別',
+            'expires_in' => '有効期限秒数',
         ],
         'LogoutResponse' => [
             'message' => 'メッセージ',

@@ -22,9 +22,12 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  */
 
 /**
- * ログイン成功のHTTPレスポンス
+ * ログイン成功時のJWTトークンレスポンス
  */
 export interface LoginResponse {
+  /** トークン有効期限（秒） */
+  expires_in: number;
   /** JWT access token */
   token: string;
+  token_type: string;
 }

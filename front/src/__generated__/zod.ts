@@ -52,9 +52,11 @@ export namespace components.schemas {
     email: z.string(),
     password: z.string(),
   });
-  /** @description ログイン成功のHTTPレスポンス */
+  /** @description ログイン成功時のJWTトークンレスポンス */
   export const LoginResponse = z.object({
     token: z.string(),
+    token_type: z.string(),
+    expires_in: z.number().int(),
   });
   /** @description ログアウト成功HTTPレスポンス */
   export const LogoutResponse = z.object({

@@ -481,13 +481,21 @@ components:
           description: パスワード
     LoginResponse:
       type: object
-      description: ログイン成功のHTTPレスポンス
+      description: ログイン成功時のJWTトークンレスポンス
       required:
         - token
+        - token_type
+        - expires_in
       properties:
         token:
           type: string
           description: JWT access token
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          description: トークン有効期限（秒）
     LogoutResponse:
       type: object
       description: ログアウト成功HTTPレスポンス

@@ -2,7 +2,7 @@ import { useQuery, useMutation, type UseMutationOptions } from '@tanstack/react-
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchAuthMe, login, logout } from '@/api/auth.api';
 import { toAuthUser } from '@/features/auth/mappers/toAuthUser';
-import type { LoginResult } from '@/domain/auth/types';
+import type { LoginResponse } from '@/__generated__/model/loginResponse';
 import type { LogoutResponse } from '@/__generated__/model/logoutResponse';
 import type { LoginRequest } from '@/__generated__/model';
 
@@ -34,7 +34,7 @@ export const useAuthMe = (
  * ログイン
  */
 export const useLogin = (
-    options?: UseMutationOptions<LoginResult, Error, LoginRequest>,
+    options?: UseMutationOptions<LoginResponse, Error, LoginRequest>,
 ) => useMutation({
     mutationKey: authQueryKeys.login(),
     mutationFn: (credentials: LoginRequest) => login(credentials),
