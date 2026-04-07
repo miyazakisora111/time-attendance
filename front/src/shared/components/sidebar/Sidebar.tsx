@@ -6,14 +6,14 @@ import { Button } from "@/shared/components";
 import SidebarUser from "@/shared/components/sidebar/SidebarUser";
 import type { SidebarMenuItem, UserInfo } from "@/shared/components/sidebar/types";
 
-type SidebarProps = {
+export interface SidebarProps {
     menuItems: SidebarMenuItem[];
     user: UserInfo;
     isCollapsed?: boolean;
     onToggle?: (collapsed: boolean) => void;
     onLogout?: () => void;
     onProfileClick?: () => void;
-};
+}
 
 function SidebarItem({
     item,

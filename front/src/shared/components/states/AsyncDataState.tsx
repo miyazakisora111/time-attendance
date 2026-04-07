@@ -2,14 +2,14 @@ import React from "react";
 import { Spinner } from "@/shared/components/Spinner";
 import { Typography } from "@/shared/components/Typography";
 
-type Props = {
+export interface AsyncDataStateProps {
     isLoading?: boolean;
     isError?: boolean;
     isEmpty?: boolean;
     children: React.ReactNode;
-};
+}
 
-export function AsyncDataState({ isLoading, isError, isEmpty, children }: Props) {
+export function AsyncDataState({ isLoading, isError, isEmpty, children }: AsyncDataStateProps) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-8" role="status" aria-label="読み込み中">

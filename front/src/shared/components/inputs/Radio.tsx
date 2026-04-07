@@ -1,15 +1,11 @@
-import { type InputHTMLAttributes } from 'react';
-import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
+import { useFormContext, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { checkableVariants } from '@/shared/design-system/variants/input';
+import type { StrictInputProps } from '@/shared/design-system/types';
+import type { FormFieldProps } from '@/shared/design-system/types';
 
-type RadioNativeProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>;
-
-type RadioProps<T extends FieldValues> = RadioNativeProps & {
-    name: FieldPath<T>;
-    label: string;
+type RadioProps<T extends FieldValues> = StrictInputProps & FormFieldProps<T> & {
     value: string | number;
-    unstableClassName?: string;
 };
 
 export const Radio = <T extends FieldValues>({

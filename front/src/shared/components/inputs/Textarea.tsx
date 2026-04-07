@@ -1,16 +1,11 @@
-import { type TextareaHTMLAttributes } from 'react';
-import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
+import { useFormContext, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
 import { inputVariants } from '@/shared/design-system/variants/input';
+import type { StrictTextareaProps } from '@/shared/design-system/types';
+import type { FormFieldProps } from '@/shared/design-system/types';
 
-type TextareaNativeProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'>;
-
-type TextareaProps<T extends FieldValues> = TextareaNativeProps & {
-    name: FieldPath<T>;
-    label: string;
-    unstableClassName?: string;
-};
+type TextareaProps<T extends FieldValues> = StrictTextareaProps & FormFieldProps<T>;
 
 export const Textarea = <T extends FieldValues>({
     name,

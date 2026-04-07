@@ -3,10 +3,10 @@ import { useFormContext } from 'react-hook-form';
 import { Button, type ButtonProps } from '@/shared/components';
 import { Spinner } from '@/shared/components/Spinner';
 
-interface SubmitButtonBaseProps {
+type SubmitButtonBaseProps = {
     children: React.ReactNode;
     loadingText?: string;
-}
+};
 
 // TODO: 普通のGETとかの送信ボタンもローディング付けたい。
 
@@ -51,3 +51,5 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
         );
     }
 );
+
+SubmitButton.displayName = "SubmitButton";

@@ -10,7 +10,7 @@ import { Card, CardContent, Container, Typography, IconWrapper, Clock } from '@/
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { formatMinutes } from '@/shared/utils/format';
-import { getAttendanceStatusIconSpec } from '@/shared/presentation/attendance/attendanceStatus';
+import { getAttendanceStatusIconView } from '@/shared/presentation/attendance/attendanceStatus';
 import { stack } from '@/shared/design-system/layout';
 
 /** 勤怠ステータス */
@@ -56,7 +56,7 @@ export function AttendancePage() {
 
   // ステータスに応じたビュー/アイコン
   const currentStatus = ATTENDANCE_STATUS_VIEW_MAP[attendanceStatus];
-  const currentStatusIcon = getAttendanceStatusIconSpec(attendanceStatus);
+  const currentStatusIcon = getAttendanceStatusIconView(attendanceStatus);
 
   return (
     <Container size="full">

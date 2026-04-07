@@ -3,13 +3,13 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
 import { badgeVariants } from "@/shared/design-system/variants/badge";
+import type { StrictHTMLProps, WithAsChild, WithUnstableClassName } from "@/shared/design-system/types";
 
 export interface BadgeProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
-  VariantProps<typeof badgeVariants> {
-  asChild?: boolean;
-  unstableClassName?: string;
-}
+  extends StrictHTMLProps<HTMLDivElement>,
+  VariantProps<typeof badgeVariants>,
+  WithAsChild,
+  WithUnstableClassName { }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
   ({ unstableClassName, intent, size, asChild = false, ...props }, ref) => {

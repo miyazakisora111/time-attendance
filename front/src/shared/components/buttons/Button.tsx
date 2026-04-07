@@ -3,13 +3,13 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
 import { buttonVariants } from "@/shared/design-system/variants/button";
+import type { StrictButtonProps, WithAsChild, WithUnstableClassName } from "@/shared/design-system/types";
 
 export interface ButtonProps
-  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "className">,
-  VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
-  unstableClassName?: string;
-}
+  extends StrictButtonProps,
+  VariantProps<typeof buttonVariants>,
+  WithAsChild,
+  WithUnstableClassName { }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ unstableClassName, variant, intent, size, fullWidth, asChild = false, ...props }, ref) => {
@@ -23,3 +23,5 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
+
+Button.displayName = "Button";

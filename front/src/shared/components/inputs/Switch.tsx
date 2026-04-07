@@ -1,16 +1,11 @@
-import { type InputHTMLAttributes } from 'react';
-import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
+import { useFormContext, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
 import { switchTrackVariants } from '@/shared/design-system/variants/input';
+import type { StrictInputProps } from '@/shared/design-system/types';
+import type { FormFieldProps } from '@/shared/design-system/types';
 
-type SwitchNativeProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>;
-
-type SwitchProps<T extends FieldValues> = SwitchNativeProps & {
-    name: FieldPath<T>;
-    label: string;
-    unstableClassName?: string;
-};
+type SwitchProps<T extends FieldValues> = StrictInputProps & FormFieldProps<T>;
 
 export const Switch = <T extends FieldValues>({
     name,

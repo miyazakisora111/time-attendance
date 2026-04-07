@@ -30,10 +30,10 @@ const clockVariants = cva(
 
 export type ClockVariantProps = VariantProps<typeof clockVariants>;
 
-export type ClockProps = ClockVariantProps & {
+export interface ClockProps extends ClockVariantProps {
     /** タイトル */
     title?: React.ReactNode;
-};
+}
 
 /**
  * 時計

@@ -2,12 +2,12 @@ import * as React from "react";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
 import { cardVariants } from "@/shared/design-system/variants/card";
+import type { StrictHTMLProps, WithUnstableClassName } from "@/shared/design-system/types";
 
 export interface CardProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
-  VariantProps<typeof cardVariants> {
-  unstableClassName?: string;
-}
+  extends StrictHTMLProps<HTMLDivElement>,
+  VariantProps<typeof cardVariants>,
+  WithUnstableClassName { }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   (
@@ -28,6 +28,3 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 );
 
 Card.displayName = "Card";
-
-
-// TODO: 全部Card.displayName = "Card";つけたい

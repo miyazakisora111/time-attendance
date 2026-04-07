@@ -1,16 +1,11 @@
-import { type InputHTMLAttributes } from 'react';
-import { useFormContext, type FieldPath, type FieldError, type FieldValues } from 'react-hook-form';
+import { useFormContext, type FieldError, type FieldValues } from 'react-hook-form';
 import { cn } from '@/shared/utils/style';
 import { Error } from '@/shared/components';
 import { inputVariants } from '@/shared/design-system/variants/input';
+import type { StrictInputProps } from '@/shared/design-system/types';
+import type { FormFieldProps } from '@/shared/design-system/types';
 
-type InputNativeProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'>;
-
-type InputProps<T extends FieldValues> = InputNativeProps & {
-    name: FieldPath<T>;
-    label: string;
-    unstableClassName?: string;
-};
+type InputProps<T extends FieldValues> = StrictInputProps & FormFieldProps<T>;
 
 export const Input = <T extends FieldValues>({ name, label, unstableClassName, ...props }: InputProps<T>) => {
     const { register, formState: { errors } } = useFormContext<T>();

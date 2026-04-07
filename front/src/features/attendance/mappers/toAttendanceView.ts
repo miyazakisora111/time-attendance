@@ -1,18 +1,19 @@
 import type { AttendanceResponse } from '@/__generated__/model';
-import type { AttendanceView } from '@/features/attendance/ui/types';
+import type { AttendanceView } from '@/features/attendance/ui/model/AttendanceView';
+import { attendanceViewDefaults } from '@/features/attendance/ui/model/AttendanceView';
+import { overrideDefined } from '@/shared/mapper/object';
 import type { Mapper } from '@/shared/mapper';
 
 export const toAttendanceView: Mapper<
     AttendanceResponse,
     AttendanceView
-> = (src) => {
-    return {
-        clockStatus: src.clockStatus ?? 'out',
-        clockInAt: src.clockInAt ?? null,
-        clockOutAt: src.clockOutAt ?? null,
-        workDate: src.workDate ?? '',
-        breakMinutes: src.breakMinutes ?? 0,
-        totalWorkedMinutes: src.workedMinutes ?? 0,
-        overtimeMinutes: src.overtimeMinutes ?? 0,
-    };
-};
+> = (src) =>
+        overrideDefined(attendanceViewDefaults, {
+            clockStatus: src.clockStatus,
+            clockInAt: src.clockInAt,
+            clockOutAt: src.clockOutAt,
+            workDate: src.workDate,
+            totalWorkedMinutes: src.workedMinutes,
+            breakMinutes: src.breakMinutes,
+            overtimeMinutes: src.overtimeMinutes,
+        });

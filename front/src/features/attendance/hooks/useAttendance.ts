@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
 import type { ClockAction, ClockStatus } from '@/__generated__/enums';
@@ -10,40 +10,45 @@ import {
 } from '@/features/attendance/hooks/useAttendanceQueries';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
-import type { LastAction } from '@/features/attendance/ui/types';
+import { AttendanceStatus } from '../../../__generated__/model/attendanceStatus';
+import type {
+  AttendanceView,
+  LastAction,
+  LastActionView,
+} from '@/features/attendance/ui/model';
+import { createEmptyAttendanceView } from '../ui/model/AttendanceView';
 
 /**
  * 勤怠画面用カスタムフック
  */
-export const useAttendance = () => {
+export const useAttendance = (): AttendanceView & {
+  attendanceStatus: AttendanceStatus;
+  isLoading: boolean;
+  isError: boolean;
+  isPending: boolean;
+  handleAction: (action: ClockAction) => void;
+  lastAction: LastActionView | null;
+} => {
   const queryClient = useQueryClient();
-  const { data: latestAttendance, isLoading, isError } = useLatestAttendanceQuery();
+  const { data, isLoading, isError } = useLatestAttendanceQuery();
   const { mutate: clockMutate, isPending } = useClockMutation();
   const [lastAction, setLastAction] = useState<LastAction | null>(null);
-  const clockStatus: ClockStatus = latestAttendance?.clockStatus ?? 'out';
+  const attendanceView: AttendanceView = data ?? createEmptyAttendanceView();
+  const clockStatus: ClockStatus = attendanceView?.clockStatus ?? 'out';
 
-  /**
-   * 打刻処理
-   */
   const handleAction = (clockAction: ClockAction) => {
     const now = new Date();
-    const nowText = formatJapaneseHourMinute(now);
+    const time = formatJapaneseHourMinute(now);
     const label = getClockActionLabel(clockAction);
 
     clockMutate(clockAction, {
       onSuccess: () => {
-
-        // 最新勤怠を再取得
-        void queryClient.invalidateQueries({
+        queryClient.invalidateQueries({
           queryKey: attendanceQueryKeys.all(),
         });
 
-        setLastAction({
-          clockAction,
-          time: nowText,
-        });
-
-        sonner.success(`${label}しました (${nowText})`);
+        setLastAction({ clockAction, time });
+        sonner.success(`${label}しました (${time})`);
       },
       onError: () => {
         sonner.error(`${label}に失敗しました`);
@@ -51,24 +56,19 @@ export const useAttendance = () => {
     });
   };
 
-  // 最後の打刻表示用
-  const lastActionView = useMemo(() => {
-    if (!lastAction) return null;
-
-    return {
-      label: getClockActionLabel(lastAction.clockAction),
-      time: lastAction.time,
-    };
-  }, [lastAction]);
-
   return {
-    ...latestAttendance,
-    clockStatus,
+    ...attendanceView,
     attendanceStatus: clockStatusToAttendanceStatusMap[clockStatus],
     isLoading,
     isError,
     isPending,
     handleAction,
-    lastAction: lastActionView,
+    lastAction: lastAction
+      ? {
+        label: getClockActionLabel(lastAction.clockAction),
+        time: lastAction.time,
+      }
+      : null,
   };
+
 };

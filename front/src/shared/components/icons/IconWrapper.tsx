@@ -1,14 +1,16 @@
 import React from "react";
 import { cn } from "@/shared/utils/style";
 import type { LucideIcon } from "lucide-react";
+import type { StrictHTMLProps, WithUnstableClassName } from "@/shared/design-system/types";
 
-export interface IconWrapperProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "className"> {
+export interface IconWrapperProps
+  extends StrictHTMLProps<HTMLDivElement>,
+  WithUnstableClassName {
   icon: LucideIcon;
   size?: number;
   iconColor?: string;
   bgColor?: string;
   strokeWidth?: number;
-  unstableClassName?: string;
 }
 
 export const IconWrapper = React.forwardRef<HTMLDivElement, IconWrapperProps>(
@@ -36,3 +38,5 @@ export const IconWrapper = React.forwardRef<HTMLDivElement, IconWrapperProps>(
     );
   }
 );
+
+IconWrapper.displayName = "IconWrapper";

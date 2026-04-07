@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
+import type { StrictHTMLProps, WithUnstableClassName } from "@/shared/design-system/types";
 
 const containerVariants = cva(
     "mx-auto w-full px-6",
@@ -37,10 +38,9 @@ const containerVariants = cva(
 );
 
 export interface ContainerProps
-    extends Omit<React.HTMLAttributes<HTMLDivElement>, "className">,
-    VariantProps<typeof containerVariants> {
-    unstableClassName?: string;
-}
+    extends StrictHTMLProps<HTMLDivElement>,
+    VariantProps<typeof containerVariants>,
+    WithUnstableClassName { }
 
 export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
     ({ size, center, tone, unstableClassName, ...props }, ref) => (
@@ -51,3 +51,5 @@ export const Container = React.forwardRef<HTMLDivElement, ContainerProps>(
         />
     )
 );
+
+Container.displayName = "Container";

@@ -1,16 +1,16 @@
 import { useFormContext, type FieldError, type FieldValues } from "react-hook-form";
 import { cn } from "@/shared/utils/style";
 import { Radio, Error } from '@/shared/components';
+import type { WithUnstableClassName } from '@/shared/design-system/types';
 
 type RadioOption = {
     label: string;
     value: string | number;
 };
 
-type RadioGroupProps<T extends FieldValues> = {
+type RadioGroupProps<T extends FieldValues> = WithUnstableClassName & {
     name: keyof T & string;
     options: RadioOption[];
-    unstableClassName?: string;
     label?: string;
 };
 

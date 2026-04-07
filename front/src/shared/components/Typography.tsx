@@ -3,13 +3,13 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps } from "class-variance-authority";
 import { cn } from "@/shared/utils/style";
 import { typographyVariants } from "@/shared/design-system/variants/typography";
+import type { StrictHTMLProps, WithAsChild, WithUnstableClassName } from "@/shared/design-system/types";
 
 export interface TypographyProps
-    extends Omit<React.HTMLAttributes<HTMLElement>, "className">,
-    VariantProps<typeof typographyVariants> {
-    asChild?: boolean;
-    unstableClassName?: string;
-}
+    extends StrictHTMLProps<HTMLElement>,
+    VariantProps<typeof typographyVariants>,
+    WithAsChild,
+    WithUnstableClassName { }
 
 export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
     ({ unstableClassName, variant, intent, align, asChild = false, ...props }, ref) => {
@@ -24,3 +24,5 @@ export const Typography = React.forwardRef<HTMLElement, TypographyProps>(
         );
     }
 );
+
+Typography.displayName = "Typography";

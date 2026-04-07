@@ -1,11 +1,11 @@
 import { Button } from "@/shared/components";
 
-type Props = {
+export interface ErrorFallbackProps {
     error: Error;
     onRetry: () => void;
-};
+}
 
-export const ErrorFallback = ({ error, onRetry }: Props) => {
+export const ErrorFallback = ({ error, onRetry }: ErrorFallbackProps) => {
     return (
         <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
             <h1 className="text-2xl font-bold text-red-600">

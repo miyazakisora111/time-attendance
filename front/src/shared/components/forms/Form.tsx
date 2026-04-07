@@ -2,18 +2,15 @@ import { type ReactNode } from 'react';
 import {
     FormProvider as RHFFormProvider,
     useForm,
-    type UseFormProps,
-    type UseFormReturn,
     type FieldValues,
 } from 'react-hook-form';
+import type { WithFormSubmit, WithFormMethods, WithUnstableClassName, WithChildren } from '@/shared/design-system/types';
 
-type Props<T extends FieldValues> = {
-    children: ReactNode;
-    onSubmit?: (data: T) => Promise<void> | void;
-    methods?: UseFormReturn<T>;
-    formOptions?: UseFormProps<T>;
-    unstableClassName?: string;
-};
+type Props<T extends FieldValues> =
+    WithChildren &
+    WithFormSubmit<T> &
+    WithFormMethods<T> &
+    WithUnstableClassName;
 
 export const Form = <T extends FieldValues = FieldValues>({
     children,
