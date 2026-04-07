@@ -1,19 +1,14 @@
 import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast as sonner } from 'sonner';
+
 import type { ClockAction, ClockStatus } from '@/__generated__/enums';
+import { AttendanceStatus } from '@/__generated__/model/attendanceStatus';
 import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance';
-import {
-  attendanceQueryKeys,
-  useClockMutation,
-  useLatestAttendanceQuery,
-} from '@/features/attendance/hooks/useAttendanceQueries';
+import { useLatestAttendanceQuery } from '@/features/attendance/hooks/useAttendanceQueries';
+import { useClock } from '@/features/attendance/hooks/useClock';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
-import { AttendanceStatus } from '../../../__generated__/model/attendanceStatus';
 import type {
   AttendanceView,
-  LastAction,
   LastActionView,
 } from '@/features/attendance/ui/model';
 import { createEmptyAttendanceView } from '../ui/model/AttendanceView';
@@ -27,32 +22,21 @@ export const useAttendance = (): AttendanceView & {
   isError: boolean;
   isPending: boolean;
   handleAction: (action: ClockAction) => void;
-  lastAction: LastActionView | null;
+  lastActionView: LastActionView | null;
 } => {
-  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useLatestAttendanceQuery();
-  const { mutate: clockMutate, isPending } = useClockMutation();
-  const [lastAction, setLastAction] = useState<LastAction | null>(null);
+  const { clock, isPending } = useClock();
+  const [lastActionView, setLastAction] = useState<LastActionView | null>(null);
   const attendanceView: AttendanceView = data ?? createEmptyAttendanceView();
-  const clockStatus: ClockStatus = attendanceView?.clockStatus ?? 'out';
+  const clockStatus: ClockStatus = attendanceView.clockStatus ?? 'out';
 
   const handleAction = (clockAction: ClockAction) => {
-    const now = new Date();
-    const time = formatJapaneseHourMinute(now);
-    const label = getClockActionLabel(clockAction);
+    clock(clockAction);
 
-    clockMutate(clockAction, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: attendanceQueryKeys.all(),
-        });
-
-        setLastAction({ clockAction, time });
-        sonner.success(`${label}しました (${time})`);
-      },
-      onError: () => {
-        sonner.error(`${label}に失敗しました`);
-      },
+    setLastAction({
+      clockAction: clockAction,
+      label: getClockActionLabel(clockAction),
+      time: formatJapaneseHourMinute(new Date()),
     });
   };
 
@@ -63,12 +47,6 @@ export const useAttendance = (): AttendanceView & {
     isError,
     isPending,
     handleAction,
-    lastAction: lastAction
-      ? {
-        label: getClockActionLabel(lastAction.clockAction),
-        time: lastAction.time,
-      }
-      : null,
+    lastActionView,
   };
-
 };

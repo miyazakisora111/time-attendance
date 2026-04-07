@@ -3,23 +3,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Clock as ClockIcon } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Clock } from "@/shared/components";
 import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
-import { useDashboardClock } from "@/features/attendance/hooks/useDashboardClock";
+import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
-import { ClockTodayRecord } from "@/features/dashboard/ui/ClockTodayRecord";
-import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockStatus";
+import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/attendanceStatus";
 import { stack } from "@/shared/design-system/layout";
 
 /**
  * ダッシュボードの打刻カード。
- *
- * 現在の打刻状態を表示し、打刻アクションを実行する。
  */
 export const ClockInOutCard = React.memo(function ClockInOutCard() {
   const queryClient = useQueryClient();
   const {
-    clockStatus: status,
-    todayAttendance,
-    todayWorkedTime,
+    clockStatus,
     isPending,
     handleAction,
   } = useDashboardClock({
@@ -27,7 +22,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
       queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },
   });
-  const statusView = getClockStatusBadgeView(status);
+  const statusView = getAttendanceStatusBadgeIntent(clockStatus);
 
   return (
     <Card variant="elevated">
@@ -43,14 +38,9 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
       <CardContent unstableClassName={stack.lg}>
         <Clock />
         <ClockActionButtons
-          status={status}
+          status={clockStatus}
           isPending={isPending}
           onAction={handleAction}
-        />
-        <ClockTodayRecord
-          status={status}
-          clockInTime={todayAttendance?.clockInAt ?? undefined}
-          totalWorkedHours={todayWorkedTime}
         />
       </CardContent>
     </Card>

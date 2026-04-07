@@ -44,7 +44,7 @@ export function AttendancePage() {
   const {
     clockStatus,
     attendanceStatus,
-    lastAction,
+    lastActionView,
     isLoading,
     isError,
     isPending,
@@ -197,7 +197,7 @@ export function AttendancePage() {
                 <AsyncDataState
                   isLoading={isLoading}
                   isError={isError}
-                  isEmpty={!lastAction}
+                  isEmpty={!lastActionView}
                 >
                   <AnimatePresence mode="popLayout">
                     <motion.div
@@ -207,14 +207,14 @@ export function AttendancePage() {
                     >
                       <div className="w-1.5 h-10 rounded-full bg-blue-500" />
                       <div className="flex-1">
-                        <Typography variant="label">{lastAction?.label}</Typography>
+                        <Typography variant="label">{lastActionView?.label}</Typography>
                         <Typography variant="small" intent="muted">
                           打刻完了
                         </Typography>
                       </div>
                       <div className="text-right">
                         <Typography variant="h3" unstableClassName="tracking-tight tabular-nums">
-                          {lastAction?.time}
+                          {lastActionView?.time}
                         </Typography>
                       </div>
                     </motion.div>
