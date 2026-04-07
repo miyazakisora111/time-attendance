@@ -37,6 +37,8 @@ const ATTENDANCE_STATUS_VIEW_MAP: Record<AttendanceStatus, AttendanceStatusView>
   },
 };
 
+// TODO: カードごとに分けようと思ったけど、ステータスに応じた見た目の切り替えが面倒だったので、とりあえず1ページにまとめてる。要リファクタ
+
 /**
  * 勤怠画面
  */
