@@ -7,11 +7,9 @@ import { useLatestAttendanceQuery } from '@/features/attendance/hooks/useAttenda
 import { useClock } from '@/features/attendance/hooks/useClock';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
-import type {
-  AttendanceView,
-  LastActionView,
-} from '@/features/attendance/ui/model';
-import { createEmptyAttendanceView } from '../ui/model/AttendanceView';
+import type { AttendanceView } from '@/features/attendance/types';
+import { createEmptyAttendanceView } from '@/features/attendance/types';
+import type { RecentActivityCardView } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCard';
 
 /**
  * 勤怠画面用カスタムフック
@@ -22,11 +20,11 @@ export const useAttendance = (): AttendanceView & {
   isError: boolean;
   isPending: boolean;
   handleAction: (action: ClockAction) => void;
-  lastActionView: LastActionView | null;
+  lastActionView: RecentActivityCardView | null;
 } => {
   const { data, isLoading, isError } = useLatestAttendanceQuery();
   const { clock, isPending } = useClock();
-  const [lastActionView, setLastAction] = useState<LastActionView | null>(null);
+  const [lastActionView, setLastAction] = useState<RecentActivityCardView | null>(null);
   const attendanceView: AttendanceView = data ?? createEmptyAttendanceView();
   const clockStatus: ClockStatus = attendanceView.clockStatus ?? 'out';
 
