@@ -7,7 +7,7 @@ import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
 import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
-import { ClockInOutCard } from "@/features/dashboard/ui/ClockInOutCard";
+import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard/ClockInCard";
 import { MiniCalendar } from "@/features/dashboard/ui/MiniCalendar";
 import { MonthlyStatsCard } from "@/features/dashboard/ui/MonthlyStatsCard";
 import { QuickActionsCard } from "@/features/dashboard/ui/QuickActionsCard";
@@ -49,7 +49,7 @@ export function DashBoardPage() {
 
               {/* Clock */}
               <motion.div className="xl:col-span-4" variants={fadeUp} transition={transitionNormal}>
-                <ClockInOutCard />
+                <ClockInCard />
               </motion.div>
 
               {/* Right Side */}

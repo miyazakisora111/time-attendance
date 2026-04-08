@@ -14,9 +14,9 @@ import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueri
 import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
 
 /**
- * ダッシュボードの打刻カード。
+ * 打刻カード。
  */
-export const ClockInOutCard = React.memo(function ClockInOutCard() {
+export const ClockInCard = React.memo(function ClockInCard() {
   const queryClient = useQueryClient();
   const {
     clockStatus,

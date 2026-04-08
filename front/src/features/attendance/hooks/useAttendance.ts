@@ -6,9 +6,9 @@ import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 
-import type { AttendanceView } from '@/features/attendance/types/AttendanceView';
-import { createEmptyAttendanceView } from '@/features/attendance/types/AttendanceView';
-import type { RecentActivityCardView } from '@/features/attendance/types/RecentActivityCardView';
+import type { AttendanceView } from '@/features/attendance/ui/page/AttendanceViewModel';
+import { createEmptyAttendanceView } from '@/features/attendance/ui/page/AttendanceViewModel';
+import type { RecentActivityCardView } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCardViewModel';
 import { useLatestAttendanceQuery } from '@/features/attendance/hooks/useAttendanceQueries';
 import { useClock } from '@/features/attendance/hooks/useClock';
 

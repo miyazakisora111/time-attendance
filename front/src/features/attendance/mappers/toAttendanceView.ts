@@ -2,9 +2,10 @@ import type { AttendanceResponse } from '@/__generated__/model';
 import { overrideDefined } from '@/shared/mapper/object';
 import type { Mapper } from '@/shared/mapper';
 
-import type { AttendanceView } from '@/features/attendance/types/AttendanceView';
-import { attendanceViewDefaults } from '@/features/attendance/types/AttendanceView';
+import type { AttendanceView } from '@/features/attendance/ui/page/AttendanceViewModel';
+import { attendanceViewDefaults } from '@/features/attendance/ui/page/AttendanceViewModel';
 
+// TODO: Viewの型をリファクタリングしたからこっちも修正だな。
 export const toAttendanceView: Mapper<
     AttendanceResponse,
     AttendanceView

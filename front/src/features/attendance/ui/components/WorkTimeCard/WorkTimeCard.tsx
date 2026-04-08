@@ -4,7 +4,7 @@ import { Card, Typography } from '@/shared/components';
 import { fadeIn } from '@/shared/animations/presets';
 import { transitionNormal } from '@/shared/animations/transitions';
 
-import type { WorkTimeCardView } from './createWorkTimeCardView';
+import type { WorkTimeCardView } from './WorkTimeCardViewModel';
 
 interface Props {
     view: WorkTimeCardView;

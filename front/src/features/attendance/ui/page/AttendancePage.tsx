@@ -7,11 +7,9 @@ import { stagger } from '@/shared/animations/stagger';
 import { transitionNormal } from '@/shared/animations/transitions';
 
 import { useAttendance } from '@/features/attendance/hooks/useAttendance';
-import { ClockCard } from '@/features/attendance/ui/components/ClockCard/ClockCard';
-import { StatusCard } from '@/features/attendance/ui/components/StatusCard/StatusCard';
-import { createStatusCardView } from '@/features/attendance/ui/components/StatusCard/createStatusCardView';
+import { ClockInCard } from '@/features/attendance/ui/components/ClockInCard/ClockInCard';
 import { WorkTimeCard } from '@/features/attendance/ui/components/WorkTimeCard/WorkTimeCard';
-import { createWorkTimeCardView } from '@/features/attendance/ui/components/WorkTimeCard/createWorkTimeCardView';
+import { createWorkTimeCardView } from '@/features/attendance/ui/components/WorkTimeCard/WorkTimeCardViewModel';
 import { ActionCard } from '@/features/attendance/ui/components/ActionCard/ActionCard';
 import { RecentActivityCard } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCard';
 
@@ -21,7 +19,6 @@ import { RecentActivityCard } from '@/features/attendance/ui/components/RecentAc
 export function AttendancePage() {
   const {
     clockStatus,
-    attendanceStatus,
     lastActionView,
     isLoading,
     isError,
@@ -32,7 +29,6 @@ export function AttendancePage() {
     handleAction,
   } = useAttendance();
 
-  const statusCardView = createStatusCardView(attendanceStatus);
   const workTimeCardView = createWorkTimeCardView(totalWorkedMinutes, breakMinutes, overtimeMinutes);
 
   return (
@@ -52,10 +48,7 @@ export function AttendancePage() {
               animate="animate"
             >
               <motion.div variants={fadeUp} transition={transitionNormal}>
-                <ClockCard />
-              </motion.div>
-              <motion.div variants={fadeUp} transition={transitionNormal}>
-                <StatusCard view={statusCardView} />
+                <ClockInCard />
               </motion.div>
               <motion.div variants={fadeUp} transition={transitionNormal}>
                 <WorkTimeCard view={workTimeCardView} />

@@ -40,7 +40,7 @@ const buildDashboardMonthlyStatsView = (
   return [
     {
       key: 'total_hours',
-      label: '今月の勤務時間',
+      label: '合計勤務時間',
       value: formatJapaneseHours(stats.totalHours),
       subtext: `目標: ${formatJapaneseHours(stats.targetHours)}`,
       iconColorClassName: 'text-blue-600',
@@ -64,7 +64,7 @@ const buildDashboardMonthlyStatsView = (
     },
     {
       key: 'overtime_hours',
-      label: '残業時間',
+      label: '合計残業時間',
       value: formatJapaneseHours(stats.overtimeHours),
       subtext: `前月比: ${formatSignedJapaneseHours(stats.overtimeDiff)}`,
       iconColorClassName: 'text-amber-600',
