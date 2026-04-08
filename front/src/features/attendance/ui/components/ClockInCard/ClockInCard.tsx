@@ -1,8 +1,8 @@
 import React from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock as ClockIcon } from "lucide-react";
 
+import type { ClockAction, ClockStatus } from "@/__generated__/enums";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Clock } from "@/shared/components";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { stack } from "@/shared/design-system/layout";
@@ -10,23 +10,21 @@ import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockS
 import { statusSwitch } from "@/shared/animations/presets";
 import { transitionFast } from "@/shared/animations/transitions";
 
-import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
-import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
+interface Props {
+  clockStatus: ClockStatus;
+  isPending: boolean;
+  onAction: (action: ClockAction) => void;
+}
 
 /**
  * 打刻カード。
+ * データ取得は行わず、親から props で受け取る。
  */
-export const ClockInCard = React.memo(function ClockInCard() {
-  const queryClient = useQueryClient();
-  const {
-    clockStatus,
-    isPending,
-    handleAction,
-  } = useDashboardClock({
-    onActionSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
-    },
-  });
+export const ClockInCard = React.memo(function ClockInCard({
+  clockStatus,
+  isPending,
+  onAction,
+}: Props) {
   const statusView = getClockStatusBadgeView(clockStatus);
 
   return (
@@ -65,7 +63,7 @@ export const ClockInCard = React.memo(function ClockInCard() {
             <ClockActionButtons
               status={clockStatus}
               isPending={isPending}
-              onAction={handleAction}
+              onAction={onAction}
             />
           </motion.div>
         </AnimatePresence>

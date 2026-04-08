@@ -7,7 +7,7 @@ import { stack } from '@/shared/design-system/layout';
 import { fadeLeft } from '@/shared/animations/presets';
 import { transitionNormal } from '@/shared/animations/transitions';
 
-import type { RecentActivityCardView } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCardViewModel';
+import type { RecentActivityCardView } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCardView';
 
 interface Props {
     view: RecentActivityCardView | null;

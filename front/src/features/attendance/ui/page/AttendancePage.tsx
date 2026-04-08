@@ -6,10 +6,9 @@ import { fadeUp } from '@/shared/animations/presets';
 import { stagger } from '@/shared/animations/stagger';
 import { transitionNormal } from '@/shared/animations/transitions';
 
-import { useAttendance } from '@/features/attendance/hooks/useAttendance';
+import { useAttendancePageViewModel } from '@/features/attendance/hooks/useAttendancePage';
 import { ClockInCard } from '@/features/attendance/ui/components/ClockInCard/ClockInCard';
 import { WorkTimeCard } from '@/features/attendance/ui/components/WorkTimeCard/WorkTimeCard';
-import { createWorkTimeCardView } from '@/features/attendance/ui/components/WorkTimeCard/WorkTimeCardViewModel';
 import { ActionCard } from '@/features/attendance/ui/components/ActionCard/ActionCard';
 import { RecentActivityCard } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCard';
 
@@ -19,17 +18,13 @@ import { RecentActivityCard } from '@/features/attendance/ui/components/RecentAc
 export function AttendancePage() {
   const {
     clockStatus,
-    lastActionView,
     isLoading,
     isError,
-    isPending,
-    totalWorkedMinutes,
-    breakMinutes,
-    overtimeMinutes,
+    isActionPending,
+    workTimeCardView,
+    lastActionView,
     handleAction,
-  } = useAttendance();
-
-  const workTimeCardView = createWorkTimeCardView(totalWorkedMinutes, breakMinutes, overtimeMinutes);
+  } = useAttendancePageViewModel();
 
   return (
     <PageTransition>
@@ -48,7 +43,11 @@ export function AttendancePage() {
               animate="animate"
             >
               <motion.div variants={fadeUp} transition={transitionNormal}>
-                <ClockInCard />
+                <ClockInCard
+                  clockStatus={clockStatus}
+                  isPending={isActionPending}
+                  onAction={handleAction}
+                />
               </motion.div>
               <motion.div variants={fadeUp} transition={transitionNormal}>
                 <WorkTimeCard view={workTimeCardView} />
@@ -56,7 +55,7 @@ export function AttendancePage() {
               <motion.div variants={fadeUp} transition={transitionNormal}>
                 <ActionCard
                   clockStatus={clockStatus}
-                  isPending={isLoading || isPending}
+                  isPending={isActionPending}
                   onAction={handleAction}
                 />
               </motion.div>
@@ -70,7 +69,7 @@ export function AttendancePage() {
             transition={transitionNormal}
           >
             <RecentActivityCard
-              lastAction={lastActionView}
+              view={lastActionView}
               isLoading={isLoading}
               isError={isError}
             />

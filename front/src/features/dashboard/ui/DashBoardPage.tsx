@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Container, Typography } from "@/shared/components";
 import { PageTransition } from "@/shared/components/transitions/PageTransition";
@@ -6,7 +7,8 @@ import { fadeUp } from "@/shared/animations/presets";
 import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
-import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
+import { useDashboard, dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
+import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
 import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard/ClockInCard";
 import { MiniCalendar } from "@/features/dashboard/ui/MiniCalendar";
 import { MonthlyStatsCard } from "@/features/dashboard/ui/MonthlyStatsCard";
@@ -14,8 +16,15 @@ import { QuickActionsCard } from "@/features/dashboard/ui/QuickActionsCard";
 import { RecentRecordsCard } from "@/features/dashboard/ui/RecentRecordsCard";
 
 export function DashBoardPage() {
+  const queryClient = useQueryClient();
   const { data: dashboardData } = useDashboard();
   const name = dashboardData?.user?.name;
+
+  const { clockStatus, isPending, handleAction } = useDashboardClock({
+    onActionSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
+    },
+  });
 
   return (
     <PageTransition>
@@ -49,7 +58,11 @@ export function DashBoardPage() {
 
               {/* Clock */}
               <motion.div className="xl:col-span-4" variants={fadeUp} transition={transitionNormal}>
-                <ClockInCard />
+                <ClockInCard
+                  clockStatus={clockStatus}
+                  isPending={isPending}
+                  onAction={handleAction}
+                />
               </motion.div>
 
               {/* Right Side */}

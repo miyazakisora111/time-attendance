@@ -5,7 +5,7 @@ import { AppRoutePath } from "@/config/routes";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { LoginPage } from "@/features/auth/ui/LoginPage";
-import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
+import { AttendancePage } from "@/features/attendance/ui/pages/AttendancePage";
 import { DashBoardPage } from "@/features/dashboard/ui/DashBoardPage";
 import { SchedulePage } from "@/features/schedule/ui/SchedulePage";
 import { SettingsPage } from "@/features/settings/ui/SettingsPage";
