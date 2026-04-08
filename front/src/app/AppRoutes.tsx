@@ -1,13 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import { PrivateLayout, PublicLayout } from "@/shared/components";
-import { LoginPage } from "@/features/auth/ui/LoginPage";
-import { useAuth } from "@/features/auth";
-import { DashBoardPage } from "@/features/dashboard";
-import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
-import TeamPage from "@/features/team";
-import SettingsPage from "@/features/settings";
-import SchedulePage from "@/features/schedule";
 import { AppRoutePath } from "@/config/routes";
+
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { LoginPage } from "@/features/auth/ui/LoginPage";
+import { AttendancePage } from "@/features/attendance/ui/AttendancePage";
+import { DashBoardPage } from "@/features/dashboard/ui/DashBoardPage";
+import { SchedulePage } from "@/features/schedule/ui/SchedulePage";
+import { SettingsPage } from "@/features/settings/ui/SettingsPage";
+import { TeamPage } from "@/features/team/ui/TeamPage";
 
 /**
  * ルーティングコンポーネント。

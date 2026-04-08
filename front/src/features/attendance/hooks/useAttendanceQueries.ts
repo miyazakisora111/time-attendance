@@ -1,9 +1,11 @@
 import { useMutation, useQuery, type UseMutationOptions } from '@tanstack/react-query';
+
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchLatestAttendance, clock } from '@/api/attendance.api';
-import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { ClockAction } from '@/__generated__/enums';
+
+import { toAttendanceView } from '@/features/attendance/mappers/toAttendanceView';
 
 /**
  * React Query キー。

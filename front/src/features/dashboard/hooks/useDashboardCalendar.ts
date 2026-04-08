@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+
 import { makeScopedKeys } from '@/lib/query/keys';
 import { fetchCalendar } from '@/api/schedule.api';
 

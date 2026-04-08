@@ -1,7 +1,7 @@
 import { type UserInfo } from "@/shared/components/sidebar/types";
 import { Button } from "@/shared/components";
 
-export default function SidebarUser({
+export function SidebarUser({
     collapsed,
     user,
     onLogout,

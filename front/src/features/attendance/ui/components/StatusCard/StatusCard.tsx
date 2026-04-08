@@ -1,5 +1,6 @@
-import type { StatusCardView } from './createStatusCardView';
 import { Card, Typography, IconWrapper } from '@/shared/components';
+
+import type { StatusCardView } from './createStatusCardView';
 
 interface Props {
     view: StatusCardView;

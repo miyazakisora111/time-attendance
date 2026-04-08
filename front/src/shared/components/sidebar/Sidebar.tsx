@@ -1,9 +1,9 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import { cn } from "@/shared/utils/style";
 import { Button } from "@/shared/components";
-import SidebarUser from "@/shared/components/sidebar/SidebarUser";
+import { SidebarUser } from "@/shared/components/sidebar/SidebarUser";
 import type { SidebarMenuItem, UserInfo } from "@/shared/components/sidebar/types";
 
 export interface SidebarProps {
@@ -42,7 +42,7 @@ function SidebarItem({
     );
 }
 
-export default function Sidebar({
+export function Sidebar({
     menuItems,
     user,
     isCollapsed = false,

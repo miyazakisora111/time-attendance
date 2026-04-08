@@ -1,9 +1,11 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
-import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
+
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { formatJapaneseHours, formatJapaneseDays, formatSignedJapaneseHours } from "@/shared/utils/format";
+
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
 import { StatItemCard } from "@/features/dashboard/ui/StatItemCard";
 
 interface DashboardStatsLike {

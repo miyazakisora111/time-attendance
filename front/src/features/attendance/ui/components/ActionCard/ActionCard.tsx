@@ -1,4 +1,5 @@
 import type { ClockAction, ClockStatus } from '@/__generated__/enums';
+
 import { Card } from '@/shared/components';
 import { ClockActionButtons } from '@/shared/components/buttons/ClockActionButtons';
 

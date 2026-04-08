@@ -2,11 +2,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast as sonner } from 'sonner';
 
 import type { ClockAction } from '@/__generated__/enums';
+import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
+
 import {
     attendanceQueryKeys,
     useClockMutation,
 } from '@/features/attendance/hooks/useAttendanceQueries';
-import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
 
 /**
  * 打刻共通フック

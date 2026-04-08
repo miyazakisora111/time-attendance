@@ -1,5 +1,6 @@
-import type { WorkTimeCardView } from './createWorkTimeCardView';
 import { Card, Typography } from '@/shared/components';
+
+import type { WorkTimeCardView } from './createWorkTimeCardView';
 
 interface Props {
     view: WorkTimeCardView;

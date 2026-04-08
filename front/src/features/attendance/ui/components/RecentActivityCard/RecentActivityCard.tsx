@@ -1,16 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { History } from 'lucide-react';
-import type { ClockAction } from '@/__generated__/enums';
+
 import { Card, CardContent, Typography } from '@/shared/components';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { stack } from '@/shared/design-system/layout';
 
-/** 直近打刻の表示用データ */
-export interface RecentActivityCardView {
-    clockAction: ClockAction;
-    label: string;
-    time: string;
-}
+import type { RecentActivityCardView } from '@/features/attendance/types/RecentActivityCardView';
 
 interface Props {
     lastAction: RecentActivityCardView | null;

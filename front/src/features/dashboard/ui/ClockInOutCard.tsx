@@ -1,12 +1,14 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Clock as ClockIcon } from "lucide-react";
+
 import { Badge, Card, CardContent, CardHeader, CardTitle, Clock } from "@/shared/components";
+import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
+import { stack } from "@/shared/design-system/layout";
+import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockStatusBadge";
+
 import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
 import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
-import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
-import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/attendanceStatus";
-import { stack } from "@/shared/design-system/layout";
 
 /**
  * ダッシュボードの打刻カード。
@@ -22,7 +24,7 @@ export const ClockInOutCard = React.memo(function ClockInOutCard() {
       queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
     },
   });
-  const statusView = getAttendanceStatusBadgeIntent(clockStatus);
+  const statusView = getClockStatusBadgeView(clockStatus);
 
   return (
     <Card variant="elevated">

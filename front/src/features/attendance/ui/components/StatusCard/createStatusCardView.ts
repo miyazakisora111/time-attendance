@@ -1,5 +1,7 @@
 import type { LucideIcon } from 'lucide-react';
+
 import type { AttendanceStatus } from '@/__generated__/enums';
+
 import { getAttendanceStatusIconView } from '@/shared/presentation/attendance/attendanceStatus';
 
 export interface StatusCardView {

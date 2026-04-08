@@ -1,12 +1,13 @@
-import { useAttendance } from '@/features/attendance/hooks/useAttendance';
 import { Card, Container } from '@/shared/components';
-import { createStatusCardView } from './components/StatusCard/createStatusCardView';
-import { createWorkTimeCardView } from './components/WorkTimeCard/createWorkTimeCardView';
-import { ClockCard } from './components/ClockCard/ClockCard';
-import { StatusCard } from './components/StatusCard/StatusCard';
-import { WorkTimeCard } from './components/WorkTimeCard/WorkTimeCard';
-import { ActionCard } from './components/ActionCard/ActionCard';
-import { RecentActivityCard } from './components/RecentActivityCard/RecentActivityCard';
+
+import { useAttendance } from '@/features/attendance/hooks/useAttendance';
+import { ClockCard } from '@/features/attendance/ui/components/ClockCard/ClockCard';
+import { StatusCard } from '@/features/attendance/ui/components/StatusCard/StatusCard';
+import { createStatusCardView } from '@/features/attendance/ui/components/StatusCard/createStatusCardView';
+import { WorkTimeCard } from '@/features/attendance/ui/components/WorkTimeCard/WorkTimeCard';
+import { createWorkTimeCardView } from '@/features/attendance/ui/components/WorkTimeCard/createWorkTimeCardView';
+import { ActionCard } from '@/features/attendance/ui/components/ActionCard/ActionCard';
+import { RecentActivityCard } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCard';
 
 /**
  * 勤怠画面

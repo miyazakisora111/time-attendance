@@ -1,8 +1,9 @@
 import type { AttendanceResponse } from '@/__generated__/model';
-import type { AttendanceView } from '@/features/attendance/types';
-import { attendanceViewDefaults } from '@/features/attendance/types';
 import { overrideDefined } from '@/shared/mapper/object';
 import type { Mapper } from '@/shared/mapper';
+
+import type { AttendanceView } from '@/features/attendance/types/AttendanceView';
+import { attendanceViewDefaults } from '@/features/attendance/types/AttendanceView';
 
 export const toAttendanceView: Mapper<
     AttendanceResponse,

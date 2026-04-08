@@ -21,8 +21,6 @@ JWT Bearer トークンを `Authorization: Bearer <token>` ヘッダーで送信
  * OpenAPI spec version: 1.1.0
  */
 
-export * from "./PasswordChangeBodyBody";
-export * from "./SettingsUpdateBodyBody";
 export * from "./attendanceBreakEndBodyBody";
 export * from "./attendanceBreakEndRequest";
 export * from "./attendanceBreakStartBodyBody";

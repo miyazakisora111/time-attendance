@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import Sidebar from "@/shared/components/sidebar/Sidebar";
-import { type SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { Home, Clock, Calendar, Users, Settings } from "lucide-react";
+
 import { cn } from "@/shared/utils/style";
-import { AppRoutePath } from "@/config/routes";
+import { Sidebar } from "@/shared/components/sidebar/Sidebar";
+import type { SidebarMenuItem } from "@/shared/components/sidebar/types";
 import { authStore } from "@/shared/stores/authStore";
+import { AppRoutePath } from "@/config/routes";
+
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 const defaultMenuItems: SidebarMenuItem[] = [

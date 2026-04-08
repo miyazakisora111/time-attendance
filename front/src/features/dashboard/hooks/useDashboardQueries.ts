@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
+
 import { makeScopedKeys } from '@/lib/query/keys';
+import type { DashboardRecentRecord, DashboardResponse, DashboardStats } from '@/__generated__/model';
 import { fetchDashboard } from '@/api/dashboard.api';
-import type { DashboardResponse } from '@/__generated__/model';
+
 import { toDashboardView } from '@/features/dashboard/mappers/toDashboardView';
-import type { DashboardViewData, DashboardRecentRecord, DashboardStats } from '@/features/dashboard/ui/types';
+import type { DashboardViewData } from '@/features/dashboard/types/DashboardViewData';
 
 const SCOPE = 'dashboard' as const;
 const scoped = makeScopedKeys(SCOPE);

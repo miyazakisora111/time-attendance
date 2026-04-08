@@ -1,15 +1,14 @@
 import { Container, Typography } from "@/shared/components";
 import { stack } from "@/shared/design-system/layout";
-import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
-import {
-  ClockInOutCard,
-  MiniCalendar,
-  MonthlyStatsCard,
-  QuickActionsCard,
-  RecentRecordsCard,
-} from "@/features/dashboard/ui";
 
-export default function DashBoardPage() {
+import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
+import { ClockInOutCard } from "@/features/dashboard/ui/ClockInOutCard";
+import { MiniCalendar } from "@/features/dashboard/ui/MiniCalendar";
+import { MonthlyStatsCard } from "@/features/dashboard/ui/MonthlyStatsCard";
+import { QuickActionsCard } from "@/features/dashboard/ui/QuickActionsCard";
+import { RecentRecordsCard } from "@/features/dashboard/ui/RecentRecordsCard";
+
+export function DashBoardPage() {
   const { data: dashboardData } = useDashboard();
   const name = dashboardData?.user?.name;
 

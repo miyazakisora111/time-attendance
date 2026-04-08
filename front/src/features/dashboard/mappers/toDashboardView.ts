@@ -1,6 +1,7 @@
 import type { DashboardResponse } from "@/__generated__/model";
-import type { DashboardViewData } from "@/features/dashboard/ui/types";
 import type { Mapper } from "@/shared/mapper";
+
+import type { DashboardViewData } from "@/features/dashboard/types/DashboardViewData";
 
 export const toDashboardView: Mapper<
   DashboardResponse,

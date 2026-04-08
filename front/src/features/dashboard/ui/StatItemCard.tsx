@@ -1,5 +1,6 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
+
 import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { IconWrapper } from "@/shared/components/icons/IconWrapper";
 

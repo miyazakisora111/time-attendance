@@ -3,13 +3,14 @@ import { useState } from 'react';
 import type { ClockAction, ClockStatus } from '@/__generated__/enums';
 import { AttendanceStatus } from '@/__generated__/model/attendanceStatus';
 import { clockStatusToAttendanceStatusMap } from '@/domain/attendance/attendance';
-import { useLatestAttendanceQuery } from '@/features/attendance/hooks/useAttendanceQueries';
-import { useClock } from '@/features/attendance/hooks/useClock';
 import { formatJapaneseHourMinute } from '@/shared/utils/format';
 import { getClockActionLabel } from '@/shared/presentation/attendance/clockAction';
-import type { AttendanceView } from '@/features/attendance/types';
-import { createEmptyAttendanceView } from '@/features/attendance/types';
-import type { RecentActivityCardView } from '@/features/attendance/ui/components/RecentActivityCard/RecentActivityCard';
+
+import type { AttendanceView } from '@/features/attendance/types/AttendanceView';
+import { createEmptyAttendanceView } from '@/features/attendance/types/AttendanceView';
+import type { RecentActivityCardView } from '@/features/attendance/types/RecentActivityCardView';
+import { useLatestAttendanceQuery } from '@/features/attendance/hooks/useAttendanceQueries';
+import { useClock } from '@/features/attendance/hooks/useClock';
 
 /**
  * 勤怠画面用カスタムフック

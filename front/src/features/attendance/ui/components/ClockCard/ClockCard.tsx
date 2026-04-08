@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Shield } from 'lucide-react';
+
 import { Card, Typography, Clock } from '@/shared/components';
 
 export function ClockCard() {

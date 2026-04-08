@@ -1,5 +1,7 @@
-import type { ClockAction } from '@/__generated__/enums';
+import type { ClockAction, ClockStatus } from '@/__generated__/enums';
+
 import { useClock } from '@/features/attendance/hooks/useClock';
+import { useDashboard } from '@/features/dashboard/hooks/useDashboardQueries';
 
 /**
  * ダッシュボード用 打刻フック
@@ -7,9 +9,11 @@ import { useClock } from '@/features/attendance/hooks/useClock';
 export const useDashboardClock = (options?: {
     onActionSuccess?: () => void;
 }): {
+    clockStatus: ClockStatus;
     isPending: boolean;
     handleAction: (action: ClockAction) => void;
 } => {
+    const { data } = useDashboard();
     const { clock, isPending } = useClock();
 
     const handleAction = (action: ClockAction) => {
@@ -18,6 +22,7 @@ export const useDashboardClock = (options?: {
     };
 
     return {
+        clockStatus: data?.clockStatus ?? 'out',
         isPending,
         handleAction,
     };

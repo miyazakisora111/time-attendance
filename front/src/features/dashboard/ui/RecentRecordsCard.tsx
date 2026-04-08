@@ -1,11 +1,13 @@
 import React from "react";
 import { Clock, History } from "lucide-react";
+
 import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
-import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
 import { formatClockText, formatHoursText } from "@/shared/utils/format";
-import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/clockAction";
+import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/attendanceStatus";
+
+import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。
