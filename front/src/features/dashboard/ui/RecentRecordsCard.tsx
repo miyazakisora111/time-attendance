@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Clock, History } from "lucide-react";
 
 import { isCrossDayShiftByClock } from "@/domain/attendance/time";
@@ -6,6 +7,9 @@ import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { formatClockText, formatHoursText } from "@/shared/utils/format";
 import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/attendanceStatus";
+import { fadeUp } from "@/shared/animations/presets";
+import { stagger } from "@/shared/animations/stagger";
+import { transitionNormal } from "@/shared/animations/transitions";
 
 import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
 
@@ -44,9 +48,19 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-50">
+              <motion.tbody
+                className="divide-y divide-gray-50"
+                variants={stagger}
+                initial="initial"
+                animate="animate"
+              >
                 {records?.map((record) => (
-                  <tr key={`${record.date}-${record.day}`} className="group transition-colors hover:bg-blue-50/30">
+                  <motion.tr
+                    key={`${record.date}-${record.day}`}
+                    className="group transition-colors hover:bg-blue-50/30"
+                    variants={fadeUp}
+                    transition={transitionNormal}
+                  >
                     <td className="px-3 py-4 font-medium">
                       <div className="flex items-center gap-2 text-gray-900 transition-colors group-hover:text-blue-600">
                         <Clock size={14} className="text-gray-300" />
@@ -73,9 +87,9 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                         {record.status}
                       </Badge>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           </div>
         </AsyncDataState>

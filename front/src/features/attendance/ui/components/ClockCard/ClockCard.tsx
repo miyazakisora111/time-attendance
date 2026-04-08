@@ -2,14 +2,18 @@ import { motion } from 'framer-motion';
 import { MapPin, Shield } from 'lucide-react';
 
 import { Card, Typography, Clock } from '@/shared/components';
+import { fadeUp } from '@/shared/animations/presets';
+import { transitionNormal } from '@/shared/animations/transitions';
 
 export function ClockCard() {
     return (
         <Card variant="flat" padding="lg">
             <div className="flex flex-col items-center justify-center h-full">
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    variants={fadeUp}
+                    initial="initial"
+                    animate="animate"
+                    transition={transitionNormal}
                 >
                     <Clock title={undefined} size="md" />
                 </motion.div>

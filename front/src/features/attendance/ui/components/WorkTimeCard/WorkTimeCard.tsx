@@ -1,4 +1,8 @@
+import { motion } from 'framer-motion';
+
 import { Card, Typography } from '@/shared/components';
+import { fadeIn } from '@/shared/animations/presets';
+import { transitionNormal } from '@/shared/animations/transitions';
 
 import type { WorkTimeCardView } from './createWorkTimeCardView';
 
@@ -21,12 +25,20 @@ export function WorkTimeCard({ view }: Props) {
                     >
                         現在の勤務時間
                     </Typography>
-                    <Typography
-                        variant="h3"
-                        unstableClassName="mb-6 tracking-tight"
+                    <motion.div
+                        key={view.totalWorkedTime}
+                        variants={fadeIn}
+                        initial="initial"
+                        animate="animate"
+                        transition={transitionNormal}
                     >
-                        {view.totalWorkedTime}
-                    </Typography>
+                        <Typography
+                            variant="h3"
+                            unstableClassName="mb-6 tracking-tight"
+                        >
+                            {view.totalWorkedTime}
+                        </Typography>
+                    </motion.div>
                 </div>
                 <div className="pt-6 border-t border-blue-500/50 space-y-2">
                     <div className="flex items-center justify-between">

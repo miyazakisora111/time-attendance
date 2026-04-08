@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { TriangleAlert, X } from 'lucide-react';
 import { Button, Typography } from '@/shared/components';
-import { useErrorModal } from '@/shared/hooks/useErrorModal';
+import { useErrorModal } from '@/shared/stores/errorModalStore';
 import { stack } from '@/shared/design-system/layout';
 
 export function ErrorModal() {
-	const { isOpen, title, messages, closeError } = useErrorModal();
+	const { isOpen, title, messages, close } = useErrorModal();
 	const dialogRef = useRef<HTMLDivElement>(null);
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
-				closeError();
+				close();
 			}
 		},
-		[closeError],
+		[close],
 	);
 
 	useEffect(() => {
@@ -31,7 +31,7 @@ export function ErrorModal() {
 	return (
 		<div
 			className="fixed inset-0 z-70 flex items-center justify-center bg-black/40 p-4"
-			onClick={closeError}
+			onClick={close}
 			role="presentation"
 		>
 			<div
@@ -59,7 +59,7 @@ export function ErrorModal() {
 					</div>
 					<button
 						type="button"
-						onClick={closeError}
+						onClick={close}
 						aria-label="エラーモーダルを閉じる"
 						className="rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
 					>
@@ -81,7 +81,7 @@ export function ErrorModal() {
 				</div>
 
 				<div className="flex justify-end border-t border-gray-100 px-6 py-4">
-					<Button type="button" onClick={closeError} variant="solid" intent="danger">
+					<Button type="button" onClick={close} variant="solid" intent="danger">
 						閉じる
 					</Button>
 				</div>

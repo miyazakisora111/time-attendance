@@ -1,9 +1,13 @@
 import React from "react";
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, Calendar, Clock, TrendingUp } from "lucide-react";
 
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { formatJapaneseHours, formatJapaneseDays, formatSignedJapaneseHours } from "@/shared/utils/format";
+import { fadeUp } from "@/shared/animations/presets";
+import { stagger } from "@/shared/animations/stagger";
+import { transitionNormal } from "@/shared/animations/transitions";
 
 import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardQueries";
 import { StatItemCard } from "@/features/dashboard/ui/StatItemCard";
@@ -91,12 +95,19 @@ export const MonthlyStatsCard = React.memo(function MonthlyStatsCard() {
     : [];
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+    <motion.div
+      className="grid grid-cols-2 gap-4 md:grid-cols-4"
+      variants={stagger}
+      initial="initial"
+      animate="animate"
+    >
       <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={!stats}>
         {statsConfig.map((stat) => (
-          <StatItemCard key={stat.label} {...stat} />
+          <motion.div key={stat.label} variants={fadeUp} transition={transitionNormal}>
+            <StatItemCard {...stat} />
+          </motion.div>
         ))}
       </AsyncDataState>
-    </div>
+    </motion.div>
   );
 });

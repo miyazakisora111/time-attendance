@@ -8,7 +8,7 @@ import {
   HTTP_STATUS_CODE,
 } from '@/config/api';
 import { StorageKey } from '@/config/auth';
-import { useErrorStore } from '@/shared/stores/errorStore';
+import { errorModalStore } from '@/shared/stores/errorModalStore';
 import { authStore } from '@/shared/stores/authStore';
 import { isRecord } from '@/shared/utils/guards';
 
@@ -68,7 +68,7 @@ axiosInstance.interceptors.response.use(
         });
       }
 
-      useErrorStore.getState().setError({
+      errorModalStore.getState().open({
         title: API_ERROR_TITLE.NETWORK,
         messages: [API_ERROR_MESSAGE.NETWORK_ERROR],
       });
@@ -153,25 +153,30 @@ const notifyByStatus = (
   const messages = extractErrorMessages(data);
   const code = isApiError(data) ? data.code : undefined;
 
+  // 認証エラー
   if (code === API_ERROR_CODE.AUTH || status === HTTP_STATUS_CODE.UNAUTHORIZED) {
     authStore.getState().reset();
     throw new UnauthorizedError();
   }
 
-  const { setError } = useErrorStore.getState();
+  const { open } = errorModalStore.getState();
 
+  // Validation Error
   if (
     code === API_ERROR_CODE.VALIDATION ||
     status === HTTP_STATUS_CODE.UNPROCESSABLE_ENTITY
   ) {
-    setError({
+    open({
       status,
       title: API_ERROR_TITLE.VALIDATION,
-      messages: messages.length ? messages : [API_ERROR_MESSAGE.REQUEST_FAILED],
+      messages: messages.length
+        ? messages
+        : [API_ERROR_MESSAGE.REQUEST_FAILED],
     });
     return;
   }
 
+  // 4xx 系（業務 / 権限 / NotFound 等）
   if (
     code === API_ERROR_CODE.DOMAIN ||
     code === API_ERROR_CODE.FORBIDDEN ||
@@ -180,21 +185,24 @@ const notifyByStatus = (
       status >= HTTP_STATUS_CODE.CLIENT_ERROR_MIN &&
       status <= HTTP_STATUS_CODE.CLIENT_ERROR_MAX)
   ) {
-    setError({
+    open({
       status,
       title: API_ERROR_TITLE.VALIDATION,
-      messages: messages.length ? messages : [API_ERROR_MESSAGE.REQUEST_FAILED],
+      messages: messages.length
+        ? messages
+        : [API_ERROR_MESSAGE.REQUEST_FAILED],
     });
     return;
   }
 
+  // 5xx / その他
   const fallback =
     status !== undefined &&
       status >= HTTP_STATUS_CODE.SERVER_ERROR_MIN
       ? API_ERROR_MESSAGE.SERVER_ERROR
       : API_ERROR_MESSAGE.GENERIC_ERROR;
 
-  setError({
+  open({
     status,
     title: API_ERROR_TITLE.SERVER,
     messages: [messages[0] ?? fallback],

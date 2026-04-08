@@ -1,8 +1,11 @@
 import React from "react";
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
 import { IconWrapper } from "@/shared/components/icons/IconWrapper";
+import { fadeIn } from "@/shared/animations/presets";
+import { transitionNormal } from "@/shared/animations/transitions";
 
 interface StatItemCardProps {
   label: string;
@@ -39,9 +42,17 @@ export const StatItemCard = React.memo(function StatItemCard({
         </div>
       </CardHeader>
       <CardContent>
-        <Typography variant="h2" unstableClassName="text-2xl tabular-nums">
-          {value}
-        </Typography>
+        <motion.div
+          key={value}
+          variants={fadeIn}
+          initial="initial"
+          animate="animate"
+          transition={transitionNormal}
+        >
+          <Typography variant="h2" unstableClassName="text-2xl tabular-nums">
+            {value}
+          </Typography>
+        </motion.div>
         <Typography variant="small" intent="muted" unstableClassName="font-medium">
           {subtext}
         </Typography>

@@ -4,6 +4,8 @@ import { History } from 'lucide-react';
 import { Card, CardContent, Typography } from '@/shared/components';
 import { AsyncDataState } from '@/shared/components/states/AsyncDataState';
 import { stack } from '@/shared/design-system/layout';
+import { fadeLeft } from '@/shared/animations/presets';
+import { transitionNormal } from '@/shared/animations/transitions';
 
 import type { RecentActivityCardView } from '@/features/attendance/types/RecentActivityCardView';
 
@@ -34,8 +36,11 @@ export function RecentActivityCard({ lastAction, isLoading, isError }: Props) {
                     >
                         <AnimatePresence mode="popLayout">
                             <motion.div
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
+                                key={lastAction?.time}
+                                variants={fadeLeft}
+                                initial="initial"
+                                animate="animate"
+                                transition={transitionNormal}
                                 className="flex items-center gap-4 group"
                             >
                                 <div className="w-1.5 h-10 rounded-full bg-blue-500" />

@@ -1,5 +1,10 @@
+import { motion } from "framer-motion";
+
 import { Container, Typography } from "@/shared/components";
-import { stack } from "@/shared/design-system/layout";
+import { PageTransition } from "@/shared/components/transitions/PageTransition";
+import { fadeUp } from "@/shared/animations/presets";
+import { stagger } from "@/shared/animations/stagger";
+import { transitionNormal } from "@/shared/animations/transitions";
 
 import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
 import { ClockInOutCard } from "@/features/dashboard/ui/ClockInOutCard";
@@ -13,53 +18,60 @@ export function DashBoardPage() {
   const name = dashboardData?.user?.name;
 
   return (
-    <div className="min-h-screen">
-      <Container size="lg" unstableClassName="grid gap-8 py-8">
+    <PageTransition>
+      <div className="min-h-screen">
+        <Container size="lg" unstableClassName="grid gap-8 py-8">
 
-        {/* Header */}
-        <header className={stack.sm}>
-          <Typography asChild variant="h1">
-            <h1>ダッシュボード</h1>
-          </Typography>
-          <Typography variant="body" intent="muted">
-            {name ? `${name}さん、` : ""}本日も1日頑張りましょう！
-          </Typography>
-        </header>
+          {/* Header */}
+          <header>
+            <Typography asChild variant="h1">
+              <h1>ダッシュボード</h1>
+            </Typography>
+            <Typography variant="body" intent="muted">
+              {name ? `${name}さん、` : ""}本日も1日頑張りましょう！
+            </Typography>
+          </header>
 
-        {/* Layout Grid */}
-        <section className="grid gap-6">
+          {/* Layout Grid */}
+          <motion.section
+            className="grid gap-6"
+            variants={stagger}
+            initial="initial"
+            animate="animate"
+          >
 
-          {/* Summary */}
-          <div>
-            <MonthlyStatsCard />
-          </div>
+            {/* Summary */}
+            <motion.div variants={fadeUp} transition={transitionNormal}>
+              <MonthlyStatsCard />
+            </motion.div>
 
-          <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
 
-            {/* Clock */}
-            <div className="xl:col-span-4">
-              <ClockInOutCard />
-            </div>
+              {/* Clock */}
+              <motion.div className="xl:col-span-4" variants={fadeUp} transition={transitionNormal}>
+                <ClockInOutCard />
+              </motion.div>
 
-            {/* Right Side */}
-            <div className="grid gap-6 xl:col-span-8">
+              {/* Right Side */}
+              <div className="grid gap-6 xl:col-span-8">
 
-              {/* Utilities */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <MiniCalendar />
-                <QuickActionsCard />
+                {/* Utilities */}
+                <motion.div className="grid grid-cols-1 gap-6 md:grid-cols-2" variants={fadeUp} transition={transitionNormal}>
+                  <MiniCalendar />
+                  <QuickActionsCard />
+                </motion.div>
+
+                {/* Activity */}
+                <motion.div variants={fadeUp} transition={transitionNormal}>
+                  <RecentRecordsCard />
+                </motion.div>
+
               </div>
-
-              {/* Activity */}
-              <div>
-                <RecentRecordsCard />
-              </div>
-
             </div>
-          </div>
-        </section>
+          </motion.section>
 
-      </Container>
-    </div>
+        </Container>
+      </div>
+    </PageTransition>
   );
 }
