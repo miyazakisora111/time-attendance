@@ -76,6 +76,8 @@ final class DashboardResponseFactory
     private function toRecentRecord(Attendance $attendance): DashboardRecentRecord
     {
         $workDate = Carbon::parse($attendance->work_date);
+
+        // TODO:共通化
         $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 
         $workedMinutes = $attendance->workMinutes();

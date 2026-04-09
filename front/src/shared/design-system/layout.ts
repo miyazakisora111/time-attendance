@@ -3,6 +3,7 @@
  *
  * spacing の統一に使う stack / cluster ヘルパー。
  * 呼び出し側は unstableClassName にこれらを渡す。
+ * TODO:用整理
  */
 
 /** 縦方向のスタック (space-y) */

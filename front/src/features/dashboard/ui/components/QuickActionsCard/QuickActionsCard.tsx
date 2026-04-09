@@ -13,7 +13,7 @@ import {
 
 import type { QuickActionKey, QuickActionsCardProps } from "@/features/dashboard/ui/components/QuickActionsCard/QuickActionsCard.types";
 
-type DashboardQuickAction = {
+type QuickAction = {
     key: QuickActionKey;
     label: string;
     icon: LucideIcon;
@@ -36,7 +36,7 @@ const QUICK_ACTIONS = [
         colorClassName: "text-green-600",
         bgColorClassName: "bg-green-100/50",
     },
-] as const satisfies ReadonlyArray<DashboardQuickAction>;
+] as const satisfies ReadonlyArray<QuickAction>;
 
 export const QuickActionsCard = React.memo(function QuickActionsCard({
     onAction,
