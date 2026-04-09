@@ -7,9 +7,11 @@ import { fadeUp } from "@/shared/animations/presets";
 import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
-import { useDashboard, dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
+import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
+import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
 import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
-import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard/ClockInCard";
+import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard";
+import { createClockInCardView } from "@/features/attendance/viewModels/ClockInCardViewModel";
 import { MiniCalendar } from "@/features/dashboard/ui/MiniCalendar";
 import { MonthlyStatsCard } from "@/features/dashboard/ui/MonthlyStatsCard";
 import { QuickActionsCard } from "@/features/dashboard/ui/QuickActionsCard";
@@ -59,8 +61,7 @@ export function DashBoardPage() {
               {/* Clock */}
               <motion.div className="xl:col-span-4" variants={fadeUp} transition={transitionNormal}>
                 <ClockInCard
-                  clockStatus={clockStatus}
-                  isPending={isPending}
+                  view={createClockInCardView(clockStatus, isPending)}
                   onAction={handleAction}
                 />
               </motion.div>

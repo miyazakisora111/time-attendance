@@ -1,5 +1,6 @@
 import { formatMinutes } from '@/shared/utils/format';
 
+/** 勤務時間カードの表示用データ */
 export interface WorkTimeCardView {
     totalWorkedTime: string;
     breakTime: string;

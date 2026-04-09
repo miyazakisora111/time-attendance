@@ -5,8 +5,6 @@ import { fetchLatestAttendance, clock } from '@/api/attendance.api';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { ClockAction } from '@/__generated__/enums';
 
-import { toAttendancePageView } from '@/features/attendance/mappers/toAttendancePageView';
-
 /**
  * React Query キー。
  */
@@ -25,7 +23,6 @@ export const useLatestAttendanceQuery = () =>
   useQuery({
     queryKey: attendanceQueryKeys.latest(),
     queryFn: () => fetchLatestAttendance(),
-    select: (data) => toAttendancePageView(data),
     staleTime: 0, // 打刻直後の refetch を即時実行するため
   });
 

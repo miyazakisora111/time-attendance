@@ -2,31 +2,27 @@ import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Clock as ClockIcon } from "lucide-react";
 
-import type { ClockAction, ClockStatus } from "@/__generated__/enums";
+import type { ClockAction } from "@/__generated__/enums";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Clock } from "@/shared/components";
 import { ClockActionButtons } from "@/shared/components/buttons/ClockActionButtons";
 import { stack } from "@/shared/design-system/layout";
-import { getClockStatusBadgeView } from "@/shared/presentation/attendance/clockStatusBadge";
 import { statusSwitch } from "@/shared/animations/presets";
 import { transitionFast } from "@/shared/animations/transitions";
 
+import type { ClockInCardView } from "@/features/attendance/viewModels/ClockInCardViewModel";
+
 interface Props {
-  clockStatus: ClockStatus;
-  isPending: boolean;
+  view: ClockInCardView;
   onAction: (action: ClockAction) => void;
 }
 
 /**
  * 打刻カード。
- * データ取得は行わず、親から props で受け取る。
  */
 export const ClockInCard = React.memo(function ClockInCard({
-  clockStatus,
-  isPending,
+  view,
   onAction,
 }: Props) {
-  const statusView = getClockStatusBadgeView(clockStatus);
-
   return (
     <Card variant="elevated">
       <CardHeader>
@@ -37,14 +33,14 @@ export const ClockInCard = React.memo(function ClockInCard({
           </CardTitle>
           <AnimatePresence mode="wait">
             <motion.div
-              key={clockStatus}
+              key={view.clockStatus}
               variants={statusSwitch}
               initial="initial"
               animate="animate"
               exit="exit"
               transition={transitionFast}
             >
-              <Badge intent={statusView.intent}>{statusView.text}</Badge>
+              <Badge intent={view.statusBadge.intent}>{view.statusBadge.text}</Badge>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -53,7 +49,7 @@ export const ClockInCard = React.memo(function ClockInCard({
         <Clock />
         <AnimatePresence mode="wait">
           <motion.div
-            key={clockStatus}
+            key={view.clockStatus}
             variants={statusSwitch}
             initial="initial"
             animate="animate"
@@ -61,8 +57,8 @@ export const ClockInCard = React.memo(function ClockInCard({
             transition={transitionFast}
           >
             <ClockActionButtons
-              status={clockStatus}
-              isPending={isPending}
+              status={view.clockStatus}
+              isPending={view.isPending}
               onAction={onAction}
             />
           </motion.div>

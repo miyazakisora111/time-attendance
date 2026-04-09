@@ -11,6 +11,7 @@ import {
 
 /**
  * 打刻共通フック
+ * TODO: onScuccess, onError を引数で受け取れるようにするなど、汎用的に使えるようにリファクタ
  */
 export const useClock = (): {
     clock: (action: ClockAction) => void;
