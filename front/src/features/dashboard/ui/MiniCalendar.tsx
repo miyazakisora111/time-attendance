@@ -3,11 +3,10 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from "lucide-reac
 
 import { Card, CardContent, CardHeader, CardTitle, Typography, Button } from "@/shared/components";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
-import { formatJapaneseYearMonth } from "@/shared/utils/format";
 import { DAYS, DAY_TYPE_CLASS } from "@/shared/presentation/day";
 import { cn } from "@/shared/utils/style";
 
-import { useDashboardCalendar } from "@/features/dashboard/hooks/useDashboardCalendar";
+import { useMiniCalendarViewModel } from "@/features/dashboard/viewModels/MiniCalendarViewModel";
 
 const dashboardMiniCalendarLegends = [
   {
@@ -27,48 +26,13 @@ const dashboardMiniCalendarLegends = [
   },
 ] as const;
 
-interface DashboardMiniCalendarSource {
-  date: string;
-  status: 'working' | 'off' | 'holiday' | 'pending';
-  isToday: boolean;
-  isHoliday: boolean;
-}
-
-interface DashboardMiniCalendarDay {
-  key: string;
-  day: string;
-  isWorkday?: boolean;
-  isHoliday?: boolean;
-  isToday?: boolean;
-}
-
-const buildDashboardMiniCalendarDays = (
-  days: ReadonlyArray<DashboardMiniCalendarSource>,
-): DashboardMiniCalendarDay[] => {
-  if (days.length === 0) {
-    return [];
-  }
-
-  const firstDate = new Date(`${days[0].date}T00:00:00`);
-  const leadingBlankDays = Array.from({ length: firstDate.getDay() }, (_, index) => ({
-    key: `blank-${index}`,
-    day: '',
-  }));
-
-  const mappedDays = days.map((day) => ({
-    key: day.date,
-    day: String(new Date(`${day.date}T00:00:00`).getDate()),
-    isWorkday: day.status === 'working',
-    isHoliday: day.isHoliday,
-    isToday: day.isToday,
-  }));
-
-  return [...leadingBlankDays, ...mappedDays];
-};
-
+/**
+ * ミニカレンダー。
+ *
+ * ViewModel から受け取った値のみを使い、ロジックを持たない View 層。
+ */
 export const MiniCalendar = React.memo(function MiniCalendar() {
-  const { currentMonth, calendar, isLoading, isError, nextMonth, prevMonth } = useDashboardCalendar();
-  const calendarDays = buildDashboardMiniCalendarDays(calendar?.days ?? []);
+  const { monthLabel, days, isLoading, isError, nextMonth, prevMonth } = useMiniCalendarViewModel();
 
   return (
     <Card>
@@ -83,7 +47,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
               <ChevronLeft size={16} />
             </Button>
             <Typography variant="label" intent="muted">
-              {formatJapaneseYearMonth(currentMonth)}
+              {monthLabel}
             </Typography>
             <Button variant="ghost" size="icon" unstableClassName="h-8 w-8 text-gray-600" aria-label="翌月" onClick={nextMonth}>
               <ChevronRight size={16} />
@@ -92,7 +56,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
         </div>
       </CardHeader>
       <CardContent>
-        <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={calendarDays.length === 0}>
+        <AsyncDataState isLoading={isLoading} isError={isError} isEmpty={days.length === 0}>
           <div className="grid grid-cols-7 gap-1">
             {Object.values(DAYS).map((day) => (
               <div
@@ -105,7 +69,7 @@ export const MiniCalendar = React.memo(function MiniCalendar() {
                 {day.label}
               </div>
             ))}
-            {calendarDays.map((day) => (
+            {days.map((day) => (
               <div
                 key={day.key}
                 className={[

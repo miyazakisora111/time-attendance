@@ -1,53 +1,20 @@
-import { useEffect } from 'react';
-import { useNavigate, useLocation, type Location } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast as sonner } from 'sonner';
 
 import { validationSchemas } from '@/__generated__/zod.validation';
 import { Card, Container, Typography, SubmitButton, Input, Form } from '@/shared/components';
-import { authStore } from '@/shared/stores/authStore';
-import { AppRoutePath } from '@/config/routes';
 import { scaleIn } from '@/shared/animations/presets';
 import { transitionSlow } from '@/shared/animations/transitions';
 
-import { useAuth } from '@/features/auth/hooks/useAuth';
-
-/** ログイン後リダイレクト元の location state。 */
-type RedirectState = { from?: Location };
-
-type LoginFormData = z.infer<typeof validationSchemas.LoginRequest>;
+import { useLoginPageViewModel, type LoginFormData } from '@/features/auth/viewModels/LoginPageViewModel';
 
 /**
  * ログイン画面。
+ *
+ * ViewModel から受け取った値のみを使い、ロジックを持たない View 層。
  */
 export function LoginPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { loginMutation } = useAuth();
-  const isAuthenticated = authStore((state) => state.isAuthenticated);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(AppRoutePath.Dashboard, { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    if (loginMutation.isSuccess) {
-      const from = (location.state as RedirectState | null)?.from?.pathname;
-      navigate(from ?? AppRoutePath.Dashboard, { replace: true });
-    }
-  }, [location.state, loginMutation.isSuccess, navigate]);
-
-  /**
-   * 認証APIへログイン情報を送信する。
-   */
-  const onSubmit = async (data: LoginFormData) => {
-    loginMutation.mutateAsync(data);
-    sonner.success('ログインしました。');
-  };
+  const { onSubmit } = useLoginPageViewModel();
 
   return (
     <Container size="full" tone="blue" center>

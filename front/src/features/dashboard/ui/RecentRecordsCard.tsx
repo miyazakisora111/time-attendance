@@ -2,22 +2,21 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Clock, History } from "lucide-react";
 
-import { isCrossDayShiftByClock } from "@/domain/attendance/time";
 import { AsyncDataState } from "@/shared/components/states/AsyncDataState";
 import { Badge, Card, CardContent, CardHeader, CardTitle, Typography } from "@/shared/components";
-import { formatClockText, formatHoursText } from "@/shared/utils/format";
-import { getAttendanceStatusBadgeIntent } from "@/shared/presentation/attendance/attendanceStatus";
 import { fadeUp } from "@/shared/animations/presets";
 import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
-import { useRecentRecords } from "@/features/dashboard/hooks/useDashboardQueries";
+import { useRecentRecordsCardViewModel } from "@/features/dashboard/viewModels/RecentRecordsCardViewModel";
 
 /**
  * 最近の勤怠記録を一覧表示するコンポーネント。
+ *
+ * ViewModel から受け取った値のみを使い、ロジックを持たない View 層。
  */
 export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
-  const { data: records, isLoading, isError } = useRecentRecords();
+  const { records, isLoading, isError } = useRecentRecordsCardViewModel();
 
   return (
     <Card>
@@ -32,7 +31,7 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
         <AsyncDataState
           isLoading={isLoading}
           isError={isError}
-          isEmpty={!records || records.length === 0}
+          isEmpty={records.length === 0}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -54,9 +53,9 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                 initial="initial"
                 animate="animate"
               >
-                {records?.map((record) => (
+                {records.map((record) => (
                   <motion.tr
-                    key={`${record.date}-${record.day}`}
+                    key={record.key}
                     className="group transition-colors hover:bg-blue-50/30"
                     variants={fadeUp}
                     transition={transitionNormal}
@@ -70,20 +69,20 @@ export const RecentRecordsCard = React.memo(function RecentRecordsCard() {
                         </Typography>
                       </div>
                     </td>
-                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{formatClockText(record.clockIn)}</td>
+                    <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">{record.clockInText}</td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
-                      {formatClockText(record.clockOut)}
-                      {isCrossDayShiftByClock(record.clockIn, record.clockOut) ? (
+                      {record.clockOutText}
+                      {record.isCrossDay ? (
                         <Typography variant="small" intent="muted" unstableClassName="ml-1 inline-block">
                           (翌日)
                         </Typography>
                       ) : null}
                     </td>
                     <td className="px-3 py-4 font-semibold tabular-nums text-gray-700">
-                      {formatHoursText(record.workHours)}
+                      {record.workHoursText}
                     </td>
                     <td className="px-3 py-4">
-                      <Badge intent={getAttendanceStatusBadgeIntent(record.status as never)}>
+                      <Badge intent={record.statusBadgeIntent}>
                         {record.status}
                       </Badge>
                     </td>

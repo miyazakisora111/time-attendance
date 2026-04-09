@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
 
 import { Container, Typography } from "@/shared/components";
 import { PageTransition } from "@/shared/components/transitions/PageTransition";
@@ -7,26 +6,20 @@ import { fadeUp } from "@/shared/animations/presets";
 import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
-import { useDashboard } from "@/features/dashboard/hooks/useDashboardQueries";
-import { dashboardQueryKeys } from "@/features/dashboard/hooks/useDashboardQueries";
-import { useDashboardClock } from "@/features/dashboard/hooks/useDashboardClock";
+import { useDashboardPageViewModel } from "@/features/dashboard/viewModels/DashboardPageViewModel";
 import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard";
-import { createClockInCardView } from "@/features/attendance/viewModels/ClockInCardViewModel";
 import { MiniCalendar } from "@/features/dashboard/ui/MiniCalendar";
 import { MonthlyStatsCard } from "@/features/dashboard/ui/MonthlyStatsCard";
 import { QuickActionsCard } from "@/features/dashboard/ui/QuickActionsCard";
 import { RecentRecordsCard } from "@/features/dashboard/ui/RecentRecordsCard";
 
+/**
+ * ダッシュボード画面。
+ *
+ * ViewModel を組み立てて各コンポーネントへ渡す wiring 層。
+ */
 export function DashBoardPage() {
-  const queryClient = useQueryClient();
-  const { data: dashboardData } = useDashboard();
-  const name = dashboardData?.user?.name;
-
-  const { clockStatus, isPending, handleAction } = useDashboardClock({
-    onActionSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: dashboardQueryKeys.all() });
-    },
-  });
+  const { userName, clockInCard, handleAction } = useDashboardPageViewModel();
 
   return (
     <PageTransition>
@@ -39,7 +32,7 @@ export function DashBoardPage() {
               <h1>ダッシュボード</h1>
             </Typography>
             <Typography variant="body" intent="muted">
-              {name ? `${name}さん、` : ""}本日も1日頑張りましょう！
+              {userName ? `${userName}さん、` : ""}本日も1日頑張りましょう！
             </Typography>
           </header>
 
@@ -61,7 +54,7 @@ export function DashBoardPage() {
               {/* Clock */}
               <motion.div className="xl:col-span-4" variants={fadeUp} transition={transitionNormal}>
                 <ClockInCard
-                  view={createClockInCardView(clockStatus, isPending)}
+                  view={clockInCard}
                   onAction={handleAction}
                 />
               </motion.div>
