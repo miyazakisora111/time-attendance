@@ -5,9 +5,6 @@ import { fetchLatestAttendance, clock } from '@/api/attendance.api';
 import type { AttendanceResponse } from '@/__generated__/model/attendanceResponse';
 import type { ClockAction } from '@/__generated__/enums';
 
-/**
- * React Query キー。
- */
 const SCOPE = 'attendance' as const;
 const scoped = makeScopedKeys(SCOPE);
 export const attendanceQueryKeys = {

@@ -4,9 +4,9 @@ import { PrivateLayout, PublicLayout } from "@/shared/components";
 import { AppRoutePath } from "@/config/routes";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { LoginPage } from "@/features/auth/ui/LoginPage";
-import { AttendancePage } from "@/features/attendance/ui/pages/AttendancePage";
-import { DashBoardPage } from "@/features/dashboard/ui/DashBoardPage";
+import { LoginPage } from "@/features/auth/ui/page/LoginPage";
+import { AttendancePage } from "@/features/attendance/ui/page/AttendancePage";
+import { DashBoardPage } from "@/features/dashboard/ui/page/DashBoardPage";
 import { SchedulePage } from "@/features/schedule/ui/SchedulePage";
 import { SettingsPage } from "@/features/settings/ui/SettingsPage";
 import { TeamPage } from "@/features/team/ui/TeamPage";

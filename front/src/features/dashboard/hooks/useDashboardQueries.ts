@@ -4,8 +4,8 @@ import { makeScopedKeys } from '@/lib/query/keys';
 import type { DashboardRecentRecord, DashboardResponse, DashboardStats } from '@/__generated__/model';
 import { fetchDashboard } from '@/api/dashboard.api';
 
-import { toDashboardView } from '@/features/dashboard/mappers/toDashboardView';
-import type { DashboardViewData } from '@/features/dashboard/types/DashboardViewData';
+import { toDashboardView } from '@/features/dashboard/assemblers/toDashboardView';
+import type { DashboardViewData } from '@/features/dashboard/lib/types';
 
 const SCOPE = 'dashboard' as const;
 const scoped = makeScopedKeys(SCOPE);
