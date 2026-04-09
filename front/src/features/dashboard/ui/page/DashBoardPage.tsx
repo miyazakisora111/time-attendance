@@ -7,9 +7,6 @@ import { stagger } from "@/shared/animations/stagger";
 import { transitionNormal } from "@/shared/animations/transitions";
 
 import { useDashboardPage } from "@/features/dashboard/hooks/useDashboardPage";
-import { useMiniCalendar } from "@/features/dashboard/hooks/useMiniCalendar";
-import { useMonthlyStats } from "@/features/dashboard/hooks/useMonthlyStats";
-import { useRecentRecordsCard } from "@/features/dashboard/hooks/useRecentRecordsCard";
 import { ClockInCard } from "@/features/attendance/ui/components/ClockInCard/ClockInCard";
 import { MiniCalendar } from "@/features/dashboard/ui/components/MiniCalendar/MiniCalendar";
 import { MonthlyStatsCard } from "@/features/dashboard/ui/components/MonthlyStatsCard/MonthlyStatsCard";
@@ -25,6 +22,7 @@ function DashBoardPageView({
     userName,
     clockInCard,
     handleAction,
+    handleQuickAction,
     miniCalendar,
     monthlyStats,
     recentRecords,
@@ -73,7 +71,7 @@ function DashBoardPageView({
                                 {/* Utilities */}
                                 <motion.div className="grid grid-cols-1 gap-6 md:grid-cols-2" variants={fadeUp} transition={transitionNormal}>
                                     <MiniCalendar {...miniCalendar} />
-                                    <QuickActionsCard />
+                                    <QuickActionsCard onAction={handleQuickAction} />
                                 </motion.div>
 
                                 {/* Activity */}
@@ -93,20 +91,9 @@ function DashBoardPageView({
 
 /**
  * ダッシュボード画面（Container）
- * 各featureのhooksを組み合わせ、Presentationalコンポーネントにpropsを渡す。
+ * useDashboardPage()を1回呼び、Presentationalコンポーネントにpropsを渡す。
  */
 export function DashBoardPage() {
-    const page = useDashboardPage();
-    const miniCalendar = useMiniCalendar();
-    const monthlyStats = useMonthlyStats();
-    const recentRecords = useRecentRecordsCard();
-
-    return (
-        <DashBoardPageView
-            {...page}
-            miniCalendar={miniCalendar}
-            monthlyStats={monthlyStats}
-            recentRecords={recentRecords}
-        />
-    );
+    const props = useDashboardPage();
+    return <DashBoardPageView {...props} />;
 }

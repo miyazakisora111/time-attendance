@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { FileEdit, FileText } from "lucide-react";
 
@@ -11,14 +10,11 @@ import {
     CardTitle,
     Typography,
 } from "@/shared/components";
-import { AppRoutePath } from "@/config/routes";
 
-type DashboardQuickActionKey =
-    | "attendance_fix"
-    | "monthly_report";
+import type { QuickActionKey, QuickActionsCardProps } from "@/features/dashboard/ui/components/QuickActionsCard/QuickActionsCard.types";
 
 type DashboardQuickAction = {
-    key: DashboardQuickActionKey;
+    key: QuickActionKey;
     label: string;
     icon: LucideIcon;
     colorClassName: string;
@@ -42,14 +38,9 @@ const QUICK_ACTIONS = [
     },
 ] as const satisfies ReadonlyArray<DashboardQuickAction>;
 
-const QUICK_ACTION_ROUTES: Record<DashboardQuickActionKey, string> = {
-    attendance_fix: AppRoutePath.Attendance,
-    monthly_report: AppRoutePath.Dashboard,
-};
-
-export const QuickActionsCard = React.memo(function QuickActionsCard() {
-    const navigate = useNavigate();
-
+export const QuickActionsCard = React.memo(function QuickActionsCard({
+    onAction,
+}: QuickActionsCardProps) {
     return (
         <Card>
             <CardHeader>
@@ -71,7 +62,7 @@ export const QuickActionsCard = React.memo(function QuickActionsCard() {
                                 size="lg"
                                 unstableClassName="h-24 flex-col border-dashed bg-transparent"
                                 fullWidth
-                                onClick={() => navigate(QUICK_ACTION_ROUTES[action.key])}
+                                onClick={() => onAction(action.key)}
                             >
                                 <span
                                     className={`flex h-10 w-10 items-center justify-center rounded-full ${action.bgColorClassName}`}
